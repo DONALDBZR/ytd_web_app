@@ -161,10 +161,10 @@ class YTD {
         this.setMimeType("text/babel");
         if (this.getBodyClassName().includes("error")) {
             if (this.getBodyClassName().includes("404")) {
-                script.src = "/Public/Scripts/HTTP404.js";
+                script.src = "/static/scripts/views/HTTP404.js";
             }
         } else {
-            script.src = `/Public/Scripts/${this.getBodyId()}.js`;
+            script.src = `/static/scripts/views/${this.getBodyId()}.js`;
         }
         script.type = this.getMimeType();
         this.getBody().appendChild(script);

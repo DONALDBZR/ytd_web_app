@@ -11,7 +11,8 @@ body {
     padding: calc(var(--height) * 0) calc(var(--width) * 0);
     font-size: var(--textSize);
 }
-#Homepage header {
+#Homepage header,
+#Homepage footer {
     height: calc(var(--height) / 10);
 }
 #Homepage header nav {
@@ -58,4 +59,13 @@ body {
     justify-content: center;
     align-items: center;
     font-size: calc(var(--textSize) * 1);
+}
+#Homepage footer {
+    display: flex;
+    justify-content: center;
+}
+#Homepage footer div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

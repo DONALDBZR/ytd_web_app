@@ -42,15 +42,17 @@ class Header extends Application {
             <header>
                 <nav>
                     <div class="active">
-                        <a href="/">YouTube Downloader</a>
+                        <a href="/">Extractio</a>
                     </div>
                     <div>
-                        <a href="/search">
-                            <i class="fa fa-search"></i>
-                        </a>
-                    </div>
-                    <div>
-                        <ColorScheme />
+                        <div>
+                            <a href="/search">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <ColorScheme />
+                        </div>
                     </div>
                 </nav>
             </header>

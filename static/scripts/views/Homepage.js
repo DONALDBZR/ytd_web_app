@@ -125,7 +125,11 @@ class Footer extends Application {
      * @returns {HTMLFooterElement}
      */
     render() {
-        return <footer></footer>;
+        return (
+            <footer>
+                <div>Extractio</div>
+            </footer>
+        );
     }
 }
 // Rendering the page

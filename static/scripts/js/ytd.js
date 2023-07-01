@@ -22,10 +22,10 @@ class YTD {
          * @type {string[]}
          */
         this._stylesheets = [
-            "/stylesheets/ytd.css",
-            "/stylesheets/desktop.css",
-            "/stylesheets/mobile.css",
-            "/stylesheets/tablet.css",
+            "/static/stylesheets/ytd.css",
+            "/static/stylesheets/desktop.css",
+            "/static/stylesheets/mobile.css",
+            "/static/stylesheets/tablet.css",
         ];
         /**
          * Relationship of the object

@@ -41,3 +41,24 @@ body {
 #Homepage header nav div:nth-child(2) div:nth-child(2) button {
     border: none;
 }
+#Homepage main {
+    height: calc(var(--height) * 0.8);
+    --component-height: calc(var(--height) * 0.8);
+}
+#Homepage main p {
+    margin: calc(var(--height) / 50) calc(var(--width) / 50);
+    margin-top: calc(var(--height) * 0);
+    letter-spacing: calc(var(--width) / 1000);
+}
+#Homepage main div {
+    height: calc(var(--component-height) / 10);
+    display: flex;
+    justify-content: space-evenly;
+}
+#Homepage main div div {
+    height: inherit;
+    width: calc(var(--width) / 10);
+    font-size: calc(var(--textSize) * 1.331);
+    justify-content: center;
+    align-items: center;
+}

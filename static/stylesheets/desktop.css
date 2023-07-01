@@ -1,0 +1,79 @@
+/* Declaring all the variables that are going to be used */
+:root {
+    --textSize: var(--percentage);
+    --height: 0px;
+    --width: 0px;
+}
+body {
+    height: var(--height);
+    width: var(--width);
+    margin: calc(var(--height) * 0) calc(var(--width) * 0);
+    padding: calc(var(--height) * 0) calc(var(--width) * 0);
+    font-size: var(--textSize);
+}
+#Homepage header,
+#Homepage footer {
+    height: calc(var(--height) / 10);
+}
+#Homepage header nav {
+    display: flex;
+    height: inherit;
+}
+#Homepage header nav div {
+    width: calc(var(--width) / 2);
+    display: flex;
+}
+#Homepage header nav div:nth-child(1) {
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 2);
+}
+#Homepage header nav div:nth-child(2) div {
+    width: calc(var(--width) / 4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 1);
+}
+#Homepage header nav div:nth-child(2) div:nth-child(1) a {
+    font-size: calc(var(--textSize) * 1.331);
+}
+#Homepage header nav div:nth-child(2) div:nth-child(2) button {
+    border: none;
+    font-size: calc(var(--textSize) * 1.331);
+}
+#Homepage main {
+    --component-height: calc(var(
+    --height) * 0.8);
+    height: calc(var(--height) * 0.8);
+}
+#Homepage main p {
+    margin: calc(var(--height) / 100) calc(var(--width) / 10);
+    margin-top: calc(var(--height) * 0);
+    margin-bottom: calc(var(--height) / 50);
+    font-size: calc(var(--textSize) * 1.1);
+    letter-spacing: calc(var(--width) / 1000);
+}
+#Homepage main div {
+    display: flex;
+    justify-content: space-evenly;
+    height: calc(var(--component-height) / 10);
+    align-items: center;
+}
+#Homepage main div div {
+    height: inherit;
+    width: calc(var(--width) / 10);
+    font-size: calc(var(--textSize) * 1.771561);
+}
+#Homepage footer {
+    display: flex;
+    justify-content: space-evenly;
+}
+#Homepage footer div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 1.61051);
+    width: calc(var(--width) / 10);
+    height: inherit;
+}

@@ -1,0 +1,43 @@
+/* Declaring all the variables that are going to be used */
+:root {
+    --textSize: calc(var(--percentage) * 1.331);
+    --height: 0px;
+    --width: 0px;
+}
+body {
+    height: var(--height);
+    width: var(--width);
+    margin: calc(var(--height) * 0) calc(var(--width) * 0);
+    padding: calc(var(--height) * 0) calc(var(--width) * 0);
+    font-size: var(--textSize);
+}
+#Homepage header {
+    height: calc(var(--height) / 10);
+}
+#Homepage header nav {
+    height: inherit;
+    display: flex;
+}
+#Homepage header nav div {
+    width: calc(var(--width) / 2);
+    display: flex;
+}
+#Homepage header nav div:nth-child(1) {
+    justify-content: center;
+    align-items: center;
+}
+#Homepage header nav div:nth-child(1) a {
+    font-size: calc(var(--textSize) * 1.331);
+}
+#Homepage header nav div:nth-child(2) div {
+    width: calc(var(--width) / 4);
+    justify-content: center;
+    align-items: center;
+}
+#Homepage header nav div:nth-child(2) div:nth-child(1) a,
+#Homepage header nav div:nth-child(2) div:nth-child(2) button {
+    font-size: calc(var(--textSize) * 1);
+}
+#Homepage header nav div:nth-child(2) div:nth-child(2) button {
+    border: none;
+}

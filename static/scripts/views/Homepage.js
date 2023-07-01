@@ -99,7 +99,21 @@ class Main extends Application {
      * @returns {HTMLMainElement}
      */
     render() {
-        return <main></main>;
+        return (
+            <main>
+                <p>
+                    The aim of the application is that software and contents
+                    must be free and it allows anyone to get content from
+                    certain platforms to be obtained for free as it is an
+                    application developed for people by people.
+                </p>
+                <div>
+                    <div>
+                        <i class="fa-brands fa-youtube"></i>
+                    </div>
+                </div>
+            </main>
+        );
     }
 }
 /**

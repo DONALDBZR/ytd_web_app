@@ -10,9 +10,27 @@ class Application extends React.Component {
         super(props);
         this.state = {
             System: {
-                color_scheme: "light",
+                color_scheme: "",
             },
         };
+    }
+    /**
+     * Retrieving the session of the application
+     * @returns {void}
+     */
+    getSession() {
+        fetch("/Session", {
+            method: "GET",
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                this.setState({
+                    System: {
+                        color_scheme: data.color_scheme,
+                    },
+                })
+            )
+            .then(() => this.verifyColorScheme());
     }
     /**
      * Rendering the application by instantiating its components

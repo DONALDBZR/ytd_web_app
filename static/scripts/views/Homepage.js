@@ -33,6 +33,19 @@ class Application extends React.Component {
             .then(() => this.verifyColorScheme());
     }
     /**
+     * Verifying that the color scheme does not have a value
+     * @returns {void}
+     */
+    verifyColorScheme() {
+        if (this.state.System.color_scheme == "") {
+            this.setState({
+                System: {
+                    color_scheme: "light",
+                },
+            });
+        }
+    }
+    /**
      * Rendering the application by instantiating its components
      * @returns {HTMLBodyElement}
      */

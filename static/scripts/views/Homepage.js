@@ -70,6 +70,23 @@ class Application extends React.Component {
         }
     }
     /**
+     * Modifying the session and storing it accordingly
+     * @returns {void}
+     */
+    setSession() {
+        const delay = 2000;
+        event.preventDefault();
+        fetch("/Session/Post", {
+            method: "POST",
+            body: JSON.stringify({
+                color_scheme: this.state.System.color_scheme,
+            }),
+            headers: "application/json",
+        })
+            .then((response) => response.json())
+            .then(() => this.redirector(delay));
+    }
+    /**
      * Rendering the application by instantiating its components
      * @returns {HTMLBodyElement}
      */

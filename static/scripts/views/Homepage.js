@@ -46,6 +46,30 @@ class Application extends React.Component {
         }
     }
     /**
+     * Changing the color scheme according to the user's taste
+     * @returns {void}
+     */
+    setColorScheme() {
+        if (
+            this.state.System.color_scheme == "light" ||
+            this.state.System.color_scheme == ""
+        ) {
+            this.setState({
+                System: {
+                    color_scheme: "dark",
+                },
+            });
+            this.setSession();
+        } else {
+            this.setState({
+                System: {
+                    color_scheme: "light",
+                },
+            });
+            this.setSession();
+        }
+    }
+    /**
      * Rendering the application by instantiating its components
      * @returns {HTMLBodyElement}
      */
@@ -108,13 +132,13 @@ class ColorScheme extends Header {
     render() {
         if (this.state.System.color_scheme == "light") {
             return (
-                <button>
+                <button onclick={this.setColorScheme}>
                     <i class="fa-solid fa-toggle-off"></i>
                 </button>
             );
         } else {
             return (
-                <button>
+                <button onclick={this.setColorScheme}>
                     <i class="fa-solid fa-toggle-on"></i>
                 </button>
             );

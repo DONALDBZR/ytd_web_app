@@ -16,3 +16,22 @@ def homepage():
     # Returns:
     #   (str): The template which is stringified version of a HTML file
     return render_template('page.html')
+
+
+@Application.route('/Session/Post', methods=['POST'])
+def createSession():
+    # Creating the session
+
+    # Returns:
+    # (void): The session is created
+    ip_address = str(request.environ('REMOTE_ADDR'))
+    http_client_ip_address = str(request.environ('HTTP_CLIENT_IP'))
+    proxy_ip_address = str(request.environ('HTTP_X_FORWARDED_FOR'))
+    timestamp = str(datetime.now())
+    data = {
+        "ip_address": ip_address,
+        "http_client_ip_address": http_client_ip_address,
+        "proxy_ip_address": proxy_ip_address,
+        "timestamp": timestamp,
+    }
+    session['Client'] = data

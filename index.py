@@ -18,7 +18,7 @@ def homepage():
     return render_template('page.html')
 
 
-@Application.route('/Session/Post', methods=['POST'])
+@Application.route('/Session')
 def createSession():
     # Creating the session
 

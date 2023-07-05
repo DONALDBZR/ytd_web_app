@@ -1,8 +1,8 @@
 # Importing the requirements for the system
 from flask import session, request
-from flask_session import Session
 from datetime import datetime
 import os
+import json
 
 
 class SessionManager:
@@ -39,13 +39,19 @@ class SessionManager:
 
     Type: string
     """
+    __session_files: list
+    """
+    The files containing the session of the users
+
+    Type: array
+    """
 
     def __init__(self) -> None:
         """
-        Instanting the session's manager which will be set to the directory of the sessions so that it can operate as needed
+        Instantiating the session's manager which will verify the session of the users
         """
 
-        self.setDirectory("/Cache/Session/Users")
+        self.verifySession()
 
     def getDirectory(self) -> str:
         return self.__directory
@@ -77,6 +83,12 @@ class SessionManager:
     def setTimestamp(self, timestamp: str) -> None:
         self.__timestamp = timestamp
 
+    def getSessionFiles(self) -> list:
+        return self.__session_files
+
+    def setSessionFiles(self, session_files: list) -> None:
+        self.__session_files = session_files
+
     def createSession(self) -> None:
         """
         Creating the session
@@ -95,3 +107,29 @@ class SessionManager:
             "timestamp": self.getTimestamp()
         }
         session['Client'] = data
+
+    def verifySession(self) -> None:
+        """
+        Verifying that the session is not hijacked
+
+        Returns: (void): Either the session has been updated, the session has been destroyed or the session will be created
+        """
+        self.setDirectory("/Cache/Session/Users")
+        self.setSessionFiles(os.listdir(self.getDirectory()))
+        self.setIpAddress(request.environ('REMOTE_ADDR'))
+        for index in range(0, len(self.getSessionFiles()), 1):
+            if self.getSessionFiles()[index].endswith(".json"):
+                file_name = str(self.getDirectory() + "/" +
+                                self.getSessionFiles()[index])
+                file = open(file_name)
+                data = json.load(file)
+                if data['Client']['ip_address'] == session['Client']['ip_address']:
+                    session = data
+        if session.get('Client') is not None:
+            if session['Client']['ip_address'] == self.getIpAddress():
+                self.setTimestamp(datetime.now())
+                session['Client']['timestamp'] = self.getTimestamp()
+            else:
+                session.clear()
+        else:
+            self.createSession()

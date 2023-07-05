@@ -51,6 +51,12 @@ class SessionManager:
 
     Type: object
     """
+    __color_scheme: str
+    """
+    The color scheme of the application
+
+    Type: string
+    """
 
     def __init__(self) -> None:
         """
@@ -101,6 +107,12 @@ class SessionManager:
     def setSession(self, session: dict) -> None:
         self.__session = session
 
+    def getColorScheme(self) -> str:
+        return self.__color_scheme
+
+    def setColorScheme(self, color_scheme: str) -> None:
+        self.__color_scheme = color_scheme
+
     def createSession(self) -> None:
         """
         Creating the session
@@ -112,11 +124,13 @@ class SessionManager:
         self.setHttpClientIpAddress(request.environ('HTTP_CLIENT_IP'))
         self.setProxyIpAddress(request.environ('HTTP_X_FORWARDED_FOR'))
         self.setTimestamp(datetime.now())
+        self.setColorScheme("light")
         data = {
             "ip_address": self.getIpAddress(),
             "http_client_ip_address": self.getHttpClientIpAddress(),
             "proxy_ip_address": self.getProxyIpAddress(),
-            "timestamp": self.getTimestamp()
+            "timestamp": self.getTimestamp(),
+            "color_scheme": self.getColorScheme()
         }
         session['Client'] = data
         self.setSession(session)

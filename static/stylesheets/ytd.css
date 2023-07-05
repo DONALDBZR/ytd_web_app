@@ -222,22 +222,22 @@
     --sourceCodePro: "Source Code Pro";
     --pacifico: "Pacifico";
     --proximaNova: "Proxima Nova";
-    --lightColor1: rgb(
+    --color1: rgb(
         calc(var(--percentage) * (250 / 255)),
         calc(var(--percentage) * (250 / 255)),
         calc(var(--percentage) * (90 / 255))
     );
-    --lightColor2: rgb(
+    --color2: rgb(
         calc(var(--percentage) * (27 / 255)),
         calc(var(--percentage) * (54 / 255)),
         calc(var(--percentage) * (92 / 255))
     );
-    --lightColor3: rgb(
+    --color3: rgb(
         calc(var(--percentage) * (250 / 255)),
         calc(var(--percentage) * (69 / 255)),
         calc(var(--percentage) * (65 / 255))
     );
-    --color1: rgb(
+    --color4: rgb(
         var(--percentage),
         calc(var(--percentage) * 0),
         calc(var(--percentage) * 0)
@@ -245,8 +245,8 @@
 }
 body {
     font-family: sans-serif;
-    background-color: var(--lightColor1);
-    color: var(--lightColor2);
+    background-color: var(--color1);
+    color: var(--color2);
 }
 #Homepage header nav div:nth-child(1) {
     font-family: var(--sourceCodePro);
@@ -260,7 +260,7 @@ body {
 #Homepage header nav .active a,
 #Homepage header nav div:nth-child(2) div:nth-child(1) a:hover,
 #Homepage header nav div:nth-child(2) div:nth-child(2) button:hover {
-    color: var(--lightColor3);
+    color: var(--color3);
 }
 #Homepage header nav div:nth-child(1) a:hover {
     text-decoration: underline;
@@ -268,7 +268,7 @@ body {
 #Homepage header nav div:nth-child(2) div:nth-child(1) a,
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
 #Homepage footer div {
-    color: var(--lightColor2);
+    color: var(--color2);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(2) button {
     background: none;
@@ -278,5 +278,5 @@ body {
     font-family: var(--proximaNova);
 }
 #Homepage main div div:nth-child(1) {
-    color: var(--color1);
+    color: var(--color4);
 }

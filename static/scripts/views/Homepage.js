@@ -43,6 +43,7 @@ class Application extends React.Component {
                     color_scheme: "light",
                 },
             });
+            this.adjustPage();
         }
     }
     /**
@@ -85,6 +86,37 @@ class Application extends React.Component {
         })
             .then((response) => response.json())
             .then(() => this.redirector(delay));
+    }
+    /**
+     * Adjusting the color scheme of the application
+     * @returns {void}
+     */
+    adjustPage() {
+        const root = document.querySelector(":root");
+        if (
+            this.state.System.color_scheme == "light" ||
+            this.state.System.color_scheme == ""
+        ) {
+            const color1 =
+                "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
+            const color2 =
+                "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
+            const color3 =
+                "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
+            root.style.setProperty("--color1", color1);
+            root.style.setProperty("--color2", color2);
+            root.style.setProperty("--color3", color3);
+        } else {
+            const color1 =
+                "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
+            const color2 =
+                "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
+            const color3 =
+                "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
+            root.style.setProperty("--color1", color1);
+            root.style.setProperty("--color2", color2);
+            root.style.setProperty("--color3", color3);
+        }
     }
     /**
      * Rendering the application by instantiating its components

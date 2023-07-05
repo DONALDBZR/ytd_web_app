@@ -45,6 +45,12 @@ class SessionManager:
 
     Type: array
     """
+    __session: dict
+    """
+    The data of the session
+
+    Type: object
+    """
 
     def __init__(self) -> None:
         """
@@ -89,6 +95,12 @@ class SessionManager:
     def setSessionFiles(self, session_files: list) -> None:
         self.__session_files = session_files
 
+    def getSession(self) -> dict:
+        return self.__session
+
+    def setSession(self, session: dict) -> None:
+        self.__session = session
+
     def createSession(self) -> None:
         """
         Creating the session
@@ -107,6 +119,7 @@ class SessionManager:
             "timestamp": self.getTimestamp()
         }
         session['Client'] = data
+        self.setSession(session)
 
     def verifySession(self) -> None:
         """
@@ -125,6 +138,7 @@ class SessionManager:
                 data = json.load(file)
                 if data['Client']['ip_address'] == session['Client']['ip_address']:
                     session = data
+                    self.setSession(session)
         if session.get('Client') is not None:
             if session['Client']['ip_address'] == self.getIpAddress():
                 self.setTimestamp(datetime.now())

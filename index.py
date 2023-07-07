@@ -1,5 +1,5 @@
 # Importing the requirements for the application
-from flask import Flask, Response, render_template, url_for, jsonify, request, session, Request
+from flask import Flask, Response, render_template, url_for, jsonify, request, session
 from flask_session import Session
 from datetime import datetime
 import os
@@ -58,18 +58,11 @@ class SessionManager:
 
     Type: string
     """
-    __request: Request
-    """
-    The request from the application
 
-    Type: Request
-    """
-
-    def __init__(self, request: Request) -> None:
+    def __init__(self) -> None:
         """
         Instantiating the session's manager which will verify the session of the users
         """
-        self.setRequest(request)
         self.verifySession()
 
     def getDirectory(self) -> str:
@@ -120,12 +113,6 @@ class SessionManager:
     def setColorScheme(self, color_scheme: str) -> None:
         self.__color_scheme = color_scheme
 
-    def getRequest(self) -> Request:
-        return self.__request
-
-    def setRequest(self, request: Request) -> None:
-        self.__request = request
-
     def createSession(self) -> None:
         """
         Creating the session
@@ -133,11 +120,9 @@ class SessionManager:
         Returns: (void): The session is created
         """
 
-        self.setIpAddress(self.getRequest().environ('REMOTE_ADDR'))
-        self.setHttpClientIpAddress(
-            self.getRequest().environ('HTTP_CLIENT_IP'))
-        self.setProxyIpAddress(
-            self.getRequest().environ('HTTP_X_FORWARDED_FOR'))
+        self.setIpAddress(request.environ('REMOTE_ADDR'))
+        self.setHttpClientIpAddress(request.environ('HTTP_CLIENT_IP'))
+        self.setProxyIpAddress(request.environ('HTTP_X_FORWARDED_FOR'))
         self.setTimestamp(datetime.now())
         self.setColorScheme("light")
         data = {
@@ -168,7 +153,7 @@ class SessionManager:
                     if data['Client']['ip_address'] == session['Client']['ip_address']:
                         session = data
                         self.setSession(session)
-            self.setIpAddress(self.getRequest().environ('REMOTE_ADDR'))
+            self.setIpAddress(request.environ('REMOTE_ADDR'))
             if session.get('Client') is not None:
                 if session['Client']['ip_address'] == self.getIpAddress():
                     self.setTimestamp(datetime.now())
@@ -183,7 +168,7 @@ class SessionManager:
 
 # Instantiating the application
 Application = Flask(__name__)
-Session_Manager = SessionManager(request)
+Session_Manager = SessionManager()
 # Configuring the application for using sessions
 Application.config["SESSION_TYPE"] = 'filesystem'
 Session(Application)

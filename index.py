@@ -168,9 +168,8 @@ class SessionManager:
 
 # Instantiating the application
 Application = Flask(__name__)
-Session_Manager = SessionManager()
 # Configuring the application for using sessions
-Application.config["SESSION_TYPE"] = 'filesystem'
+Application.config["SESSION_TYPE"] = 'null'
 Session(Application)
 
 
@@ -191,6 +190,6 @@ def getSession() -> Response:
 
     Returns: (Response): JSON containing the session data
     """
-    return jsonify(Session_Manager.getSession())
+    return jsonify(SessionManager.getSession())
 # @Application.route('/Session/Post', methods=['POST'])
 # def setSession():

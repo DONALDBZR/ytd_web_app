@@ -1,10 +1,189 @@
 # Importing the requirements for the application
-from flask import Flask, Response, render_template, url_for, jsonify
+from flask import Flask, Response, render_template, url_for, jsonify, request, session, Request
 from flask_session import Session
-from Session import SessionManager
+from datetime import datetime
+import os
+import json
+
+
+class SessionManager:
+    """
+    It allows the application to manage the session.
+    """
+    __directory: str
+    """
+    The directory of the session files
+
+    Type: string
+    """
+    __ip_address: str
+    """
+    The IP Address of the user
+
+    Type: string
+    """
+    __http_client_ip_address: str
+    """
+    The client's IP Address of the user
+
+    Type: string
+    """
+    __proxy_ip_address: str
+    """
+    The Proxy's IP Address of the user
+
+    Type: string
+    """
+    __timestamp: str
+    """
+    The timestamp at which the session has been created
+
+    Type: string
+    """
+    __session_files: list
+    """
+    The files containing the session of the users
+
+    Type: array
+    """
+    __session: dict
+    """
+    The data of the session
+
+    Type: object
+    """
+    __color_scheme: str
+    """
+    The color scheme of the application
+
+    Type: string
+    """
+    __request: Request
+    """
+    The request from the application
+
+    Type: Request
+    """
+
+    def __init__(self, request: Request) -> None:
+        """
+        Instantiating the session's manager which will verify the session of the users
+        """
+        self.setRequest(request)
+        self.verifySession()
+
+    def getDirectory(self) -> str:
+        return self.__directory
+
+    def setDirectory(self, directory: str) -> None:
+        self.__directory = directory
+
+    def getIpAddress(self) -> str:
+        return self.__ip_address
+
+    def setIpAddress(self, ip_address: str) -> None:
+        self.__ip_address = ip_address
+
+    def getHttpClientIpAddress(self) -> str:
+        return self.__http_client_ip_address
+
+    def setHttpClientIpAddress(self, http_client_ip_address: str) -> None:
+        self.__http_client_ip_address = http_client_ip_address
+
+    def getProxyIpAddress(self) -> str:
+        return self.__proxy_ip_address
+
+    def setProxyIpAddress(self, proxy_ip_address: str) -> None:
+        self.__proxy_ip_address = proxy_ip_address
+
+    def getTimestamp(self) -> str:
+        return self.__timestamp
+
+    def setTimestamp(self, timestamp: str) -> None:
+        self.__timestamp = timestamp
+
+    def getSessionFiles(self) -> list:
+        return self.__session_files
+
+    def setSessionFiles(self, session_files: list) -> None:
+        self.__session_files = session_files
+
+    def getSession(self) -> dict:
+        return self.__session
+
+    def setSession(self, session: dict) -> None:
+        self.__session = session
+
+    def getColorScheme(self) -> str:
+        return self.__color_scheme
+
+    def setColorScheme(self, color_scheme: str) -> None:
+        self.__color_scheme = color_scheme
+
+    def getRequest(self) -> Request:
+        return self.__request
+
+    def setRequest(self, request: Request) -> None:
+        self.__request = request
+
+    def createSession(self) -> None:
+        """
+        Creating the session
+
+        Returns: (void): The session is created
+        """
+
+        self.setIpAddress(self.getRequest().environ('REMOTE_ADDR'))
+        self.setHttpClientIpAddress(
+            self.getRequest().environ('HTTP_CLIENT_IP'))
+        self.setProxyIpAddress(
+            self.getRequest().environ('HTTP_X_FORWARDED_FOR'))
+        self.setTimestamp(datetime.now())
+        self.setColorScheme("light")
+        data = {
+            "ip_address": self.getIpAddress(),
+            "http_client_ip_address": self.getHttpClientIpAddress(),
+            "proxy_ip_address": self.getProxyIpAddress(),
+            "timestamp": self.getTimestamp(),
+            "color_scheme": self.getColorScheme()
+        }
+        session['Client'] = data
+        self.setSession(session)
+
+    def verifySession(self) -> None:
+        """
+        Verifying that the session is not hijacked
+
+        Returns: (void): Either the session has been updated, the session has been destroyed or the session will be created
+        """
+        self.setDirectory("/var/www/ytd/Cache/Session/Users/")
+        self.setSessionFiles(os.listdir(self.getDirectory()))
+        if len(self.getSessionFiles()) > 0:
+            for index in range(0, len(self.getSessionFiles()), 1):
+                if self.getSessionFiles()[index].endswith(".json"):
+                    file_name = str(self.getDirectory() + "/" +
+                                    self.getSessionFiles()[index])
+                    file = open(file_name)
+                    data = json.load(file)
+                    if data['Client']['ip_address'] == session['Client']['ip_address']:
+                        session = data
+                        self.setSession(session)
+            self.setIpAddress(self.getRequest().environ('REMOTE_ADDR'))
+            if session.get('Client') is not None:
+                if session['Client']['ip_address'] == self.getIpAddress():
+                    self.setTimestamp(datetime.now())
+                    session['Client']['timestamp'] = self.getTimestamp()
+                else:
+                    session.clear()
+            else:
+                self.createSession()
+        else:
+            self.createSession()
+
+
 # Instantiating the application
 Application = Flask(__name__)
-Session_Manager = SessionManager()
+Session_Manager = SessionManager(request)
 # Configuring the application for using sessions
 Application.config["SESSION_TYPE"] = 'filesystem'
 Session(Application)
@@ -28,3 +207,5 @@ def getSession() -> Response:
     Returns: (Response): JSON containing the session data
     """
     return jsonify(Session_Manager.getSession())
+# @Application.route('/Session/Post', methods=['POST'])
+# def setSession():

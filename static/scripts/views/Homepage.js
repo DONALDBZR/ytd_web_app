@@ -60,15 +60,14 @@ class Application extends React.Component {
                     color_scheme: "dark",
                 },
             });
-            this.setSession();
         } else {
             this.setState({
                 System: {
                     color_scheme: "light",
                 },
             });
-            this.setSession();
         }
+        this.setSession();
     }
     /**
      * Modifying the session and storing it accordingly
@@ -117,6 +116,17 @@ class Application extends React.Component {
             root.style.setProperty("--color2", color2);
             root.style.setProperty("--color3", color3);
         }
+    }
+    /**
+     * Redirecting the user after changing the state of the application
+     * @param {number} delay The amount of time the application needs to wait
+     * @param {string} uniform_resource_locator The url at which the user will be redirected
+     * @returns {void}
+     */
+    redirector(delay, uniform_resource_locator) {
+        setTimeout(() => {
+            window.location.href = uniform_resource_locator;
+        }, delay);
     }
     /**
      * Rendering the application by instantiating its components

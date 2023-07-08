@@ -26,11 +26,12 @@ class Application extends React.Component {
             .then((data) =>
                 this.setState({
                     System: {
-                        color_scheme: data.color_scheme,
+                        color_scheme: data.Client.color_scheme,
                     },
                 })
             )
-            .then(() => this.verifyColorScheme());
+            .then(() => this.verifyColorScheme())
+            .then(() => this.adjustPage());
     }
     /**
      * Verifying that the color scheme does not have a value
@@ -43,7 +44,6 @@ class Application extends React.Component {
                     color_scheme: "light",
                 },
             });
-            this.adjustPage();
         }
     }
     /**

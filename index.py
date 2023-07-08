@@ -252,6 +252,12 @@ def getSession() -> Response:
 
 
 @Application.route('/Session/Post', methods=['POST'])
-def setSession():
+def setSession() -> None:
+    """
+    Allowing the Session Manager to update the session
+
+    Returns: (void): The user has changed his/her color scheme and the session has been updated
+    """
     Session_Manager = SessionManager()
     get_data = request.json
+    Session_Manager.updateSession(get_data)

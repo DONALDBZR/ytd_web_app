@@ -79,7 +79,9 @@ class Application extends React.Component {
         fetch("/Session/Post", {
             method: "POST",
             body: JSON.stringify({
-                color_scheme: this.state.System.color_scheme,
+                Client: {
+                    color_scheme: this.state.System.color_scheme,
+                },
             }),
             headers: "application/json",
         })

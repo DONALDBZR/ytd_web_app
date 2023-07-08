@@ -1,9 +1,9 @@
 # Importing the requirements for the application
 from flask import Flask, Response, render_template, url_for, jsonify, request, session
-from flask_session import Session
 from datetime import datetime
 import os
 import json
+from Environment import Environment
 
 
 class SessionManager:
@@ -46,17 +46,17 @@ class SessionManager:
 
     Type: array
     """
-    __session: dict
-    """
-    The data of the session
-
-    Type: object
-    """
     __color_scheme: str
     """
     The color scheme of the application
 
     Type: string
+    """
+    __length: int
+    """
+    The amount of session files
+
+    Type: int
     """
 
     def __init__(self) -> None:
@@ -101,17 +101,17 @@ class SessionManager:
     def setSessionFiles(self, session_files: list) -> None:
         self.__session_files = session_files
 
-    def getSession(self) -> dict:
-        return self.__session
-
-    def setSession(self, session: dict) -> None:
-        self.__session = session
-
     def getColorScheme(self) -> str:
         return self.__color_scheme
 
     def setColorScheme(self, color_scheme: str) -> None:
         self.__color_scheme = color_scheme
+
+    def getLength(self) -> int:
+        return self.__length
+
+    def setLength(self, length: int) -> None:
+        self.__length = length
 
     def createSession(self) -> None:
         """
@@ -120,10 +120,10 @@ class SessionManager:
         Returns: (void): The session is created
         """
 
-        self.setIpAddress(request.environ('REMOTE_ADDR'))
-        self.setHttpClientIpAddress(request.environ('HTTP_CLIENT_IP'))
-        self.setProxyIpAddress(request.environ('HTTP_X_FORWARDED_FOR'))
-        self.setTimestamp(datetime.now())
+        self.setIpAddress(request.environ.get('REMOTE_ADDR'))
+        self.setHttpClientIpAddress(request.environ.get('HTTP_CLIENT_IP'))
+        self.setProxyIpAddress(request.environ.get('HTTP_X_FORWARDED_FOR'))
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.setColorScheme("light")
         data = {
             "ip_address": self.getIpAddress(),
@@ -133,7 +133,13 @@ class SessionManager:
             "color_scheme": self.getColorScheme()
         }
         session['Client'] = data
-        self.setSession(session)
+        session_data = self.getSession()
+        new_length = self.getLength() + 1
+        file_name = "User_" + str(new_length) + ".json"
+        file_path = self.getDirectory() + file_name
+        session_file = open(file_path, 'w')
+        session_file.write(session_data)
+        session_file.close()
 
     def verifySession(self) -> None:
         """
@@ -143,6 +149,7 @@ class SessionManager:
         """
         self.setDirectory("/var/www/ytd/Cache/Session/Users/")
         self.setSessionFiles(os.listdir(self.getDirectory()))
+        self.setLength(len(self.getSessionFiles()))
         if len(self.getSessionFiles()) > 0:
             for index in range(0, len(self.getSessionFiles()), 1):
                 if self.getSessionFiles()[index].endswith(".json"):
@@ -150,10 +157,9 @@ class SessionManager:
                                     self.getSessionFiles()[index])
                     file = open(file_name)
                     data = json.load(file)
-                    if data['Client']['ip_address'] == session['Client']['ip_address']:
+                    if request.environ.get('REMOTE_ADDR') == data['Client']['ip_address']:
                         session = data
-                        self.setSession(session)
-            self.setIpAddress(request.environ('REMOTE_ADDR'))
+            self.setIpAddress(request.environ.get('REMOTE_ADDR'))
             if session.get('Client') is not None:
                 if session['Client']['ip_address'] == self.getIpAddress():
                     self.setTimestamp(datetime.now())
@@ -165,12 +171,20 @@ class SessionManager:
         else:
             self.createSession()
 
+    def getSession(self) -> str:
+        """
+        Returning a stringified form of the session
+
+        Returns: (str)
+        """
+        return json.dumps(session, indent=4)
+
 
 # Instantiating the application
 Application = Flask(__name__)
 # Configuring the application for using sessions
-Application.config["SESSION_TYPE"] = 'null'
-Session(Application)
+Application.secret_key = Environment.SESSION_KEY
+Application.config["SESSION_TYPE"] = 'filesystem'
 
 
 @Application.route('/')
@@ -190,6 +204,10 @@ def getSession() -> Response:
 
     Returns: (Response): JSON containing the session data
     """
-    return jsonify(SessionManager.getSession())
+    Session_Manager = SessionManager()
+    headers = {
+        "Content-Type": "application/json",
+    }
+    return jsonify(Session_Manager.getSession()), 200, headers
 # @Application.route('/Session/Post', methods=['POST'])
 # def setSession():

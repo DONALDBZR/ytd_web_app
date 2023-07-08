@@ -205,9 +205,15 @@ def getSession() -> Response:
     Returns: (Response): JSON containing the session data
     """
     Session_Manager = SessionManager()
+    session_data = {
+        "Client": {
+            "timestamp": session["Client"]["timestamp"],
+            "color_scheme": session["Client"]["color_scheme"]
+        }
+    }
     headers = {
         "Content-Type": "application/json",
     }
-    return jsonify(Session_Manager.getSession()), 200, headers
+    return jsonify(session_data), 200, headers
 # @Application.route('/Session/Post', methods=['POST'])
 # def setSession():

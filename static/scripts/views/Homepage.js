@@ -84,7 +84,7 @@ class Application extends React.Component {
             headers: "application/json",
         })
             .then((response) => response.json())
-            .then(() => this.redirector(delay));
+            .then(() => this.redirector(delay, window.location.href));
     }
     /**
      * Adjusting the color scheme of the application

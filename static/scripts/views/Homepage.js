@@ -59,32 +59,24 @@ class Application extends React.Component {
         const sub_component = component.querySelector("div:nth-child(2)");
         const button = sub_component.querySelector("button");
         const color_scheme = button.attributes.color_scheme.value;
+        const new_color_scheme = "";
         event.preventDefault();
         if (color_scheme == "light") {
-            fetch("/Session/Post", {
-                method: "POST",
-                body: JSON.stringify({
-                    Client: {
-                        color_scheme: "dark",
-                    },
-                }),
-                headers: "application/json",
-            })
-                .then((response) => response.json())
-                .then(() => this.redirector(delay, window.location.href));
+            new_color_scheme = "dark";
         } else {
-            fetch("/Session/Post", {
-                method: "POST",
-                body: JSON.stringify({
-                    Client: {
-                        color_scheme: "light",
-                    },
-                }),
-                headers: "application/json",
-            })
-                .then((response) => response.json())
-                .then(() => this.redirector(delay, window.location.href));
+            new_color_scheme = "light";
         }
+        fetch("/Session/Post", {
+            method: "POST",
+            body: JSON.stringify({
+                Client: {
+                    color_scheme: new_color_scheme,
+                },
+            }),
+            headers: "application/json",
+        })
+            .then((response) => response.json())
+            .then(() => this.redirector(delay, window.location.href));
     }
     /**
      * Adjusting the color scheme of the application

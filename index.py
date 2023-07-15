@@ -147,7 +147,7 @@ class SessionManager:
 
         Returns: (void): Either the session has been updated, the session has been destroyed or the session will be created
         """
-        self.setDirectory("/var/www/ytd/Cache/Session/Users/")
+        self.setDirectory("./Cache/Session/Users/")
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
         if len(self.getSessionFiles()) > 0:

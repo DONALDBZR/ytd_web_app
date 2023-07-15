@@ -59,7 +59,7 @@ class Application extends React.Component {
         const sub_component = component.querySelector("div:nth-child(2)");
         const button = sub_component.querySelector("button");
         const color_scheme = button.attributes.color_scheme.value;
-        const new_color_scheme = "";
+        let new_color_scheme = "";
         event.preventDefault();
         if (color_scheme == "light") {
             new_color_scheme = "dark";
@@ -73,7 +73,9 @@ class Application extends React.Component {
                     color_scheme: new_color_scheme,
                 },
             }),
-            headers: "application/json",
+            headers: {
+                "Content-Type": "application/json",
+            },
         })
             .then((response) => response.json())
             .then(() => this.redirector(delay, window.location.href));

@@ -59,32 +59,24 @@ class Application extends React.Component {
         const button = sub_component.querySelector("button");
         const color_scheme = button.attributes.color_scheme.value;
         if (color_scheme == "light") {
-            this.setState({
-                System: {
-                    color_scheme: "dark",
-                },
-            });
+            this.setSession("dark");
         } else {
-            this.setState({
-                System: {
-                    color_scheme: "light",
-                },
-            });
+            this.setSession("light");
         }
-        this.setSession();
     }
     /**
      * Modifying the session and storing it accordingly
+     * @param {string} color_scheme The new color scheme mode
      * @returns {void}
      */
-    setSession() {
+    setSession(color_scheme) {
         const delay = 2000;
         event.preventDefault();
         fetch("/Session/Post", {
             method: "POST",
             body: JSON.stringify({
                 Client: {
-                    color_scheme: this.state.System.color_scheme,
+                    color_scheme: color_scheme,
                 },
             }),
             headers: "application/json",

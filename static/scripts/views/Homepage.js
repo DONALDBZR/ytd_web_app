@@ -48,10 +48,11 @@ class Application extends React.Component {
     }
     /**
      * Changing the color scheme according to the user's taste
+     * @param {string} color_scheme The color scheme that needs to be changed
      * @returns {void}
      */
-    setColorScheme() {
-        if (this.state.System.color_scheme == "light") {
+    setColorScheme(color_scheme) {
+        if (color_scheme == "light") {
             this.setState({
                 System: {
                     color_scheme: "dark",
@@ -200,13 +201,21 @@ class ColorScheme extends Header {
             this.state.System.color_scheme == ""
         ) {
             return (
-                <button onClick={this.setColorScheme}>
+                <button
+                    onClick={this.setColorScheme(
+                        this.state.System.color_scheme
+                    )}
+                >
                     <i class="fa-solid fa-toggle-off"></i>
                 </button>
             );
         } else {
             return (
-                <button onClick={this.setColorScheme}>
+                <button
+                    onClick={this.setColorScheme(
+                        this.state.System.color_scheme
+                    )}
+                >
                     <i class="fa-solid fa-toggle-on"></i>
                 </button>
             );

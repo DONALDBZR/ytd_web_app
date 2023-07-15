@@ -254,12 +254,22 @@ def getSession() -> Response:
 
 
 @Application.route('/Session/Post', methods=['POST'])
-def setSession() -> None:
+def setSession() -> Response:
     """
     Allowing the Session Manager to update the session
 
-    Returns: (void): The user has changed his/her color scheme and the session has been updated
+    Returns: (Response): JSON containing the session data
     """
     Session_Manager = SessionManager()
     get_data = request.json
     Session_Manager.updateSession(get_data)
+    session_data = {
+        "Client": {
+            "timestamp": session["Client"]["timestamp"],
+            "color_scheme": session["Client"]["color_scheme"]
+        }
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    return jsonify(session_data), 200, headers

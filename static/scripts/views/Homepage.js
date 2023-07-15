@@ -51,6 +51,7 @@ class Application extends React.Component {
      * @returns {void}
      */
     setColorScheme() {
+        const delay = 2000;
         const body = document.body;
         const header = body.querySelector("header");
         const navigation_bar = header.querySelector("nav");
@@ -58,31 +59,32 @@ class Application extends React.Component {
         const sub_component = component.querySelector("div:nth-child(2)");
         const button = sub_component.querySelector("button");
         const color_scheme = button.attributes.color_scheme.value;
-        if (color_scheme == "light") {
-            this.setSession("dark");
-        } else {
-            this.setSession("light");
-        }
-    }
-    /**
-     * Modifying the session and storing it accordingly
-     * @param {string} color_scheme The new color scheme mode
-     * @returns {void}
-     */
-    setSession(color_scheme) {
-        const delay = 2000;
         event.preventDefault();
-        fetch("/Session/Post", {
-            method: "POST",
-            body: JSON.stringify({
-                Client: {
-                    color_scheme: color_scheme,
-                },
-            }),
-            headers: "application/json",
-        })
-            .then((response) => response.json())
-            .then(() => this.redirector(delay, window.location.href));
+        if (color_scheme == "light") {
+            fetch("/Session/Post", {
+                method: "POST",
+                body: JSON.stringify({
+                    Client: {
+                        color_scheme: "dark",
+                    },
+                }),
+                headers: "application/json",
+            })
+                .then((response) => response.json())
+                .then(() => this.redirector(delay, window.location.href));
+        } else {
+            fetch("/Session/Post", {
+                method: "POST",
+                body: JSON.stringify({
+                    Client: {
+                        color_scheme: "light",
+                    },
+                }),
+                headers: "application/json",
+            })
+                .then((response) => response.json())
+                .then(() => this.redirector(delay, window.location.href));
+        }
     }
     /**
      * Adjusting the color scheme of the application

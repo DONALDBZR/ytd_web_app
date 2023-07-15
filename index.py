@@ -207,8 +207,9 @@ class SessionManager:
                         "timestamp": self.getTimestamp(),
                         "color_scheme": self.getColorScheme()
                     }
+                    session["Client"] = new_data
                     file_to_be_updated = open(file_name, "w")
-                    file_to_be_updated.write(new_data)
+                    file_to_be_updated.write(session)
                     file_to_be_updated.close()
                     session["Client"]["timestamp"] = self.getTimestamp()
                     session["Client"]["color_scheme"] = self.getColorScheme()

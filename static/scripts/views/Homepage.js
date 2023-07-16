@@ -11,7 +11,6 @@ class Application extends React.Component {
         this.state = {
             System: {
                 color_scheme: "",
-                url: "",
             },
         };
     }
@@ -53,6 +52,7 @@ class Application extends React.Component {
      */
     setColorScheme() {
         const delay = 2000;
+        const uniform_resource_locator = window.location.href;
         const body = document.body;
         const header = body.querySelector("header");
         const navigation_bar = header.querySelector("nav");
@@ -79,14 +79,11 @@ class Application extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) =>
-                this.setState({
-                    System: {
-                        color_scheme: data.Client.color_scheme,
-                    },
-                })
-            )
-            .then(() => this.redirector(delay, window.location.href));
+            .then(() => {
+                setTimeout(() => {
+                    window.location.href = uniform_resource_locator;
+                }, delay);
+            });
     }
     /**
      * Adjusting the color scheme of the application
@@ -118,17 +115,6 @@ class Application extends React.Component {
             root.style.setProperty("--color2", color2);
             root.style.setProperty("--color3", color3);
         }
-    }
-    /**
-     * Redirecting the user after changing the state of the application
-     * @param {number} delay The amount of time the application needs to wait
-     * @param {string} uniform_resource_locator The url at which the user will be redirected
-     * @returns {void}
-     */
-    redirector(delay, uniform_resource_locator) {
-        setTimeout(() => {
-            window.location.href = uniform_resource_locator;
-        }, delay);
     }
     /**
      * Rendering the application by instantiating its components

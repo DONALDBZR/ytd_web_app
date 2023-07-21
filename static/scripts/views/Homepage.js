@@ -230,7 +230,7 @@ class ColorScheme extends Header {
     render() {
         return (
             <button
-                color_scheme={this.state.System.color_scheme}
+                value={this.state.System.color_scheme}
                 onClick={this.setColorScheme}
             >
                 {this.verifyButtonColorScheme(this.state.System.color_scheme)}

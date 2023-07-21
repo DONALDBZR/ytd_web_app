@@ -95,7 +95,10 @@ class Application extends React.Component {
     setColorScheme() {
         const delay = 2000;
         event.preventDefault();
-        if (this.state.System.color_scheme == "light") {
+        const color_scheme = document.querySelector(
+            "button[name='colorSchemeChanger']"
+        ).value;
+        if (color_scheme == "light") {
             this.setState((previous) => ({
                 System: {
                     ...previous.System,
@@ -169,6 +172,7 @@ class Header extends Application {
                         </div>
                         <div>
                             <button
+                                name="colorSchemeChanger"
                                 value={this.state.System.color_scheme}
                                 onClick={this.setColorScheme}
                             >

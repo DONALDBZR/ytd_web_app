@@ -116,13 +116,11 @@ class Application extends React.Component {
      * @returns {HTMLElement}
      */
     verifyButton(color_scheme) {
-        setTimeout(() => {
-            if (color_scheme == "dark") {
-                return <i class="fa-solid fa-toggle-on"></i>;
-            } else {
-                return <i class="fa-solid fa-toggle-off"></i>;
-            }
-        }, 2000);
+        if (color_scheme == "dark") {
+            return <i class="fa-solid fa-toggle-on"></i>;
+        } else {
+            return <i class="fa-solid fa-toggle-off"></i>;
+        }
     }
     /**
      * Rendering the application by instantiating its components
@@ -192,15 +190,17 @@ class ColorScheme extends Header {
      * @returns {HTMLButtonElement}
      */
     render() {
-        return (
-            <button
-                name="colorSchemeChanger"
-                value={this.state.System.color_scheme}
-                onClick={this.setColorScheme}
-            >
-                {this.verifyButton(this.state.System.color_scheme)}
-            </button>
-        );
+        setTimeout(() => {
+            return (
+                <button
+                    name="colorSchemeChanger"
+                    value={this.state.System.color_scheme}
+                    onClick={this.setColorScheme}
+                >
+                    {this.verifyButton(this.state.System.color_scheme)}
+                </button>
+            );
+        }, 2000);
     }
 }
 /**

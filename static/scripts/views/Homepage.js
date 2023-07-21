@@ -82,7 +82,7 @@ class Application extends React.Component {
      * @returns {void}
      */
     setColorScheme() {
-        const delay = 2000;
+        const delay = 1000;
         event.preventDefault();
         let color_scheme = document.querySelector(
             "button[name='colorSchemeChanger']"

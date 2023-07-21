@@ -143,6 +143,13 @@ class Header extends Application {
         super(props);
     }
     /**
+     * Running the methods needed as soon as the component has been successfully mounted
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getSession();
+    }
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */
@@ -160,7 +167,13 @@ class Header extends Application {
                             </a>
                         </div>
                         <div>
-                            <ColorScheme />
+                            <button
+                                name="colorSchemeChanger"
+                                value={this.state.System.color_scheme}
+                                onClick={this.setColorScheme}
+                            >
+                                <ColorScheme />
+                            </button>
                         </div>
                     </div>
                 </nav>
@@ -178,13 +191,6 @@ class ColorScheme extends Header {
      */
     constructor(props) {
         super(props);
-    }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted
-     * @returns {void}
-     */
-    componentDidMount() {
-        this.getSession();
     }
     /**
      * Rendering the component which allows the user to change the color scheme

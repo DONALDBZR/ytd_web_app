@@ -78,17 +78,6 @@ class Application extends React.Component {
         }
     }
     /**
-     * Redirecting the user to an intended url
-     * @param {int} delay
-     * @param {string} uniform_resource_locator
-     * @returns {void}
-     */
-    redirector(delay, uniform_resource_locator) {
-        setTimeout(() => {
-            window.location.href = uniform_resource_locator;
-        }, delay);
-    }
-    /**
      * Changing the color scheme according to the user's taste
      * @returns {void}
      */
@@ -115,7 +104,11 @@ class Application extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then(() => this.redirector(delay, window.location.href));
+            .then(() => {
+                setTimeout(() => {
+                    window.location.href = window.location.href;
+                }, delay);
+            });
     }
     /**
      * Rendering the application by instantiating its components

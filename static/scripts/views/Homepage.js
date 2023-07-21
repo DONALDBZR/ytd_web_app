@@ -161,13 +161,7 @@ class Header extends Application {
                             </a>
                         </div>
                         <div>
-                            <button
-                                name="colorSchemeChanger"
-                                value={this.state.System.color_scheme}
-                                onClick={this.setColorScheme}
-                            >
-                                <ColorScheme />
-                            </button>
+                            <ColorScheme />
                         </div>
                     </div>
                 </nav>
@@ -199,9 +193,25 @@ class ColorScheme extends Header {
      */
     render() {
         if (this.state.System.color_scheme == "dark") {
-            return <i class="fa-solid fa-toggle-on"></i>;
+            return (
+                <button
+                    name="colorSchemeChanger"
+                    value={this.state.System.color_scheme}
+                    onClick={this.setColorScheme}
+                >
+                    <i class="fa-solid fa-toggle-on"></i>
+                </button>
+            );
         } else {
-            return <i class="fa-solid fa-toggle-off"></i>;
+            return (
+                <button
+                    name="colorSchemeChanger"
+                    value={this.state.System.color_scheme}
+                    onClick={this.setColorScheme}
+                >
+                    <i class="fa-solid fa-toggle-off"></i>
+                </button>
+            );
         }
     }
 }

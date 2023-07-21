@@ -116,6 +116,7 @@ class Application extends React.Component {
      * @returns {HTMLElement}
      */
     verifyButton(color_scheme) {
+        console.log(`Color Scheme: ${color_scheme}`);
         if (color_scheme == "dark") {
             return <i class="fa-solid fa-toggle-on"></i>;
         } else {
@@ -190,17 +191,15 @@ class ColorScheme extends Header {
      * @returns {HTMLButtonElement}
      */
     render() {
-        setTimeout(() => {
-            return (
-                <button
-                    name="colorSchemeChanger"
-                    value={this.state.System.color_scheme}
-                    onClick={this.setColorScheme}
-                >
-                    {this.verifyButton(this.state.System.color_scheme)}
-                </button>
-            );
-        }, 2000);
+        return (
+            <button
+                name="colorSchemeChanger"
+                value={this.state.System.color_scheme}
+                onClick={this.setColorScheme}
+            >
+                {this.verifyButton(this.state.System.color_scheme)}
+            </button>
+        );
     }
 }
 /**

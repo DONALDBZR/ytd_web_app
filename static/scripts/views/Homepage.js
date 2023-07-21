@@ -115,13 +115,6 @@ class Application extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) =>
-                this.setState({
-                    System: {
-                        color_scheme: data.Client.color_scheme,
-                    },
-                })
-            )
             .then(() => this.redirector(delay, window.location.href));
     }
     /**

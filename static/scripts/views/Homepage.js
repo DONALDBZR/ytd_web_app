@@ -47,6 +47,18 @@ class Application extends React.Component {
         }
     }
     /**
+     * Verifying the color scheme of the button
+     * @param {string} color_scheme The color scheme that is stored in the state of the component
+     * @returns {HTMLElement}
+     */
+    verifyButtonColorScheme(color_scheme) {
+        if (color_scheme == "dark") {
+            return <i class="fa-solid fa-toggle-on"></i>;
+        } else {
+            return <i class="fa-solid fa-toggle-off"></i>;
+        }
+    }
+    /**
      * Changing the color scheme according to the user's taste
      * @returns {void}
      */
@@ -87,7 +99,7 @@ class Application extends React.Component {
     }
     /**
      * Adjusting the color scheme of the application
-     * @returns {void}
+     * @returns {string}
      */
     adjustPage() {
         const root = document.querySelector(":root");
@@ -115,6 +127,22 @@ class Application extends React.Component {
             root.style.setProperty("--color2", color2);
             root.style.setProperty("--color3", color3);
         }
+    }
+    /**
+     * Handling any change that is made in the user interface
+     * @param {Event} event
+     * @returns {void}
+     */
+    handleChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState((previous) => ({
+            User: {
+                ...previous.User,
+                [name]: value,
+            },
+        }));
     }
     /**
      * Rendering the application by instantiating its components
@@ -184,28 +212,14 @@ class ColorScheme extends Header {
      * @returns {HTMLButtonElement}
      */
     render() {
-        if (
-            this.state.System.color_scheme == "light" ||
-            this.state.System.color_scheme == ""
-        ) {
-            return (
-                <button
-                    color_scheme={this.state.System.color_scheme}
-                    onClick={this.setColorScheme}
-                >
-                    <i class="fa-solid fa-toggle-off"></i>
-                </button>
-            );
-        } else {
-            return (
-                <button
-                    color_scheme={this.state.System.color_scheme}
-                    onClick={this.setColorScheme}
-                >
-                    <i class="fa-solid fa-toggle-on"></i>
-                </button>
-            );
-        }
+        return (
+            <button
+                color_scheme={this.state.System.color_scheme}
+                onClick={this.setColorScheme}
+            >
+                {this.verifyButtonColorScheme(this.state.System.color_scheme)}
+            </button>
+        );
     }
 }
 /**

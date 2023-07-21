@@ -90,40 +90,34 @@ class Application extends React.Component {
         }
     }
     /**
-     * Handling any change that is made in the user interface
-     * @param {Event} event
+     * Redirecting the user to an intended url
+     * @param {int} delay
+     * @param {string} uniform_resource_locator
      * @returns {void}
      */
-    handleChange(event) {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-        this.setState((previous) => ({
-            System: {
-                ...previous.System,
-                [name]: value,
-            },
-        }));
+    redirector(delay, uniform_resource_locator) {
+        setTimeout(() => {
+            window.location.href = uniform_resource_locator;
+        }, delay);
     }
     /**
-     * Handling the form submission
-     * @param {Event} event
+     * Changing the color scheme according to the user's taste
      * @returns {void}
      */
-    handleSubmit(event) {
+    setColorScheme() {
         const delay = 2000;
         event.preventDefault();
         if (this.state.System.color_scheme == "light") {
             this.setState((previous) => ({
                 System: {
-                    ...previous.system,
+                    ...previous.System,
                     color_scheme: "dark",
                 },
             }));
         } else {
             this.setState((previous) => ({
                 System: {
-                    ...previous.system,
+                    ...previous.System,
                     color_scheme: "light",
                 },
             }));
@@ -148,17 +142,6 @@ class Application extends React.Component {
                 })
             )
             .then(() => this.redirector(delay, window.location.href));
-    }
-    /**
-     * Redirecting the user to an intended url
-     * @param {int} delay
-     * @param {string} uniform_resource_locator
-     * @returns {void}
-     */
-    redirector(delay, uniform_resource_locator) {
-        setTimeout(() => {
-            window.location.href = uniform_resource_locator;
-        }, delay);
     }
     /**
      * Rendering the application by instantiating its components

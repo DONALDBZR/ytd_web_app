@@ -95,29 +95,19 @@ class Application extends React.Component {
     setColorScheme() {
         const delay = 2000;
         event.preventDefault();
-        const color_scheme = document.querySelector(
+        let color_scheme = document.querySelector(
             "button[name='colorSchemeChanger']"
         ).value;
         if (color_scheme == "light") {
-            this.setState((previous) => ({
-                System: {
-                    ...previous.System,
-                    color_scheme: "dark",
-                },
-            }));
+            color_scheme = "dark";
         } else {
-            this.setState((previous) => ({
-                System: {
-                    ...previous.System,
-                    color_scheme: "light",
-                },
-            }));
+            color_scheme = "light";
         }
         fetch("/Session/Post", {
             method: "POST",
             body: JSON.stringify({
                 Client: {
-                    color_scheme: this.state.System.color_scheme,
+                    color_scheme: color_scheme,
                 },
             }),
             headers: {

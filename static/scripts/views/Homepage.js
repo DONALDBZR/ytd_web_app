@@ -116,11 +116,13 @@ class Application extends React.Component {
      * @returns {HTMLElement}
      */
     verifyButton(color_scheme) {
-        if (color_scheme == "dark") {
-            return <i class="fa-solid fa-toggle-on"></i>;
-        } else {
-            return <i class="fa-solid fa-toggle-off"></i>;
-        }
+        setTimeout(() => {
+            if (color_scheme == "dark") {
+                return <i class="fa-solid fa-toggle-on"></i>;
+            } else {
+                return <i class="fa-solid fa-toggle-off"></i>;
+            }
+        }, 2000);
     }
     /**
      * Rendering the application by instantiating its components

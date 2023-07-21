@@ -138,11 +138,55 @@ class Application extends React.Component {
         const value = target.value;
         const name = target.name;
         this.setState((previous) => ({
-            User: {
-                ...previous.User,
+            System: {
+                ...previous.System,
                 [name]: value,
             },
         }));
+    }
+    /**
+     * Handling the form submission
+     * @param {Event} event
+     * @returns {void}
+     */
+    handleSubmit(event) {
+        const delay = 2000;
+        event.preventDefault();
+        if (this.state.System.color_scheme == "light") {
+            this.setState((previous) => ({
+                System: {
+                    ...previous.system,
+                    color_scheme: "dark",
+                },
+            }));
+        } else {
+            this.setState((previous) => ({
+                System: {
+                    ...previous.system,
+                    color_scheme: "light",
+                },
+            }));
+        }
+        fetch("/Session/Post", {
+            method: "POST",
+            body: JSON.stringify({
+                Client: {
+                    color_scheme: this.state.System.color_scheme,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                this.setState({
+                    System: {
+                        color_scheme: data.Client.color_scheme,
+                    },
+                })
+            )
+            .then(() => this.redirector(delay));
     }
     /**
      * Rendering the application by instantiating its components

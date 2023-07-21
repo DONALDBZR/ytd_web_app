@@ -59,45 +59,6 @@ class Application extends React.Component {
         }
     }
     /**
-     * Changing the color scheme according to the user's taste
-     * @returns {void}
-     */
-    setColorScheme() {
-        const delay = 2000;
-        const uniform_resource_locator = window.location.href;
-        const body = document.body;
-        const header = body.querySelector("header");
-        const navigation_bar = header.querySelector("nav");
-        const component = navigation_bar.querySelector("div:nth-child(2)");
-        const sub_component = component.querySelector("div:nth-child(2)");
-        const button = sub_component.querySelector("button");
-        const color_scheme = button.attributes.color_scheme.value;
-        let new_color_scheme = "";
-        event.preventDefault();
-        if (color_scheme == "light") {
-            new_color_scheme = "dark";
-        } else {
-            new_color_scheme = "light";
-        }
-        fetch("/Session/Post", {
-            method: "POST",
-            body: JSON.stringify({
-                Client: {
-                    color_scheme: new_color_scheme,
-                },
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => response.json())
-            .then(() => {
-                setTimeout(() => {
-                    window.location.href = uniform_resource_locator;
-                }, delay);
-            });
-    }
-    /**
      * Adjusting the color scheme of the application
      * @returns {string}
      */
@@ -186,7 +147,18 @@ class Application extends React.Component {
                     },
                 })
             )
-            .then(() => this.redirector(delay));
+            .then(() => this.redirector(delay, window.location.href));
+    }
+    /**
+     * Redirecting the user to an intended url
+     * @param {int} delay
+     * @param {string} uniform_resource_locator
+     * @returns {void}
+     */
+    redirector(delay, uniform_resource_locator) {
+        setTimeout(() => {
+            window.location.href = uniform_resource_locator;
+        }, delay);
     }
     /**
      * Rendering the application by instantiating its components

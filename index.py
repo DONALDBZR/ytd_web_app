@@ -254,7 +254,7 @@ class Media:
 
     Type: string
     """
-    _YouTube: YouTubeDownloader
+    _YouTube: None
     """
     It will handle every operations related to YouTube
 
@@ -340,15 +340,21 @@ class YouTubeDownloader:
     def setTitle(self, title: str) -> None:
         self.__title = title
 
-    def search(self):
+    def search(self) -> dict:
         """
         Searching for the video in YouTube.
+
+        Returns: dict
         """
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setArtist(self.getVideo().title.split(" - ")[0])
         self.setTitle(self.getVideo().title.split(" - ")[1])
-        print("Uniform Resource Locator: " + self.getUniformResourceLocator() +
-              "\nArtist: " + self.getArtist() + "\nTitle: " + self.getTitle())
+        data = {
+            "uniform_resource_locator": self.getUniformResourceLocator(),
+            "artist": self.getArtist(),
+            "title": self.getTitle()
+        }
+        return data
 
 
 # Instantiating the application
@@ -422,5 +428,10 @@ def searchPage() -> str:
 
 @Application.route("/Media/Search", methods=["POST"])
 def search():
-    """"""
-    data = request.get_json()
+    """
+    Searching for the media by the uniform resouce locator that
+    has been retrieved from the client.
+    """
+    data = request.json
+    media = Media(data["Media"]["search"])
+    return "Done"

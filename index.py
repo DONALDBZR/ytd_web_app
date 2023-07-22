@@ -150,17 +150,35 @@ class SessionManager:
         self.setDirectory("./Cache/Session/Users/")
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
+        # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
+            """
+            Iterating throughout the session files to find any file that
+            contains the IP Address of the client.
+            """
             for index in range(0, len(self.getSessionFiles()), 1):
+                # Ensuring that the session files are of JSON file type.
                 if self.getSessionFiles()[index].endswith(".json"):
                     file_name = str(self.getDirectory() + "/" +
                                     self.getSessionFiles()[index])
                     file = open(file_name)
                     data = json.load(file)
+                    """
+                    Verifying the IP Address of the client against the IP
+                    Address stored in the cache database.
+                    """
                     if request.environ.get('REMOTE_ADDR') == data['Client']['ip_address']:
                         session = data
             self.setIpAddress(request.environ.get('REMOTE_ADDR'))
+            """
+            Ensuring that the Client data type is not null or else a
+            session will be created.
+            """
             if session.get('Client') is not None:
+                """
+                Comparing the IP Addresses to either renew the timestamp or
+                to clear the session.
+                """
                 if session['Client']['ip_address'] == self.getIpAddress():
                     self.setTimestamp(
                         datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))

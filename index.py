@@ -273,3 +273,13 @@ def setSession() -> Response:
         "Content-Type": "application/json",
     }
     return jsonify(session_data), 200, headers
+
+
+@Application.route('/Search')
+def searchPage() -> str:
+    """
+    Rendering the template needed which will import the web-worker
+
+    Returns: (str): The template which is stringified version of a HTML file
+    """
+    return render_template('page.html')

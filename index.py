@@ -273,12 +273,16 @@ class Media:
     def setSearch(self, search: str) -> None:
         self.__search = search
 
-    def verifyUniformResourceLocator(self):
+    def verifyUniformResourceLocator(self) -> (dict | None):
         """
-        Verifying the uniform resource locator in order to switch to the correct system.
+        Verifying the uniform resource locator in order to switch to
+        the correct system.
+
+        Returns: dict | None
         """
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
             self._YouTube = YouTubeDownloader(self.getSearch())
+            return self._YouTube.search()
 
 
 class YouTubeDownloader:

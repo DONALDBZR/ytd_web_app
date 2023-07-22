@@ -138,7 +138,6 @@ class Application extends React.Component {
      * @returns {void}
      */
     handleSubmit(event) {
-        const delay = 2000;
         event.preventDefault();
         fetch("/Media/Search", {
             method: "POST",

@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import json
 from Environment import Environment
+from pytube import YouTube
 
 
 class SessionManager:
@@ -290,6 +291,12 @@ class YouTubeDownloader:
 
     Type: string
     """
+    __video: YouTube
+    """
+    The video from YouTube
+
+    Type: YouTube
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -302,6 +309,18 @@ class YouTubeDownloader:
 
     def setUniformResourceLocator(self, uniform_resource_locator: str) -> None:
         self.__uniform_resource_locator = uniform_resource_locator
+
+    def getVideo(self) -> YouTube:
+        return self.__video
+
+    def setVideo(self, video: YouTube) -> None:
+        self.__video = video
+
+    def search(self):
+        """
+        Searching for the video in YouTube.
+        """
+        self.setVideo(YouTube(self.getUniformResourceLocator()))
 
 
 # Instantiating the application

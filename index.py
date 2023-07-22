@@ -226,6 +226,12 @@ class Media:
 
     Type: string
     """
+    _YouTube: YouTubeDownloader
+    """
+    It will handle every operations related to YouTube
+
+    Type: YouTubeDownloader
+    """
 
     def __init__(self, search: str) -> None:
         """
@@ -244,10 +250,10 @@ class Media:
         Verifying the uniform resource locator in order to switch to the correct system.
         """
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
-            pass
+            self._YouTube = YouTubeDownloader(self.getSearch())
 
 
-class Youtube:
+class YouTubeDownloader:
     """
     It will handle every operations related to YouTube
     """
@@ -256,10 +262,6 @@ class Youtube:
     The uniform resource locator to be searched.
 
     Type: string
-    """
-    _YouTube: Youtube
-    """
-    It will handle every operations related to YouTube
     """
 
     def __init__(self, uniform_resource_locator: str):

@@ -216,6 +216,30 @@ class SessionManager:
                     session["Client"]["color_scheme"] = self.getColorScheme()
 
 
+class Media:
+    """
+    It allows the application to manage the media.
+    """
+    __search: str
+    """
+    The uniform resource locator to be searched.
+
+    Type: string
+    """
+
+    def __init__(self, search: str) -> None:
+        """
+        Instantiating the media's manager which will search the media.
+        """
+        self.setSearch(search)
+
+    def getSearch(self) -> str:
+        return self.__search
+
+    def setSearch(self, search: str) -> None:
+        self.__search = search
+
+
 # Instantiating the application
 Application = Flask(__name__)
 # Configuring the application for using sessions
@@ -283,3 +307,9 @@ def searchPage() -> str:
     Returns: (str): The template which is stringified version of a HTML file
     """
     return render_template('page.html')
+
+
+@Application.route("/Media/Search", methods=["POST"])
+def search():
+    """"""
+    data = request.get_json()

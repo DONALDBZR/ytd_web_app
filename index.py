@@ -347,6 +347,8 @@ class YouTubeDownloader:
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setArtist(self.getVideo().title.split(" - ")[0])
         self.setTitle(self.getVideo().title.split(" - ")[1])
+        print("Uniform Resource Locator: " + self.getUniformResourceLocator() +
+              "\nArtist: " + self.getArtist() + "\nTitle: " + self.getTitle())
 
 
 # Instantiating the application

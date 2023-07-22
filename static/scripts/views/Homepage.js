@@ -144,11 +144,11 @@ class Header extends Application {
         return (
             <header>
                 <nav>
-                    <div>
+                    <div class="active">
                         <a href="/">Extractio</a>
                     </div>
                     <div>
-                        <div class="active">
+                        <div>
                             <a href="/Search">
                                 <i class="fa fa-search"></i>
                             </a>

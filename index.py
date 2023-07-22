@@ -211,12 +211,21 @@ class SessionManager:
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.setColorScheme(data["Client"]["color_scheme"])
         self.setSessionFiles(os.listdir(self.getDirectory()))
+        """
+        Iterating throughout the session files to update the session
+        needed.
+        """
         for index in range(0, len(self.getSessionFiles()), 1):
+            # Ensuring that the session files are of JSON file type.
             if self.getSessionFiles()[index].endswith(".json"):
                 file_name = str(self.getDirectory() + "/" +
                                 self.getSessionFiles()[index])
                 file = open(file_name)
                 data = json.load(file)
+                """
+                Ensuring that the IP Addresses corresponds in order to
+                update the session.
+                """
                 if self.getIpAddress() == data['Client']['ip_address']:
                     new_data = {
                         "ip_address": self.getIpAddress(),

@@ -438,4 +438,4 @@ def search():
     """
     data = request.json
     media = Media(data["Media"]["search"])
-    return "Done"
+    return media.verifyUniformResourceLocator()

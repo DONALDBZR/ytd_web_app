@@ -12,6 +12,9 @@ class Application extends React.Component {
             System: {
                 color_scheme: "",
             },
+            Media: {
+                search: "",
+            },
         };
     }
     /**
@@ -202,7 +205,17 @@ class Main extends Application {
     render() {
         return (
             <main>
-                <div>Main</div>
+                <form method="POST">
+                    <input
+                        type="search"
+                        placeholder="Search..."
+                        name="search"
+                        required
+                    />
+                    <button>
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
             </main>
         );
     }

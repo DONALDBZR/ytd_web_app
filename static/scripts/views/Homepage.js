@@ -149,7 +149,7 @@ class Header extends Application {
                     </div>
                     <div>
                         <div>
-                            <a href="/search">
+                            <a href="/Search">
                                 <i class="fa fa-search"></i>
                             </a>
                         </div>

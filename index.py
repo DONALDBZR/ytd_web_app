@@ -247,6 +247,34 @@ class Media:
             pass
 
 
+class Youtube:
+    """
+    It will handle every operations related to YouTube
+    """
+    __uniform_resource_locator: str
+    """
+    The uniform resource locator to be searched.
+
+    Type: string
+    """
+    _YouTube: Youtube
+    """
+    It will handle every operations related to YouTube
+    """
+
+    def __init__(self, uniform_resource_locator: str):
+        """
+        Instantiating the class and launching the operations needed
+        """
+        self.setUniformResourceLocator(uniform_resource_locator)
+
+    def getUniformResourceLocator(self) -> str:
+        return self.__uniform_resource_locator
+
+    def setUniformResourceLocator(self, uniform_resource_locator: str) -> None:
+        self.__uniform_resource_locator = uniform_resource_locator
+
+
 # Instantiating the application
 Application = Flask(__name__)
 # Configuring the application for using sessions

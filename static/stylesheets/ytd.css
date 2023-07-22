@@ -254,7 +254,8 @@ body {
 }
 #Homepage header nav div:nth-child(1) a,
 #Homepage footer div,
-#Search header nav div:nth-child(1) a {
+#Search header nav div:nth-child(1) a,
+#Search footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
@@ -275,7 +276,8 @@ body {
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
 #Homepage footer div,
 #Search header nav div:nth-child(1) a,
-#Search header nav div:nth-child(2) div:nth-child(2) button {
+#Search header nav div:nth-child(2) div:nth-child(2) button,
+#Search footer div {
     color: var(--color2);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,

@@ -243,7 +243,9 @@
         calc(var(--percentage) * 0)
     );
 }
-body {
+body,
+#Search main form input,
+#Search main form button {
     font-family: sans-serif;
     background-color: var(--color1);
     color: var(--color2);
@@ -266,7 +268,8 @@ body {
 #Search header nav div:nth-child(1) a:hover,
 #Search header nav .active a,
 #Search header nav div:nth-child(2) div:nth-child(1) a,
-#Search header nav div:nth-child(2) div:nth-child(2) button:hover {
+#Search header nav div:nth-child(2) div:nth-child(2) button:hover,
+#Search main form button:hover {
     color: var(--color3);
 }
 #Homepage header nav div:nth-child(1) a:hover {
@@ -277,7 +280,8 @@ body {
 #Homepage footer div,
 #Search header nav div:nth-child(1) a,
 #Search header nav div:nth-child(2) div:nth-child(2) button,
-#Search footer div {
+#Search footer div,
+#Search main form input::placeholder {
     color: var(--color2);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
@@ -290,4 +294,10 @@ body {
 }
 #Homepage main div div:nth-child(1) {
     color: var(--color4);
+}
+#Search main form input::placeholder {
+    opacity: calc(var(--percentage) / 2);
+}
+#Search main form button {
+    cursor: pointer;
 }

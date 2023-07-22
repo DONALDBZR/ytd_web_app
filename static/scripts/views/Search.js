@@ -114,6 +114,22 @@ class Application extends React.Component {
             });
     }
     /**
+     * Handling any change that is made in the user interface
+     * @param {Event} event
+     * @returns {void}
+     */
+    handleChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState((previous) => ({
+            Media: {
+                ...previous.Media,
+                [name]: value,
+            },
+        }));
+    }
+    /**
      * Rendering the application by instantiating its components
      * @returns {HTMLBodyElement}
      */

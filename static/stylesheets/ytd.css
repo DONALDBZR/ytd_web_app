@@ -248,18 +248,24 @@ body {
     background-color: var(--color1);
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(1) {
+#Homepage header nav div:nth-child(1),
+#Search header nav div:nth-child(1) {
     font-family: var(--sourceCodePro);
 }
 #Homepage header nav div:nth-child(1) a,
-#Homepage footer div {
+#Homepage footer div,
+#Search header nav div:nth-child(1) a {
     text-decoration: none;
     font-family: var(--pacifico);
 }
 #Homepage header nav div a:hover,
 #Homepage header nav .active a,
 #Homepage header nav div:nth-child(2) div:nth-child(1) a:hover,
-#Homepage header nav div:nth-child(2) div:nth-child(2) button:hover {
+#Homepage header nav div:nth-child(2) div:nth-child(2) button:hover,
+#Search header nav div:nth-child(1) a:hover,
+#Search header nav .active a,
+#Search header nav div:nth-child(2) div:nth-child(1) a,
+#Search header nav div:nth-child(2) div:nth-child(2) button:hover {
     color: var(--color3);
 }
 #Homepage header nav div:nth-child(1) a:hover {
@@ -267,10 +273,13 @@ body {
 }
 #Homepage header nav div:nth-child(2) div:nth-child(1) a,
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
-#Homepage footer div {
+#Homepage footer div,
+#Search header nav div:nth-child(1) a,
+#Search header nav div:nth-child(2) div:nth-child(2) button {
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(2) div:nth-child(2) button {
+#Homepage header nav div:nth-child(2) div:nth-child(2) button,
+#Search header nav div:nth-child(2) div:nth-child(2) button {
     background: none;
     cursor: pointer;
 }

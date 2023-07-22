@@ -297,6 +297,12 @@ class YouTubeDownloader:
 
     Type: YouTube
     """
+    __artist: str
+    """
+    The artist of the video
+
+    Type: string
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -316,11 +322,18 @@ class YouTubeDownloader:
     def setVideo(self, video: YouTube) -> None:
         self.__video = video
 
+    def getArtist(self) -> str:
+        return self.__artist
+
+    def setArtist(self, artist: str) -> None:
+        self.__artist = artist
+
     def search(self):
         """
         Searching for the video in YouTube.
         """
         self.setVideo(YouTube(self.getUniformResourceLocator()))
+        self.setArtist(self.getVideo().title.split(" - ")[0])
 
 
 # Instantiating the application

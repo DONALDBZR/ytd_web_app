@@ -11,6 +11,9 @@ class Application extends React.Component {
         this.state = {
             System: {
                 color_scheme: "",
+                status: 0,
+                message: "",
+                url: "",
             },
             Media: {
                 search: "",
@@ -128,6 +131,26 @@ class Application extends React.Component {
                 [name]: value,
             },
         }));
+    }
+    /**
+     * Handling the form submission
+     * @param {Event} event
+     * @returns {void}
+     */
+    handleSubmit(event) {
+        const delay = 2000;
+        event.preventDefault();
+        fetch("/Media/Search", {
+            method: "POST",
+            body: JSON.stringify({
+                Media: {
+                    search: this.state.Media.search,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then((response) => response.json());
     }
     /**
      * Rendering the application by instantiating its components

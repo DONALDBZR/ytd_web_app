@@ -244,11 +244,13 @@ class Main extends Application {
     render() {
         return (
             <main>
-                <form method="POST">
+                <form method="POST" onSubmit={this.handleSubmit.bind(this)}>
                     <input
                         type="search"
                         placeholder="Search..."
                         name="search"
+                        value={this.state.Media.search}
+                        onChange={this.handleChange.bind(this)}
                         required
                     />
                     <button>

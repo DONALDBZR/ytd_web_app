@@ -239,6 +239,13 @@ class Media:
     def setSearch(self, search: str) -> None:
         self.__search = search
 
+    def verifyUniformResourceLocator(self):
+        """
+        Verifying the uniform resource locator in order to switch to the correct system.
+        """
+        if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
+            pass
+
 
 # Instantiating the application
 Application = Flask(__name__)

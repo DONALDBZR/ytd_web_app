@@ -455,7 +455,9 @@ def search() -> Response:
     """
     data = request.json
     media = Media(data["Media"]["search"])
-    return media.verifyUniformResourceLocator()
+    return_data = media.verifyUniformResourceLocator()
+    identifier = session["Media"]["YouTube"]["identifier"]
+    return return_data
 
 
 @Application.route('/Search/<identifier>')
@@ -465,6 +467,5 @@ def searchPageWithMedia(identifier: str) -> (str | None):
 
     Returns: (string | void)
     """
-    identifier = session["Media"]["YouTube"]["identifier"]
     if 'identifier' in session["Media"]["YouTube"] and identifier == session["Media"]["YouTube"]["identifier"]:
         return render_template('page.html')

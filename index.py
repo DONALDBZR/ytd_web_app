@@ -459,7 +459,7 @@ def search() -> Response:
     media = Media(data["Media"]["search"])
     session["Media"] = media.verifyUniformResourceLocator()
     identifier = session["Media"]["identifier"]
-    return redirect("/Search/" + identifier, 302)
+    return session["Media"]["identifier"]
 
 
 @Application.route('/Search/<identifier>')

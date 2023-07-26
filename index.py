@@ -135,7 +135,7 @@ class SessionManager:
         }
         session['Client'] = data
         session_data = self.getSession()
-        file_name = self.getHttpClientIpAddress()
+        file_name = self.getHttpClientIpAddress() + ".json"
         file_path = self.getDirectory() + file_name
         session_file = open(file_path, 'w')
         session_file.write(session_data)

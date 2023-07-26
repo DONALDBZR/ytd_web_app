@@ -459,4 +459,4 @@ def search() -> Response:
     media = Media(data["Media"]["search"])
     session["Media"] = media.verifyUniformResourceLocator()
     identifier = session["Media"]["identifier"]
-    return redirect("/Search/" + session["Media"]["identifier"], 302)
+    return redirect("/Search/" + identifier, 302)

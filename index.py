@@ -373,7 +373,7 @@ class YouTubeDownloader:
         file = open(filename, "w")
         file.write(json.dumps(session, indent=4))
         file.close()
-        return json.dumps(session, indent=4)
+        return json.dumps(session["Media"], indent=4)
 
 
 # Instantiating the application

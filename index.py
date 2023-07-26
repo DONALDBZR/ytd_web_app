@@ -437,10 +437,10 @@ def setSession() -> Response:
 
 
 @Application.route('/Search')
-@Application.route('/Search/<identifier>')
 def searchPage() -> str:
     """
-    Rendering the template needed which will import the web-worker
+    Rendering the template needed which will import the
+    web-worker
 
     Returns: (str): The template which is stringified version of a HTML file
     """

@@ -469,10 +469,9 @@ def search() -> Response:
 @Application.route('/Search/<identifier>')
 def searchPageWithMedia(identifier: str) -> (str | None):
     """
-    Rendering the template needed which will import the
-    web-worker
+    Rendering the template needed which will import the web-worker
 
     Returns: (string | void)
     """
-    if 'identifier' in session["Media"] and identifier == session["Media"]["identifier"]:
+    if 'identifier' in session["Media"]["YouTube"] and identifier == session["Media"]["YouTube"]["identifier"]:
         return render_template('page.html')

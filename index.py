@@ -437,7 +437,7 @@ def setSession() -> Response:
 
 
 @Application.route('/Search')
-@Application.route("/Search/<session['Media']['identifier']>")
+@Application.route('/Search/<identifier>')
 def searchPage() -> str:
     """
     Rendering the template needed which will import the web-worker
@@ -458,4 +458,5 @@ def search() -> Response:
     data = request.json
     media = Media(data["Media"]["search"])
     session["Media"] = media.verifyUniformResourceLocator()
+    identifier = session["Media"]["identifier"]
     return redirect("/Search/" + session["Media"]["identifier"], 302)

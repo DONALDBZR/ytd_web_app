@@ -320,7 +320,13 @@ class YouTube extends Media {
     render() {
         return (
             <div className="YouTube">
-                <video></video>
+                <video controls autoplay>
+                    <source
+                        src={this.state.Media.uniform_resource_locator}
+                        type="video/mp4"
+                    />
+                </video>
+                <div>{`${this.state.Media.artist} - ${this.state.Media.title}`}</div>
             </div>
         );
     }

@@ -377,7 +377,7 @@ class YouTubeDownloader:
         filename = "./Cache/Session/Users/" + \
             session["Client"]["ip_address"] + ".json"
         file = open(filename, "w")
-        file.write(session)
+        file.write(json.dumps(session, indent=4))
         file.close()
         return data
 

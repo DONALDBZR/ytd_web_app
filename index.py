@@ -1,5 +1,5 @@
 # Importing the requirements for the application
-from flask import Flask, Response, render_template, url_for, jsonify, request, session
+from flask import Flask, Response, render_template, url_for, jsonify, request, session, redirect
 from datetime import datetime
 import os
 import json
@@ -437,6 +437,7 @@ def setSession() -> Response:
 
 
 @Application.route('/Search')
+@Application.route("/Search/" + session["media"]["identifier"])
 def searchPage() -> str:
     """
     Rendering the template needed which will import the web-worker
@@ -447,13 +448,14 @@ def searchPage() -> str:
 
 
 @Application.route("/Media/Search", methods=["POST"])
-def search() -> (dict | None):
+def search() -> Response:
     """
     Searching for the media by the uniform resouce locator that
     has been retrieved from the client.
 
-    Returns: dict | None
+    Returns: (Response)
     """
     data = request.json
     media = Media(data["Media"]["search"])
-    return media.verifyUniformResourceLocator()
+    session["Media"] = media.verifyUniformResourceLocator()
+    return redirect("/Search/" + session["Media"]["identifier"], 302)

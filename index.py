@@ -365,10 +365,14 @@ class YouTubeDownloader:
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setArtist(self.getVideo().title.split(" - ")[0])
         self.setTitle(self.getVideo().title.split(" - ")[1])
+        self.setIdentifier(self.getUniformResourceLocator())
+        self.setIdentifier(self.getIdentifier().replace(
+            "https://www.youtube.com/", ""))
         data = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "artist": self.getArtist(),
-            "title": self.getTitle()
+            "title": self.getTitle(),
+            "identifier": self.getIdentifier()
         }
         return data
 

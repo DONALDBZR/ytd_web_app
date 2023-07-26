@@ -373,6 +373,7 @@ class YouTubeDownloader:
             "title": self.getTitle(),
             "identifier": self.getIdentifier()
         }
+        session["Media"]["YouTube"] = data
         return data
 
 

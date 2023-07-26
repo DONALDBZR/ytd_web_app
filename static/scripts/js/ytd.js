@@ -163,6 +163,8 @@ class YTD {
             if (this.getBodyClassName().includes("404")) {
                 script.src = "/static/scripts/views/HTTP404.js";
             }
+        } else if (this.getBodyId().includes("Search")) {
+            script.src = "/static/scripts/views/Search.js";
         } else {
             script.src = `/static/scripts/views/${this.getBodyId()}.js`;
         }

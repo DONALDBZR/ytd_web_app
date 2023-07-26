@@ -1,6 +1,6 @@
 # Importing the requirements for the application
 from flask import Flask, Response, render_template, url_for, jsonify, request, session, redirect
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import json
 from Environment import Environment
@@ -145,17 +145,14 @@ class SessionManager:
         """
         Verifying that the session is not hijacked
 
-        Returns: (void): Either the session has been updated, the session has been destroyed or the session will be created
+        Returns: (void)
         """
         self.setDirectory("./Cache/Session/Users/")
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
         # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
-            """
-            Iterating throughout the session files to find any file that
-            contains the IP Address of the client.
-            """
+            # Iterating throughout the session files to find any file that contains the IP Address of the client.
             for index in range(0, len(self.getSessionFiles()), 1):
                 # Ensuring that the session files are of JSON file type.
                 if self.getSessionFiles()[index].endswith(".json"):
@@ -163,23 +160,20 @@ class SessionManager:
                                     self.getSessionFiles()[index])
                     file = open(file_name)
                     data = json.load(file)
-                    """
-                    Verifying the IP Address of the client against the IP
-                    Address stored in the cache database.
-                    """
+                    # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
                     if request.environ.get('REMOTE_ADDR') == data['Client']['ip_address']:
-                        session = data
+                        timestamp = datetime.strptime(
+                            data['Client']['timestamp'], "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
+                        # Verifying that the session has not expired
+                        if timestamp > datetime.now():
+                            session = data
+                        else:
+                            self.createSession()
             self.setIpAddress(request.environ.get('REMOTE_ADDR'))
-            """
-            Ensuring that the Client data type is not null or else a
-            session will be created.
-            """
+            # Ensuring that the Client data type is not null or else a session will be created.
             if session.get('Client') is not None:
-                """
-                Comparing the IP Addresses to either renew the timestamp or
-                to clear the session.
-                """
-                if session['Client']['ip_address'] == self.getIpAddress():
+                # Comparing the IP Addresses to either renew the timestamp or to clear the session.
+                if session['Client']['ip_address'] == self.getIpAddress() and session["Client"]:
                     self.setTimestamp(
                         datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
                     session['Client']['timestamp'] = self.getTimestamp()

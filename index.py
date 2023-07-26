@@ -437,7 +437,7 @@ def setSession() -> Response:
 
 
 @Application.route('/Search')
-@Application.route("/Search/" + session["media"]["identifier"])
+@Application.route("/Search/<session['Media']['identifier']>")
 def searchPage() -> str:
     """
     Rendering the template needed which will import the web-worker

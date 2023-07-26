@@ -366,6 +366,7 @@ class YouTubeDownloader:
             "title": self.getTitle(),
             "identifier": self.getIdentifier()
         }
+        session["Media"] = {}
         session["Media"]["YouTube"] = data
         filename = "./Cache/Session/Users/" + \
             session["Client"]["ip_address"] + ".json"

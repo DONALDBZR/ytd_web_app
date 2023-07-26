@@ -303,6 +303,29 @@ class Media extends Main {
     }
 }
 /**
+ * The component that is the YouTube component given that it will only be rendered only when the data corresponds to it.
+ */
+class YouTube extends Media {
+    /**
+     * Constructing the Youtube component and also inheriting the properties and states from the media
+     * @param {*} props
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLVideoElement}
+     */
+    render() {
+        return (
+            <div className="YouTube">
+                <video></video>
+            </div>
+        );
+    }
+}
+/**
  * The component that is the footer
  */
 class Footer extends Application {

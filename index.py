@@ -455,15 +455,14 @@ def searchPage() -> str:
 @Application.route("/Media/Search", methods=["POST"])
 def search() -> Response:
     """
-    Searching for the media by the uniform resouce locator that
-    has been retrieved from the client.
+    Searching for the media by the uniform resouce locator that has been retrieved from the client.
 
     Returns: Response
     """
     data = request.json
     media = Media(data["Media"]["search"])
     session["Media"] = media.verifyUniformResourceLocator()
-    identifier = session["Media"]["identifier"]
+    identifier = session["Media"]["YouTube"]["identifier"]
     return session["Media"]
 
 

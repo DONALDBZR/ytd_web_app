@@ -244,20 +244,20 @@
     );
 }
 body,
-#Search main form input,
-#Search main form button {
+body[id*="Search"] main form input,
+body[id*="Search"] main form button {
     font-family: sans-serif;
     background-color: var(--color1);
     color: var(--color2);
 }
 #Homepage header nav div:nth-child(1),
-#Search header nav div:nth-child(1) {
+body[id*="Search"] header nav div:nth-child(1) {
     font-family: var(--sourceCodePro);
 }
 #Homepage header nav div:nth-child(1) a,
 #Homepage footer div,
-#Search header nav div:nth-child(1) a,
-#Search footer div {
+body[id*="Search"] header nav div:nth-child(1) a,
+body[id*="Search"] footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
@@ -265,11 +265,11 @@ body,
 #Homepage header nav .active a,
 #Homepage header nav div:nth-child(2) div:nth-child(1) a:hover,
 #Homepage header nav div:nth-child(2) div:nth-child(2) button:hover,
-#Search header nav div:nth-child(1) a:hover,
-#Search header nav .active a,
-#Search header nav div:nth-child(2) div:nth-child(1) a,
-#Search header nav div:nth-child(2) div:nth-child(2) button:hover,
-#Search main form button:hover {
+body[id*="Search"] header nav div:nth-child(1) a:hover,
+body[id*="Search"] header nav .active a,
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a,
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button:hover,
+body[id*="Search"] main form button:hover {
     color: var(--color3);
 }
 #Homepage header nav div:nth-child(1) a:hover {
@@ -278,14 +278,14 @@ body,
 #Homepage header nav div:nth-child(2) div:nth-child(1) a,
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
 #Homepage footer div,
-#Search header nav div:nth-child(1) a,
-#Search header nav div:nth-child(2) div:nth-child(2) button,
-#Search footer div,
-#Search main form input::placeholder {
+body[id*="Search"] header nav div:nth-child(1) a,
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
+body[id*="Search"] footer div,
+body[id*="Search"] main form input::placeholder {
     color: var(--color2);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
-#Search header nav div:nth-child(2) div:nth-child(2) button {
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button {
     background: none;
     cursor: pointer;
 }
@@ -295,9 +295,9 @@ body,
 #Homepage main div div:nth-child(1) {
     color: var(--color4);
 }
-#Search main form input::placeholder {
+body[id*="Search"] main form input::placeholder {
     opacity: calc(var(--percentage) / 2);
 }
-#Search main form button {
+body[id*="Search"] main form button {
     cursor: pointer;
 }

@@ -92,7 +92,7 @@ class Application extends React.Component {
      * @returns {void}
      */
     setColorScheme() {
-        const delay = 1000;
+        const delay = 200;
         event.preventDefault();
         let color_scheme = document.querySelector(
             "button[name='colorSchemeChanger']"
@@ -142,6 +142,7 @@ class Application extends React.Component {
      * @returns {void}
      */
     handleSubmit(event) {
+        const delay = 200;
         event.preventDefault();
         fetch("/Media/Search", {
             method: "POST",
@@ -164,16 +165,26 @@ class Application extends React.Component {
                         identifier: data.identifier,
                     },
                 })
-            );
+            )
+            .then(() =>
+                this.setState((previous) => ({
+                    System: {
+                        ...previous.System,
+                        url: `${window.location.pathname}/${this.state.Media.identifier}`,
+                    },
+                }))
+            )
+            .then(() => this.redirector(delay, this.state.System.url));
     }
     /**
      * Redirecting the user to an intended url
-     * @param {int} delay
+     * @param {int} delay The amount of time in milliseconds before firing the method
+     * @param {string} uniform_resource_locator The route
      * @returns {void}
      */
-    redirector(delay) {
+    redirector(delay, uniform_resource_locator) {
         setTimeout(() => {
-            window.location.href = this.state.System.url;
+            window.location.href = uniform_resource_locator;
         }, delay);
     }
     /**

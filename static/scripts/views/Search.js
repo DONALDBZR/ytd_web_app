@@ -20,6 +20,7 @@ class Application extends React.Component {
                 artist: "",
                 title: "",
                 uniform_resource_locator: "",
+                identifier: "",
             },
         };
     }
@@ -160,9 +161,20 @@ class Application extends React.Component {
                         artist: data.artist,
                         title: data.title,
                         uniform_resource_locator: data.uniform_resource_locator,
+                        identifier: data.identifier,
                     },
                 })
             );
+    }
+    /**
+     * Redirecting the user to an intended url
+     * @param {int} delay
+     * @returns {void}
+     */
+    redirector(delay) {
+        setTimeout(() => {
+            window.location.href = this.state.System.url;
+        }, delay);
     }
     /**
      * Rendering the application by instantiating its components

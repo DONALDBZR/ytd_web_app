@@ -349,11 +349,11 @@ class YouTubeDownloader:
     def setIdentifier(self, identifier: str) -> None:
         self.__identifier = identifier
 
-    def search(self) -> dict:
+    def search(self) -> str:
         """
         Searching for the video in YouTube.
 
-        Returns: dict
+        Returns: String
         """
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setArtist(self.getVideo().title.split(" - ")[0])
@@ -373,7 +373,7 @@ class YouTubeDownloader:
         file = open(filename, "w")
         file.write(json.dumps(session, indent=4))
         file.close()
-        return data
+        return json.dumps(session, indent=4)
 
 
 # Instantiating the application
@@ -455,6 +455,7 @@ def search() -> Response:
     """
     data = request.json
     media = Media(data["Media"]["search"])
+    media.verifyUniformResourceLocator()
     return session["Media"]
 
 

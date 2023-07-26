@@ -460,3 +460,15 @@ def search() -> Response:
     session["Media"] = media.verifyUniformResourceLocator()
     identifier = session["Media"]["identifier"]
     return redirect("/Search/" + identifier, 302)
+
+
+@Application.route('/Search/<string: identifier>')
+def searchPageWithMedia() -> str:
+    """
+    Rendering the template needed which will import the
+    web-worker
+
+    Returns: (str): The template which is stringified version of a HTML file
+    """
+    if 'identifier' in session["Media"]:
+        return render_template('page.html')

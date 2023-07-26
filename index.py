@@ -455,8 +455,7 @@ def search() -> Response:
     """
     data = request.json
     media = Media(data["Media"]["search"])
-    media.verifyUniformResourceLocator()
-    return session["Media"]
+    return media.verifyUniformResourceLocator()
 
 
 @Application.route('/Search/<identifier>')

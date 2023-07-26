@@ -389,7 +389,7 @@ def homepage() -> str:
     """
     Rendering the template needed which will import the web-worker
 
-    Returns: (str): The template which is stringified version of a HTML file
+    Returns: string
     """
     return render_template('page.html')
 
@@ -399,7 +399,7 @@ def getSession() -> Response:
     """
     Sending the session data in the form of JSON
 
-    Returns: (Response): JSON containing the session data
+    Returns: Response
     """
     Session_Manager = SessionManager()
     session_data = {
@@ -419,7 +419,7 @@ def setSession() -> Response:
     """
     Allowing the Session Manager to update the session
 
-    Returns: (Response): JSON containing the session data
+    Returns: Response
     """
     Session_Manager = SessionManager()
     get_data = request.json
@@ -442,7 +442,7 @@ def searchPage() -> str:
     Rendering the template needed which will import the
     web-worker
 
-    Returns: (str): The template which is stringified version of a HTML file
+    Returns: string
     """
     return render_template('page.html')
 
@@ -453,7 +453,7 @@ def search() -> Response:
     Searching for the media by the uniform resouce locator that
     has been retrieved from the client.
 
-    Returns: (Response)
+    Returns: Response
     """
     data = request.json
     media = Media(data["Media"]["search"])
@@ -463,12 +463,12 @@ def search() -> Response:
 
 
 @Application.route('/Search/<string: identifier>')
-def searchPageWithMedia() -> str:
+def searchPageWithMedia() -> (str | None):
     """
     Rendering the template needed which will import the
     web-worker
 
-    Returns: (str): The template which is stringified version of a HTML file
+    Returns: (string | void)
     """
     if 'identifier' in session["Media"]:
         return render_template('page.html')

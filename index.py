@@ -431,10 +431,12 @@ def searchPage() -> str:
 
 
 @Application.route("/Media/Search", methods=["POST"])
-def search():
+def search() -> (dict | None):
     """
     Searching for the media by the uniform resouce locator that
     has been retrieved from the client.
+
+    Returns: dict | None
     """
     data = request.json
     media = Media(data["Media"]["search"])

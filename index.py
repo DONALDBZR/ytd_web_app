@@ -118,9 +118,9 @@ class SessionManager:
         """
         Creating the session
 
-        Returns: (void): The session is created
+        Returns: void
         """
-
+        session.clear()
         self.setIpAddress(request.environ.get('REMOTE_ADDR'))
         self.setHttpClientIpAddress(request.environ.get('HTTP_CLIENT_IP'))
         self.setProxyIpAddress(request.environ.get('HTTP_X_FORWARDED_FOR'))

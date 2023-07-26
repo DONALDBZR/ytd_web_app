@@ -313,6 +313,12 @@ class YouTubeDownloader:
 
     Type: string
     """
+    __identifier: str
+    """
+    The identifier of the video
+
+    Type: string
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -343,6 +349,12 @@ class YouTubeDownloader:
 
     def setTitle(self, title: str) -> None:
         self.__title = title
+
+    def getIdentifier(self) -> str:
+        return self.__identifier
+
+    def setIdentifier(self, identifier: str) -> None:
+        self.__identifier = identifier
 
     def search(self) -> dict:
         """

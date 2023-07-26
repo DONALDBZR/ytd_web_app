@@ -459,7 +459,7 @@ def search() -> Response:
     media = Media(data["Media"]["search"])
     session["Media"] = media.verifyUniformResourceLocator()
     identifier = session["Media"]["identifier"]
-    return session["Media"]["identifier"]
+    return session["Media"]
 
 
 @Application.route('/Search/<identifier>')

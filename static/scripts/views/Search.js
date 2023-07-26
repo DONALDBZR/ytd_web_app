@@ -17,6 +17,9 @@ class Application extends React.Component {
             },
             Media: {
                 search: "",
+                artist: "",
+                title: "",
+                uniform_resource_locator: "",
             },
         };
     }
@@ -149,7 +152,17 @@ class Application extends React.Component {
             headers: {
                 "Content-Type": "application/json",
             },
-        }).then((response) => response.json());
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                this.setState({
+                    Media: {
+                        artist: data.artist,
+                        title: data.title,
+                        uniform_resource_locator: data.uniform_resource_locator,
+                    },
+                })
+            );
     }
     /**
      * Rendering the application by instantiating its components
@@ -256,8 +269,28 @@ class Main extends Application {
                         <i class="fa fa-search"></i>
                     </button>
                 </form>
+                <Media />
             </main>
         );
+    }
+}
+/**
+ * The Media Component
+ */
+class Media extends Application {
+    /**
+     * Constructing the media component and also inheriting the properties and states from the application
+     * @param {*} props
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return <div className="Media">if (condition) {}</div>;
     }
 }
 /**

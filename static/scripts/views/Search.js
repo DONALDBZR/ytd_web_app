@@ -275,11 +275,11 @@ class Main extends Application {
     }
 }
 /**
- * The Media Component
+ * The Media Component that will render according the to the data retrieved
  */
-class Media extends Application {
+class Media extends Main {
     /**
-     * Constructing the media component and also inheriting the properties and states from the application
+     * Constructing the media component and also inheriting the properties and states from the main
      * @param {*} props
      */
     constructor(props) {
@@ -290,7 +290,16 @@ class Media extends Application {
      * @returns {HTMLDivElement}
      */
     render() {
-        return <div className="Media">if (condition) {}</div>;
+        if (
+            this.state.Media.uniform_resource_locator.includes("youtube") ||
+            this.state.Media.uniform_resource_locator.includes("youtu.be")
+        ) {
+            return (
+                <div className="Media">
+                    <YouTube />
+                </div>
+            );
+        }
     }
 }
 /**

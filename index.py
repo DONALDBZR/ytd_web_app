@@ -462,7 +462,7 @@ def search() -> Response:
     return redirect("/Search/" + identifier, 302)
 
 
-@Application.route('/Search/<string: identifier>')
+@Application.route('/Search/<identifier>')
 def searchPageWithMedia(identifier: str) -> (str | None):
     """
     Rendering the template needed which will import the

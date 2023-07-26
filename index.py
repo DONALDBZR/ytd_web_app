@@ -455,8 +455,6 @@ def search() -> Response:
     """
     data = request.json
     media = Media(data["Media"]["search"])
-    session["Media"] = media.verifyUniformResourceLocator()
-    identifier = session["Media"]["YouTube"]["identifier"]
     return session["Media"]
 
 

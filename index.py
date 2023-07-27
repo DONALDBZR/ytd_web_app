@@ -447,7 +447,7 @@ def searchPage() -> str:
 
 
 @Application.route("/Media/Search", methods=["POST"])
-def search() -> Response:
+def search() -> (str | None):
     """
     Searching for the media by the uniform resouce locator that has been retrieved from the client.
 
@@ -460,7 +460,7 @@ def search() -> Response:
     return return_data
 
 
-@Application.route('/Search/<identifier>')
+@Application.route('/Search/<str: identifier>')
 def searchPageWithMedia(identifier: str) -> (str | None):
     """
     Rendering the template needed which will import the web-worker

@@ -460,7 +460,7 @@ def search() -> (str | None):
     return return_data
 
 
-@Application.route('/Search/<string: identifier>')
+@Application.route('/Search/<string:identifier>')
 def searchPageWithMedia(identifier: str) -> (str | None):
     """
     Rendering the template needed which will import the web-worker

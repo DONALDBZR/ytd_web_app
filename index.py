@@ -467,5 +467,5 @@ def searchPageWithMedia(identifier: str) -> (str | None):
 
     Returns: (string | void)
     """
-    if 'identifier' in session["Media"]["YouTube"] and identifier == session["Media"]["YouTube"]["identifier"]:
+    if 'identifier' in session["Media"]["YouTube"]:
         return render_template('page.html')

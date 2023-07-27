@@ -142,7 +142,7 @@ class Application extends React.Component {
      * @returns {void}
      */
     handleSubmit(event) {
-        const delay = 200000;
+        const delay = 200;
         event.preventDefault();
         fetch("/Media/Search", {
             method: "POST",
@@ -159,10 +159,11 @@ class Application extends React.Component {
             .then((data) =>
                 this.setState({
                     Media: {
-                        artist: data.artist,
-                        title: data.title,
-                        uniform_resource_locator: data.uniform_resource_locator,
-                        identifier: data.identifier,
+                        artist: data.YouTube.artist,
+                        title: data.YouTube.title,
+                        uniform_resource_locator:
+                            data.YouTube.uniform_resource_locator,
+                        identifier: data.YouTube.identifier,
                     },
                 })
             )

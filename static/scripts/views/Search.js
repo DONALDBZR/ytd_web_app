@@ -189,6 +189,28 @@ class Application extends React.Component {
         }, delay);
     }
     /**
+     * Retrieving the data of the media content that is searched by the user
+     * @returns {void}
+     */
+    getMedia() {
+        fetch("/Media", {
+            method: "GET",
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (typeof data.YouTube != "undefined") {
+                    this.setState({
+                        Media: {
+                            artist: data.YouTube.artist,
+                            title: data.YouTube.title,
+                            uniform_resource_locator:
+                                data.Media.uniform_resource_locator,
+                        },
+                    });
+                }
+            });
+    }
+    /**
      * Rendering the application by instantiating its components
      * @returns {HTMLBodyElement}
      */

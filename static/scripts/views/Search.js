@@ -383,7 +383,7 @@ class YouTube extends Media {
         return (
             <div className="YouTube">
                 <iframe
-                    src={this.state.Media.YouTube.uniform_resource_locator}
+                    src={`https://www.youtube.com/embed/${this.state.Media.YouTube.identifier}?autoplay=1`}
                 ></iframe>
                 <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
             </div>

@@ -341,8 +341,12 @@ class Media extends Main {
      */
     render() {
         if (
-            this.state.Media.uniform_resource_locator.includes("youtube") ||
-            this.state.Media.uniform_resource_locator.includes("youtu.be")
+            this.state.Media.YouTube.uniform_resource_locator.includes(
+                "youtube"
+            ) ||
+            this.state.Media.YouTube.uniform_resource_locator.includes(
+                "youtu.be"
+            )
         ) {
             return (
                 <div className="Media">

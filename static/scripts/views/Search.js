@@ -385,7 +385,7 @@ class YouTube extends Media {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen
                 ></iframe>
-                <div>
+                <div class="data">
                     <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
                     <div>
                         <button

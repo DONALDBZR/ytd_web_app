@@ -207,5 +207,21 @@ class YTD {
         root.style.setProperty("--width", width);
         this.changeReferrerPolicy();
     }
+    /**
+     * Changing the referrer policy of the application
+     * @returns {void}
+     */
+    changeReferrerPolicy() {
+        const head = document.head;
+        const meta = document.createElement("meta");
+        if (
+            this.getRequestURI().includes("/Search") &&
+            this.getRequestURI() != "/Search"
+        ) {
+            meta.name = "referrer";
+            meta.content = "no-referrer-when-downgrade";
+            head.appendChild(meta);
+        }
+    }
 }
 const application = new YTD();

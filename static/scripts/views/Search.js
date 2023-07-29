@@ -373,7 +373,7 @@ class YouTube extends Media {
     }
     /**
      * Rendering the component
-     * @returns {HTMLObjectElement}
+     * @returns {HTMLIFrameElement}
      */
     render() {
         return (

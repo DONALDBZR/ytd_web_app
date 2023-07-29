@@ -384,7 +384,6 @@ class YouTube extends Media {
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen
-                    referrerpolicy="no-referrer-when-downgrade"
                 ></iframe>
                 <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
             </div>

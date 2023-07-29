@@ -340,7 +340,9 @@ class Media extends Main {
      * @returns {void}
      */
     componentDidMount() {
-        this.getMedia();
+        if (window.location.pathname != "/Search") {
+            this.getMedia();
+        }
     }
     /**
      * Rendering the component

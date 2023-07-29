@@ -383,11 +383,11 @@ class YouTube extends Media {
             <div className="YouTube">
                 <video controls autoplay>
                     <source
-                        src={this.state.Media.uniform_resource_locator}
+                        src={this.state.Media.YouTube.uniform_resource_locator}
                         type="video/mp4"
                     />
                 </video>
-                <div>{`${this.state.Media.artist} - ${this.state.Media.title}`}</div>
+                <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
             </div>
         );
     }

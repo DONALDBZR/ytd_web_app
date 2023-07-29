@@ -218,7 +218,7 @@ class YTD {
             this.getRequestURI() != "/Search"
         ) {
             meta.name = "referrer";
-            meta.content = "no-referrer-when-downgrade";
+            meta.content = "no-referrer";
             head.appendChild(meta);
         }
         this.render();

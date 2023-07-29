@@ -481,7 +481,7 @@ def getMedia() -> Response:
     media_data = {
         "Media": {
             "YouTube": {
-                "uniform_resource_locator": session["Media"]["YouTube"]["uniform_resource_locator"],
+                "identifier": session["Media"]["YouTube"]["identifier"],
                 "artist": session["Media"]["YouTube"]["artist"],
                 "title": session["Media"]["YouTube"]["title"]
             }

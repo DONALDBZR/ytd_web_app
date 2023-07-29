@@ -385,7 +385,18 @@ class YouTube extends Media {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowfullscreen
                 ></iframe>
-                <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
+                <div>
+                    <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
+                    <div>
+                        <button
+                            name="mediaDownloader"
+                            value={this.state.Media.YouTube.identifier}
+                            onClick={this.retrieveMedia}
+                        >
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }

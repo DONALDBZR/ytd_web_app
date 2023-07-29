@@ -349,12 +349,8 @@ class Media extends Main {
      */
     render() {
         if (
-            this.state.Media.YouTube.uniform_resource_locator.includes(
-                "youtube"
-            ) ||
-            this.state.Media.YouTube.uniform_resource_locator.includes(
-                "youtu.be"
-            )
+            window.location.pathname != "/Search" &&
+            this.state.Media.YouTube.identifier != ""
         ) {
             return (
                 <div className="Media">

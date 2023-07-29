@@ -215,7 +215,8 @@ class YTD {
         const meta = document.createElement("meta");
         if (
             this.getRequestURI().includes("/Search") &&
-            this.getRequestURI() != "/Search"
+            this.getRequestURI() != "/Search" &&
+            window.location.protocol == "http:"
         ) {
             meta.name = "referrer";
             meta.content = "no-referrer";

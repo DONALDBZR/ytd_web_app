@@ -400,6 +400,7 @@ class YouTubeDownloader:
         self.setLength(self.getVideo().length)
         self.setDuration(time.strftime(
             "%H:%M:%S", time.gmtime(self.getLength())))
+        self.setPublishedAt(self.getVideo().publish_date)
         data = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "artist": self.getArtist(),
@@ -409,7 +410,7 @@ class YouTubeDownloader:
             "author_channel": self.getVideo().channel_url,
             "rating": self.getVideo().rating,
             "views": self.getVideo().views,
-            "published_at": self.getVideo().publish_date,
+            "published_at": self.getPublishedAt(),
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration()
         }

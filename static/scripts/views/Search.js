@@ -336,6 +336,13 @@ class Media extends Main {
         super(props);
     }
     /**
+     * Running the methods needed as soon as the component has been successfully mounted
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getMedia();
+    }
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

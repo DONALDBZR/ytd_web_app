@@ -364,7 +364,14 @@ class YouTubeDownloader:
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "artist": self.getArtist(),
             "title": self.getTitle(),
-            "identifier": self.getIdentifier()
+            "identifier": self.getIdentifier(),
+            "author": self.getVideo().author,
+            "author_channel": self.getVideo().channel_url,
+            "rating": self.getVideo().rating,
+            "views": self.getVideo().views,
+            "published_at": self.getVideo().published_at,
+            "thumbnail": self.getVideo().thumbnail,
+            "duration": self.getVideo().duration
         }
         session["Media"] = {}
         session["Media"]["YouTube"] = data

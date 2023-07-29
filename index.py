@@ -468,3 +468,26 @@ def searchPageWithMedia(identifier: str) -> (str | None):
     """
     if 'identifier' in session["Media"]["YouTube"] and identifier == session["Media"]["YouTube"]["identifier"]:
         return render_template('page.html')
+
+
+@Application.route('/Media')
+def getMedia() -> Response:
+    """
+    Sending the data for the media that has been searched in the form of JSON
+
+    Returns: Response
+    """
+    Session_Manager = SessionManager()
+    media_data = {
+        "Media": {
+            "YouTube": {
+                "uniform_resource_locator": session["Media"]["YouTube"]["uniform_resource_locator"],
+                "artist": session["Media"]["YouTube"]["artist"],
+                "title": session["Media"]["YouTube"]["title"]
+            }
+        }
+    }
+    headers = {
+        "Content-Type": "application/json",
+    }
+    return jsonify(media_data), 200, headers

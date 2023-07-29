@@ -18,7 +18,7 @@ class Application extends React.Component {
             Media: {
                 search: "",
                 YouTube: {
-                    uniform_resource_locator: "",
+                    identifier: "",
                     artist: "",
                     title: "",
                 },
@@ -204,10 +204,9 @@ class Application extends React.Component {
                         Media: {
                             ...previous.Media,
                             YouTube: {
+                                identifier: data.Media.YouTube.identifier,
                                 artist: data.Media.YouTube.artist,
                                 title: data.Media.YouTube.title,
-                                uniform_resource_locator:
-                                    data.Media.YouTube.uniform_resource_locator,
                             },
                         },
                     }));

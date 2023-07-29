@@ -17,10 +17,11 @@ class Application extends React.Component {
             },
             Media: {
                 search: "",
-                artist: "",
-                title: "",
-                uniform_resource_locator: "",
-                identifier: "",
+                YouTube: {
+                    uniform_resource_locator: "",
+                    artist: "",
+                    title: "",
+                },
             },
         };
     }
@@ -198,15 +199,18 @@ class Application extends React.Component {
         })
             .then((response) => response.json())
             .then((data) => {
-                if (typeof data.YouTube != "undefined") {
-                    this.setState({
+                if (typeof data.Media.YouTube != "undefined") {
+                    this.setState((previous) => ({
                         Media: {
-                            artist: data.YouTube.artist,
-                            title: data.YouTube.title,
-                            uniform_resource_locator:
-                                data.Media.uniform_resource_locator,
+                            ...previous.Media,
+                            YouTube: {
+                                artist: data.Media.YouTube.artist,
+                                title: data.Media.YouTube.title,
+                                uniform_resource_locator:
+                                    data.Media.YouTube.uniform_resource_locator,
+                            },
                         },
-                    });
+                    }));
                 }
             });
     }

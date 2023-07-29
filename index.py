@@ -383,17 +383,6 @@ Application.secret_key = Environment.SESSION_KEY
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 
-@Application.after_request
-def changeReferrerPolicy(response: Response) -> Response:
-    """
-    Changing the referrer policy in order to allow YouTube to generate a 200 response instead of a 204 response.
-
-    Returns: Response
-    """
-    response.headers["Referrer Policy"] = "no-referrer-when-downgrade"
-    return response
-
-
 @Application.route('/')
 def homepage() -> str:
     """

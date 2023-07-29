@@ -149,7 +149,7 @@ class YTD {
             this.setBodyId(this.getRequestURI().replaceAll("/", ""));
         }
         this.getBody().id = this.getBodyId();
-        this.render();
+        this.changeReferrerPolicy();
     }
     /**
      * Importing and rendering the scripts
@@ -205,7 +205,6 @@ class YTD {
         const width = `${root.clientWidth}px`;
         root.style.setProperty("--height", height);
         root.style.setProperty("--width", width);
-        this.changeReferrerPolicy();
     }
     /**
      * Changing the referrer policy of the application
@@ -222,6 +221,7 @@ class YTD {
             meta.content = "no-referrer-when-downgrade";
             head.appendChild(meta);
         }
+        this.render();
     }
 }
 const application = new YTD();

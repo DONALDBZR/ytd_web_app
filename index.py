@@ -408,7 +408,6 @@ class YouTubeDownloader:
             "identifier": self.getIdentifier(),
             "author": self.getVideo().author,
             "author_channel": self.getVideo().channel_url,
-            "rating": self.getVideo().rating,
             "views": self.getVideo().views,
             "published_at": self.getPublishedAt(),
             "thumbnail": self.getVideo().thumbnail_url,

@@ -378,17 +378,14 @@ class YouTube extends Media {
     }
     /**
      * Rendering the component
-     * @returns {HTMLVideoElement}
+     * @returns {HTMLIFrameElement}
      */
     render() {
         return (
             <div className="YouTube">
-                <video controls autoplay>
-                    <source
-                        src={this.state.Media.YouTube.uniform_resource_locator}
-                        type="video/mp4"
-                    />
-                </video>
+                <iframe
+                    src={this.state.Media.YouTube.uniform_resource_locator}
+                ></iframe>
                 <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
             </div>
         );

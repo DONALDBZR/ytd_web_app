@@ -311,6 +311,12 @@ class YouTubeDownloader:
 
     Type: string
     """
+    __length: int
+    """
+    The length of the video in seconds
+
+    Type: int
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -347,6 +353,12 @@ class YouTubeDownloader:
 
     def setIdentifier(self, identifier: str) -> None:
         self.__identifier = identifier
+
+    def getLength(self) -> int:
+        return self.__length
+
+    def setLength(self, length: int) -> None:
+        self.__length = length
 
     def search(self) -> str:
         """

@@ -1,6 +1,7 @@
 # Importing the requirements for the application
 from flask import Flask, Response, render_template, url_for, jsonify, request, session, redirect
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
+import time
 import os
 import json
 from Environment import Environment

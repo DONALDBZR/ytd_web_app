@@ -324,6 +324,12 @@ class YouTubeDownloader:
 
     Type: string
     """
+    __published_at: str
+    """
+    The date at which the video has been published
+
+    Type: string
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -372,6 +378,12 @@ class YouTubeDownloader:
 
     def setDuration(self, duration: str) -> None:
         self.__duration = duration
+
+    def getPublishedAt(self) -> str:
+        return self.__published_at
+
+    def setPublishedAt(self, published_at: datetime) -> None:
+        self.__published_at = str(published_at)
 
     def search(self) -> str:
         """

@@ -317,6 +317,12 @@ class YouTubeDownloader:
 
     Type: int
     """
+    __duration: str
+    """
+    The duration of the video in the format of HH:mm:ss
+
+    Type: string
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -359,6 +365,12 @@ class YouTubeDownloader:
 
     def setLength(self, length: int) -> None:
         self.__length = length
+
+    def getDuration(self) -> str:
+        return self.__duration
+
+    def setDuration(self, duration: str) -> None:
+        self.__duration = duration
 
     def search(self) -> str:
         """

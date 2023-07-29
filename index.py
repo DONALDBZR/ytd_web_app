@@ -1,6 +1,6 @@
 # Importing the requirements for the application
 from flask import Flask, Response, render_template, url_for, jsonify, request, session, redirect
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import os
 import json
 from Environment import Environment
@@ -384,6 +384,9 @@ class YouTubeDownloader:
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.getIdentifier().replace(
             "https://www.youtube.com/watch?v=", ""))
+        self.setLength(self.getVideo().length)
+        self.setDuration(time.strftime(
+            "%H:%M:%S", time.gmtime(self.getLength())))
         data = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "artist": self.getArtist(),
@@ -395,7 +398,7 @@ class YouTubeDownloader:
             "views": self.getVideo().views,
             "published_at": self.getVideo().publish_date,
             "thumbnail": self.getVideo().thumbnail_url,
-            "duration": self.getVideo().length
+            "duration": self.getDuration()
         }
         session["Media"] = {}
         session["Media"]["YouTube"] = data

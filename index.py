@@ -368,10 +368,7 @@ class YouTubeDownloader:
             "author": self.getVideo().author,
             "author_channel": self.getVideo().channel_url,
             "rating": self.getVideo().rating,
-            "views": self.getVideo().views,
-            "published_at": self.getVideo().published_at,
-            "thumbnail": self.getVideo().thumbnail,
-            "duration": self.getVideo().duration
+            "views": self.getVideo().views
         }
         session["Media"] = {}
         session["Media"]["YouTube"] = data

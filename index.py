@@ -528,9 +528,15 @@ def getMedia() -> Response:
     media_data = {
         "Media": {
             "YouTube": {
-                "identifier": session["Media"]["YouTube"]["identifier"],
+                "uniform_resource_locator": session["Media"]["YouTube"]["uniform_resource_locator"],
                 "artist": session["Media"]["YouTube"]["artist"],
-                "title": session["Media"]["YouTube"]["title"]
+                "title": session["Media"]["YouTube"]["title"],
+                "author": session["Media"]["YouTube"]["author"],
+                "author_channel": session["Media"]["YouTube"]["author_channel"],
+                "views": session["Media"]["YouTube"]["views"],
+                "published_at": session["Media"]["YouTube"]["published_at"],
+                "thumbnail": session["Media"]["YouTube"]["thumbnail"],
+                "duration": session["Media"]["YouTube"]["duration"]
             }
         }
     }

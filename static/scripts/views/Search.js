@@ -409,10 +409,13 @@ class YouTube extends Media {
                             <div>Duration:</div>
                             <div>{this.state.Media.YouTube.duration}</div>
                         </div>
-                        <div id="author">
-                            <a href={this.state.Media.YouTube.author_channel}>
-                                {this.state.Media.YouTube.author}
-                            </a>
+                        <div id="views">
+                            <div>Views:</div>
+                            <div>
+                                {this.handleViews(
+                                    this.state.Media.YouTube.views
+                                )}
+                            </div>
                         </div>
                     </div>
                     <div>

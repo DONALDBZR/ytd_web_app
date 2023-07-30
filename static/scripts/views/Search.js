@@ -210,9 +210,17 @@ class Application extends React.Component {
                         Media: {
                             ...previous.Media,
                             YouTube: {
-                                identifier: data.Media.YouTube.identifier,
+                                uniform_resource_locator:
+                                    data.Media.YouTube.uniform_resource_locator,
                                 artist: data.Media.YouTube.artist,
                                 title: data.Media.YouTube.title,
+                                author: data.Media.YouTube.author,
+                                author_channel:
+                                    data.Media.YouTube.author_channel,
+                                views: data.Media.YouTube.views,
+                                published_at: data.Media.YouTube.published_at,
+                                thumbnail: data.Media.YouTube.thumbnail,
+                                duration: data.Media.YouTube.duration,
                             },
                         },
                     }));

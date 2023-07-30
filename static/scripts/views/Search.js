@@ -18,9 +18,15 @@ class Application extends React.Component {
             Media: {
                 search: "",
                 YouTube: {
-                    identifier: "",
+                    uniform_resource_locator: "",
                     artist: "",
                     title: "",
+                    author: "",
+                    author_channel: "",
+                    views: 0,
+                    published_at: "",
+                    thumbnail: "",
+                    duration: "",
                 },
             },
         };

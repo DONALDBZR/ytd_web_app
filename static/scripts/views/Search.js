@@ -387,20 +387,34 @@ class YouTube extends Media {
     }
     /**
      * Rendering the component
-     * @returns {HTMLIFrameElement}
+     * @returns {HTMLDivElement}
      */
     render() {
         return (
             <div className="YouTube">
-                <iframe
-                    src={`https://www.youtube.com/embed/${this.state.Media.YouTube.identifier}`}
-                    title={`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                ></iframe>
+                <div>
+                    <a href={this.state.Media.YouTube.uniform_resource_locator}>
+                        <img src={this.state.Media.YouTube.thumbnail} />
+                    </a>
+                </div>
                 <div class="data">
                     <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
+                    <div>
+                        <a href={this.state.Media.YouTube.author_channel}>
+                            {this.state.Media.YouTube.author}
+                        </a>
+                    </div>
+                    <div>
+                        <div id="duration">
+                            <div>Duration:</div>
+                            <div>{this.state.Media.YouTube.duration}</div>
+                        </div>
+                        <div id="author">
+                            <a href={this.state.Media.YouTube.author_channel}>
+                                {this.state.Media.YouTube.author}
+                            </a>
+                        </div>
+                    </div>
                     <div>
                         <button
                             name="mediaDownloader"

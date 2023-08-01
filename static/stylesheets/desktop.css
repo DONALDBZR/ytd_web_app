@@ -105,21 +105,21 @@ body[id*="Search"] main form button {
 }
 body[id*="Search"] main .Media {
     height: calc(var(--component-height) * 0.9);
---media-height: calc(var(
-    --component-height) * 0.9);
+    --media-height: calc(var(--component-height) * 0.9);
 }
 body[id*="Search"] main .Media .YouTube {
     height: inherit;
 }
-body[id*="Search"] main .Media .YouTube div {height: calc(var(--media-height) * 0.9);}
+body[id*="Search"] main .Media .YouTube div {
+    height: calc(var(--media-height) * 0.9);
+}
 body[id*="Search"] main .Media .YouTube .data {
     height: calc(var(--media-height) / 10);
     display: flex;
     flex-wrap: wrap;
     margin: calc(var(--media-height) * 0) calc(var(--width) / 100);
     width: calc(var(--width) * 0.98);
---data-width: calc(var(
-    --width) * 0.98);
+    --data-width: calc(var(--width) * 0.98);
 }
 body[id*="Search"] main .Media .YouTube div a img {
     height: calc(var(--media-height) * 0.9);
@@ -132,7 +132,10 @@ body[id*="Search"] main .Media .YouTube div:nth-child(1) {
 body[id*="Search"] main .Media .YouTube .data div {
     height: calc(var(--media-height) / 20);
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(1) {width: var(--data-width);display: block;}
+body[id*="Search"] main .Media .YouTube .data div:nth-child(1) {
+    width: var(--data-width);
+    display: block;
+}
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2),
 body[id*="Search"] main .Media .YouTube .data div:nth-child(3),
 body[id*="Search"] main .Media .YouTube .data div:nth-child(4) {
@@ -150,8 +153,26 @@ body[id*="Search"] main .Media .YouTube .data div:nth-child(3) #duration div,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(3) #views div {
     width: calc(var(--data-width) / 12);
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(3) #duration div:nth-child(2),
-body[id*="Search"] main .Media .YouTube .data div:nth-child(3) #views div:nth-child(2) {display: flex;justify-content: center;align-items: center;}
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    div:nth-child(3)
+    #duration
+    div:nth-child(2),
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    div:nth-child(3)
+    #views
+    div:nth-child(2) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 body[id*="Search"] main .Media .YouTube .data div:nth-child(4) {
     display: flex;
     justify-content: center;

@@ -393,14 +393,20 @@ class YouTube extends Media {
         return (
             <div className="YouTube">
                 <div>
-                    <a href={this.state.Media.YouTube.uniform_resource_locator}>
+                    <a
+                        href={this.state.Media.YouTube.uniform_resource_locator}
+                        target="__blank"
+                    >
                         <img src={this.state.Media.YouTube.thumbnail} />
                     </a>
                 </div>
                 <div class="data">
                     <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
                     <div>
-                        <a href={this.state.Media.YouTube.author_channel}>
+                        <a
+                            href={this.state.Media.YouTube.author_channel}
+                            target="__blank"
+                        >
                             {this.state.Media.YouTube.author}
                         </a>
                     </div>

@@ -174,14 +174,23 @@ class Application extends React.Component {
                     },
                 })
             )
-            .then(() =>
-                this.setState((previous) => ({
-                    System: {
-                        ...previous.System,
-                        url: `${window.location.pathname}/${this.state.Media.identifier}`,
-                    },
-                }))
-            )
+            .then(() => {
+                if (window.location.pathname == "/Search") {
+                    this.setState((previous) => ({
+                        System: {
+                            ...previous.System,
+                            url: `${window.location.pathname}/${this.state.Media.identifier}`,
+                        },
+                    }));
+                } else {
+                    this.setState((previous) => ({
+                        System: {
+                            ...previous.System,
+                            url: `/Search/${this.state.Media.identifier}`,
+                        },
+                    }));
+                }
+            })
             .then(() => this.redirector(delay, this.state.System.url));
     }
     /**

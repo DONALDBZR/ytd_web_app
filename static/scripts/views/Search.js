@@ -412,8 +412,8 @@ class YouTube extends Media {
                         <div id="views">
                             <div>Views:</div>
                             <div>
-                                {this.handleViews(
-                                    this.state.Media.YouTube.views
+                                {this.state.Media.YouTube.views.toLocaleString(
+                                    "en-US"
                                 )}
                             </div>
                         </div>

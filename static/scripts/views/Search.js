@@ -237,6 +237,37 @@ class Application extends React.Component {
             });
     }
     /**
+     * Retrieving Media from the server by using its uniform resource locator.
+     * @returns {void}
+     */
+    retrieveMedia() {
+        const delay = 200;
+        const uniform_resource_locator = document.querySelector(
+            "button[name='mediaDownloader']"
+        ).value;
+        fetch("/Media/Download", {
+            method: "POST",
+            body: JSON.stringify({
+                Media: {
+                    uniform_resource_locator: uniform_resource_locator,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                this.setState((previous) => ({
+                    System: {
+                        ...previous.System,
+                        url: data.url,
+                    },
+                }))
+            )
+            .then(() => this.redirector(delay, this.state.System.url));
+    }
+    /**
      * Rendering the application by instantiating its components
      * @returns {HTMLBodyElement}
      */

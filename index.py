@@ -261,11 +261,12 @@ class Media:
     Type: string|null
     """
 
-    def __init__(self, search: str) -> None:
+    def __init__(self, search: str, referer: str | None) -> None:
         """
         Instantiating the media's manager which will search the media.
         """
         self.setSearch(search)
+        self.setReferer(referer)
 
     def getSearch(self) -> str:
         return self.__search

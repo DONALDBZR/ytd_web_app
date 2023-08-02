@@ -544,3 +544,18 @@ def getMedia() -> Response:
         "Content-Type": "application/json",
     }
     return jsonify(media_data), 200, headers
+
+
+@Application.route('/Media/Download')
+def retrieveMedia():
+    """
+    Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
+    """
+    Session_Manager = SessionManager()
+    referer = request.referrer
+    data = request.json
+    if 'Search' in referer:
+        media = Media(data["Media"]["search"])
+        headers = {
+            "Content-Type": "application/json",
+        }

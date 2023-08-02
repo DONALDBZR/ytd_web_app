@@ -254,6 +254,12 @@ class Media:
 
     Type: YouTubeDownloader
     """
+    __referer: str | None
+    """
+    The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the requried media.
+
+    Type: string|null
+    """
 
     def __init__(self, search: str) -> None:
         """
@@ -266,6 +272,12 @@ class Media:
 
     def setSearch(self, search: str) -> None:
         self.__search = search
+
+    def getReferer(self) -> str | None:
+        return self.__referer
+
+    def setReferer(self, referer: str | None) -> None:
+        self.__referer = referer
 
     def verifyUniformResourceLocator(self) -> (str | None):
         """

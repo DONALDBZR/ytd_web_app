@@ -436,7 +436,10 @@ class YouTube extends Media {
                     <div>
                         <button
                             name="mediaDownloader"
-                            value={this.state.Media.YouTube.identifier}
+                            value={
+                                this.state.Media.YouTube
+                                    .uniform_resource_locator
+                            }
                             onClick={this.retrieveMedia}
                         >
                             <i class="fa-solid fa-download"></i>

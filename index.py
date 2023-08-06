@@ -279,6 +279,13 @@ class Media:
     Type: string
     Visibility: private
     """
+    __value: str
+    """
+    The value of the required media which have to correspond to the name of the platform from which the media comes from.
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, search: str, referer: str | None) -> None:
         """
@@ -318,6 +325,12 @@ class Media:
 
     def setIdentifier(self, identifier: str) -> None:
         self.__identifier = identifier
+
+    def getValue(self) -> str:
+        return self.__value
+
+    def setValue(self, value: str) -> None:
+        self.__value = value
 
     def verifyUniformResourceLocator(self):
         """

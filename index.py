@@ -492,6 +492,22 @@ class Database_Handler:
     Type: string
     visibility: private
     """
+    __database_handler: None
+    """
+    The database handler needed to execute the queries needed
+
+    Type: PooledMySQLConnection | MySQLConnection | Any
+    visibility: private
+    """
+
+    def __init__(self):
+        self.setHost(Environment.HOST)
+        self.setDatabase(Environment.DATABASE)
+        self.setUsername(Environment.USERNAME)
+        self.setPassword(Environment.PASSWORD)
+        self.setDatabaseHandler(mysql.connector.connect(host=self.getHost(
+        ), database=self.getDatabase(), username=self.getUsername(), password=self.getPassword()))
+        self.__database_handler = mysql.connector.connect()
 
     def getHost(self) -> str:
         return self.__host
@@ -516,6 +532,12 @@ class Database_Handler:
 
     def setPassword(self, password: str) -> None:
         self.__password = password
+
+    def getDatabaseHandler(self):
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler) -> None:
+        self.__database_handler = database_handler
 
 
 # Instantiating the application

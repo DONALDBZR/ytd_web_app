@@ -280,15 +280,18 @@ class Media:
     def setReferer(self, referer: str | None) -> None:
         self.__referer = referer
 
-    def verifyUniformResourceLocator(self) -> (str | None):
+    def verifyUniformResourceLocator(self):
         """
-        Verifying the uniform resource locator in order to switch to the correct system.
+        Verifying the uniform resource locator in order to switch to the correct system as well as select and return the correct response.
 
         Returns: String | None
         """
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
-            self._YouTube = YouTubeDownloader(self.getSearch())
-            return self._YouTube.search()
+            if self.getReferer() is None:
+                self._YouTube = YouTubeDownloader(self.getSearch())
+                return self._YouTube.search()
+            else:
+                self._YouTube = YouTubeDownloader(self.getSearch())
 
 
 class YouTubeDownloader:

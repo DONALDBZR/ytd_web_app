@@ -440,6 +440,12 @@ class YouTube_Downloader:
         return json.dumps(session["Media"], indent=4)
 
 
+class Database_Handler:
+    """
+    The database handler that will communicate with the database server.
+    """
+
+
 # Instantiating the application
 Application = Flask(__name__)
 # Configuring the application for using sessions

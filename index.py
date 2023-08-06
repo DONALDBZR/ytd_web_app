@@ -499,6 +499,13 @@ class Database_Handler:
     Type: PooledMySQLConnection | MySQLConnection | Any
     visibility: private
     """
+    __statement: None
+    """
+    The statement to be used to execute all of the requests to the database server
+
+    Type: MySQLCursor
+    visibility: private
+    """
 
     def __init__(self):
         """
@@ -543,6 +550,18 @@ class Database_Handler:
 
     def setDatabaseHandler(self, database_handler) -> None:
         self.__database_handler = database_handler
+
+    def getStatement(self):
+        return self.__statement
+
+    def setStatement(self, statement) -> None:
+        self.__statement = statement
+
+    def query(self, query: str, parameters: None | tuple):
+        """
+        Preparing the SQL query that is going to be handled by the database handler
+        """
+        self.setStatement(self.getDatabaseHandler().cursor(prepared=True))
 
 
 # Instantiating the application

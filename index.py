@@ -478,6 +478,13 @@ class Database_Handler:
     Type: string
     visibility: private
     """
+    __username: str
+    """
+    The user that have access to the database
+
+    Type: string
+    visibility: private
+    """
 
     def getHost(self) -> str:
         return self.__host
@@ -490,6 +497,12 @@ class Database_Handler:
 
     def setDatabase(self, database: str) -> None:
         self.__database = database
+
+    def getUsername(self) -> str:
+        return self.__username
+
+    def setUsername(self, username: str) -> None:
+        self.__username = username
 
 
 # Instantiating the application

@@ -260,7 +260,7 @@ class Media:
     """
     __referer: str | None
     """
-    The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the requried media.
+    The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the required media.
 
     Type: string|null
     Visibility: private
@@ -293,7 +293,7 @@ class Media:
 
         Parameters:
             search: string: The uniform resource locator to be searched.
-            referer: string | null: The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the requried media.
+            referer: string | null: The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the required media.
         """
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler().query(

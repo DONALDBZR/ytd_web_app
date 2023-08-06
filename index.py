@@ -501,13 +501,18 @@ class Database_Handler:
     """
 
     def __init__(self):
+        """
+        Instantiating the class which will try to connect to the database.
+        """
         self.setHost(Environment.HOST)
         self.setDatabase(Environment.DATABASE)
         self.setUsername(Environment.USERNAME)
         self.setPassword(Environment.PASSWORD)
-        self.setDatabaseHandler(mysql.connector.connect(host=self.getHost(
-        ), database=self.getDatabase(), username=self.getUsername(), password=self.getPassword()))
-        self.__database_handler = mysql.connector.connect()
+        try:
+            self.setDatabaseHandler(mysql.connector.connect(host=self.getHost(
+            ), database=self.getDatabase(), username=self.getUsername(), password=self.getPassword()))
+        except mysql.connector.Error as error:
+            print("Connection Failed: " + error)
 
     def getHost(self) -> str:
         return self.__host

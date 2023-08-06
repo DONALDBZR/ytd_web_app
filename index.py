@@ -464,7 +464,7 @@ def getSession() -> Response:
 
     Returns: Response
     """
-    Session_Manager = Session_Manager()
+    SessionManager = Session_Manager()
     session_data = {
         "Client": {
             "timestamp": session["Client"]["timestamp"],
@@ -484,9 +484,9 @@ def setSession() -> Response:
 
     Returns: Response
     """
-    Session_Manager = Session_Manager()
+    SessionManager = Session_Manager()
     get_data = request.json
-    Session_Manager.updateSession(get_data)
+    SessionManager.updateSession(get_data)
     session_data = {
         "Client": {
             "timestamp": session["Client"]["timestamp"],
@@ -541,7 +541,7 @@ def getMedia() -> Response:
 
     Returns: Response
     """
-    Session_Manager = Session_Manager()
+    SessionManager = Session_Manager()
     media_data = {
         "Media": {
             "YouTube": {
@@ -568,7 +568,7 @@ def retrieveMedia():
     """
     Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
     """
-    Session_Manager = Session_Manager()
+    SessionManager = Session_Manager()
     referer = request.referrer
     data = request.json
     if 'Search' in referer:

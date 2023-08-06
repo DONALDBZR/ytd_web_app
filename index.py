@@ -568,7 +568,7 @@ def retrieveMedia():
     referer = request.referrer
     data = request.json
     if 'Search' in referer:
-        media = Media(data["Media"]["search"])
+        media = Media(data["Media"]["uniform_resource_locator"], referer)
         headers = {
             "Content-Type": "application/json",
         }

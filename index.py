@@ -574,6 +574,14 @@ class Database_Handler:
         """
         self.getDatabaseHandler().commit()
 
+    def resultSet(self):
+        """
+        Fetching all the data that is requested from the command that was sent to the database server
+
+        Returns: (Any | List[RowType])
+        """
+        return self.getStatement().fetchall()
+
 
 # Instantiating the application
 Application = Flask(__name__)

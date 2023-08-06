@@ -272,6 +272,13 @@ class Media:
     Type: Database_Handler
     Visibility: private
     """
+    __identifier: str
+    """
+    The identifier of the required media
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, search: str, referer: str | None) -> None:
         """
@@ -305,6 +312,12 @@ class Media:
 
     def setDatabaseHandler(self, database_handler) -> None:
         self.__database_handler = database_handler
+
+    def getIdentifier(self) -> str:
+        return self.__identifier
+
+    def setIdentifier(self, identifier: str) -> None:
+        self.__identifier = identifier
 
     def verifyUniformResourceLocator(self):
         """

@@ -18,48 +18,56 @@ class Session_Manager:
     The directory of the session files
 
     Type: string
+    Visibility: private
     """
     __ip_address: str
     """
     The IP Address of the user
 
     Type: string
+    Visibility: private
     """
     __http_client_ip_address: str
     """
     The client's IP Address of the user
 
     Type: string
+    Visibility: private
     """
     __proxy_ip_address: str
     """
     The Proxy's IP Address of the user
 
     Type: string
+    Visibility: private
     """
     __timestamp: str
     """
     The timestamp at which the session has been created
 
     Type: string
+    Visibility: private
     """
     __session_files: list
     """
     The files containing the session of the users
 
     Type: array
+    Visibility: private
     """
     __color_scheme: str
     """
     The color scheme of the application
 
     Type: string
+    Visibility: private
     """
     __length: int
     """
     The amount of session files
 
     Type: int
+    Visibility: private
     """
 
     def __init__(self) -> None:

@@ -485,6 +485,13 @@ class Database_Handler:
     Type: string
     visibility: private
     """
+    __password: str
+    """
+    The password that allows the required user to connect to the database.
+
+    Type: string
+    visibility: private
+    """
 
     def getHost(self) -> str:
         return self.__host
@@ -503,6 +510,12 @@ class Database_Handler:
 
     def setUsername(self, username: str) -> None:
         self.__username = username
+
+    def getPassword(self) -> str:
+        return self.__password
+
+    def setPassword(self, password: str) -> None:
+        self.__password = password
 
 
 # Instantiating the application

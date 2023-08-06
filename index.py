@@ -464,6 +464,19 @@ class Database_Handler:
     """
     The database handler that will communicate with the database server.
     """
+    __host: str
+    """
+    The host of the application
+
+    Type: string
+    visibility: private
+    """
+
+    def getHost(self) -> str:
+        return self.__host
+
+    def setHost(self, host: str) -> None:
+        self.__host = host
 
 
 # Instantiating the application

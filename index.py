@@ -265,6 +265,13 @@ class Media:
     Type: string|null
     Visibility: private
     """
+    __database_handler: None
+    """
+    The database handler that will communicate with the database server.
+
+    Type: Database_Handler
+    Visibility: private
+    """
 
     def __init__(self, search: str, referer: str | None) -> None:
         """
@@ -288,6 +295,12 @@ class Media:
 
     def setReferer(self, referer: str | None) -> None:
         self.__referer = referer
+
+    def getDatabaseHandler(self):
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler) -> None:
+        self.__database_handler = database_handler
 
     def verifyUniformResourceLocator(self):
         """

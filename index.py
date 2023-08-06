@@ -9,7 +9,7 @@ from pytube import YouTube
 import mysql.connector
 
 
-class SessionManager:
+class Session_Manager:
     """
     It allows the application to manage the session.
     """
@@ -464,7 +464,7 @@ def getSession() -> Response:
 
     Returns: Response
     """
-    Session_Manager = SessionManager()
+    Session_Manager = Session_Manager()
     session_data = {
         "Client": {
             "timestamp": session["Client"]["timestamp"],
@@ -484,7 +484,7 @@ def setSession() -> Response:
 
     Returns: Response
     """
-    Session_Manager = SessionManager()
+    Session_Manager = Session_Manager()
     get_data = request.json
     Session_Manager.updateSession(get_data)
     session_data = {
@@ -541,7 +541,7 @@ def getMedia() -> Response:
 
     Returns: Response
     """
-    Session_Manager = SessionManager()
+    Session_Manager = Session_Manager()
     media_data = {
         "Media": {
             "YouTube": {
@@ -568,7 +568,7 @@ def retrieveMedia():
     """
     Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
     """
-    Session_Manager = SessionManager()
+    Session_Manager = Session_Manager()
     referer = request.referrer
     data = request.json
     if 'Search' in referer:

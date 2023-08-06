@@ -249,23 +249,30 @@ class Media:
     The uniform resource locator to be searched.
 
     Type: string
+    Visibility: private
     """
     _YouTubeDownloader: None
     """
     It will handle every operations related to YouTube
 
     Type: YouTube_Downloader
+    Visibility: protected
     """
     __referer: str | None
     """
     The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the requried media.
 
     Type: string|null
+    Visibility: private
     """
 
     def __init__(self, search: str, referer: str | None) -> None:
         """
         Instantiating the media's manager which will search the media.
+
+        Parameters:
+            search: string: The uniform resource locator to be searched.
+            referer: string | null: The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the requried media.
         """
         self.setSearch(search)
         self.setReferer(referer)
@@ -288,7 +295,9 @@ class Media:
 
         Returns: String | None
         """
+        # Verifying that the content is from the specified platform before trigerreing the correct system.
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
+            # Verifying that there is no referer.
             if self.getReferer() is None:
                 self._YouTube = YouTube_Downloader(self.getSearch())
                 return self._YouTube.search()

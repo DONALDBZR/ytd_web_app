@@ -151,6 +151,7 @@ class Application extends React.Component {
     handleSubmit(event) {
         const delay = 200;
         event.preventDefault();
+        const uniform_resource_locator = new URL(this.state.Media.search);
         fetch("/Media/Search", {
             method: "POST",
             body: JSON.stringify({

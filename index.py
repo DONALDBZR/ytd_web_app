@@ -6,6 +6,7 @@ import os
 import json
 from Environment import Environment
 from pytube import YouTube
+import mysql.connector
 
 
 class SessionManager:

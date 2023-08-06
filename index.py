@@ -471,12 +471,25 @@ class Database_Handler:
     Type: string
     visibility: private
     """
+    __database: str
+    """
+    The database of the application
+
+    Type: string
+    visibility: private
+    """
 
     def getHost(self) -> str:
         return self.__host
 
     def setHost(self, host: str) -> None:
         self.__host = host
+
+    def getDatabase(self) -> str:
+        return self.__database
+
+    def setDatabase(self, database: str) -> None:
+        self.__database = database
 
 
 # Instantiating the application

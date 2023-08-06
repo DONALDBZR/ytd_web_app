@@ -314,53 +314,63 @@ class YouTube_Downloader:
     The uniform resource locator to be searched.
 
     Type: string
+    Visibility: private
     """
     __video: YouTube
     """
     The video from YouTube
 
     Type: YouTube
+    Visibility: private
     """
     __artist: str
     """
     The artist of the video
 
     Type: string
+    Visibility: private
     """
     __title: str
     """
     The title of the video
 
     Type: string
+    Visibility: private
     """
     __identifier: str
     """
     The identifier of the video
 
     Type: string
+    Visibility: private
     """
     __length: int
     """
     The length of the video in seconds
 
     Type: int
+    Visibility: private
     """
     __duration: str
     """
     The duration of the video in the format of HH:mm:ss
 
     Type: string
+    Visibility: private
     """
     __published_at: str
     """
     The date at which the video has been published
 
     Type: string
+    Visibility: private
     """
 
     def __init__(self, uniform_resource_locator: str):
         """
         Instantiating the class and launching the operations needed
+
+        Parameters: uniform_resource_locator: string: The uniform resource locator to be searched.
         """
         self.setUniformResourceLocator(uniform_resource_locator)
 

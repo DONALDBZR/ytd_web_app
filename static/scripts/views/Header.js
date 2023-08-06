@@ -14,6 +14,13 @@ class Header extends React.Component {
             },
         };
     }
+    /**
+     * Running the methods needed as soon as the component has been successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getSession();
+    }
 }
 // Rendering the page
 ReactDOM.render(<Application />, document.querySelector("header"));

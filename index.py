@@ -566,6 +566,14 @@ class Database_Handler:
         self.setStatement(self.getDatabaseHandler().cursor(prepared=True))
         self.getStatement().execute(query, parameters)
 
+    def execute(self) -> None:
+        """
+        Executing the SQL query which will send a command to the database server
+
+        Returns: None
+        """
+        self.getDatabaseHandler().commit()
+
 
 # Instantiating the application
 Application = Flask(__name__)

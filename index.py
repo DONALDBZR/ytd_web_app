@@ -275,12 +275,16 @@ class Media:
 
     def __init__(self, search: str, referer: str | None) -> None:
         """
-        Instantiating the media's manager which will search the media.
+        Instantiating the media's manager which will interact with the media's dataset and do the required processing.
 
         Parameters:
             search: string: The uniform resource locator to be searched.
             referer: string | null: The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the requried media.
         """
+        self.setDatabaseHandler(Database_Handler())
+        self.getDatabaseHandler().query(
+            "CREATE TABLE IF NOT EXISTS `Media` (identifier VARCHAR(2) PRIMARY KEY, `value` VARCHAR(8))", None)
+        self.getDatabaseHandler().commit()
         self.setSearch(search)
         self.setReferer(referer)
 

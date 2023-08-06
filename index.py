@@ -249,11 +249,11 @@ class Media:
 
     Type: string
     """
-    _YouTube: None
+    _YouTubeDownloader: None
     """
     It will handle every operations related to YouTube
 
-    Type: YouTubeDownloader
+    Type: YouTube_Downloader
     """
     __referer: str | None
     """
@@ -289,13 +289,13 @@ class Media:
         """
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
             if self.getReferer() is None:
-                self._YouTube = YouTubeDownloader(self.getSearch())
+                self._YouTube = YouTube_Downloader(self.getSearch())
                 return self._YouTube.search()
             else:
-                self._YouTube = YouTubeDownloader(self.getSearch())
+                self._YouTube = YouTube_Downloader(self.getSearch())
 
 
-class YouTubeDownloader:
+class YouTube_Downloader:
     """
     It will handle every operations related to YouTube
     """

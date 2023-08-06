@@ -514,7 +514,7 @@ def search() -> (str | None):
     Returns: Response
     """
     data = request.json
-    media = Media(data["Media"]["search"])
+    media = Media(data["Media"]["search"], None)
     return_data = media.verifyUniformResourceLocator()
     return return_data
 

@@ -560,8 +560,11 @@ class Database_Handler:
     def query(self, query: str, parameters: None | tuple):
         """
         Preparing the SQL query that is going to be handled by the database handler
+
+        Returns: Generator[MySQLCursor, None, None] | None
         """
         self.setStatement(self.getDatabaseHandler().cursor(prepared=True))
+        self.getStatement().execute(query, parameters)
 
 
 # Instantiating the application

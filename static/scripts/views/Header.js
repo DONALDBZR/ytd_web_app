@@ -11,6 +11,7 @@ class Header extends React.Component {
         this.state = {
             System: {
                 color_scheme: "",
+                // view_route: "",
             },
         };
     }
@@ -20,6 +21,38 @@ class Header extends React.Component {
      */
     componentDidMount() {
         this.getSession();
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLHeaderElement}
+     */
+    render() {
+        // Verifying the uniform resource locator of the application
+        return (
+            <header>
+                <nav>
+                    <div class="active">
+                        <a href="/">Extractio</a>
+                    </div>
+                    <div>
+                        <div>
+                            <a href="/Search">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <button
+                                name="colorSchemeChanger"
+                                value={this.state.System.color_scheme}
+                                onClick={this.setColorScheme}
+                            >
+                                <ColorScheme />
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+        );
     }
 }
 // Rendering the page

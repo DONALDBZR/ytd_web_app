@@ -42,6 +42,19 @@ class Header extends React.Component {
             .then(() => this.adjustPage());
     }
     /**
+     * Verifying that the color scheme does not have a value
+     * @returns {void}
+     */
+    verifyColorScheme() {
+        if (this.state.System.color_scheme == "") {
+            this.setState({
+                System: {
+                    color_scheme: "light",
+                },
+            });
+        }
+    }
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

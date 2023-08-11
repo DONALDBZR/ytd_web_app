@@ -20,7 +20,7 @@ class Header extends React.Component {
      * @returns {void}
      */
     componentDidMount() {
-        this.getSession();
+        this.getRoute();
     }
     /**
      * Retrieving the session of the application
@@ -40,8 +40,7 @@ class Header extends React.Component {
                 }))
             )
             .then(() => this.verifyColorScheme())
-            .then(() => this.adjustPage())
-            .then(() => this.getRoute());
+            .then(() => this.adjustPage());
     }
     /**
      * Verifying that the color scheme does not have a value

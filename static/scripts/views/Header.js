@@ -49,11 +49,12 @@ class Header extends React.Component {
      */
     verifyColorScheme() {
         if (this.state.System.color_scheme == "") {
-            this.setState({
+            this.setState((previous) => ({
                 System: {
+                    ...previous.System,
                     color_scheme: "light",
                 },
-            });
+            }));
         }
     }
     /**

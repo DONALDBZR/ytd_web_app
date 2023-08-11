@@ -106,6 +106,52 @@ class Header extends React.Component {
      */
     render() {
         // Verifying the uniform resource locator of the application
+        if (this.state.System.view_route.includes("Search")) {
+        } else {
+        }
+        return (
+            <header>
+                <nav>
+                    <div class="active">
+                        <a href="/">Extractio</a>
+                    </div>
+                    <div>
+                        <div>
+                            <a href="/Search">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <button
+                                name="colorSchemeChanger"
+                                value={this.state.System.color_scheme}
+                                onClick={this.setColorScheme}
+                            >
+                                <ColorScheme />
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+        );
+    }
+}
+/**
+ * The component to be rendered for the homepage
+ */
+class Homepage extends Header {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLHeaderElement}
+     */
+    render() {
         return (
             <header>
                 <nav>

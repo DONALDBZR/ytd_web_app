@@ -147,6 +147,13 @@ class Homepage extends Header {
         super(props);
     }
     /**
+     * Running the methods needed as soon as the component has been successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getSession();
+    }
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

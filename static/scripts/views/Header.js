@@ -268,4 +268,4 @@ class Search extends Header {
     }
 }
 // Rendering the page
-ReactDOM.render(<Application />, document.querySelector("header"));
+ReactDOM.render(<Header />, document.querySelector("header"));

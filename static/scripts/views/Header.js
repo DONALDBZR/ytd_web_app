@@ -40,7 +40,8 @@ class Header extends React.Component {
                 }))
             )
             .then(() => this.verifyColorScheme())
-            .then(() => this.adjustPage());
+            .then(() => this.adjustPage())
+            .then(() => this.verifyRoute());
     }
     /**
      * Verifying that the color scheme does not have a value
@@ -85,6 +86,18 @@ class Header extends React.Component {
             root.style.setProperty("--color2", color2);
             root.style.setProperty("--color3", color3);
         }
+    }
+    /**
+     * Setting the view route of the application.
+     * @returns {void}
+     */
+    getRoute() {
+        this.setState((previous) => ({
+            System: {
+                ...previous.System,
+                view_route: window.location.pathname,
+            },
+        }));
     }
     /**
      * Rendering the component

@@ -364,4 +364,4 @@ class YouTube extends Media {
     }
 }
 // Rendering the page
-ReactDOM.render(<Main />, document.querySelector("header"));
+ReactDOM.render(<Main />, document.querySelector("main"));

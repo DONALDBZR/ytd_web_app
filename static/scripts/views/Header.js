@@ -100,6 +100,39 @@ class Header extends React.Component {
         }));
     }
     /**
+     * Changing the color scheme according to the user's taste
+     * @returns {void}
+     */
+    setColorScheme() {
+        const delay = 200;
+        event.preventDefault();
+        let color_scheme = document.querySelector(
+            "button[name='colorSchemeChanger']"
+        ).value;
+        if (color_scheme == "light") {
+            color_scheme = "dark";
+        } else {
+            color_scheme = "light";
+        }
+        fetch("/Session/Post", {
+            method: "POST",
+            body: JSON.stringify({
+                Client: {
+                    color_scheme: color_scheme,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => response.json())
+            .then(() => {
+                setTimeout(() => {
+                    window.location.href = window.location.href;
+                }, delay);
+            });
+    }
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

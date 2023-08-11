@@ -11,7 +11,7 @@ class Header extends React.Component {
         this.state = {
             System: {
                 color_scheme: "",
-                // view_route: "",
+                view_route: "",
             },
         };
     }
@@ -21,6 +21,25 @@ class Header extends React.Component {
      */
     componentDidMount() {
         this.getSession();
+    }
+    /**
+     * Retrieving the session of the application
+     * @returns {void}
+     */
+    getSession() {
+        fetch("/Session", {
+            method: "GET",
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                this.setState({
+                    System: {
+                        color_scheme: data.Client.color_scheme,
+                    },
+                })
+            )
+            .then(() => this.verifyColorScheme())
+            .then(() => this.adjustPage());
     }
     /**
      * Rendering the component

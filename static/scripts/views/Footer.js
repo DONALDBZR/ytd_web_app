@@ -15,4 +15,4 @@ class Footer extends React.Component {
     }
 }
 // Rendering the page
-ReactDOM.render(<Footer />, document.querySelector("header"));
+ReactDOM.render(<Footer />, document.querySelector("footer"));

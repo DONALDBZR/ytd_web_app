@@ -32,11 +32,12 @@ class Header extends React.Component {
         })
             .then((response) => response.json())
             .then((data) =>
-                this.setState({
+                this.setState((previous) => ({
                     System: {
+                        ...previous.System,
                         color_scheme: data.Client.color_scheme,
                     },
-                })
+                }))
             )
             .then(() => this.verifyColorScheme())
             .then(() => this.adjustPage());

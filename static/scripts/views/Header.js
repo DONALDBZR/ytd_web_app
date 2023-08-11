@@ -137,8 +137,8 @@ class Header extends React.Component {
      * @returns {HTMLHeaderElement}
      */
     render() {
-        // Verifying the uniform resource locator of the application
         if (this.state.System.view_route.includes("Search")) {
+            return <Search />;
         } else {
             return <Homepage />;
         }

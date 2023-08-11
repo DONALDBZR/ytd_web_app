@@ -41,7 +41,7 @@ class Header extends React.Component {
             )
             .then(() => this.verifyColorScheme())
             .then(() => this.adjustPage())
-            .then(() => this.verifyRoute());
+            .then(() => this.getRoute());
     }
     /**
      * Verifying that the color scheme does not have a value
@@ -109,6 +109,29 @@ class Header extends React.Component {
         if (this.state.System.view_route.includes("Search")) {
         } else {
             return <Homepage />;
+        }
+    }
+}
+/**
+ * It allows the component to be change on intearction of the user to change its color scheme
+ */
+class ColorScheme extends Header {
+    /**
+     * Constructing the color scheme's component and also inheriting the properties and states from the header
+     * @param {*} props
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component which allows the user to change the color scheme
+     * @returns {HTMLButtonElement}
+     */
+    render() {
+        if (this.state.System.color_scheme == "dark") {
+            return <i class="fa-solid fa-toggle-on"></i>;
+        } else if (this.state.System.color_scheme == "light") {
+            return <i class="fa-solid fa-toggle-off"></i>;
         }
     }
 }

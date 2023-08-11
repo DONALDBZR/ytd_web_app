@@ -181,7 +181,7 @@ class Main extends React.Component {
     }
     /**
      * Redirecting the user to an intended url
-     * @param {int} delay The amount of time in milliseconds before firing the method
+     * @param {number} delay The amount of time in milliseconds before firing the method
      * @param {string} uniform_resource_locator The route
      * @returns {void}
      */

@@ -3,16 +3,15 @@
  */
 class Footer extends React.Component {
     /**
-     * Constructing the application from React's Component
-     * @param {*} props The properties of the component
+     * Rendering the component
+     * @returns {HTMLFooterElement}
      */
-    constructor(props) {
-        super(props);
-        this.state = {
-            System: {
-                view_route: "",
-            },
-        };
+    render() {
+        return (
+            <footer>
+                <div>Extractio</div>
+            </footer>
+        );
     }
 }
 // Rendering the page

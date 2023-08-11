@@ -180,6 +180,17 @@ class Main extends React.Component {
             .then(() => this.redirector(delay, this.state.System.url));
     }
     /**
+     * Redirecting the user to an intended url
+     * @param {int} delay The amount of time in milliseconds before firing the method
+     * @param {string} uniform_resource_locator The route
+     * @returns {void}
+     */
+    redirector(delay, uniform_resource_locator) {
+        setTimeout(() => {
+            window.location.href = uniform_resource_locator;
+        }, delay);
+    }
+    /**
      * Rendering the component
      * @returns {HTMLElement}
      */

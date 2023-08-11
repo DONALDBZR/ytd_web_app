@@ -277,7 +277,9 @@ class Media extends Search {
      * @returns {void}
      */
     componentDidMount() {
-        this.getMedia();
+        if (window.location.pathname != "/Search") {
+            this.getMedia();
+        }
     }
     /**
      * Rendering the component

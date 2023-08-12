@@ -358,6 +358,9 @@ class Media:
         if media["status"] != 200:
             self.postMedia()
         # Verifying the platform data to redirecto to the correct system.
+        if "youtube" in self.getValue():
+            self._YouTubeDownloader = YouTube_Downloader(self.getSearch())
+            # Verifying the referer to be able to to return the data needed.
 
         # Verifying that the content is from the specified platform before trigerreing the correct system.
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
@@ -402,6 +405,20 @@ class Media:
         self.getDatabaseHandler().query(
             "INSERT INTO `Media` (`value`) VALUES (%s)", self.getValue())
         self.getDatabaseHandler().execute()
+
+    def handleYouTube(self) -> dict:
+        """
+        Handling the data throughout the You Tube Downloader which will depend on the referer.
+
+        Returns: object
+        """
+        response = {}
+        # Verifying the referer to retrieve to required data
+        if self.getReferer() is None:
+            pass
+        else:
+            pass
+        return response
 
 
 class YouTube_Downloader:

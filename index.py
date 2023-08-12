@@ -361,16 +361,11 @@ class Media:
         # Verifying the platform data to redirecto to the correct system.
         if "youtube" in self.getValue():
             self._YouTubeDownloader = YouTube_Downloader(self.getSearch())
+            response = {
+                "status": 200,
+                "data": self.handleYouTube()
+            }
         return response
-
-        # Verifying that the content is from the specified platform before trigerreing the correct system.
-        if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
-            # Verifying that there is no referer.
-            if self.getReferer() is None:
-                self._YouTube = YouTube_Downloader(self.getSearch())
-                return self._YouTube.search()
-            else:
-                self._YouTube = YouTube_Downloader(self.getSearch())
 
     def getMedia(self) -> dict:
         """
@@ -416,7 +411,10 @@ class Media:
         response = {}
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
-            pass
+            response = {
+                "status": 200,
+                "data": self._YouTubeDownloader.search()
+            }
         else:
             pass
         return response
@@ -567,13 +565,6 @@ class YouTube_Downloader:
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration()
         }
-        # session["Media"] = {}
-        # session["Media"]["YouTube"] = data
-        # filename = "./Cache/Session/Users/" + \
-        #     session["Client"]["ip_address"] + ".json"
-        # file = open(filename, "w")
-        # file.write(json.dumps(session, indent=4))
-        # file.close()
         return data
 
 

@@ -539,11 +539,11 @@ class YouTube_Downloader:
     def setPublishedAt(self, published_at: datetime) -> None:
         self.__published_at = str(published_at)
 
-    def search(self) -> str:
+    def search(self) -> dict:
         """
         Searching for the video in YouTube.
 
-        Returns: String
+        Returns: object
         """
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setArtist(self.getVideo().title.split(" - ")[0])
@@ -567,14 +567,14 @@ class YouTube_Downloader:
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration()
         }
-        session["Media"] = {}
-        session["Media"]["YouTube"] = data
-        filename = "./Cache/Session/Users/" + \
-            session["Client"]["ip_address"] + ".json"
-        file = open(filename, "w")
-        file.write(json.dumps(session, indent=4))
-        file.close()
-        return json.dumps(session["Media"], indent=4)
+        # session["Media"] = {}
+        # session["Media"]["YouTube"] = data
+        # filename = "./Cache/Session/Users/" + \
+        #     session["Client"]["ip_address"] + ".json"
+        # file = open(filename, "w")
+        # file.write(json.dumps(session, indent=4))
+        # file.close()
+        return data
 
 
 class Database_Handler:

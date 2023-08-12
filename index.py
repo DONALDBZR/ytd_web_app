@@ -512,16 +512,19 @@ class YouTube_Downloader:
     Visibility: private
     """
 
-    def __init__(self, uniform_resource_locator: str):
+    def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
         Instantiating the class and launching the operations needed
 
-        Parameters: uniform_resource_locator: string: The uniform resource locator to be searched.
+        Parameters:
+            uniform_resource_locator: string: The uniform resource locator to be searched.
+            media_identifier: int: The media type for the system. 
         """
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler().query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
         self.getDatabaseHandler().execute()
         self.setUniformResourceLocator(uniform_resource_locator)
+        self.setMediaIdentifier(media_identifier)
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator
@@ -598,6 +601,7 @@ class YouTube_Downloader:
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.getIdentifier().replace(
             "https://www.youtube.com/watch?v=", ""))
+
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setArtist(self.getVideo().title.split(" - ")[0])
         self.setTitle(self.getVideo().title.split(" - ")[1])

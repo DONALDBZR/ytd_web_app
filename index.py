@@ -402,7 +402,7 @@ class Media:
         Returns: void
         """
         self.getDatabaseHandler().query(
-            "INSERT INTO `Media` (`value`) VALUES (%s)", self.getValue())
+            "INSERT INTO `Media` (`value`) VALUES (%s)", (self.getValue()))
         self.getDatabaseHandler().execute()
 
     def handleYouTube(self) -> dict:

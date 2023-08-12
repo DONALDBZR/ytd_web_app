@@ -658,6 +658,16 @@ class YouTube_Downloader:
             }
         return response
 
+    def postYouTube(self) -> None:
+        """
+        Creating a record for the media with its data.
+
+        Returns: void
+        """
+        self.getDatabaseHandler().query("INSERT INTO `YouTube` (identifier, `length`, published_at, author, title, `Media`) VALUES (%s, %i, %s, %s, %s, %i)",
+                                        {self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()})
+        self.getDatabaseHandler().execute()
+
 
 class Database_Handler:
     """

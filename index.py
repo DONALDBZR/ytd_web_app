@@ -425,8 +425,6 @@ class Media:
                 "status": 200,
                 "data": self._YouTubeDownloader.search()
             }
-        else:
-            pass
         return response
 
 

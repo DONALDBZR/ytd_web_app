@@ -666,7 +666,7 @@ class YouTube_Downloader:
         data = (self.getIdentifier(), self.getLength(), self.getPublishedAt(
         ), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
         self.getDatabaseHandler().query(
-            "INSERT INTO `YouTube` (identifier, `length`, published_at, author, title, `Media`) VALUES (%s, '%i', %s, %s, %s, '%i')", data)
+            "INSERT INTO `YouTube` (identifier, `length`, published_at, author, title, `Media`) VALUES (%s, %s, %s, %s, %s, %s)", data)
         self.getDatabaseHandler().execute()
 
 

@@ -487,6 +487,13 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
+    __database_handler: None
+    """
+    The database handler that will communicate with the database server.
+
+    Type: Database_Handler
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -543,6 +550,12 @@ class YouTube_Downloader:
 
     def setPublishedAt(self, published_at: datetime) -> None:
         self.__published_at = str(published_at)
+
+    def getDatabaseHandler(self):
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler) -> None:
+        self.__database_handler = database_handler
 
     def search(self) -> dict:
         """

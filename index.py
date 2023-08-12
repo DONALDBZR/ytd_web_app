@@ -494,6 +494,13 @@ class YouTube_Downloader:
     Type: Database_Handler
     Visibility: private
     """
+    __author: str
+    """
+    The author of the video/music.
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -559,6 +566,12 @@ class YouTube_Downloader:
 
     def setDatabaseHandler(self, database_handler) -> None:
         self.__database_handler = database_handler
+
+    def getAuthor(self) -> str:
+        return self.__author
+
+    def setAuthor(self, author: str) -> None:
+        self.__author = author
 
     def search(self) -> dict:
         """

@@ -363,8 +363,6 @@ class Media:
             self.setIdentifier(media["data"][0][0])
         # Verifying the platform data to redirecto to the correct system.
         if "youtube" in self.getValue():
-            self._YouTubeDownloader = YouTube_Downloader(
-                self.getSearch(), self.getIdentifier())
             response = {
                 "status": 200,
                 "data": self.handleYouTube()
@@ -412,6 +410,8 @@ class Media:
 
         Returns: object
         """
+        self._YouTubeDownloader = YouTube_Downloader(
+            self.getSearch(), self.getIdentifier())
         response = {}
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:

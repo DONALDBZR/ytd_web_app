@@ -411,6 +411,13 @@ class Media:
         response = {}
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
+            session["Media"] = {}
+            session["Media"]["YouTube"] = self._YouTubeDownloader.search()
+            filename = "./Cache/Session/Users/" + \
+                session["Client"]["ip_address"] + ".json"
+            file = open(filename, "w")
+            file.write(json.dumps(session, indent=4))
+            file.close()
             response = {
                 "status": 200,
                 "data": self._YouTubeDownloader.search()

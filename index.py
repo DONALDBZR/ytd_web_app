@@ -501,6 +501,9 @@ class YouTube_Downloader:
 
         Parameters: uniform_resource_locator: string: The uniform resource locator to be searched.
         """
+        self.setDatabaseHandler(Database_Handler())
+        self.getDatabaseHandler().query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
+        self.getDatabaseHandler().execute()
         self.setUniformResourceLocator(uniform_resource_locator)
 
     def getUniformResourceLocator(self) -> str:

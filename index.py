@@ -286,6 +286,13 @@ class Media:
     Type: string | null
     Visibility: private
     """
+    __timestamp: str
+    """
+    The timestamp at which the session has been created
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, search: str, referer: str | None, value: str) -> None:
         """
@@ -334,11 +341,17 @@ class Media:
     def setValue(self, value: str | None) -> None:
         self.__value = value
 
+    def getTimestamp(self) -> str:
+        return self.__timestamp
+
+    def setTimestamp(self, timestamp: str) -> None:
+        self.__timestamp = timestamp
+
     def verifyUniformResourceLocator(self):
         """
         Verifying the uniform resource locator in order to switch to the correct system as well as select and return the correct response.
 
-        Returns: String | None
+        Returns: string | None
         """
         # Verifying that the content is from the specified platform before trigerreing the correct system.
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
@@ -348,6 +361,31 @@ class Media:
                 return self._YouTube.search()
             else:
                 self._YouTube = YouTube_Downloader(self.getSearch())
+
+    def getMedia(self) -> dict:
+        """
+        Retrieving the Media data from the Media table.
+
+        Returns: object
+        """
+        self.getDatabaseHandler().query(
+            "SELECT * FROM `Media` WHERE value = %s", self.getValue())
+        media = self.getDatabaseHandler().resultSet()
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        response = {}
+        if len(media) == 0:
+            response = {
+                'status': 204,
+                'data': media,
+                'timestamp': self.getTimestamp()
+            }
+        else:
+            response = {
+                'status': 200,
+                'data': media,
+                'timestamp': self.getTimestamp()
+            }
+        return response
 
 
 class YouTube_Downloader:

@@ -638,7 +638,7 @@ class YouTube_Downloader:
         Returns: object
         """
         self.getDatabaseHandler().query(
-            "SELECT * FROM `YouTube` WHERE identifier = %s", self.getIdentifier())
+            "SELECT * FROM `YouTube` WHERE identifier = %s", (self.getIdentifier()))
         media = self.getDatabaseHandler().resultSet()
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}

@@ -605,10 +605,10 @@ class YouTube_Downloader:
         response = {}
         # Verifying the response of the metadata to retrieve the needed response
         if meta_data["status"] == 200:
-            self.setLength(meta_data["data"][0]["length"])
-            self.setPublishedAt(meta_data["data"][0]["published_at"])
-            self.setAuthor(meta_data["data"][0]["author"])
-            self.setTitle(meta_data["data"][0]["title"])
+            self.setLength(meta_data["data"][0][1])
+            self.setPublishedAt(meta_data["data"][0][2])
+            self.setAuthor(meta_data["data"][0][3])
+            self.setTitle(meta_data["data"][0][4])
             self.setDuration(time.strftime(
                 "%H:%M:%S", time.gmtime(self.getLength())))
         else:

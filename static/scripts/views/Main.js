@@ -89,17 +89,6 @@ class Main extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) =>
-                this.setState({
-                    Media: {
-                        artist: data.YouTube.artist,
-                        title: data.YouTube.title,
-                        uniform_resource_locator:
-                            data.YouTube.uniform_resource_locator,
-                        identifier: data.YouTube.identifier,
-                    },
-                })
-            )
             .then(() => {
                 if (window.location.pathname == "/Search") {
                     this.setState((previous) => ({

@@ -898,7 +898,6 @@ def getMedia() -> Response:
         "Media": {
             "YouTube": {
                 "uniform_resource_locator": session["Media"]["YouTube"]["uniform_resource_locator"],
-                "artist": session["Media"]["YouTube"]["artist"],
                 "title": session["Media"]["YouTube"]["title"],
                 "author": session["Media"]["YouTube"]["author"],
                 "author_channel": session["Media"]["YouTube"]["author_channel"],

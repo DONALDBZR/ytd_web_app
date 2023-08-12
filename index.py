@@ -347,7 +347,7 @@ class Media:
     def setTimestamp(self, timestamp: str) -> None:
         self.__timestamp = timestamp
 
-    def verifyUniformResourceLocator(self):
+    def VerifyPlatform(self):
         """
         Verifying the uniform resource locator in order to switch to the correct system as well as select and return the correct response.
 

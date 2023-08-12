@@ -624,6 +624,31 @@ class YouTube_Downloader:
         }
         return data
 
+    def getYouTube(self) -> dict:
+        """
+        Retrieving the metadata from the YouTube table.
+
+        Returns: object
+        """
+        self.getDatabaseHandler().query(
+            "SELECT * FROM `YouTube` WHERE identifier = %s", self.getIdentifier())
+        media = self.getDatabaseHandler().resultSet()
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        response = {}
+        if len(media) == 0:
+            response = {
+                'status': 204,
+                'data': media,
+                'timestamp': self.getTimestamp()
+            }
+        else:
+            response = {
+                'status': 200,
+                'data': media,
+                'timestamp': self.getTimestamp()
+            }
+        return response
+
 
 class Database_Handler:
     """

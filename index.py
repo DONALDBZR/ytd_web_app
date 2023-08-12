@@ -354,10 +354,9 @@ class Media:
         Returns: string | None
         """
         media = self.getMedia()
-        if media["status"] == 200:
-            # Verify that the platform has a subsystem here
-        else:
-            # Creating a record for it before verifying that the platform has a subsystem.
+        # Verifying that the media does not exist to create one.
+        if media["status"] != 200:
+            self.postMedia()
 
         # Verifying that the content is from the specified platform before trigerreing the correct system.
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
@@ -392,6 +391,16 @@ class Media:
                 'timestamp': self.getTimestamp()
             }
         return response
+
+    def postMedia(self) -> None:
+        """
+        Creating a record for the media with its data.
+
+        Returns: void
+        """
+        self.getDatabaseHandler().query(
+            "INSERT INTO `Media` (`value`) VALUES (%s)", self.getValue())
+        self.getDatabaseHandler().execute()
 
 
 class YouTube_Downloader:

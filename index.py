@@ -347,12 +347,18 @@ class Media:
     def setTimestamp(self, timestamp: str) -> None:
         self.__timestamp = timestamp
 
-    def VerifyPlatform(self):
+    def verifyPlatform(self):
         """
         Verifying the uniform resource locator in order to switch to the correct system as well as select and return the correct response.
 
         Returns: string | None
         """
+        media = self.getMedia()
+        if media["status"] == 200:
+            # Verify that the platform has a subsystem here
+        else:
+            # Creating a record for it before verifying that the platform has a subsystem.
+
         # Verifying that the content is from the specified platform before trigerreing the correct system.
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():
             # Verifying that there is no referer.
@@ -745,7 +751,7 @@ def search() -> (str | None):
     """
     data = request.json
     media = Media(data["Media"]["search"], None)
-    return_data = media.verifyUniformResourceLocator()
+    return_data = media.verifyPlatform()
     return return_data
 
 

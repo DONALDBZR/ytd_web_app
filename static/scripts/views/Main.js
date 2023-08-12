@@ -157,11 +157,14 @@ class Main extends React.Component {
         const uniform_resource_locator = document.querySelector(
             "button[name='mediaDownloader']"
         ).value;
+        const url = new URL(uniform_resource_locator);
+        const platform = url.host.replaceAll("www.", "").replaceAll(".com", "");
         fetch("/Media/Download", {
             method: "POST",
             body: JSON.stringify({
                 Media: {
                     uniform_resource_locator: uniform_resource_locator,
+                    platform: platform,
                 },
             }),
             headers: {

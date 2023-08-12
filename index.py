@@ -347,7 +347,7 @@ class Media:
     def setTimestamp(self, timestamp: str) -> None:
         self.__timestamp = timestamp
 
-    def verifyPlatform(self):
+    def verifyPlatform(self) -> dict:
         """
         Verifying the uniform resource locator in order to switch to the correct system as well as select and return the correct response.
 
@@ -355,11 +355,12 @@ class Media:
         """
         response = {}
         media = self.getMedia()
-        self.setIdentifier(media['data'][0]['identifier'])
         # Verifying that the media does not exist to create one.
         if media["status"] != 200:
             self.postMedia()
             self.verifyPlatform()
+        else:
+            self.setIdentifier(media['data'][0]['identifier'])
         # Verifying the platform data to redirecto to the correct system.
         if "youtube" in self.getValue():
             self._YouTubeDownloader = YouTube_Downloader(

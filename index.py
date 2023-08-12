@@ -353,6 +353,7 @@ class Media:
 
         Returns: string | None
         """
+        response = {}
         media = self.getMedia()
         # Verifying that the media does not exist to create one.
         if media["status"] != 200:
@@ -360,7 +361,7 @@ class Media:
         # Verifying the platform data to redirecto to the correct system.
         if "youtube" in self.getValue():
             self._YouTubeDownloader = YouTube_Downloader(self.getSearch())
-            # Verifying the referer to be able to to return the data needed.
+        return response
 
         # Verifying that the content is from the specified platform before trigerreing the correct system.
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():

@@ -550,12 +550,12 @@ class YouTube_Downloader:
 
         Returns: object
         """
-        self.setVideo(YouTube(self.getUniformResourceLocator()))
-        self.setArtist(self.getVideo().title.split(" - ")[0])
-        self.setTitle(self.getVideo().title.split(" - ")[1])
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.getIdentifier().replace(
             "https://www.youtube.com/watch?v=", ""))
+        self.setVideo(YouTube(self.getUniformResourceLocator()))
+        self.setArtist(self.getVideo().title.split(" - ")[0])
+        self.setTitle(self.getVideo().title.split(" - ")[1])
         self.setLength(self.getVideo().length)
         self.setDuration(time.strftime(
             "%H:%M:%S", time.gmtime(self.getLength())))

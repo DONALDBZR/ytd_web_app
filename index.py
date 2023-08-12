@@ -601,7 +601,8 @@ class YouTube_Downloader:
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.getIdentifier().replace(
             "https://www.youtube.com/watch?v=", ""))
-
+        meta_data = self.getYouTube()
+        ##########
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setArtist(self.getVideo().title.split(" - ")[0])
         self.setTitle(self.getVideo().title.split(" - ")[1])

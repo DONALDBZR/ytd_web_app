@@ -294,7 +294,7 @@ class Media:
     Visibility: private
     """
 
-    def __init__(self, search: str, referer: str | None, value: str) -> None:
+    def __init__(self, search: str, referer: str | None, value: str | None) -> None:
         """
         Instantiating the media's manager which will interact with the media's dataset and do the required processing.
 

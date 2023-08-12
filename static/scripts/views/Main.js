@@ -73,12 +73,15 @@ class Main extends React.Component {
      */
     handleSubmit(event) {
         const delay = 200;
+        const url = new URL(this.state.Media.search);
+        const platform = url.host.replaceAll("www.", "").replaceAll(".com", "");
         event.preventDefault();
         fetch("/Media/Search", {
             method: "POST",
             body: JSON.stringify({
                 Media: {
                     search: this.state.Media.search,
+                    platform: platform,
                 },
             }),
             headers: {

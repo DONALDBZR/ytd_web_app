@@ -279,7 +279,7 @@ class Media:
     Type: int
     Visibility: private
     """
-    __value: str | None
+    __value: str
     """
     The value of the required media which have to correspond to the name of the platform from which the media comes from.
 
@@ -294,7 +294,7 @@ class Media:
     Visibility: private
     """
 
-    def __init__(self, search: str, referer: str | None, value: str | None) -> None:
+    def __init__(self, search: str, referer: str | None, value: str) -> None:
         """
         Instantiating the media's manager which will interact with the media's dataset and do the required processing.
 
@@ -335,10 +335,10 @@ class Media:
     def setIdentifier(self, identifier: int) -> None:
         self.__identifier = identifier
 
-    def getValue(self) -> str | None:
+    def getValue(self) -> str:
         return self.__value
 
-    def setValue(self, value: str | None) -> None:
+    def setValue(self, value: str) -> None:
         self.__value = value
 
     def getTimestamp(self) -> str:
@@ -923,7 +923,8 @@ def retrieveMedia():
     referer = request.referrer
     data = request.json
     if 'Search' in referer:
-        media = Media(data["Media"]["uniform_resource_locator"], referer)
+        media = Media(data["Media"]["uniform_resource_locator"],
+                      referer, data["media"]["platform"])
         headers = {
             "Content-Type": "application/json",
         }

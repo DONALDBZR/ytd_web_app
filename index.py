@@ -360,7 +360,7 @@ class Media:
             self.postMedia()
             self.verifyPlatform()
         else:
-            self.setIdentifier(media['data'][0]['identifier'])
+            self.setIdentifier(media["data"][0][0])
         # Verifying the platform data to redirecto to the correct system.
         if "youtube" in self.getValue():
             self._YouTubeDownloader = YouTube_Downloader(

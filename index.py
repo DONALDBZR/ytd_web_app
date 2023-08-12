@@ -504,6 +504,13 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
+    __media_identifier: int
+    """
+    The media type for the system.
+
+    Type: int
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str):
         """
@@ -575,6 +582,12 @@ class YouTube_Downloader:
 
     def setAuthor(self, author: str) -> None:
         self.__author = author
+
+    def getMediaIdentifier(self) -> int:
+        return self.__media_identifier
+
+    def setMediaIdentifier(self, media_identifier: int) -> None:
+        self.__media_identifier = media_identifier
 
     def search(self) -> dict:
         """

@@ -377,7 +377,7 @@ class Media:
         Returns: object
         """
         self.getDatabaseHandler().query(
-            "SELECT * FROM `Media` WHERE value = %s", {self.getValue()})
+            "SELECT * FROM `Media` WHERE value = %s", (self.getValue()))
         media = self.getDatabaseHandler().resultSet()
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}

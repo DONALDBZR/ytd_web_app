@@ -272,11 +272,11 @@ class Media:
     Type: Database_Handler
     Visibility: private
     """
-    __identifier: str
+    __identifier: int
     """
     The identifier of the required media
 
-    Type: string
+    Type: int
     Visibility: private
     """
     __value: str | None
@@ -329,10 +329,10 @@ class Media:
     def setDatabaseHandler(self, database_handler) -> None:
         self.__database_handler = database_handler
 
-    def getIdentifier(self) -> str:
+    def getIdentifier(self) -> int:
         return self.__identifier
 
-    def setIdentifier(self, identifier: str) -> None:
+    def setIdentifier(self, identifier: int) -> None:
         self.__identifier = identifier
 
     def getValue(self) -> str | None:
@@ -357,6 +357,7 @@ class Media:
         # Verifying that the media does not exist to create one.
         if media["status"] != 200:
             self.postMedia()
+        # Verifying the platform data to redirecto to the correct system.
 
         # Verifying that the content is from the specified platform before trigerreing the correct system.
         if "youtube" in self.getSearch() or "youtu.be" in self.getSearch():

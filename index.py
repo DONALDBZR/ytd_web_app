@@ -448,13 +448,6 @@ class YouTube_Downloader:
     Type: YouTube
     Visibility: private
     """
-    __artist: str
-    """
-    The artist of the video
-
-    Type: string
-    Visibility: private
-    """
     __title: str
     """
     The title of the video
@@ -545,12 +538,6 @@ class YouTube_Downloader:
     def setVideo(self, video: YouTube) -> None:
         self.__video = video
 
-    def getArtist(self) -> str:
-        return self.__artist
-
-    def setArtist(self, artist: str) -> None:
-        self.__artist = artist
-
     def getTitle(self) -> str:
         return self.__title
 
@@ -611,31 +598,40 @@ class YouTube_Downloader:
 
         Returns: object
         """
+        self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.getIdentifier().replace(
             "https://www.youtube.com/watch?v=", ""))
         meta_data = self.getYouTube()
-        ##########
-        self.setVideo(YouTube(self.getUniformResourceLocator()))
-        self.setArtist(self.getVideo().title.split(" - ")[0])
-        self.setTitle(self.getVideo().title.split(" - ")[1])
-        self.setLength(self.getVideo().length)
-        self.setDuration(time.strftime(
-            "%H:%M:%S", time.gmtime(self.getLength())))
-        self.setPublishedAt(self.getVideo().publish_date)
-        data = {
+        response = {}
+        # Verifying the response of the metadata to retrieve the needed response
+        if meta_data["status"] == 200:
+            self.setLength(meta_data["data"][0]["length"])
+            self.setPublishedAt(meta_data["data"][0]["published_at"])
+            self.setAuthor(meta_data["data"][0]["author"])
+            self.setTitle(meta_data["data"][0]["title"])
+            self.setDuration(time.strftime(
+                "%H:%M:%S", time.gmtime(self.getLength())))
+        else:
+            self.setLength(self.getVideo().length)
+            self.setPublishedAt(self.getVideo().publish_date)
+            self.setAuthor(self.getVideo().author)
+            self.setTitle(self.getVideo().title)
+            self.setDuration(time.strftime(
+                "%H:%M:%S", time.gmtime(self.getLength())))
+            self.postYouTube()
+        response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
-            "artist": self.getArtist(),
+            "author": self.getAuthor(),
             "title": self.getTitle(),
             "identifier": self.getIdentifier(),
-            "author": self.getVideo().author,
             "author_channel": self.getVideo().channel_url,
             "views": self.getVideo().views,
             "published_at": self.getPublishedAt(),
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration()
         }
-        return data
+        return response
 
     def getYouTube(self) -> dict:
         """

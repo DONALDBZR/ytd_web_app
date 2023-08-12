@@ -511,6 +511,13 @@ class YouTube_Downloader:
     Type: int
     Visibility: private
     """
+    __timestamp: str
+    """
+    The timestamp at which the session has been created.
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
@@ -591,6 +598,12 @@ class YouTube_Downloader:
 
     def setMediaIdentifier(self, media_identifier: int) -> None:
         self.__media_identifier = media_identifier
+
+    def getTimestamp(self) -> str:
+        return self.__timestamp
+
+    def setTimestamp(self, timestamp: str) -> None:
+        self.__timestamp = timestamp
 
     def search(self) -> dict:
         """

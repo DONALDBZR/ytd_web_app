@@ -305,7 +305,7 @@ class Media:
         """
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler().query(
-            "CREATE TABLE IF NOT EXISTS `Media` (identifier VARCHAR(2) PRIMARY KEY, `value` VARCHAR(8))", None)
+            "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
         self.getDatabaseHandler().execute()
         self.setSearch(search)
         self.setReferer(referer)

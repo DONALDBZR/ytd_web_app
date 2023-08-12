@@ -870,7 +870,7 @@ def search() -> (str | None):
     Returns: Response
     """
     data = request.json
-    media = Media(data["Media"]["search"], None, None)
+    media = Media(data["Media"]["search"], None, data["media"]["platform"])
     return_data = media.verifyPlatform()
     return return_data
 

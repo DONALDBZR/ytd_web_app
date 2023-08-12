@@ -351,16 +351,19 @@ class Media:
         """
         Verifying the uniform resource locator in order to switch to the correct system as well as select and return the correct response.
 
-        Returns: string | None
+        Returns: object
         """
         response = {}
         media = self.getMedia()
+        self.setIdentifier(media['data'][0]['identifier'])
         # Verifying that the media does not exist to create one.
         if media["status"] != 200:
             self.postMedia()
+            self.verifyPlatform()
         # Verifying the platform data to redirecto to the correct system.
         if "youtube" in self.getValue():
-            self._YouTubeDownloader = YouTube_Downloader(self.getSearch())
+            self._YouTubeDownloader = YouTube_Downloader(
+                self.getSearch(), self.getIdentifier())
             response = {
                 "status": 200,
                 "data": self.handleYouTube()

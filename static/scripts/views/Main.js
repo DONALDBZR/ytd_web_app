@@ -19,7 +19,6 @@ class Main extends React.Component {
                 search: "",
                 YouTube: {
                     uniform_resource_locator: "",
-                    artist: "",
                     title: "",
                     author: "",
                     author_channel: "",
@@ -112,7 +111,6 @@ class Main extends React.Component {
                             YouTube: {
                                 uniform_resource_locator:
                                     data.Media.YouTube.uniform_resource_locator,
-                                artist: data.Media.YouTube.artist,
                                 title: data.Media.YouTube.title,
                                 author: data.Media.YouTube.author,
                                 author_channel:
@@ -376,7 +374,7 @@ class YouTube extends Media {
                     </a>
                 </div>
                 <div class="data">
-                    <div>{`${this.state.Media.YouTube.artist} - ${this.state.Media.YouTube.title}`}</div>
+                    <div>{this.state.Media.YouTube.title}</div>
                     <div>
                         <a
                             href={this.state.Media.YouTube.author_channel}

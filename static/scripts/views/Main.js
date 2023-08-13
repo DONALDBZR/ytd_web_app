@@ -27,6 +27,7 @@ class Main extends React.Component {
                     published_at: "",
                     thumbnail: "",
                     duration: "",
+                    identifier: "",
                 },
             },
         };
@@ -95,7 +96,23 @@ class Main extends React.Component {
                         ...previous.Media,
                         YouTube: {
                             ...previous.Media.YouTube,
-                            identifier: data.data.identifier,
+                            uniform_resource_locator:
+                                data.data.data.uniform_resource_locator,
+                        },
+                    },
+                }))
+            )
+            .then(() =>
+                this.setState((previous) => ({
+                    Media: {
+                        ...previous.Media,
+                        YouTube: {
+                            ...previous.Media.YouTube,
+                            identifier:
+                                this.state.Media.YouTube.uniform_resource_locator.replace(
+                                    "https://www.youtube.com/watch?v=",
+                                    ""
+                                ),
                         },
                     },
                 }))

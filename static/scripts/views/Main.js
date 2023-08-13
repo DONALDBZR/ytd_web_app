@@ -90,18 +90,7 @@ class Main extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) =>
-                this.setState((previous) => ({
-                    Media: {
-                        ...previous.Media,
-                        YouTube: {
-                            ...previous.Media.YouTube,
-                            uniform_resource_locator:
-                                data.data.data.uniform_resource_locator,
-                        },
-                    },
-                }))
-            )
+            .then((data) => this.setMediaYouTubeUniformResourceLocator(data))
             .then(() =>
                 this.setState((previous) => ({
                     Media: {
@@ -226,6 +215,25 @@ class Main extends React.Component {
                     ...previous.Media.YouTube,
                     uniform_resource_locator:
                         data.data.data.uniform_resource_locator,
+                },
+            },
+        }));
+    }
+    /**
+     * Extracting the identifier of a specific YouTube content.
+     * @returns {void}
+     */
+    setMediaYouTubeIdentifier() {
+        this.setState((previous) => ({
+            Media: {
+                ...previous.Media,
+                YouTube: {
+                    ...previous.Media.YouTube,
+                    identifier:
+                        this.state.Media.YouTube.uniform_resource_locator.replace(
+                            "https://www.youtube.com/watch?v=",
+                            ""
+                        ),
                 },
             },
         }));

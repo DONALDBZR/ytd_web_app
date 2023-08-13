@@ -89,19 +89,30 @@ class Main extends React.Component {
             },
         })
             .then((response) => response.json())
+            .then((data) =>
+                this.setState((previous) => ({
+                    Media: {
+                        ...previous.Media,
+                        YouTube: {
+                            ...previous.Media.YouTube,
+                            identifier: data.data.identifier,
+                        },
+                    },
+                }))
+            )
             .then(() => {
-                if (window.location.pathname == "/Search") {
+                if (this.state.System.view_route == "/Search") {
                     this.setState((previous) => ({
                         System: {
                             ...previous.System,
-                            url: `${window.location.pathname}/${this.state.Media.identifier}`,
+                            url: `${this.state.System.view_route}/${this.state.Media.YouTube.identifier}`,
                         },
                     }));
                 } else {
                     this.setState((previous) => ({
                         System: {
                             ...previous.System,
-                            url: `/Search/${this.state.Media.identifier}`,
+                            url: `/Search/${this.state.Media.YouTube.identifier}`,
                         },
                     }));
                 }

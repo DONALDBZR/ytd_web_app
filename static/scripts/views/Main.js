@@ -91,38 +91,8 @@ class Main extends React.Component {
         })
             .then((response) => response.json())
             .then((data) => this.setMediaYouTubeUniformResourceLocator(data))
-            .then(() =>
-                this.setState((previous) => ({
-                    Media: {
-                        ...previous.Media,
-                        YouTube: {
-                            ...previous.Media.YouTube,
-                            identifier:
-                                this.state.Media.YouTube.uniform_resource_locator.replace(
-                                    "https://www.youtube.com/watch?v=",
-                                    ""
-                                ),
-                        },
-                    },
-                }))
-            )
-            .then(() => {
-                if (this.state.System.view_route == "/Search") {
-                    this.setState((previous) => ({
-                        System: {
-                            ...previous.System,
-                            url: `${this.state.System.view_route}/${this.state.Media.YouTube.identifier}`,
-                        },
-                    }));
-                } else {
-                    this.setState((previous) => ({
-                        System: {
-                            ...previous.System,
-                            url: `/Search/${this.state.Media.YouTube.identifier}`,
-                        },
-                    }));
-                }
-            })
+            .then(() => this.setMediaYouTubeIdentifier())
+            .then(() => this.setRoute())
             .then(() => this.redirector(delay, this.state.System.url));
     }
     /**
@@ -237,6 +207,28 @@ class Main extends React.Component {
                 },
             },
         }));
+    }
+    /**
+     * Setting the route to be redirected.
+     * @returns {void}
+     */
+    setRoute() {
+        // Verifying the view route before updating to the new route.
+        if (this.state.System.view_route == "/Search") {
+            this.setState((previous) => ({
+                System: {
+                    ...previous.System,
+                    url: `${this.state.System.view_route}/${this.state.Media.YouTube.identifier}`,
+                },
+            }));
+        } else {
+            this.setState((previous) => ({
+                System: {
+                    ...previous.System,
+                    url: `/Search/${this.state.Media.YouTube.identifier}`,
+                },
+            }));
+        }
     }
     /**
      * Rendering the component

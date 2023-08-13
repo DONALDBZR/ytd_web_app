@@ -214,6 +214,23 @@ class Main extends React.Component {
         }, delay);
     }
     /**
+     * Setting the uniform resource locator for a specific YouTube content.
+     * @param {object} data The dataset from the server.
+     * @returns {void}
+     */
+    setMediaYouTubeUniformResourceLocator(data) {
+        this.setState((previous) => ({
+            Media: {
+                ...previous.Media,
+                YouTube: {
+                    ...previous.Media.YouTube,
+                    uniform_resource_locator:
+                        data.data.data.uniform_resource_locator,
+                },
+            },
+        }));
+    }
+    /**
      * Rendering the component
      * @returns {HTMLElement}
      */

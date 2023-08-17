@@ -266,7 +266,7 @@ class Session_Manager:
             data = json.load(file)
             self.validateIpAddress(data)
 
-    def validateIpAddress(self, data):
+    def validateIpAddress(self, data) -> None:
         """
         Validating the IP Address against the one stored in the cache file.
 
@@ -279,11 +279,26 @@ class Session_Manager:
         if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):
             timestamp = datetime.strptime(
                 str(data['Client']['timestamp']), "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
-            self.handleExpiryHour(timestamp, data)
-            # Verifying that the session has not expired
-            if timestamp > datetime.now():
-                self.setSession(data)
-                session = self.getSession()
-            else:
-                self.getSession().clear()
-                self.createSession()
+            self.handleExpiryTime(timestamp)
+
+    def handleExpiryTime(self, expiry_time: datetime) -> dict:
+        """
+        Handling the expiry time of the session
+
+        Parameters:
+            expiry_time: datetime: The expiry time of the session
+            data: object: The data in the file
+
+        Returns: object
+        """
+        response = {}
+        # Verifying that the session has not expired
+        if expiry_time > datetime.now():
+            response = {
+                "status": 200
+            }
+        else:
+            response = {
+                "status": 205
+            }
+        return response

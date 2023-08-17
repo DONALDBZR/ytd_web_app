@@ -176,7 +176,6 @@ class Session_Manager:
         self.setIpAddress(str(request.environ.get('REMOTE_ADDR')))
         # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
-            self.sessionsLoader(self.getSessionFiles())
             self.handleSessionData(self.sessionsLoader(self.getSessionFiles()))
         else:
             self.createSession()
@@ -361,18 +360,32 @@ class Session_Manager:
 
         Parameters:
             session_data: dict: Session's data
+
+        Returns: void
         """
         # Verifying that the data has been received or created in order to verify it to renew access.
         if session_data["status"] == 200 or session_data == 201:
-            # Comparing the IP Addresses to either renew the timestamp or to clear the session.
-            if self.getSession()['Client']['ip_address'] == self.getIpAddress():
-                self.setTimestamp(
-                    datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-                self.getSession()[
-                    'Client']['timestamp'] = self.getTimestamp()
-                session = self.getSession()
-            else:
-                self.getSession().clear()
-                session = self.getSession()
+            self.renew(self.getSession())
         else:
+            self.createSession()
+
+    def renew(self, session_data: SessionMixin):
+        """
+        Verifying that the IP Addresses are the same for renewing the access to their current data
+
+        Parameters:
+            session_data: SessionMixin: Session Data
+        """
+        file_path = str(self.getDirectory() + "/" +
+                        self.getIpAddress() + ".json")
+        # Comparing the IP Addresses to either renew the timestamp or to clear the session.
+        if session_data['Client']['ip_address'] == self.getIpAddress():
+            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+            session_data['Client']['timestamp'] = self.getTimestamp()
+            self.setSession(session_data)
+            session = self.getSession()
+        else:
+            self.getSession().clear()
+            os.remove(file_path)
+            session = self.getSession()
             self.createSession()

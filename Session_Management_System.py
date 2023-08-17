@@ -318,3 +318,35 @@ class Session_Manager:
                 "status": 205
             }
         return response
+
+    def handleSession(self, status: int, name: str) -> dict:
+        """
+        Handling the session based on the status retrieved from the system.
+
+        Parameters:
+            status: int: HTTP Status Code
+            name: string: File Name
+
+        Returns: object
+        """
+        response = {}
+        file_path = str(self.getDirectory() + "/" + name)
+        file = open(file_path)
+        data = json.load(file)
+        if status == 200:
+            self.setSession(data)
+            session = self.getSession()
+            response = {
+                "status": status
+            }
+        elif status == 204:
+            response = {
+                "status": status
+            }
+        elif status == 205:
+            self.getSession().clear()
+            os.remove(file_path)
+            response = {
+                "status": 202
+            }
+        return response

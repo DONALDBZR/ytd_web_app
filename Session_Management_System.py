@@ -176,25 +176,7 @@ class Session_Manager:
         self.setIpAddress(str(request.environ.get('REMOTE_ADDR')))
         # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
-            # Iterating throughout the session files to find any file that contains the IP Address of the client.
-            for index in range(0, len(self.getSessionFiles()), 1):
-                # Ensuring that the session files are of JSON file type.
-                if self.getSessionFiles()[index].endswith(".json"):
-                    file_name = str(self.getDirectory() + "/" +
-                                    self.getSessionFiles()[index])
-                    file = open(file_name)
-                    data = json.load(file)
-                    # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
-                    if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):
-                        timestamp = datetime.strptime(
-                            data['Client']['timestamp'], "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
-                        # Verifying that the session has not expired
-                        if timestamp > datetime.now():
-                            self.setSession(data)
-                            session = self.getSession()
-                        else:
-                            self.getSession().clear()
-                            self.createSession()
+            self.sessionsLoader(self.getSessionFiles())
             # Ensuring that the Client data type is not null or else a session will be created.
             if self.getSession().get('Client') is not None:
                 # Comparing the IP Addresses to either renew the timestamp or to clear the session.
@@ -256,3 +238,30 @@ class Session_Manager:
                     file_to_be_updated.close()
                     session["Client"]["timestamp"] = self.getTimestamp()
                     session["Client"]["color_scheme"] = self.getColorScheme()
+
+    def sessionsLoader(self, sessions: list) -> None:
+        """
+        Iterating throughout the session files to find any file that contains the IP Address of the client.
+
+        Parameters:
+            sessions: array: List of session files
+        Returns: void
+        """
+        # Iterating throughout the session files to find any file that contains the IP Address of the client.
+        for index in range(0, len(sessions), 1):
+            # Ensuring that the session files are of JSON file type.
+            if sessions[index].endswith(".json"):
+                file_name = str(self.getDirectory() + "/" + sessions[index])
+                file = open(file_name)
+                data = json.load(file)
+                # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
+                if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):
+                    timestamp = datetime.strptime(
+                        data['Client']['timestamp'], "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
+                    # Verifying that the session has not expired
+                    if timestamp > datetime.now():
+                        self.setSession(data)
+                        session = self.getSession()
+                    else:
+                        self.getSession().clear()
+                        self.createSession()

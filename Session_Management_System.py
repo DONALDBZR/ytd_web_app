@@ -177,20 +177,7 @@ class Session_Manager:
         # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
             self.sessionsLoader(self.getSessionFiles())
-            # Ensuring that the Client data type is not null or else a session will be created.
-            if self.getSession().get('Client') is not None:
-                # Comparing the IP Addresses to either renew the timestamp or to clear the session.
-                if self.getSession()['Client']['ip_address'] == self.getIpAddress():
-                    self.setTimestamp(
-                        datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-                    self.getSession()[
-                        'Client']['timestamp'] = self.getTimestamp()
-                    session = self.getSession()
-                else:
-                    self.getSession().clear()
-                    session = self.getSession()
-            else:
-                self.createSession()
+            self.handleSessionData(self.sessionsLoader(self.getSessionFiles()))
         else:
             self.createSession()
 
@@ -239,23 +226,34 @@ class Session_Manager:
                     session["Client"]["timestamp"] = self.getTimestamp()
                     session["Client"]["color_scheme"] = self.getColorScheme()
 
-    def sessionsLoader(self, sessions: list) -> None:
+    def sessionsLoader(self, sessions: list) -> dict:
         """
         Iterating throughout the session files to process them depending on the response from the system.
 
         Parameters:
             sessions: array: List of session files
-        Returns: void
+        Returns: object
         """
+        response = {}
         # Iterating throughout the session files to find any file that contains the IP Address of the client.
         for index in range(0, len(sessions), 1):
             if self.handleFile(sessions[index])["status"] == 200:
+                response = {
+                    "status": self.handleFile(sessions[index])["status"]
+                }
                 break
             elif self.handleFile(sessions[index])["status"] == 202:
                 self.createSession()
+                response = {
+                    "status": 201
+                }
                 break
             elif self.handleFile(sessions[index])["status"] == 204:
+                response = {
+                    "status": self.handleFile(sessions[index])["status"]
+                }
                 continue
+        return response
 
     def handleFile(self, file_name: str) -> dict:
         """
@@ -291,7 +289,7 @@ class Session_Manager:
         """
         response = {}
         # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
-        if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):
+        if self.getIpAddress() == str(data['Client']['ip_address']):
             timestamp = datetime.strptime(
                 str(data['Client']['timestamp']), "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
             response = {
@@ -356,3 +354,25 @@ class Session_Manager:
                 "status": 202
             }
         return response
+
+    def handleSessionData(self, session_data: dict):
+        """
+        Verifying that the data has not been tampered in order to renew the session.
+
+        Parameters:
+            session_data: dict: Session's data
+        """
+        # Verifying that the data has been received or created in order to verify it to renew access.
+        if session_data["status"] == 200 or session_data == 201:
+            # Comparing the IP Addresses to either renew the timestamp or to clear the session.
+            if self.getSession()['Client']['ip_address'] == self.getIpAddress():
+                self.setTimestamp(
+                    datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+                self.getSession()[
+                    'Client']['timestamp'] = self.getTimestamp()
+                session = self.getSession()
+            else:
+                self.getSession().clear()
+                session = self.getSession()
+        else:
+            self.createSession()

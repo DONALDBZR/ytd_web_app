@@ -251,20 +251,28 @@ class Session_Manager:
         for index in range(0, len(sessions), 1):
             self.handleFile(sessions[index])
 
-    def handleFile(self, file_name: str) -> None:
+    def handleFile(self, file_name: str) -> dict:
         """
         Ensuring that the file is of type JSON in order to process it further more.
 
         Parameters:
             file: Any: file to be loaded
-        Returns: void
+        Returns: object
         """
+        response = {}
         # Ensuring that the session files are of JSON file type.
         if file_name.endswith(".json"):
             file_path = str(self.getDirectory() + "/" + file_name)
             file = open(file_path)
             data = json.load(file)
-            self.validateIpAddress(data)
+            response = {
+                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
+            }
+        else:
+            response = {
+                "status": 204
+            }
+        return response
 
     def validateIpAddress(self, data) -> dict:
         """
@@ -280,9 +288,8 @@ class Session_Manager:
         if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):
             timestamp = datetime.strptime(
                 str(data['Client']['timestamp']), "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
-            self.handleExpiryTime(timestamp)
             response = {
-                "status": self.handleExpiryTime(timestamp)["status"],
+                "status": self.handleExpiryTime(timestamp)["status"]
             }
         else:
             response = {

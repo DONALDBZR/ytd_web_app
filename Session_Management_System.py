@@ -383,6 +383,9 @@ class Session_Manager:
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
+            file = open(file_path, "w")
+            file.write(json.dumps(self.getSession()))
+            file.close()
             session = self.getSession()
         else:
             self.getSession().clear()

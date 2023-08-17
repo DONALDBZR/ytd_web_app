@@ -241,7 +241,7 @@ class Session_Manager:
 
     def sessionsLoader(self, sessions: list) -> None:
         """
-        Iterating throughout the session files to find any file that contains the IP Address of the client.
+        Iterating throughout the session files to process them depending on the response from the system.
 
         Parameters:
             sessions: array: List of session files
@@ -249,7 +249,13 @@ class Session_Manager:
         """
         # Iterating throughout the session files to find any file that contains the IP Address of the client.
         for index in range(0, len(sessions), 1):
-            self.handleFile(sessions[index])
+            if self.handleFile(sessions[index])["status"] == 200:
+                break
+            elif self.handleFile(sessions[index])["status"] == 202:
+                self.createSession()
+                break
+            elif self.handleFile(sessions[index])["status"] == 204:
+                continue
 
     def handleFile(self, file_name: str) -> dict:
         """

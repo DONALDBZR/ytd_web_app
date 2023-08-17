@@ -143,7 +143,7 @@ class Session_Manager:
 
         Returns: void
         """
-        session.clear()
+        self.getSession().clear()
         self.setIpAddress(str(request.environ.get('REMOTE_ADDR')))
         self.setHttpClientIpAddress(str(request.environ.get('HTTP_CLIENT_IP')))
         self.setProxyIpAddress(
@@ -157,13 +157,14 @@ class Session_Manager:
             "timestamp": self.getTimestamp(),
             "color_scheme": self.getColorScheme()
         }
-        session['Client'] = data
+        self.getSession()['Client'] = data
         session_data = self.retrieveSession()
         file_name = self.getIpAddress() + ".json"
         file_path = self.getDirectory() + file_name
         session_file = open(file_path, 'w')
         session_file.write(session_data)
         session_file.close()
+        session = self.getSession()
 
     def verifySession(self) -> None:
         """
@@ -186,7 +187,7 @@ class Session_Manager:
 
         Returns: string
         """
-        return json.dumps(session, indent=4)
+        return json.dumps(self.getSession(), indent=4)
 
     def updateSession(self, data) -> None:
         """

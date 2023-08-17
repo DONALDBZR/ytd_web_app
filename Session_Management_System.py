@@ -264,14 +264,26 @@ class Session_Manager:
             file_path = str(self.getDirectory() + "/" + file_name)
             file = open(file_path)
             data = json.load(file)
-            # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
-            if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):
-                timestamp = datetime.strptime(
-                    data['Client']['timestamp'], "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
-                # Verifying that the session has not expired
-                if timestamp > datetime.now():
-                    self.setSession(data)
-                    session = self.getSession()
-                else:
-                    self.getSession().clear()
-                    self.createSession()
+            self.validateIpAddress(data)
+
+    def validateIpAddress(self, data):
+        """
+        Validating the IP Address against the one stored in the cache file.
+
+        Parameters:
+            data: object: The data in the file
+
+        Returns: void
+        """
+        # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
+        if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):
+            timestamp = datetime.strptime(
+                str(data['Client']['timestamp']), "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
+            self.handleExpiryHour(timestamp, data)
+            # Verifying that the session has not expired
+            if timestamp > datetime.now():
+                self.setSession(data)
+                session = self.getSession()
+            else:
+                self.getSession().clear()
+                self.createSession()

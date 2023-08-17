@@ -251,7 +251,7 @@ class Session_Manager:
         for index in range(0, len(sessions), 1):
             self.handleFile(sessions[index])
 
-    def handleFile(self, file) -> None:
+    def handleFile(self, file_name: str) -> None:
         """
         Ensuring that the file is of type JSON in order to process it further more.
 
@@ -260,9 +260,9 @@ class Session_Manager:
         Returns: void
         """
         # Ensuring that the session files are of JSON file type.
-        if sessions[index].endswith(".json"):
-            file_name = str(self.getDirectory() + "/" + sessions[index])
-            file = open(file_name)
+        if file_name.endswith(".json"):
+            file_path = str(self.getDirectory() + "/" + file_name)
+            file = open(file_path)
             data = json.load(file)
             # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
             if str(request.environ.get('REMOTE_ADDR')) == str(data['Client']['ip_address']):

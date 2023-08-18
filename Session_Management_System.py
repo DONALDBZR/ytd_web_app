@@ -3,7 +3,6 @@ from flask import session, request
 from datetime import datetime, timedelta
 import os
 import json
-from flask import sessions
 from flask.sessions import SessionMixin
 
 
@@ -346,7 +345,7 @@ class Session_Manager:
             }
         return response
 
-    def handleSessionData(self, session_data: dict):
+    def handleSessionData(self, session_data: dict) -> None:
         """
         Verifying that the data has not been tampered in order to renew the session.
 
@@ -361,7 +360,7 @@ class Session_Manager:
         else:
             self.createSession()
 
-    def renew(self, session_data: SessionMixin):
+    def renew(self, session_data: SessionMixin) -> None:
         """
         Verifying that the IP Addresses are the same for renewing the access to their current data
 

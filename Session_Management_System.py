@@ -191,40 +191,31 @@ class Session_Manager:
 
     def updateSession(self, data) -> None:
         """
-        Modifying the session
+        Modifying the session.
 
-        Parameters: data: mixed: Data from the view
+        Parameters: data: object: Data from the view
 
         Returns: void
         """
-        self.setIpAddress(request.environ.get('REMOTE_ADDR'))
+        self.setIpAddress(str(request.environ.get('REMOTE_ADDR')))
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.setColorScheme(data["Client"]["color_scheme"])
-        self.setSessionFiles(os.listdir(self.getDirectory()))
-        # Iterating throughout the session files to update the session needed.
-        for index in range(0, len(self.getSessionFiles()), 1):
-            # Ensuring that the session files are of JSON file type.
-            if self.getSessionFiles()[index].endswith(".json"):
-                file_name = str(self.getDirectory() + "/" +
-                                self.getSessionFiles()[index])
-                file = open(file_name)
-                data = json.load(file)
-                # Ensuring that the IP Addresses corresponds in order to update the session.
-                if self.getIpAddress() == data['Client']['ip_address']:
-                    new_data = {
-                        "ip_address": self.getIpAddress(),
-                        "http_client_ip_address": data["Client"]["http_client_ip_address"],
-                        "proxy_ip_address": data["Client"]["proxy_ip_address"],
-                        "timestamp": self.getTimestamp(),
-                        "color_scheme": self.getColorScheme()
-                    }
-                    session["Client"] = new_data
-                    session_data = self.getSession()
-                    file_to_be_updated = open(file_name, "w")
-                    file_to_be_updated.write(session_data)
-                    file_to_be_updated.close()
-                    session["Client"]["timestamp"] = self.getTimestamp()
-                    session["Client"]["color_scheme"] = self.getColorScheme()
+        file_name = self.getDirectory() + "/" + self.getIpAddress() + ".json"
+        data = json.load(open(file_name))
+        # Ensuring that the IP Addresses corresponds in order to update the session.
+        if self.getIpAddress() == data['Client']['ip_address']:
+            new_data = {
+                "ip_address": self.getIpAddress(),
+                "http_client_ip_address": data["Client"]["http_client_ip_address"],
+                "proxy_ip_address": data["Client"]["proxy_ip_address"],
+                "timestamp": self.getTimestamp(),
+                "color_scheme": self.getColorScheme()
+            }
+            file = open(file_name, "w")
+            self.getSession()["Client"] = new_data
+            file.write(self.retrieveSession())
+            file.close()
+            session = self.getSession()
 
     def sessionsLoader(self, sessions: list) -> dict:
         """

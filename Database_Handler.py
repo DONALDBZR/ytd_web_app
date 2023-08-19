@@ -122,6 +122,6 @@ class Database_Handler:
         """
         Fetching all the data that is requested from the command that was sent to the database server
 
-        Returns: (Any | List[RowType])
+        Returns: array
         """
         return self.getStatement().fetchall()

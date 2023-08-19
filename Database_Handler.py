@@ -101,7 +101,7 @@ class Database_Handler:
     def setStatement(self, statement: "MySQLCursor") -> None:
         self.__statement = statement
 
-    def query(self, query: str, parameters: None | tuple | dict):
+    def query(self, query: str, parameters: None | tuple):
         """
         Preparing the SQL query that is going to be handled by the database handler
 

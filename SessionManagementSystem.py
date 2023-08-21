@@ -76,7 +76,8 @@ class Session_Manager:
 
     def __init__(self) -> None:
         """
-        Instantiating the session's manager which will verify the session of the users
+        Instantiating the session's manager which will verify the
+        session of the users
         """
         self.setDirectory("./Cache/Session/Users/")
         self.setSession(session)
@@ -218,7 +219,8 @@ class Session_Manager:
 
     def sessionsLoader(self, sessions: list) -> dict:
         """
-        Iterating throughout the session files to process them depending on the response from the system.
+        Iterating throughout the session files to process them
+        depending on the response from the system.
 
         Parameters:
             sessions: array: List of session files
@@ -247,7 +249,8 @@ class Session_Manager:
 
     def handleFile(self, file_name: str) -> dict:
         """
-        Ensuring that the file is of type JSON in order to process it further more.
+        Ensuring that the file is of type JSON in order to process
+        it further more.
 
         Parameters:
             file: Any: file to be loaded
@@ -270,7 +273,8 @@ class Session_Manager:
 
     def validateIpAddress(self, data) -> dict:
         """
-        Validating the IP Address against the one stored in the cache file.
+        Validating the IP Address against the one stored in the
+        cache file.
 
         Parameters:
             data: object: The data in the file
@@ -315,7 +319,8 @@ class Session_Manager:
 
     def handleSession(self, status: int, name: str) -> dict:
         """
-        Handling the session based on the status retrieved from the system.
+        Handling the session based on the status retrieved from the
+        system.
 
         Parameters:
             status: int: HTTP Status Code
@@ -347,7 +352,8 @@ class Session_Manager:
 
     def handleSessionData(self, session_data: dict) -> None:
         """
-        Verifying that the data has not been tampered in order to renew the session.
+        Verifying that the data has not been tampered in order to
+        renew the session.
 
         Parameters:
             session_data: dict: Session's data
@@ -362,7 +368,8 @@ class Session_Manager:
 
     def renew(self, session_data: SessionMixin) -> None:
         """
-        Verifying that the IP Addresses are the same for renewing the access to their current data
+        Verifying that the IP Addresses are the same for renewing
+        the access to their current data
 
         Parameters:
             session_data: SessionMixin: Session Data

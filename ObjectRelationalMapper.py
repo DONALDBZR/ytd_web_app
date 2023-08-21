@@ -27,7 +27,7 @@ class Object_Relational_Mapper(Database_Handler):
     def setQuery(self, query: str) -> None:
         self.__query = query
 
-    def get_table_records(self, parameters: dict | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", filtered: bool = False, is_sorted: bool = False, sort_condition: str = "") -> list:
+    def get_table_records(self, parameters: dict | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", is_sorted: bool = False, sort_condition: str = "") -> list:
         """
         Retrieving data from the database.  (SELECT)
 
@@ -36,7 +36,6 @@ class Object_Relational_Mapper(Database_Handler):
             table_name:         string:         The name of the table.
             column_names:       string:         The name of the columns.
             join_condition      string:         Joining table condition.
-            filtered            boolean:        The condition to filter the result set.
             filter_condition    string:         Items to be filtered with.
             is_sorted           boolean:        The condition to sort the result set.
             sort_condition      string:         The items to be sorted.
@@ -44,13 +43,11 @@ class Object_Relational_Mapper(Database_Handler):
         Returns:
             array: The list of data retrieved.
         """
-        query = f"SELECT {column_names} FROM {table_name}{join_condition}{filtered}{filter_condition}{is_sorted}{sort_condition}"
+        query = f"SELECT {column_names} FROM {table_name}{join_condition}{filter_condition}{is_sorted}{sort_condition}"
         query = f"SELECT {column_names} FROM {table_name}"
         self.setQuery(query)
         self._get_join(join_condition)
-        if filtered == True:
-            query = f"{self.getQuery()} WHERE {filter_condition}"
-            self.setQuery(query)
+        self._get_filter(filter_condition)
         if is_sorted == True:
             query = f"{self.getQuery()} ORDER BY {sort_condition}"
             self.setQuery(query)
@@ -72,4 +69,19 @@ class Object_Relational_Mapper(Database_Handler):
             query = self.getQuery()
         else:
             query = f"{self.getQuery()} JOIN {condition}"
+        self.setQuery(query)
+
+    def _get_filter(self, condition: str):
+        """
+        Bulding the query needed for retrieving specific data.
+
+        Parameters:
+            condition:  string: The WHERE statement that will be used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} WHERE {condition}"
         self.setQuery(query)

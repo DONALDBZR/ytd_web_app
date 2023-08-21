@@ -139,6 +139,7 @@ class Object_Relational_Mapper(Database_Handler):
         Returns: void
         """
         query = f"INSERT INTO {table}({columns}) VALUES ({values})"
+        self.setQuery(query)
         self.__handle_parameters(parameters)
         self.query(self.getQuery(), self.getParameters())
         self.execute()

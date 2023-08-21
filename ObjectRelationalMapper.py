@@ -162,11 +162,19 @@ class Object_Relational_Mapper(Database_Handler):
         self.query(self.getQuery(), self.getParameters())
         self.execute()
 
-    def delete_records(self) -> None:
+    def delete_records(self, table: str, parameters: list | None, condition: str = "") -> None:
         """
         Deleting data from the database.
+
+        Parameters:
+            table:      string: Table
+            parameters: array:  Data to be used for data manipulation.
+            condition:  string: Specification
+
+        Returns: void
         """
         query = f"DELETE FROM {table}"
         self.setQuery(query)
+        self._get_filter(condition, parameters)
         self.query(self.getQuery(), self.getParameters())
         self.execute()

@@ -58,14 +58,13 @@ class Object_Relational_Mapper(Database_Handler):
         self.execute()
         return self.resultSet()
 
-    def _get_join(self, condition: str, trigger: bool) -> None:
+    def _get_join(self, condition: str) -> None:
         """
         Building the query needed for retrieving data that is in at
         least two tables.
 
         Parameters:
-            condition:  string:     The JOIN statement that is used.
-            trigger:    boolean:    It will state whether it is a joined query or not.
+            condition:  string: The JOIN statement that is used.
 
         Returns: void
         """

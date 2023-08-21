@@ -126,3 +126,15 @@ class Object_Relational_Mapper(Database_Handler):
         else:
             query = f"{self.getQuery()} ORDER BY {condition}"
         self.setQuery(query)
+
+    def post_data(self) -> None:
+        """
+        Creating records to store data into the database server.
+
+        Parameters:
+
+        Returns: void
+        """
+        query = f"INSERT INTO {table}({columns}) VALUES ({values})"
+        self.query(self.getQuery(), self.getParameters())
+        self.execute()

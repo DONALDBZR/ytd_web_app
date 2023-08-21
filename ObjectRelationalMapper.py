@@ -19,13 +19,13 @@ class Object_Relational_Mapper(Database_Handler):
         """
         super().__init__()
 
-    def get_query(self) -> str:
+    def getQuery(self) -> str:
         return self.__query
 
-    def set_query(self, query: str) -> None:
+    def setQuery(self, query: str) -> None:
         self.__query = query
 
-    def get_table_records(self, parameters: dict | None, table_name: str, column_names: str = "*", join_condition: str = "", is_joined: bool = False, filtered: bool = False, filter_condition: str = "", is_sorted: bool = False, sort_condition: str) -> list:
+    def get_table_records(self, parameters: dict | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", is_joined: bool = False, filtered: bool = False, is_sorted: bool = False, sort_condition: str = "") -> list:
         """
         Retrieving data from the database.  (SELECT)
 
@@ -44,6 +44,17 @@ class Object_Relational_Mapper(Database_Handler):
             array: The list of data retrieved.
         """
         query = f"SELECT {column_names} FROM {table_name}{is_joined}{join_condition}{filtered}{filter_condition}{is_sorted}{sort_condition}"
-        super().query(query, parameters)
-        super().execute()
-        return super().resultSet()
+        query = f"SELECT {column_names} FROM {table_name}"
+        self.setQuery(query)
+        if is_joined == True:
+            query = f"{self.getQuery()} JOIN {join_condition}"
+            self.setQuery(query)
+        if filtered == True:
+            query = f"{self.getQuery()} WHERE {filter_condition}"
+            self.setQuery(query)
+        if is_sorted == True:
+            query = f"{self.getQuery()} ORDER BY {sort_condition}"
+            self.setQuery(query)
+        self.query(self.getQuery(), parameters)
+        self.execute()
+        return self.resultSet()

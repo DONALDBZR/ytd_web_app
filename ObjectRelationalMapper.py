@@ -144,15 +144,20 @@ class Object_Relational_Mapper(Database_Handler):
         self.query(self.getQuery(), self.getParameters())
         self.execute()
 
-    def update(self):
+    def update(self, table: str, values: str, parameters: list | None, condition: str = "") -> None:
         """
         Updating a specific table in the database.
 
         Parameters:
+            table:      string: Table
+            values:     string: Columns to be modified and data to be put within
+            condition:  string: Condition for the data to be modified
+            parameters: array:  Data to be used for data manipulation.
 
         Returns: void
         """
         query = f"UPDATE {table} SET {values}"
         self.setQuery(query)
+        self._get_filter(condition, parameters)
         self.query(self.getQuery(), self.getParameters())
         self.execute()

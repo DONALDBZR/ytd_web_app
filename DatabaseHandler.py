@@ -7,7 +7,8 @@ from Environment import Environment
 
 class Database_Handler:
     """
-    The database handler that will communicate with the database server.
+    The database handler that will communicate with the database
+    server.
     """
     __host: str
     """
@@ -32,7 +33,8 @@ class Database_Handler:
     """
     __password: str
     """
-    The password that allows the required user to connect to the database.
+    The password that allows the required user to connect to the
+    database.
 
     Type: string
     visibility: private
@@ -46,7 +48,8 @@ class Database_Handler:
     """
     __statement: "MySQLCursor"
     """
-    The statement to be used to execute all of the requests to the database server
+    The statement to be used to execute all of the requests to
+    the database server
 
     Type: MySQLCursor
     visibility: private
@@ -54,7 +57,8 @@ class Database_Handler:
 
     def __init__(self):
         """
-        Instantiating the class which will try to connect to the database.
+        Instantiating the class which will try to connect to the
+        database.
         """
         self.setHost(Environment.HOST)
         self.setDatabase(Environment.DATABASE)
@@ -104,7 +108,8 @@ class Database_Handler:
 
     def query(self, query: str, parameters: None | tuple):
         """
-        Preparing the SQL query that is going to be handled by the database handler
+        Preparing the SQL query that is going to be handled by the
+        database handler
 
         Returns: Generator[MySQLCursor, None, None] | None
         """
@@ -113,7 +118,8 @@ class Database_Handler:
 
     def execute(self) -> None:
         """
-        Executing the SQL query which will send a command to the database server
+        Executing the SQL query which will send a command to the
+        database server
 
         Returns: None
         """
@@ -121,7 +127,8 @@ class Database_Handler:
 
     def resultSet(self) -> list:
         """
-        Fetching all the data that is requested from the command that was sent to the database server
+        Fetching all the data that is requested from the command that
+        was sent to the database server
 
         Returns: array
         """

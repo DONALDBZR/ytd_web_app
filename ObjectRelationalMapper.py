@@ -43,7 +43,7 @@ class Object_Relational_Mapper(Database_Handler):
 
     def get_table_records(self, parameters: list | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "") -> list:
         """
-        Retrieving data from the database.  (SELECT)
+        Retrieving data from the database.
 
         Parameters:
             parameters:         array|null: The parameters to be passed into the query.
@@ -144,7 +144,7 @@ class Object_Relational_Mapper(Database_Handler):
         self.query(self.getQuery(), self.getParameters())
         self.execute()
 
-    def update(self, table: str, values: str, parameters: list | None, condition: str = "") -> None:
+    def update_data(self, table: str, values: str, parameters: list | None, condition: str = "") -> None:
         """
         Updating a specific table in the database.
 
@@ -159,5 +159,14 @@ class Object_Relational_Mapper(Database_Handler):
         query = f"UPDATE {table} SET {values}"
         self.setQuery(query)
         self._get_filter(condition, parameters)
+        self.query(self.getQuery(), self.getParameters())
+        self.execute()
+
+    def delete_records(self) -> None:
+        """
+        Deleting data from the database.
+        """
+        query = f"DELETE FROM {table}"
+        self.setQuery(query)
         self.query(self.getQuery(), self.getParameters())
         self.execute()

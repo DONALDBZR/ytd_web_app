@@ -99,8 +99,20 @@ class Object_Relational_Mapper(Database_Handler):
             query = self.getQuery()
         else:
             query = f"{self.getQuery()} WHERE {condition}"
-            if type(parameters) is list:
-                self.setParameters(tuple(parameters))
-            else:
-                self.setParameters(None)
+            self.__handle_parameters(parameters)
         self.setQuery(query)
+
+    def __handle_parameters(self, parameters: list | None) -> None:
+        """
+        Building the array to be used as parameters to sanitize the
+        query for more security.
+
+        Parameters:
+            parameters: array|null: The parameters to be used.
+
+        Returns: void
+        """
+        if type(parameters) is list:
+            self.setParameters(tuple(parameters))
+        else:
+            self.setParameters(None)

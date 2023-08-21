@@ -3,11 +3,13 @@ from DatabaseHandler import Database_Handler
 
 class Object_Relational_Mapper(Database_Handler):
     """
-    It is the relational mapper that will be used to simplify the process to entering queries.
+    It is the relational mapper that will be used to simplify
+    the process to entering queries.
     """
     __query: str
     """
-    The query to be used to be sent to the database server to either get, post, update or delete data.
+    The query to be used to be sent to the database server to
+    either get, post, update or delete data.
 
     Type: string
     Visibility: private
@@ -46,9 +48,7 @@ class Object_Relational_Mapper(Database_Handler):
         query = f"SELECT {column_names} FROM {table_name}{is_joined}{join_condition}{filtered}{filter_condition}{is_sorted}{sort_condition}"
         query = f"SELECT {column_names} FROM {table_name}"
         self.setQuery(query)
-        if is_joined == True:
-            query = f"{self.getQuery()} JOIN {join_condition}"
-            self.setQuery(query)
+        self._get_join(join_condition, is_joined)
         if filtered == True:
             query = f"{self.getQuery()} WHERE {filter_condition}"
             self.setQuery(query)
@@ -59,8 +59,19 @@ class Object_Relational_Mapper(Database_Handler):
         self.execute()
         return self.resultSet()
 
-    def _get_join(self, condition: str):
+    def _get_join(self, condition: str, trigger: bool) -> None:
         """
         Building the query needed for retrieving data that is in at
         least two tables.
+
+        Parameters:
+            condition:  string:     The JOIN statement that is used.
+            trigger:    boolean:    It will state whether it is a joined query or not.
+
+        Returns: void
         """
+        if trigger:
+            query = f"{self.getQuery()} JOIN {condition}"
+        else:
+            query = self.getQuery()
+        self.setQuery(query)

@@ -127,7 +127,7 @@ class Object_Relational_Mapper(Database_Handler):
             query = f"{self.getQuery()} ORDER BY {condition}"
         self.setQuery(query)
 
-    def post_data(self, table: str, columns: str, values: str, parameters: list) -> None:
+    def post_data(self, table: str, columns: str, values: str, parameters: list | None) -> None:
         """
         Creating records to store data into the database server.
 
@@ -141,5 +141,18 @@ class Object_Relational_Mapper(Database_Handler):
         query = f"INSERT INTO {table}({columns}) VALUES ({values})"
         self.setQuery(query)
         self.__handle_parameters(parameters)
+        self.query(self.getQuery(), self.getParameters())
+        self.execute()
+
+    def update(self):
+        """
+        Updating a specific table in the database.
+
+        Parameters:
+
+        Returns: void
+        """
+        query = f"UPDATE {table} SET {values}"
+        self.setQuery(query)
         self.query(self.getQuery(), self.getParameters())
         self.execute()

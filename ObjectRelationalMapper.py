@@ -58,3 +58,9 @@ class Object_Relational_Mapper(Database_Handler):
         self.query(self.getQuery(), parameters)
         self.execute()
         return self.resultSet()
+
+    def _get_join(self, condition: str):
+        """
+        Building the query needed for retrieving data that is in at
+        least two tables.
+        """

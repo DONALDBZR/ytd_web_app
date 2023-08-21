@@ -41,7 +41,7 @@ class Object_Relational_Mapper(Database_Handler):
     def setParameters(self, parameters: tuple | None) -> None:
         self.__parameters = parameters
 
-    def get_table_records(self, parameters: list | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", is_sorted: bool = False, sort_condition: str = "") -> list:
+    def get_table_records(self, parameters: list | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "") -> list:
         """
         Retrieving data from the database.  (SELECT)
 
@@ -51,20 +51,15 @@ class Object_Relational_Mapper(Database_Handler):
             column_names:       string:     The name of the columns.
             join_condition      string:     Joining table condition.
             filter_condition    string:     Items to be filtered with.
-            is_sorted           boolean:    The condition to sort the result set.
             sort_condition      string:     The items to be sorted.
 
-        Returns:
-            array: The list of data retrieved.
+        Returns: array
         """
-        query = f"SELECT {column_names} FROM {table_name}{join_condition}{filter_condition}{is_sorted}{sort_condition}"
         query = f"SELECT {column_names} FROM {table_name}"
         self.setQuery(query)
         self._get_join(join_condition)
         self._get_filter(filter_condition, parameters)
-        if is_sorted == True:
-            query = f"{self.getQuery()} ORDER BY {sort_condition}"
-            self.setQuery(query)
+        self._get_sort(sort_condition)
         self.query(self.getQuery(), self.getParameters())
         self.execute()
         return self.resultSet()
@@ -87,7 +82,7 @@ class Object_Relational_Mapper(Database_Handler):
 
     def _get_filter(self, condition: str, parameters: list | None) -> None:
         """
-        Bulding the query needed for retrieving specific data.
+        Building the query needed for retrieving specific data.
 
         Parameters:
             condition:  string:     The WHERE statement that will be used.
@@ -116,3 +111,18 @@ class Object_Relational_Mapper(Database_Handler):
             self.setParameters(tuple(parameters))
         else:
             self.setParameters(None)
+
+    def _get_sort(self, condition: str) -> None:
+        """
+        Building the query needed to be used to sort the result set.
+
+        Parameters:
+            condition:  string: The ORDER BY statement that will be used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} ORDER BY {condition}"
+        self.setQuery(query)

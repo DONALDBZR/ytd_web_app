@@ -3,8 +3,8 @@ from DatabaseHandler import Database_Handler
 
 class Object_Relational_Mapper(Database_Handler):
     """
-    It is the relational mapper that will be used to simplify
-    the process to entering queries.
+    It is the object relational mapper that will be used to
+    simplify the process to entering queries.
     """
     __query: str
     """

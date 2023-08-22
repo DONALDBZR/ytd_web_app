@@ -35,8 +35,15 @@ class Security_Management_System:
     """
     The hash that will be stored in the database.
 
-    Type: str
+    Type: string
     Visibility: Private
+    """
+    __password_hasher: "PasswordHasher"
+    """
+    High level class to hash passwords with sensible defaults.
+
+    Type: Password_Hasher
+    Visibility: private
     """
 
     def __init__(self) -> None:
@@ -71,3 +78,14 @@ class Security_Management_System:
 
     def setHash(self, hash: str) -> None:
         self.__hash = hash
+
+    def getPasswordHasher(self) -> "PasswordHasher":
+        return self.__password_hasher
+
+    def setPasswordHasher(self, password_hasher: "PasswordHasher") -> None:
+        self.__password_hasher = password_hasher
+
+    def hash(self):
+        """
+        It is a one-way encryption function that will generate a hash based on the Argon 2 hashing algorithm.
+        """

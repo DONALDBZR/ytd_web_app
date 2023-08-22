@@ -29,6 +29,7 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
+        self.setApplicationName(Environment.APPLICATION_NAME)
 
     def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
         return self.__Object_Relational_Mapper

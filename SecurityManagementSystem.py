@@ -14,6 +14,20 @@ class Security_Management_System:
     Type: Object_Relational_Mapper
     Visibility: Private
     """
+    __application_name: str
+    """
+    The name of the application.
+
+    Type: string
+    Visibility: Private
+    """
+
+    def __init__(self) -> None:
+        """
+        Instantiating the system which will allow the application to
+        encrypt and decrypt the data that moves around in the
+        application.
+        """
 
     def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
         return self.__Object_Relational_Mapper

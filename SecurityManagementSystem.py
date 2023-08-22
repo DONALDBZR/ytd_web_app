@@ -88,7 +88,8 @@ class Security_Management_System:
 
     def hash(self):
         """
-        It is a one-way encryption function that will generate a hash based on the Argon 2 hashing algorithm.
+        It is a one-way encryption function that will generate a
+        hash based on the Argon 2 hashing algorithm.
         """
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(

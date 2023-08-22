@@ -1,6 +1,7 @@
 from ObjectRelationalMapper import Object_Relational_Mapper
 from Environment import Environment
 from time import time
+from argon2 import PasswordHasher
 
 
 class Security_Management_System:
@@ -30,6 +31,13 @@ class Security_Management_System:
     Type: int
     Visibility: Private
     """
+    __hash: str
+    """
+    The hash that will be stored in the database.
+
+    Type: str
+    Visibility: Private
+    """
 
     def __init__(self) -> None:
         """
@@ -57,3 +65,9 @@ class Security_Management_System:
 
     def setDatestamp(self, datestamp: int) -> None:
         self.__datestamp = datestamp
+
+    def getHash(self) -> str:
+        return self.__hash
+
+    def setHash(self, hash: str) -> None:
+        self.__hash = hash

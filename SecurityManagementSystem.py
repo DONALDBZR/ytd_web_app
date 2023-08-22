@@ -22,6 +22,13 @@ class Security_Management_System:
     Type: string
     Visibility: Private
     """
+    __datestamp: int
+    """
+    The date retrieved from UNIX time.
+
+    Type: int
+    Visibility: Private
+    """
 
     def __init__(self) -> None:
         """
@@ -42,3 +49,9 @@ class Security_Management_System:
 
     def setApplicationName(self, application_name: str) -> None:
         self.__application_name = application_name
+
+    def getDatestamp(self) -> int:
+        return self.__datestamp
+
+    def setDatestamp(self, datestamp: int) -> None:
+        self.__datestamp = datestamp

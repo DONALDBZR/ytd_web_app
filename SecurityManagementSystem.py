@@ -93,6 +93,12 @@ class Security_Management_System:
     def setPasswordHasher(self, password_hasher: "PasswordHasher") -> None:
         self.__password_hasher = password_hasher
 
+    def getDateCreated(self) -> str | int:
+        return self.__date_created
+
+    def setDateCreated(self, date_created: str | int) -> None:
+        self.__date_created = date_created
+
     def hash(self):
         """
         It is a one-way encryption function that will generate a

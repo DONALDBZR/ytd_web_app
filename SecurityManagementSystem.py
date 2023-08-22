@@ -45,6 +45,13 @@ class Security_Management_System:
     Type: Password_Hasher
     Visibility: private
     """
+    __date_created: str | int
+    """
+    The date at which the key has been created.
+
+    Type: string | int
+    Visibility: private
+    """
 
     def __init__(self) -> None:
         """

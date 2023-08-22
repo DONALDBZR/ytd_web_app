@@ -1,5 +1,6 @@
 from ObjectRelationalMapper import Object_Relational_Mapper
 from Environment import Environment
+from time import time
 
 
 class Security_Management_System:
@@ -37,6 +38,7 @@ class Security_Management_System:
         application.
         """
         self.setApplicationName(Environment.APPLICATION_NAME)
+        self.setDatestamp(int(time() / 86400))
 
     def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
         return self.__Object_Relational_Mapper

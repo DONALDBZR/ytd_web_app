@@ -101,10 +101,12 @@ class Security_Management_System:
     def setDateCreated(self, date_created: str | int) -> None:
         self.__date_created = date_created
 
-    def hash(self):
+    def hash(self) -> None:
         """
         It is a one-way encryption function that will generate a
         hash based on the Argon 2 hashing algorithm.
+
+        Returns: void
         """
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(

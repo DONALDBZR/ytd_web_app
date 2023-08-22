@@ -1,4 +1,5 @@
 from ObjectRelationalMapper import Object_Relational_Mapper
+from Environment import Environment
 
 
 class Security_Management_System:
@@ -34,3 +35,9 @@ class Security_Management_System:
 
     def setObjectRelationalMapper(self, object_relational_mapper: "Object_Relational_Mapper") -> None:
         self.__Object_Relational_Mapper = object_relational_mapper
+
+    def getApplicationName(self) -> str:
+        return self.__application_name
+
+    def setApplicationName(self, application_name: str) -> None:
+        self.__application_name = application_name

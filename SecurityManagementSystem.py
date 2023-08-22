@@ -52,6 +52,7 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
+        self.setObjectRelationalMapper(Object_Relational_Mapper())
         self.setApplicationName(Environment.APPLICATION_NAME)
         self.setDatestamp(int(time() / 86400))
 
@@ -89,3 +90,9 @@ class Security_Management_System:
         """
         It is a one-way encryption function that will generate a hash based on the Argon 2 hashing algorithm.
         """
+        self.setPasswordHasher(PasswordHasher())
+        self.setApplicationName(
+            self.getApplicationName() + str(self.getDatestamp()))
+        self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
+        self.getObjectRelationalMapper().post_data(
+            "Session", "hash", "%s", [self.getHash()])

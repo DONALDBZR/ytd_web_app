@@ -7,6 +7,7 @@ import json
 from Environment import Environment
 from pytube import YouTube
 from SessionManagementSystem import Session_Manager
+from ObjectRelationalMapper import Object_Relational_Mapper
 
 
 class Media:
@@ -441,8 +442,11 @@ class YouTube_Downloader:
 
 # Instantiating the application
 Application = Flask(__name__)
+# Instantiating the object relational mapper
+ObjectRelationalMapper = Object_Relational_Mapper()
 # Configuring the application for using sessions
-Application.secret_key = Environment.SESSION_KEY
+Application.secret_key = ObjectRelationalMapper.get_table_records(
+    None, "Session", sort_condition="date_created DESC")[1]
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 

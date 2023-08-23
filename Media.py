@@ -45,7 +45,8 @@ class Media:
     """
     __value: str
     """
-    The value of the required media which have to correspond to the name of the platform from which the media comes from.
+    The value of the required media which have to correspond to
+    the name of the platform from which the media comes from.
 
     Type: string | null
     Visibility: private
@@ -60,17 +61,18 @@ class Media:
 
     def __init__(self, search: str, referer: str | None, value: str) -> None:
         """
-        Instantiating the media's manager which will interact with the media's dataset and do the required processing.
+        Instantiating the media's manager which will interact with
+        the media's dataset and do the required processing.
 
         Parameters:
             search: string: The uniform resource locator to be searched.
             referer: string | null: The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the required media.
             value: string: The value of the required media which have to correspond to the name of the platform from which the media comes from.
         """
-        self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler().query(
+        self.setObjectRelationalMapper(Object_Relational_Mapper())
+        self.getObjectRelationalMapper().query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
-        self.getDatabaseHandler().execute()
+        self.getObjectRelationalMapper().execute()
         self.setSearch(search)
         self.setReferer(referer)
         self.setValue(value)

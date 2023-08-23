@@ -1,6 +1,6 @@
 # Importing the requirements for the application
 from flask import Flask, Response, render_template, jsonify, request, session
-from datetime import datetime
+from datetime import date
 import time
 import os
 import json
@@ -445,8 +445,8 @@ Application = Flask(__name__)
 # Instantiating the object relational mapper
 ObjectRelationalMapper = Object_Relational_Mapper()
 # Configuring the application for using sessions
-Application.secret_key = ObjectRelationalMapper.get_table_records(
-    None, "Session", sort_condition="date_created DESC")[1]
+Application.secret_key = ObjectRelationalMapper.get_table_records(parameters=[date.today(
+)], table_name="Session", filter_condition="date_created = %s", sort_condition="date_created DESC")[1]
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 

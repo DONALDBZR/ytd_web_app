@@ -9,7 +9,7 @@ class Media:
     Type: string
     Visibility: private
     """
-    _YouTubeDownloader: None
+    _YouTubeDownloader: "YouTube_Downloader"
     """
     It will handle every operations related to YouTube
 

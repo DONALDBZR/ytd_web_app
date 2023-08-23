@@ -2,6 +2,7 @@ from ObjectRelationalMapper import Object_Relational_Mapper
 from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
+from datetime import datetime
 
 
 class Security_Management_System:
@@ -112,5 +113,7 @@ class Security_Management_System:
         self.setApplicationName(
             self.getApplicationName() + str(self.getDatestamp()))
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
+        self.setDateCreated(datetime.utcfromtimestamp(
+            self.getDatestamp()).strftime("%Y - %m - %d"))
         self.getObjectRelationalMapper().post_data(
-            "Session", "hash", "%s", [self.getHash()])
+            "Session", "hash, date_created", "%s, %s", [self.getHash(), self.getDateCreated()])

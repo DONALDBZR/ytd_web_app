@@ -168,9 +168,8 @@ class Media:
 
         Returns: void
         """
-        self.getDatabaseHandler().query(
-            "INSERT INTO `Media` (`value`) VALUES (%s)", (self.getValue(),))
-        self.getDatabaseHandler().execute()
+        self.getObjectRelationalMapper().post_data(
+            "Media", "value", "%s", [self.getValue()])
 
     def handleYouTube(self) -> dict:
         """

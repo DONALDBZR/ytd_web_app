@@ -1,4 +1,5 @@
 from ObjectRelationalMapper import Object_Relational_Mapper
+from datetime import datetime
 
 
 class Media:
@@ -115,7 +116,9 @@ class Media:
 
     def verifyPlatform(self) -> dict:
         """
-        Verifying the uniform resource locator in order to switch to the correct system as well as select and return the correct response.
+        Verifying the uniform resource locator in order to switch to
+        the correct system as well as select and return the correct
+        response.
 
         Returns: object
         """
@@ -141,9 +144,8 @@ class Media:
 
         Returns: object
         """
-        self.getDatabaseHandler().query(
-            "SELECT * FROM `Media` WHERE value = %s", (self.getValue(),))
-        media = self.getDatabaseHandler().resultSet()
+        media = self.getObjectRelationalMapper().get_table_records(
+            [self.getValue()], "Media", filter_condition="value = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}
         if len(media) == 0:

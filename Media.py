@@ -1,3 +1,6 @@
+from ObjectRelationalMapper import Object_Relational_Mapper
+
+
 class Media:
     """
     It allows the application to manage the media.
@@ -18,16 +21,19 @@ class Media:
     """
     __referer: str | None
     """
-    The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the required media.
+    The http referrer which is the uniform resource locator that
+    is needed to be able to allow the user to download the
+    required media.
 
     Type: string|null
     Visibility: private
     """
-    __database_handler: None
+    __object_relational_mapper: "Object_Relational_Mapper"
     """
-    The database handler that will communicate with the database server.
+    It is the object relational mapper that will be used to
+    simplify the process to entering queries.
 
-    Type: Database_Handler
+    Type: Object_Relational_Mapper
     Visibility: private
     """
     __identifier: int
@@ -81,11 +87,11 @@ class Media:
     def setReferer(self, referer: str | None) -> None:
         self.__referer = referer
 
-    def getDatabaseHandler(self):
-        return self.__database_handler
+    def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
+        return self.__object_relational_mapper
 
-    def setDatabaseHandler(self, database_handler) -> None:
-        self.__database_handler = database_handler
+    def setObjectRelationalMapper(self, object_relational_mapper: "Object_Relational_Mapper") -> None:
+        self.__object_relational_mapper = object_relational_mapper
 
     def getIdentifier(self) -> int:
         return self.__identifier

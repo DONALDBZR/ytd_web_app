@@ -161,10 +161,11 @@ class Session_Manager:
         Returns: void
         """
         self.getSession().clear()
-        self.setIpAddress(str(request.environ.get('REMOTE_ADDR')))
-        self.setHttpClientIpAddress(str(request.environ.get('HTTP_CLIENT_IP')))
+        self.setIpAddress(str(self.getRequest().environ.get('REMOTE_ADDR')))
+        self.setHttpClientIpAddress(
+            str(self.getRequest().environ.get('HTTP_CLIENT_IP')))
         self.setProxyIpAddress(
-            str(request.environ.get('HTTP_X_FORWARDED_FOR')))
+            str(self.getRequest().environ.get('HTTP_X_FORWARDED_FOR')))
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.setColorScheme("light")
         data = {

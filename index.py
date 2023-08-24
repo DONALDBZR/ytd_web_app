@@ -124,45 +124,45 @@ def searchPageWithMedia(identifier: str):
     return render_template('page.html')
 
 
-@Application.route('/Media')
-def getMedia() -> Response:
-    """
-    Sending the data for the media that has been searched in the form of JSON
+# @Application.route('/Media')
+# def getMedia():
+#     """
+#     Sending the data for the media that has been searched in the
+#     form of JSON.
 
-    Returns: Response
-    """
-    SessionManager = Session_Manager()
-    media_data = {
-        "Media": {
-            "YouTube": {
-                "uniform_resource_locator": session["Media"]["YouTube"]["uniform_resource_locator"],
-                "title": session["Media"]["YouTube"]["title"],
-                "author": session["Media"]["YouTube"]["author"],
-                "author_channel": session["Media"]["YouTube"]["author_channel"],
-                "views": session["Media"]["YouTube"]["views"],
-                "published_at": session["Media"]["YouTube"]["published_at"],
-                "thumbnail": session["Media"]["YouTube"]["thumbnail"],
-                "duration": session["Media"]["YouTube"]["duration"]
-            }
-        }
-    }
-    headers = {
-        "Content-Type": "application/json",
-    }
-    return jsonify(media_data), 200, headers
+#     Returns: string
+#     """
+#     media_data = {
+#         "Media": {
+#             "YouTube": {
+#                 "uniform_resource_locator": session["Media"]["YouTube"]["uniform_resource_locator"],
+#                 "title": session["Media"]["YouTube"]["title"],
+#                 "author": session["Media"]["YouTube"]["author"],
+#                 "author_channel": session["Media"]["YouTube"]["author_channel"],
+#                 "views": session["Media"]["YouTube"]["views"],
+#                 "published_at": session["Media"]["YouTube"]["published_at"],
+#                 "thumbnail": session["Media"]["YouTube"]["thumbnail"],
+#                 "duration": session["Media"]["YouTube"]["duration"]
+#             }
+#         }
+#     }
+#     headers = {
+#         "Content-Type": "application/json",
+#     }
+#     return jsonify(media_data), 200, headers
 
 
-@Application.route('/Media/Download')
-def retrieveMedia():
-    """
-    Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
-    """
-    SessionManager = Session_Manager()
-    referer = request.referrer
-    data = request.json
-    if 'Search' in referer:
-        media = Media(data["Media"]["uniform_resource_locator"],
-                      referer, data["media"]["platform"])
-        headers = {
-            "Content-Type": "application/json",
-        }
+# @Application.route('/Media/Download')
+# def retrieveMedia():
+#     """
+#     Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
+#     """
+#     SessionManager = Session_Manager()
+#     referer = request.referrer
+#     data = request.json
+#     if 'Search' in referer:
+#         media = Media(data["Media"]["uniform_resource_locator"],
+#                       referer, data["media"]["platform"])
+#         headers = {
+#             "Content-Type": "application/json",
+#         }

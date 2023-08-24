@@ -1,5 +1,6 @@
 from ObjectRelationalMapper import Object_Relational_Mapper
 from datetime import datetime
+from flask import request
 
 
 class Media:
@@ -173,7 +174,8 @@ class Media:
 
     def handleYouTube(self) -> dict:
         """
-        Handling the data throughout the You Tube Downloader which will depend on the referer.
+        Handling the data throughout the You Tube Downloader which
+        will depend on the referer.
 
         Returns: object
         """
@@ -182,8 +184,11 @@ class Media:
         response = {}
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
-            session["Media"] = {}
-            session["Media"]["YouTube"] = self._YouTubeDownloader.search()
+            media = {
+                "YouTube": self._YouTubeDownloader.search()
+            }
+            # session["Media"] = {}
+            # session["Media"]["YouTube"] = self._YouTubeDownloader.search()
             filename = "./Cache/Session/Users/" + \
                 session["Client"]["ip_address"] + ".json"
             file = open(filename, "w")

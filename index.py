@@ -31,16 +31,21 @@ simplify the process to entering queries.
 
 Type: Object_Relational_Mapper
 """
+SessionManager = Session_Manager(request)
+"""
+It will be a major component that will assure the security
+of the data that will be stored across the application.
 
+Type: Session_Manager
+"""
 """
 SELECT *
 FROM `Session`
 WHERE date_created = :date_created
 ORDER BY date_created DESC;
 """
-SessionManager = Session_Manager()
 Application.secret_key = ObjectRelationalMapper.get_table_records(parameters=[date.today(
-)], table_name="Session", filter_condition="date_created = %s", sort_condition="date_created DESC")[1]
+)], table_name="Session", filter_condition="date_created = %s", sort_condition="identifier ASC")[1]
 Application.config["SESSION_TYPE"] = 'filesystem'
 """
 It allows the application to manage the session.

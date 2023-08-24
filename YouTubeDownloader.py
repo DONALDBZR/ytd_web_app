@@ -243,9 +243,9 @@ class YouTube_Downloader:
 
         Returns: void
         """
-        self.getObjectRelationalMapper().post_data()
-        data = (self.getIdentifier(), self.getLength(), self.getPublishedAt(
-        ), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
-        self.getDatabaseHandler().query(
-            "INSERT INTO `YouTube` (identifier, `length`, published_at, author, title, `Media`) VALUES (%s, %s, %s, %s, %s, %s)", data)
-        self.getDatabaseHandler().execute()
+        """
+        INSERT INTO `YouTube` (identifier, `length`, published_at, author, title, `Media`)
+        VALUES (identifier, `length`, published_at, author, title, `Media`);
+        """
+        self.getObjectRelationalMapper().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s",
+                                                   [self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()])

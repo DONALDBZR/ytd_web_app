@@ -173,6 +173,11 @@ class Media:
 
         Returns: object
         """
+        """
+        SELECT *
+        FROM Media
+        WHERE value = :value
+        """
         media = self.getObjectRelationalMapper().get_table_records(
             [self.getValue()], "Media", filter_condition="value = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
@@ -196,6 +201,10 @@ class Media:
         Creating a record for the media with its data.
 
         Returns: void
+        """
+        """
+        INSERT INTO `Media` (value)
+        VALUES (:value);
         """
         self.getObjectRelationalMapper().post_data(
             "Media", "value", "%s", [self.getValue()])

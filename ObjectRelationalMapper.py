@@ -41,7 +41,7 @@ class Object_Relational_Mapper(Database_Handler):
     def setParameters(self, parameters: tuple | None) -> None:
         self.__parameters = parameters
 
-    def get_table_records(self, parameters: list | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "") -> list:
+    def get_table_records(self, parameters: list | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: str = "") -> list:
         """
         Retrieving data from the database.
 
@@ -52,6 +52,7 @@ class Object_Relational_Mapper(Database_Handler):
             join_condition      string:     Joining table condition.
             filter_condition    string:     Items to be filtered with.
             sort_condition      string:     The items to be sorted.
+            limit_condition     string:     The amount of items to be returned
 
         Returns: array
         """
@@ -60,6 +61,7 @@ class Object_Relational_Mapper(Database_Handler):
         self._get_join(join_condition)
         self._get_filter(filter_condition, parameters)
         self._get_sort(sort_condition)
+        self._get_limit(limit_condition)
         self.query(self.getQuery(), self.getParameters())
         self.execute()
         return self.resultSet()

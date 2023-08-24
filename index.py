@@ -89,7 +89,7 @@ def setSession() -> str:
 def searchPage() -> str:
     """
     Rendering the template needed which will import the
-    web-worker
+    web-worker.
 
     Returns: string
     """
@@ -97,22 +97,26 @@ def searchPage() -> str:
 
 
 @Application.route("/Media/Search", methods=["POST"])
-def search() -> (str | None):
+def search() -> str:
     """
-    Searching for the media by the uniform resouce locator that has been retrieved from the client.
+    Searching for the media by the uniform resouce locator that
+    has been retrieved from the client.
 
-    Returns: Response
+    Returns: string
     """
     data = request.json
     media = Media(data["Media"]["search"], None, data["Media"]["platform"])
-    return_data = media.verifyPlatform()
-    return return_data
+    return json.dumps(media.verifyPlatform(), indent=4)
 
 
 @Application.route('/Search/<string:identifier>')
-def searchPageWithMedia(identifier: str) -> (str | None):
+def searchPageWithMedia(identifier: str):
     """
-    Rendering the template needed which will import the web-worker
+    Rendering the template needed which will import the
+    web-worker.
+
+    Parameters:
+        identifier: string: Identifier of the media conetent to be searched.
 
     Returns: (string | void)
     """

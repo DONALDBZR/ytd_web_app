@@ -78,6 +78,7 @@ class Media:
             referer: string | null: The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the required media.
             value: string: The value of the required media which have to correspond to the name of the platform from which the media comes from.
         """
+        self.setDirectory("./Cache/Media/")
         self.setObjectRelationalMapper(Object_Relational_Mapper())
         self.getObjectRelationalMapper().query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)

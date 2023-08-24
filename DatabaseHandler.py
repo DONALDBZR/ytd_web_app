@@ -109,11 +109,12 @@ class Database_Handler:
     def query(self, query: str, parameters: None | tuple):
         """
         Preparing the SQL query that is going to be handled by the
-        database handler
+        database handler.
 
         Returns: Generator[MySQLCursor, None, None] | None
         """
         self.setStatement(self.getDatabaseHandler().cursor(prepared=True))
+        print(f"\nQuery: {query}\n")
         self.getStatement().execute(query, parameters)
 
     def execute(self) -> None:

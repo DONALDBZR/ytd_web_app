@@ -215,7 +215,7 @@ class Session_Manager:
 
         Returns: void
         """
-        self.setIpAddress(str(request.environ.get('REMOTE_ADDR')))
+        self.setIpAddress(str(self.getRequest().environ.get('REMOTE_ADDR')))
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.setColorScheme(data["Client"]["color_scheme"])
         file_name = self.getDirectory() + "/" + self.getIpAddress() + ".json"

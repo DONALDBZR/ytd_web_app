@@ -192,7 +192,7 @@ class Session_Manager:
         """
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
-        self.setIpAddress(str(request.environ.get('REMOTE_ADDR')))
+        self.setIpAddress(str(self.getRequest().environ.get('REMOTE_ADDR')))
         # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
             self.handleSessionData(self.sessionsLoader(self.getSessionFiles()))

@@ -214,6 +214,11 @@ class YouTube_Downloader:
 
         Returns: object
         """
+        """
+        SELECT *
+        FROM `YouTube`
+        WHERE identifier = :identifier;
+        """
         media = self.getObjectRelationalMapper().get_table_records(
             [self.getIdentifier()], "YouTube", filter_condition="identifier = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
@@ -238,6 +243,7 @@ class YouTube_Downloader:
 
         Returns: void
         """
+        self.getObjectRelationalMapper().post_data()
         data = (self.getIdentifier(), self.getLength(), self.getPublishedAt(
         ), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
         self.getDatabaseHandler().query(

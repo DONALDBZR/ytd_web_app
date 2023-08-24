@@ -180,3 +180,19 @@ class Object_Relational_Mapper(Database_Handler):
         self._get_filter(condition, parameters)
         self.query(self.getQuery(), self.getParameters())
         self.execute()
+
+    def _get_limit(self, condition: str) -> None:
+        """
+        Building the query needed to be used to limit the amount of
+        data from the result set.
+
+        Parameters:
+            condition:  string: The ORDER BY statement that will be used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} LIMIT {condition}"
+        self.setQuery(query)

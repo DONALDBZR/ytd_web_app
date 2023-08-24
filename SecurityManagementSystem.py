@@ -65,6 +65,7 @@ class Security_Management_System:
         self.setDatestamp(int(time()))
         self.getObjectRelationalMapper().query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
         self.getObjectRelationalMapper().execute()
+        self.hash()
 
     def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
         return self.__Object_Relational_Mapper

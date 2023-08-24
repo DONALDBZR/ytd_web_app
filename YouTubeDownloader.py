@@ -1,6 +1,7 @@
 from pytube import YouTube
 from ObjectRelationalMapper import Object_Relational_Mapper
 from datetime import datetime
+from time import time
 
 
 class YouTube_Downloader:
@@ -49,7 +50,7 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
-    __published_at: str
+    __published_at: str | datetime | None
     """
     The date at which the video has been published.
 
@@ -106,10 +107,10 @@ class YouTube_Downloader:
     def setUniformResourceLocator(self, uniform_resource_locator: str) -> None:
         self.__uniform_resource_locator = uniform_resource_locator
 
-    def getVideo(self) -> YouTube:
+    def getVideo(self) -> "YouTube":
         return self.__video
 
-    def setVideo(self, video: YouTube) -> None:
+    def setVideo(self, video: "YouTube") -> None:
         self.__video = video
 
     def getTitle(self) -> str:
@@ -136,10 +137,10 @@ class YouTube_Downloader:
     def setDuration(self, duration: str) -> None:
         self.__duration = duration
 
-    def getPublishedAt(self) -> str:
+    def getPublishedAt(self) -> str | datetime | None:
         return self.__published_at
 
-    def setPublishedAt(self, published_at: datetime) -> None:
+    def setPublishedAt(self, published_at: str | datetime | None) -> None:
         self.__published_at = str(published_at)
 
     def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":

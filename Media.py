@@ -60,6 +60,13 @@ class Media:
     Type: string
     Visibility: private
     """
+    __directory: str
+    """
+    The directory of the JSON files
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, search: str, referer: str | None, value: str) -> None:
         """
@@ -114,6 +121,12 @@ class Media:
 
     def setTimestamp(self, timestamp: str) -> None:
         self.__timestamp = timestamp
+
+    def getDirectory(self) -> str:
+        return self.__directory
+
+    def setDirectory(self, directory: str) -> None:
+        self.__directory = directory
 
     def verifyPlatform(self) -> dict:
         """

@@ -2,8 +2,6 @@
 from flask import Flask, Response, render_template, jsonify, request, session
 from datetime import date
 import time
-import os
-import json
 from pytube import YouTube
 from SessionManagementSystem import Session_Manager
 from ObjectRelationalMapper import Object_Relational_Mapper

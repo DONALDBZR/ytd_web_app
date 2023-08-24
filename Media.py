@@ -1,6 +1,7 @@
 from ObjectRelationalMapper import Object_Relational_Mapper
 from datetime import datetime
 from flask import request
+import json
 
 
 class Media:
@@ -209,17 +210,15 @@ class Media:
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(), self.getIdentifier())
         response = {}
+        self.setIpAddress(str(request.environ.get("REMOTE_ADDRESS")))
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
             media = {
                 "YouTube": self._YouTubeDownloader.search()
             }
-            # session["Media"] = {}
-            # session["Media"]["YouTube"] = self._YouTubeDownloader.search()
-            filename = "./Cache/Session/Users/" + \
-                session["Client"]["ip_address"] + ".json"
+            filename = self.getDirectory() + self.getIpAddress() + ".json"
             file = open(filename, "w")
-            file.write(json.dumps(session, indent=4))
+            file.write(json.dumps(media, indent=4))
             file.close()
             response = {
                 "status": 200,

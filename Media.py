@@ -67,6 +67,13 @@ class Media:
     Type: string
     Visibility: private
     """
+    __ip_address: str
+    """
+    The IP Address of the user
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, search: str, referer: str | None, value: str) -> None:
         """
@@ -128,6 +135,12 @@ class Media:
 
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
+
+    def getIpAddress(self) -> str:
+        return self.__ip_address
+
+    def setIpAddress(self, ip_address: str) -> None:
+        self.__ip_address = ip_address
 
     def verifyPlatform(self) -> dict:
         """

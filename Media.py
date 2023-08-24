@@ -2,6 +2,7 @@ from ObjectRelationalMapper import Object_Relational_Mapper
 from datetime import datetime
 from flask import request
 import json
+from YouTubeDownloader import YouTube_Downloader
 
 
 class Media:
@@ -17,7 +18,7 @@ class Media:
     """
     _YouTubeDownloader: "YouTube_Downloader"
     """
-    It will handle every operations related to YouTube
+    It will handle every operations related to YouTube.
 
     Type: YouTube_Downloader
     Visibility: protected

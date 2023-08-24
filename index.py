@@ -1,11 +1,11 @@
 # Importing the requirements for the application
-from flask import Flask, Response, render_template, request, session
+from flask import Flask, render_template, request
 from datetime import date
 from SessionManagementSystem import Session_Manager
 from ObjectRelationalMapper import Object_Relational_Mapper
 from Media import Media
 import json
-
+from SecurityManagementSystem import Security_Management_System
 
 Application = Flask(__name__)
 """
@@ -17,6 +17,13 @@ template configuration and much more.
 
 Type: Flask
 """
+SecurityManagementSystem = Security_Management_System()
+"""
+It will be a major component that will assure the security
+of the data that will be stored across the application.
+
+Type: Security_Management_System
+"""
 ObjectRelationalMapper = Object_Relational_Mapper()
 """
 It is the object relational mapper that will be used to
@@ -24,16 +31,17 @@ simplify the process to entering queries.
 
 Type: Object_Relational_Mapper
 """
+
 """
 SELECT *
 FROM `Session`
 WHERE date_created = :date_created
 ORDER BY date_created DESC;
 """
+SessionManager = Session_Manager()
 Application.secret_key = ObjectRelationalMapper.get_table_records(parameters=[date.today(
 )], table_name="Session", filter_condition="date_created = %s", sort_condition="date_created DESC")[1]
 Application.config["SESSION_TYPE"] = 'filesystem'
-SessionManager = Session_Manager()
 """
 It allows the application to manage the session.
 

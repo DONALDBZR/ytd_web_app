@@ -120,8 +120,8 @@ def searchPageWithMedia(identifier: str):
 
     Returns: (string | void)
     """
-    if 'identifier' in session["Media"]["YouTube"] and identifier == session["Media"]["YouTube"]["identifier"]:
-        return render_template('page.html')
+    # if 'identifier' in session["Media"]["YouTube"] and identifier == session["Media"]["YouTube"]["identifier"]:
+    return render_template('page.html')
 
 
 @Application.route('/Media')

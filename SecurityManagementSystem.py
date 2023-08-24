@@ -115,5 +115,9 @@ class Security_Management_System:
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
         self.setDateCreated(datetime.utcfromtimestamp(
             self.getDatestamp()).strftime("%Y - %m - %d"))
+        """
+        INSERT INTO `SESSION` (hash, date_created)
+        VALUES (:hash, :date_created);
+        """
         self.getObjectRelationalMapper().post_data(
             "Session", "hash, date_created", "%s, %s", [self.getHash(), self.getDateCreated()])

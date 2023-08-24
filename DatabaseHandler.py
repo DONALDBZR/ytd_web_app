@@ -114,7 +114,6 @@ class Database_Handler:
         Returns: Generator[MySQLCursor, None, None] | None
         """
         self.setStatement(self.getDatabaseHandler().cursor(prepared=True))
-        print(f"\nQuery: {query}\n")
         self.getStatement().execute(query, parameters)
 
     def execute(self) -> None:

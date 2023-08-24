@@ -115,7 +115,7 @@ class Security_Management_System:
             self.getApplicationName() + str(self.getDatestamp()))
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
         self.setDateCreated(datetime.utcfromtimestamp(
-            self.getDatestamp()).strftime("%Y - %m - %d"))
+            self.getDatestamp()).strftime("%Y-%m-%d"))
         """
         INSERT INTO `SESSION` (hash, date_created)
         VALUES (:hash, :date_created);

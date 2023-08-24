@@ -1,5 +1,5 @@
 # Importing the requirements
-from flask import session, request
+from flask import session, request, Request
 from datetime import datetime, timedelta
 import os
 import json
@@ -73,13 +73,24 @@ class Session_Manager:
     Type: SessionMixin
     Visibility: private
     """
+    __request: "Request"
+    """
+    The request from the application.
 
-    def __init__(self) -> None:
+    Type: Request
+    Visibility: private
+    """
+
+    def __init__(self, request: "Request") -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users
+
+        Parameters:
+            request: Request: The request from the application.
         """
         self.setDirectory("./Cache/Session/Users/")
+        self.setRequest(request)
         self.setSession(session)
         self.verifySession()
 
@@ -131,11 +142,17 @@ class Session_Manager:
     def setLength(self, length: int) -> None:
         self.__length = length
 
-    def getSession(self) -> SessionMixin:
+    def getSession(self) -> "SessionMixin":
         return self.__session
 
-    def setSession(self, session: SessionMixin) -> None:
+    def setSession(self, session: "SessionMixin") -> None:
         self.__session = session
+
+    def getRequest(self) -> "Request":
+        return self.__request
+
+    def setRequest(self, request: "Request") -> None:
+        self.__request = request
 
     def createSession(self) -> None:
         """

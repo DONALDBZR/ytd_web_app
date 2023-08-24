@@ -1,3 +1,8 @@
+from pytube import YouTube
+from ObjectRelationalMapper import Object_Relational_Mapper
+from datetime import datetime
+
+
 class YouTube_Downloader:
     """
     It will handle every operations related to YouTube.
@@ -9,53 +14,54 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
-    __video: YouTube
+    __video: "YouTube"
     """
-    The video from YouTube
+    Core developer interface for pytube.
 
     Type: YouTube
     Visibility: private
     """
     __title: str
     """
-    The title of the video
+    The title of the video.
 
     Type: string
     Visibility: private
     """
     __identifier: str
     """
-    The identifier of the video
+    The identifier of the video.
 
     Type: string
     Visibility: private
     """
     __length: int
     """
-    The length of the video in seconds
+    The length of the video in seconds.
 
     Type: int
     Visibility: private
     """
     __duration: str
     """
-    The duration of the video in the format of HH:mm:ss
+    The duration of the video in the format of HH:mm:ss.
 
     Type: string
     Visibility: private
     """
     __published_at: str
     """
-    The date at which the video has been published
+    The date at which the video has been published.
 
     Type: string
     Visibility: private
     """
-    __database_handler: None
+    __object_relational_mapper: "Object_Relational_Mapper"
     """
-    The database handler that will communicate with the database server.
+    It is the object relational mapper that will be used to
+    simplify the process to entering queries.
 
-    Type: Database_Handler
+    Type: Object_Relational_Mapper
     Visibility: private
     """
     __author: str
@@ -82,15 +88,15 @@ class YouTube_Downloader:
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
-        Instantiating the class and launching the operations needed
+        Instantiating the class and launching the operations needed.
 
         Parameters:
             uniform_resource_locator: string: The uniform resource locator to be searched.
             media_identifier: int: The media type for the system. 
         """
-        self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler().query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
-        self.getDatabaseHandler().execute()
+        self.setObjectRelationalMapper(Object_Relational_Mapper())
+        self.getObjectRelationalMapper().query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
+        self.getObjectRelationalMapper().execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
 
@@ -136,11 +142,11 @@ class YouTube_Downloader:
     def setPublishedAt(self, published_at: datetime) -> None:
         self.__published_at = str(published_at)
 
-    def getDatabaseHandler(self):
-        return self.__database_handler
+    def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
+        return self.__object_relational_mapper
 
-    def setDatabaseHandler(self, database_handler) -> None:
-        self.__database_handler = database_handler
+    def setObjectRelationalMapper(self, object_relational_mapper: "Object_Relational_Mapper") -> None:
+        self.__object_relational_mapper = object_relational_mapper
 
     def getAuthor(self) -> str:
         return self.__author

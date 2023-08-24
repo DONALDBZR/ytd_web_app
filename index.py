@@ -56,7 +56,7 @@ def getSession() -> str:
     """
     Sending the session data in the form of JSON.
 
-    Returns: Response
+    Returns: string
     """
     session_data = {
         "Client": {
@@ -68,25 +68,21 @@ def getSession() -> str:
 
 
 @Application.route('/Session/Post', methods=['POST'])
-def setSession() -> Response:
+def setSession() -> str:
     """
-    Allowing the Session Manager to update the session
+    Allowing the Session Manager to update the session.
 
-    Returns: Response
+    Returns: string
     """
-    SessionManager = Session_Manager()
     get_data = request.json
     SessionManager.updateSession(get_data)
     session_data = {
         "Client": {
-            "timestamp": session["Client"]["timestamp"],
-            "color_scheme": session["Client"]["color_scheme"]
+            "timestamp": SessionManager.getSession()["Client"]["timestamp"],
+            "color_scheme": SessionManager.getSession()["Client"]["color_scheme"]
         }
     }
-    headers = {
-        "Content-Type": "application/json",
-    }
-    return jsonify(session_data), 200, headers
+    return json.dumps(session_data, indent=4)
 
 
 @Application.route('/Search')

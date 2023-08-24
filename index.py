@@ -1,19 +1,44 @@
 # Importing the requirements for the application
-from flask import Flask, Response, render_template, jsonify, request, session
+from flask import Flask, Response, render_template, request, session
 from datetime import date
 from SessionManagementSystem import Session_Manager
 from ObjectRelationalMapper import Object_Relational_Mapper
 from Media import Media
+import json
 
 
-# Instantiating the application
 Application = Flask(__name__)
-# Instantiating the object relational mapper
+"""
+The flask object implements a WSGI application and acts as
+the central object.  It is passed the name of the module or
+package of the application.  Once it is created it will act
+as a central registry for the view functions, the URL rules,
+template configuration and much more.
+
+Type: Flask
+"""
 ObjectRelationalMapper = Object_Relational_Mapper()
-# Configuring the application for using sessions
+"""
+It is the object relational mapper that will be used to
+simplify the process to entering queries.
+
+Type: Object_Relational_Mapper
+"""
+"""
+SELECT *
+FROM `Session`
+WHERE date_created = :date_created
+ORDER BY date_created DESC;
+"""
 Application.secret_key = ObjectRelationalMapper.get_table_records(parameters=[date.today(
 )], table_name="Session", filter_condition="date_created = %s", sort_condition="date_created DESC")[1]
 Application.config["SESSION_TYPE"] = 'filesystem'
+SessionManager = Session_Manager()
+"""
+It allows the application to manage the session.
+
+Type: Session_Management
+"""
 
 
 @Application.route('/')
@@ -27,23 +52,19 @@ def homepage() -> str:
 
 
 @Application.route('/Session')
-def getSession() -> Response:
+def getSession() -> str:
     """
-    Sending the session data in the form of JSON
+    Sending the session data in the form of JSON.
 
     Returns: Response
     """
-    SessionManager = Session_Manager()
     session_data = {
         "Client": {
-            "timestamp": session["Client"]["timestamp"],
-            "color_scheme": session["Client"]["color_scheme"]
+            "timestamp": SessionManager.getSession()["Client"]["timestamp"],
+            "color_scheme": SessionManager.getSession()["Client"]["color_scheme"]
         }
     }
-    headers = {
-        "Content-Type": "application/json",
-    }
-    return jsonify(session_data), 200, headers
+    return json.dumps(session_data, indent=4)
 
 
 @Application.route('/Session/Post', methods=['POST'])

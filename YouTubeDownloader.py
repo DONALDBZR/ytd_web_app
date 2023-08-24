@@ -214,9 +214,8 @@ class YouTube_Downloader:
 
         Returns: object
         """
-        self.getDatabaseHandler().query(
-            "SELECT * FROM `YouTube` WHERE identifier = %s", (self.getIdentifier(),))
-        media = self.getDatabaseHandler().resultSet()
+        media = self.getObjectRelationalMapper().get_table_records(
+            [self.getIdentifier()], "YouTube", filter_condition="identifier = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}
         if len(media) == 0:

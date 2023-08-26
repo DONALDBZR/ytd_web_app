@@ -153,7 +153,7 @@ class Database_Handler:
         """
         self.__getDatabaseHandler().commit()
 
-    def resultSet(self) -> list:
+    def _resultSet(self) -> list:
         """
         Fetching all the data that is requested from the command that
         was sent to the database server

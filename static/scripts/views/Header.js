@@ -248,7 +248,7 @@ class Search extends Header {
      */
     render() {
         return (
-            <header>
+            <>
                 <nav>
                     <div>
                         <a href="/">Extractio</a>
@@ -270,7 +270,7 @@ class Search extends Header {
                         </div>
                     </div>
                 </nav>
-            </header>
+            </>
         );
     }
 }

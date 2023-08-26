@@ -83,6 +83,7 @@ class Session_Manager:
             session: SessionMixin:  The session of the user.
         """
         self.setDirectory("./Cache/Session/Users/")
+        self.sessionDirectory()
         self.setIpAddress(request["ip_address"])
         self.setHttpClientIpAddress(request["http_client_ip_address"])
         self.setProxyIpAddress(request["proxy_ip_address"])
@@ -397,4 +398,4 @@ class Session_Manager:
         Returns: void
         """
         if not os.path.exists(self.getDirectory()):
-            os.mkdir(self.getDirectory())
+            os.makedirs(self.getDirectory())

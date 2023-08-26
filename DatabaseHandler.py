@@ -193,7 +193,6 @@ class Database_Handler:
         self._get_sort(sort_condition)
         self._get_limit(limit_condition)
         self._query(self.getQuery(), self.getParameters())
-        self._execute()
         return self._resultSet()
 
     def _get_join(self, condition: str) -> None:

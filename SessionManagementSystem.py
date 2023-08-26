@@ -366,7 +366,7 @@ class Session_Manager:
         else:
             self.createSession()
 
-    def renew(self, session_data: SessionMixin) -> None:
+    def renew(self, session_data: SessionMixin) -> (SessionMixin | None):
         """
         Verifying that the IP Addresses are the same for renewing
         the access to their current data
@@ -374,8 +374,7 @@ class Session_Manager:
         Parameters:
             session_data: SessionMixin: Session Data
         """
-        file_path = str(self.getDirectory() + "/" +
-                        self.getIpAddress() + ".json")
+        file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         # Comparing the IP Addresses to either renew the timestamp or to clear the session.
         if session_data['Client']['ip_address'] == self.getIpAddress():
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
@@ -384,9 +383,8 @@ class Session_Manager:
             file = open(file_path, "w")
             file.write(json.dumps(self.getSession()))
             file.close()
-            session = self.getSession()
+            return self.getSession()
         else:
             self.getSession().clear()
             os.remove(file_path)
-            session = self.getSession()
             self.createSession()

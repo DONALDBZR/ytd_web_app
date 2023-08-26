@@ -1,4 +1,4 @@
-from pytube import YouTube
+from pytube import YouTube, StreamQuery
 from DatabaseHandler import Database_Handler
 from datetime import datetime
 import time
@@ -94,6 +94,13 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
+    __streams: "StreamQuery"
+    """
+    Interface for querying the available media streams.
+
+    Type: StreamQuery
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
@@ -183,6 +190,12 @@ class YouTube_Downloader:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
+    def getStreams(self) -> "StreamQuery":
+        return self.__streams
+
+    def setStreams(self, streams: "StreamQuery") -> None:
+        self.__streams = streams
+
     def search(self) -> dict:
         """
         Searching for the video in YouTube.
@@ -267,7 +280,14 @@ class YouTube_Downloader:
             os.makedirs(f"{self.getDirectory()}/Video")
         if not os.path.exists(f"{self.getDirectory()}/Audio"):
             os.makedirs(f"{self.getDirectory()}/Audio")
-    # def donwloadContent(self):
-    #     """
-    #     Downloading the content from YouTube.
-    #     """
+
+    def downloadContent(self):
+        """
+        Downloading the content from YouTube.
+        """
+        self.setVideo(
+            YouTube(self.getUniformResourceLocator(), use_oauth=True))
+        streams = self.getVideo().streams
+        print(
+            f"Uniform Resource Locator: {self.getUniformResourceLocator()}\nStreams: {streams}")
+        return {}

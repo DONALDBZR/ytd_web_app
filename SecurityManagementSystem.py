@@ -60,11 +60,11 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
-        self.setObjectRelationalMapper(Object_Relational_Mapper())
+        self.setDatabaseHandler(Database_Handler())
         self.setApplicationName(Environment.APPLICATION_NAME)
         self.setDatestamp(int(time()))
-        self.getObjectRelationalMapper().query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
-        self.getObjectRelationalMapper().execute()
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
+        self.getDatabaseHandler()._execute()
         self.hash()
 
     def getDatabaseHandler(self) -> "Database_Handler":

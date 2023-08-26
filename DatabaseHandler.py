@@ -134,7 +134,7 @@ class Database_Handler:
     def setParameters(self, parameters: tuple | None) -> None:
         self.__parameters = parameters
 
-    def query(self, query: str, parameters: None | tuple):
+    def _query(self, query: str, parameters: None | tuple):
         """
         Preparing the SQL query that is going to be handled by the
         database handler.

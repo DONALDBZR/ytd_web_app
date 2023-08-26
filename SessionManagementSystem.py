@@ -303,7 +303,6 @@ class Session_Manager:
 
         Parameters:
             expiry_time: datetime: The expiry time of the session
-            data: object: The data in the file
 
         Returns: object
         """

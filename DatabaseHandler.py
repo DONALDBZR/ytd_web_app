@@ -132,4 +132,4 @@ class Database_Handler:
 
         Returns: array
         """
-        return self.getStatement().fetchall()
+        return self.__getStatement().fetchall()

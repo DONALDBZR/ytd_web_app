@@ -84,7 +84,7 @@ class Media:
         Parameters:
             request:    object: The request from the user.
         """
-        self.setDirectory("./Cache/Media/")
+        self.setDirectory("./Cache/Media")
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
@@ -214,7 +214,7 @@ class Media:
             media = {
                 "YouTube": self._YouTubeDownloader.search()
             }
-            filename = self.getDirectory() + self.getIpAddress() + ".json"
+            filename = f"{self.getDirectory()}/{self.getIpAddress()}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
             file.close()
@@ -223,5 +223,5 @@ class Media:
                 "data": self._YouTubeDownloader.search()
             }
         print(
-            f"Identifier: {self.getIdentifier()}\nSearch: {self.getSearch()}")
+            f"Identifier: {self.getIdentifier()}\nSearch: {self.getSearch()}\nMedia: {media}\nFile Name: {filename}\nResponse: {response}")
         return response

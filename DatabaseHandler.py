@@ -286,7 +286,7 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def delete_records(self, table: str, parameters: tuple | None, condition: str = "") -> None:
+    def delete_data(self, table: str, parameters: tuple | None, condition: str = "") -> None:
         """
         Deleting data from the database.
 

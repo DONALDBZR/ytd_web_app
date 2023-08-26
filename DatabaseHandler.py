@@ -266,3 +266,22 @@ class Database_Handler:
         self.setParameters(parameters)
         self._query(self.getQuery(), self.getParameters())
         self._execute()
+
+    def update_data(self, table: str, values: str, parameters: tuple | None, condition: str = "") -> None:
+        """
+        Updating a specific table in the database.
+
+        Parameters:
+            table:      string: Table
+            values:     string: Columns to be modified and data to be put within
+            condition:  string: Condition for the data to be modified
+            parameters: array:  Data to be used for data manipulation.
+
+        Returns: void
+        """
+        query = f"UPDATE {table} SET {values}"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._get_filter(condition)
+        self._query(self.getQuery(), self.getParameters())
+        self._execute()

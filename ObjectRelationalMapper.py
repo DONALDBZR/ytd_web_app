@@ -14,23 +14,6 @@ class Object_Relational_Mapper(Database_Handler):
         super().__init__()
         self.setParameters(None)
 
-    def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
-        """
-        Creating records to store data into the database server.
-
-        Parameters:
-            table:      string: Table Name
-            columns:    string: Column names
-            values:     string: Data to be inserted
-
-        Returns: void
-        """
-        query = f"INSERT INTO {table}({columns}) VALUES ({values})"
-        self.setQuery(query)
-        self.setParameters(parameters)
-        self.query(self.getQuery(), self.getParameters())
-        self.execute()
-
     def update_data(self, table: str, values: str, parameters: tuple | None, condition: str = "") -> None:
         """
         Updating a specific table in the database.

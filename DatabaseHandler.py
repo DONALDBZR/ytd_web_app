@@ -249,3 +249,20 @@ class Database_Handler:
         else:
             query = f"{self.getQuery()} LIMIT {condition}"
         self.setQuery(query)
+
+    def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
+        """
+        Creating records to store data into the database server.
+
+        Parameters:
+            table:      string: Table Name
+            columns:    string: Column names
+            values:     string: Data to be inserted
+
+        Returns: void
+        """
+        query = f"INSERT INTO {table}({columns}) VALUES ({values})"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._query(self.getQuery(), self.getParameters())
+        self._execute()

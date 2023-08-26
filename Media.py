@@ -1,6 +1,5 @@
 from DatabaseHandler import Database_Handler
 from datetime import datetime
-from flask import request
 import json
 from YouTubeDownloader import YouTube_Downloader
 
@@ -208,10 +207,9 @@ class Media:
 
         Returns: object
         """
+        response = {}
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(), self.getIdentifier())
-        response = {}
-        self.setIpAddress(str(request.environ.get("REMOTE_ADDRESS")))
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
             media = {
@@ -225,4 +223,6 @@ class Media:
                 "status": 200,
                 "data": self._YouTubeDownloader.search()
             }
+        print(
+            f"Identifier: {self.getIdentifier()}\nSearch: {self.getSearch()}")
         return response

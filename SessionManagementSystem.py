@@ -1,5 +1,4 @@
 # Importing the requirements
-from flask import session, Request
 from datetime import datetime, timedelta
 import os
 import json

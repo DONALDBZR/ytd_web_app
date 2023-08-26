@@ -2,6 +2,7 @@ from DatabaseHandler import Database_Handler
 from datetime import datetime
 import json
 from YouTubeDownloader import YouTube_Downloader
+import os
 
 
 class Media:
@@ -85,6 +86,7 @@ class Media:
             request:    object: The request from the user.
         """
         self.setDirectory("./Cache/Media")
+        self.metadataDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
@@ -224,4 +226,18 @@ class Media:
                 "status": 200,
                 "data": self._YouTubeDownloader.search()
             }
+        else:
+            response = {
+                "status": 200,
+                "data": self._YouTubeDownloader.retrievingStreams()
+            }
         return response
+
+    def metadataDirectory(self):
+        """
+        Creating the metadata directory
+
+        Returns: void
+        """
+        if not os.path.exists(self.getDirectory()):
+            os.makedirs(self.getDirectory())

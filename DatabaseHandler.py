@@ -144,7 +144,7 @@ class Database_Handler:
         self.__setStatement(self.__getDatabaseHandler().cursor(prepared=True))
         self.__getStatement().execute(query, parameters)
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         """
         Executing the SQL query which will send a command to the
         database server

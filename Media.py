@@ -174,13 +174,8 @@ class Media:
 
         Returns: object
         """
-        """
-        SELECT *
-        FROM Media
-        WHERE value = :value
-        """
-        media = self.getObjectRelationalMapper().get_table_records(
-            [self.getValue()], "Media", filter_condition="value = %s")
+        media = self.getDatabaseHandler().get_data(
+            tuple([self.getValue()]), "Media", filter_condition="value = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}
         if len(media) == 0:

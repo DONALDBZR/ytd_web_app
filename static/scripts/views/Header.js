@@ -198,7 +198,7 @@ class Homepage extends Header {
      */
     render() {
         return (
-            <header>
+            <>
                 <nav>
                     <div class="active">
                         <a href="/">Extractio</a>
@@ -220,7 +220,7 @@ class Homepage extends Header {
                         </div>
                     </div>
                 </nav>
-            </header>
+            </>
         );
     }
 }

@@ -1,4 +1,4 @@
-from ObjectRelationalMapper import Object_Relational_Mapper
+from DatabaseHandler import Database_Handler
 from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
@@ -10,12 +10,12 @@ class Security_Management_System:
     It will be a major component that will assure the security
     of the data that will be stored across the application.
     """
-    __Object_Relational_Mapper: "Object_Relational_Mapper"
+    __Database_Handler: "Database_Handler"
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
 
-    Type: Object_Relational_Mapper
+    Type: Database_Handler
     Visibility: Private
     """
     __application_name: str
@@ -67,11 +67,11 @@ class Security_Management_System:
         self.getObjectRelationalMapper().execute()
         self.hash()
 
-    def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
-        return self.__Object_Relational_Mapper
+    def getDatabaseHandler(self) -> "Database_Handler":
+        return self.__Database_Handler
 
-    def setObjectRelationalMapper(self, object_relational_mapper: "Object_Relational_Mapper") -> None:
-        self.__Object_Relational_Mapper = object_relational_mapper
+    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+        self.__Database_Handler = database_handler
 
     def getApplicationName(self) -> str:
         return self.__application_name

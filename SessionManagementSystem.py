@@ -389,3 +389,12 @@ class Session_Manager:
             self.getSession().clear()
             os.remove(file_path)
             self.createSession()
+
+    def sessionDirectory(self) -> None:
+        """
+        Creating the Session Directory.
+
+        Returns: void
+        """
+        if not os.path.exists(self.getDirectory()):
+            os.mkdir(self.getDirectory())

@@ -1,4 +1,4 @@
-from pytube import YouTube, StreamQuery
+from pytube import YouTube, StreamQuery, Stream
 from DatabaseHandler import Database_Handler
 from datetime import datetime
 import time
@@ -101,6 +101,13 @@ class YouTube_Downloader:
     Type: StreamQuery
     Visibility: private
     """
+    __stream: "Stream"
+    """
+    Container for stream manifest data.
+
+    Type: Stream
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
@@ -196,6 +203,12 @@ class YouTube_Downloader:
     def setStreams(self, streams: "StreamQuery") -> None:
         self.__streams = streams
 
+    def getStream(self) -> "Stream":
+        return self.__stream
+
+    def setStream(self, stream: "Stream") -> None:
+        self.__stream = stream
+
     def search(self) -> dict:
         """
         Searching for the video in YouTube.
@@ -287,7 +300,12 @@ class YouTube_Downloader:
         """
         self.setVideo(
             YouTube(self.getUniformResourceLocator(), use_oauth=True))
-        streams = self.getVideo().streams
+        self.setStreams(self.getVideo().streams)
+        audio_streams = self.getStreams().filter(mime_type="audio/mp4", abr="128kbps")
+        audio_stream_itag = 0
+        for index in range(0, len(audio_streams), 1):
+            audio_stream_itag = audio_streams[index].itag
+        audio_stream = audio_streams.get_by_itag(audio_stream_itag)
         print(
-            f"Uniform Resource Locator: {self.getUniformResourceLocator()}\nStreams: {streams}")
+            f"Uniform Resource Locator: {self.getUniformResourceLocator()}\nStreams: {self.getStreams()}\nAudio Streams: {audio_streams}\nAudio Stream ITAG: {audio_stream_itag}\nAudio Stream: {audio_stream}")
         return {}

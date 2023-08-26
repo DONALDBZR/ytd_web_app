@@ -225,6 +225,7 @@ class Session_Manager:
 
         Parameters:
             sessions: array: List of session files
+
         Returns: object
         """
         response = {}

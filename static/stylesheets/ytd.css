@@ -243,34 +243,57 @@
         calc(var(--percentage) * 0)
     );
 }
-body {
+body,
+body[id*="Search"] main form input,
+body[id*="Search"] main form button,
+body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
     font-family: sans-serif;
     background-color: var(--color1);
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(1) {
+#Homepage header nav div:nth-child(1),
+body[id*="Search"] header nav div:nth-child(1),
+body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
     font-family: var(--sourceCodePro);
 }
 #Homepage header nav div:nth-child(1) a,
-#Homepage footer div {
+#Homepage footer div,
+body[id*="Search"] header nav div:nth-child(1) a,
+body[id*="Search"] footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
 #Homepage header nav div a:hover,
 #Homepage header nav .active a,
 #Homepage header nav div:nth-child(2) div:nth-child(1) a:hover,
-#Homepage header nav div:nth-child(2) div:nth-child(2) button:hover {
+#Homepage header nav div:nth-child(2) div:nth-child(2) button:hover,
+body[id*="Search"] header nav div:nth-child(1) a:hover,
+body[id*="Search"] header nav .active a,
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a,
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button:hover,
+body[id*="Search"] main form button:hover,
+body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button:hover,
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover {
     color: var(--color3);
 }
-#Homepage header nav div:nth-child(1) a:hover {
+#Homepage header nav div:nth-child(1) a:hover,
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover {
     text-decoration: underline;
 }
 #Homepage header nav div:nth-child(2) div:nth-child(1) a,
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
-#Homepage footer div {
+#Homepage footer div,
+body[id*="Search"] header nav div:nth-child(1) a,
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
+body[id*="Search"] footer div,
+body[id*="Search"] main form input::placeholder,
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(2) div:nth-child(2) button {
+#Homepage header nav div:nth-child(2) div:nth-child(2) button,
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
+body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
     background: none;
     cursor: pointer;
 }
@@ -279,4 +302,50 @@ body {
 }
 #Homepage main div div:nth-child(1) {
     color: var(--color4);
+}
+body[id*="Search"] main form input::placeholder {
+    opacity: calc(var(--percentage) / 2);
+}
+body[id*="Search"] main form button {
+    cursor: pointer;
+}
+body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    div:nth-child(3)
+    #duration
+    div:nth-child(1),
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    div:nth-child(3)
+    #views
+    div:nth-child(1) {
+    font-weight: bold;
+}
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
+    text-decoration: none;
+}
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    div:nth-child(3)
+    #duration
+    div:nth-child(2),
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    div:nth-child(3)
+    #views
+    div:nth-child(2) {
+    font-weight: normal;
 }

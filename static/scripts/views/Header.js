@@ -1,7 +1,7 @@
 /**
- * The Application that is going to be rendered in the DOM
+ * The component that is the header for all of the pages
  */
-class Application extends React.Component {
+class Header extends React.Component {
     /**
      * Constructing the application from React's Component
      * @param {*} props The properties of the component
@@ -11,8 +11,16 @@ class Application extends React.Component {
         this.state = {
             System: {
                 color_scheme: "",
+                view_route: "",
             },
         };
+    }
+    /**
+     * Running the methods needed as soon as the component has been successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getRoute();
     }
     /**
      * Retrieving the session of the application
@@ -24,11 +32,12 @@ class Application extends React.Component {
         })
             .then((response) => response.json())
             .then((data) =>
-                this.setState({
+                this.setState((previous) => ({
                     System: {
+                        ...previous.System,
                         color_scheme: data.Client.color_scheme,
                     },
-                })
+                }))
             )
             .then(() => this.verifyColorScheme())
             .then(() => this.adjustPage());
@@ -39,11 +48,12 @@ class Application extends React.Component {
      */
     verifyColorScheme() {
         if (this.state.System.color_scheme == "") {
-            this.setState({
+            this.setState((previous) => ({
                 System: {
+                    ...previous.System,
                     color_scheme: "light",
                 },
-            });
+            }));
         }
     }
     /**
@@ -78,11 +88,23 @@ class Application extends React.Component {
         }
     }
     /**
+     * Setting the view route of the application.
+     * @returns {void}
+     */
+    getRoute() {
+        this.setState((previous) => ({
+            System: {
+                ...previous.System,
+                view_route: window.location.pathname,
+            },
+        }));
+    }
+    /**
      * Changing the color scheme according to the user's taste
      * @returns {void}
      */
     setColorScheme() {
-        const delay = 1000;
+        const delay = 200;
         event.preventDefault();
         let color_scheme = document.querySelector(
             "button[name='colorSchemeChanger']"
@@ -111,61 +133,15 @@ class Application extends React.Component {
             });
     }
     /**
-     * Rendering the application by instantiating its components
-     * @returns {HTMLBodyElement}
-     */
-    render() {
-        return [<Header />, <Main />, <Footer />];
-    }
-}
-/**
- * The component that is the header
- */
-class Header extends Application {
-    /**
-     * Constructing the header component and also inheriting the properties and states from the application
-     * @param {*} props
-     */
-    constructor(props) {
-        super(props);
-    }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted
-     * @returns {void}
-     */
-    componentDidMount() {
-        this.getSession();
-    }
-    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */
     render() {
-        return (
-            <header>
-                <nav>
-                    <div class="active">
-                        <a href="/">Extractio</a>
-                    </div>
-                    <div>
-                        <div>
-                            <a href="/search">
-                                <i class="fa fa-search"></i>
-                            </a>
-                        </div>
-                        <div>
-                            <button
-                                name="colorSchemeChanger"
-                                value={this.state.System.color_scheme}
-                                onClick={this.setColorScheme}
-                            >
-                                <ColorScheme />
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-        );
+        if (this.state.System.view_route.includes("Search")) {
+            return <Search />;
+        } else {
+            return <Homepage />;
+        }
     }
 }
 /**
@@ -180,6 +156,13 @@ class ColorScheme extends Header {
         super(props);
     }
     /**
+     * Running the methods needed as soon as the component has been successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getSession();
+    }
+    /**
      * Rendering the component which allows the user to change the color scheme
      * @returns {HTMLButtonElement}
      */
@@ -192,46 +175,104 @@ class ColorScheme extends Header {
     }
 }
 /**
- * The component that is the main
+ * The component to be rendered for the homepage
  */
-class Main extends Application {
+class Homepage extends Header {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Running the methods needed as soon as the component has been successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getSession();
+    }
     /**
      * Rendering the component
-     * @returns {HTMLMainElement}
+     * @returns {HTMLHeaderElement}
      */
     render() {
         return (
-            <main>
-                <p>
-                    The aim of the application is that software and contents
-                    must be free and it allows anyone to get content from
-                    certain platforms to be obtained for free as it is an
-                    application developed for people by people.
-                </p>
-                <div>
-                    <div>
-                        <i class="fa-brands fa-youtube"></i>
+            <>
+                <nav>
+                    <div class="active">
+                        <a href="/">Extractio</a>
                     </div>
-                </div>
-            </main>
+                    <div>
+                        <div>
+                            <a href="/Search">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <button
+                                name="colorSchemeChanger"
+                                value={this.state.System.color_scheme}
+                                onClick={this.setColorScheme}
+                            >
+                                <ColorScheme />
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </>
         );
     }
 }
 /**
- * The component that is the footer
+ * The component to be rendered for the search page
  */
-class Footer extends Application {
+class Search extends Header {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Running the methods needed as soon as the component has been successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getSession();
+    }
     /**
      * Rendering the component
-     * @returns {HTMLFooterElement}
+     * @returns {HTMLHeaderElement}
      */
     render() {
         return (
-            <footer>
-                <div>Extractio</div>
-            </footer>
+            <>
+                <nav>
+                    <div>
+                        <a href="/">Extractio</a>
+                    </div>
+                    <div>
+                        <div class="active">
+                            <a href="/Search">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <button
+                                name="colorSchemeChanger"
+                                value={this.state.System.color_scheme}
+                                onClick={this.setColorScheme}
+                            >
+                                <ColorScheme />
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </>
         );
     }
 }
 // Rendering the page
-ReactDOM.render(<Application />, document.body);
+ReactDOM.render(<Header />, document.querySelector("header"));

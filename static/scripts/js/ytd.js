@@ -149,25 +149,6 @@ class YTD {
             this.setBodyId(this.getRequestURI().replaceAll("/", ""));
         }
         this.getBody().id = this.getBodyId();
-        this.render();
-    }
-    /**
-     * Importing and rendering the scripts
-     * @returns {void}
-     */
-    render() {
-        const script = document.createElement("script");
-        this.setBodyClassName(this.getBody().className);
-        this.setMimeType("text/babel");
-        if (this.getBodyClassName().includes("error")) {
-            if (this.getBodyClassName().includes("404")) {
-                script.src = "/static/scripts/views/HTTP404.js";
-            }
-        } else {
-            script.src = `/static/scripts/views/${this.getBodyId()}.js`;
-        }
-        script.type = this.getMimeType();
-        this.getBody().appendChild(script);
         this.style();
     }
     /**

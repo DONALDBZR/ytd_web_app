@@ -3,3 +3,5 @@
 /venv/
 /Environment.py
 /Cache/
+/Public/
+/*.sql

@@ -1,275 +1,185 @@
 # Importing the requirements for the application
-from flask import Flask, Response, render_template, url_for, jsonify, request, session
-from datetime import datetime
-import os
+from flask import Flask, render_template, request, session
+from datetime import date
+from SessionManagementSystem import Session_Manager
+from DatabaseHandler import Database_Handler
+from Media import Media
 import json
-from Environment import Environment
+from SecurityManagementSystem import Security_Management_System
 
-
-class SessionManager:
-    """
-    It allows the application to manage the session.
-    """
-    __directory: str
-    """
-    The directory of the session files
-
-    Type: string
-    """
-    __ip_address: str
-    """
-    The IP Address of the user
-
-    Type: string
-    """
-    __http_client_ip_address: str
-    """
-    The client's IP Address of the user
-
-    Type: string
-    """
-    __proxy_ip_address: str
-    """
-    The Proxy's IP Address of the user
-
-    Type: string
-    """
-    __timestamp: str
-    """
-    The timestamp at which the session has been created
-
-    Type: string
-    """
-    __session_files: list
-    """
-    The files containing the session of the users
-
-    Type: array
-    """
-    __color_scheme: str
-    """
-    The color scheme of the application
-
-    Type: string
-    """
-    __length: int
-    """
-    The amount of session files
-
-    Type: int
-    """
-
-    def __init__(self) -> None:
-        """
-        Instantiating the session's manager which will verify the session of the users
-        """
-        self.verifySession()
-
-    def getDirectory(self) -> str:
-        return self.__directory
-
-    def setDirectory(self, directory: str) -> None:
-        self.__directory = directory
-
-    def getIpAddress(self) -> str:
-        return self.__ip_address
-
-    def setIpAddress(self, ip_address: str) -> None:
-        self.__ip_address = ip_address
-
-    def getHttpClientIpAddress(self) -> str:
-        return self.__http_client_ip_address
-
-    def setHttpClientIpAddress(self, http_client_ip_address: str) -> None:
-        self.__http_client_ip_address = http_client_ip_address
-
-    def getProxyIpAddress(self) -> str:
-        return self.__proxy_ip_address
-
-    def setProxyIpAddress(self, proxy_ip_address: str) -> None:
-        self.__proxy_ip_address = proxy_ip_address
-
-    def getTimestamp(self) -> str:
-        return self.__timestamp
-
-    def setTimestamp(self, timestamp: str) -> None:
-        self.__timestamp = timestamp
-
-    def getSessionFiles(self) -> list:
-        return self.__session_files
-
-    def setSessionFiles(self, session_files: list) -> None:
-        self.__session_files = session_files
-
-    def getColorScheme(self) -> str:
-        return self.__color_scheme
-
-    def setColorScheme(self, color_scheme: str) -> None:
-        self.__color_scheme = color_scheme
-
-    def getLength(self) -> int:
-        return self.__length
-
-    def setLength(self, length: int) -> None:
-        self.__length = length
-
-    def createSession(self) -> None:
-        """
-        Creating the session
-
-        Returns: (void): The session is created
-        """
-
-        self.setIpAddress(request.environ.get('REMOTE_ADDR'))
-        self.setHttpClientIpAddress(request.environ.get('HTTP_CLIENT_IP'))
-        self.setProxyIpAddress(request.environ.get('HTTP_X_FORWARDED_FOR'))
-        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        self.setColorScheme("light")
-        data = {
-            "ip_address": self.getIpAddress(),
-            "http_client_ip_address": self.getHttpClientIpAddress(),
-            "proxy_ip_address": self.getProxyIpAddress(),
-            "timestamp": self.getTimestamp(),
-            "color_scheme": self.getColorScheme()
-        }
-        session['Client'] = data
-        session_data = self.getSession()
-        new_length = self.getLength() + 1
-        file_name = "User_" + str(new_length) + ".json"
-        file_path = self.getDirectory() + file_name
-        session_file = open(file_path, 'w')
-        session_file.write(session_data)
-        session_file.close()
-
-    def verifySession(self) -> None:
-        """
-        Verifying that the session is not hijacked
-
-        Returns: (void): Either the session has been updated, the session has been destroyed or the session will be created
-        """
-        self.setDirectory("./Cache/Session/Users/")
-        self.setSessionFiles(os.listdir(self.getDirectory()))
-        self.setLength(len(self.getSessionFiles()))
-        if len(self.getSessionFiles()) > 0:
-            for index in range(0, len(self.getSessionFiles()), 1):
-                if self.getSessionFiles()[index].endswith(".json"):
-                    file_name = str(self.getDirectory() + "/" +
-                                    self.getSessionFiles()[index])
-                    file = open(file_name)
-                    data = json.load(file)
-                    if request.environ.get('REMOTE_ADDR') == data['Client']['ip_address']:
-                        session = data
-            self.setIpAddress(request.environ.get('REMOTE_ADDR'))
-            if session.get('Client') is not None:
-                if session['Client']['ip_address'] == self.getIpAddress():
-                    self.setTimestamp(
-                        datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-                    session['Client']['timestamp'] = self.getTimestamp()
-                else:
-                    session.clear()
-            else:
-                self.createSession()
-        else:
-            self.createSession()
-
-    def getSession(self) -> str:
-        """
-        Returning a stringified form of the session
-
-        Returns: (str): A JSON stringified form of the session
-        """
-        return json.dumps(session, indent=4)
-
-    def updateSession(self, data) -> None:
-        """
-        Modifying the session
-
-        Parameters:
-            data: (Any): Data from the view
-
-        Returns: (void): The session has been updated
-        """
-        self.setIpAddress(request.environ.get('REMOTE_ADDR'))
-        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        self.setColorScheme(data["Client"]["color_scheme"])
-        self.setSessionFiles(os.listdir(self.getDirectory()))
-        for index in range(0, len(self.getSessionFiles()), 1):
-            if self.getSessionFiles()[index].endswith(".json"):
-                file_name = str(self.getDirectory() + "/" +
-                                self.getSessionFiles()[index])
-                file = open(file_name)
-                data = json.load(file)
-                if self.getIpAddress() == data['Client']['ip_address']:
-                    new_data = {
-                        "ip_address": self.getIpAddress(),
-                        "http_client_ip_address": data["Client"]["http_client_ip_address"],
-                        "proxy_ip_address": data["Client"]["proxy_ip_address"],
-                        "timestamp": self.getTimestamp(),
-                        "color_scheme": self.getColorScheme()
-                    }
-                    session["Client"] = new_data
-                    session_data = self.getSession()
-                    file_to_be_updated = open(file_name, "w")
-                    file_to_be_updated.write(session_data)
-                    file_to_be_updated.close()
-                    session["Client"]["timestamp"] = self.getTimestamp()
-                    session["Client"]["color_scheme"] = self.getColorScheme()
-
-
-# Instantiating the application
 Application = Flask(__name__)
-# Configuring the application for using sessions
-Application.secret_key = Environment.SESSION_KEY
+"""
+The flask object implements a WSGI application and acts as
+the central object.  It is passed the name of the module or
+package of the application.  Once it is created it will act
+as a central registry for the view functions, the URL rules,
+template configuration and much more.
+
+Type: Flask
+"""
+DatabaseHandler = Database_Handler()
+"""
+The database handler that will communicate with the database
+server.
+
+Type: Database_Handler
+"""
+SecurityManagementSystem = Security_Management_System()
+"""
+It will be a major component that will assure the security
+of the data that will be stored across the application.
+
+Type: Security_Management_System
+"""
+data = DatabaseHandler.get_data(
+    None,
+    "Session",
+    filter_condition="date_created = CURRENT_DATE()",
+    column_names="hash",
+    sort_condition="identifier ASC",
+    limit_condition=1
+)
+key: str = data[0][0]
+"""
+Encryption key of the application
+
+Type: string
+"""
+Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 
-@Application.route('/')
+@Application.route('/', methods=['GET'])
 def homepage() -> str:
     """
     Rendering the template needed which will import the web-worker
 
-    Returns: (str): The template which is stringified version of a HTML file
+    Returns: string
     """
     return render_template('page.html')
 
 
-@Application.route('/Session')
-def getSession() -> Response:
+@Application.route('/Session', methods=['GET'])
+def getSession() -> str:
     """
-    Sending the session data in the form of JSON
+    Sending the session data in the form of JSON.
 
-    Returns: (Response): JSON containing the session data
+    Returns: string
     """
-    Session_Manager = SessionManager()
+    user_request = {
+        "ip_address": str(request.environ.get('REMOTE_ADDR')),
+        "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
+        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
+    }
+    SessionManager = Session_Manager(user_request, session)
     session_data = {
         "Client": {
-            "timestamp": session["Client"]["timestamp"],
-            "color_scheme": session["Client"]["color_scheme"]
+            "timestamp": SessionManager.getSession()["Client"]["timestamp"],
+            "color_scheme": SessionManager.getSession()["Client"]["color_scheme"]
         }
     }
-    headers = {
-        "Content-Type": "application/json",
-    }
-    return jsonify(session_data), 200, headers
+    return json.dumps(session_data, indent=4)
 
 
 @Application.route('/Session/Post', methods=['POST'])
-def setSession() -> Response:
+def setSession() -> str:
     """
-    Allowing the Session Manager to update the session
+    Allowing the Session Manager to update the session.
 
-    Returns: (Response): JSON containing the session data
+    Returns: string
     """
-    Session_Manager = SessionManager()
     get_data = request.json
-    Session_Manager.updateSession(get_data)
+    user_request = {
+        "ip_address": str(request.environ.get('REMOTE_ADDR')),
+        "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
+        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
+    }
+    SessionManager = Session_Manager(user_request, session)
+    SessionManager.updateSession(get_data)
     session_data = {
         "Client": {
-            "timestamp": session["Client"]["timestamp"],
-            "color_scheme": session["Client"]["color_scheme"]
+            "timestamp": SessionManager.getSession()["Client"]["timestamp"],
+            "color_scheme": SessionManager.getSession()["Client"]["color_scheme"]
         }
     }
-    headers = {
-        "Content-Type": "application/json",
+    return json.dumps(session_data, indent=4)
+
+
+@Application.route('/Search')
+def searchPage() -> str:
+    """
+    Rendering the template needed which will import the
+    web-worker.
+
+    Returns: string
+    """
+    return render_template('page.html')
+
+
+@Application.route("/Media/Search", methods=["POST"])
+def search() -> str:
+    """
+    Searching for the media by the uniform resouce locator that
+    has been retrieved from the client.
+
+    Returns: string
+    """
+    data = request.json
+    user_request = {
+        "referer": None,
+        "search": str(data["Media"]["search"]),  # type: ignore
+        "platform": str(data["Media"]["platform"]),  # type: ignore
+        "ip_address": str(request.environ.get("REMOTE_ADDR"))
     }
-    return jsonify(session_data), 200, headers
+    media = Media(user_request)
+    return json.dumps(media.verifyPlatform(), indent=4)
+
+
+@Application.route('/Search/<string:identifier>', methods=['GET'])
+def searchPageWithMedia(identifier: str) -> str:
+    """
+    Rendering the template needed which will import the
+    web-worker.
+
+    Parameters:
+        identifier: string: Identifier of the media conetent to be searched.
+
+    Returns: string
+    """
+    return render_template('page.html')
+
+
+@Application.route('/Media', methods=["GET"])
+def getMedia() -> str:
+    """
+    Sending the data for the media that has been searched in the
+    form of JSON.
+
+    Returns: string
+    """
+    file_name = f"./Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
+    file = open(file_name)
+    media_data = file.read()
+    return media_data
+
+
+@Application.route('/Media/Download', methods=['POST'])
+def retrieveMedia() -> str:
+    """
+    Retrieving the media needed from the uniform resource
+    locator and stores it in the server while allowing the user
+    to download it.
+
+    Returns: string
+    """
+    request_json = request.json
+    data = request_json["Media"]  # type: ignore
+    user_request = {
+        "referer": request.referrer,
+        "search": str(data["uniform_resource_locator"]),  # type: ignore
+        "platform": str(data["platform"]),  # type: ignore
+        "ip_address": str(request.environ.get("REMOTE_ADDR"))
+    }
+    if "Search" in request.referrer:
+        media = Media(user_request)
+    return json.dumps(media.verifyPlatform(), indent=4)  # type: ignore

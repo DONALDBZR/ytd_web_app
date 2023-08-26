@@ -330,12 +330,11 @@ class Session_Manager:
         Returns: object
         """
         response = {}
-        file_path = str(self.getDirectory() + "/" + name)
+        file_path = f"{self.getDirectory()}/{name}"
         file = open(file_path)
         data = json.load(file)
         if status == 200:
             self.setSession(data)
-            session = self.getSession()
             response = {
                 "status": status
             }

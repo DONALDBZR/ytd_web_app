@@ -28,6 +28,7 @@ class Object_Relational_Mapper(Database_Handler):
         Connecting the database as well as initializing the ORM.
         """
         super().__init__()
+        self.setParameters(None)
 
     def getQuery(self) -> str:
         return self.__query

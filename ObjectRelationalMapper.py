@@ -14,22 +14,6 @@ class Object_Relational_Mapper(Database_Handler):
         super().__init__()
         self.setParameters(None)
 
-    def _get_join(self, condition: str) -> None:
-        """
-        Building the query needed for retrieving data that is in at
-        least two tables.
-
-        Parameters:
-            condition:  string: The JOIN statement that is used.
-
-        Returns: void
-        """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} JOIN {condition}"
-        self.setQuery(query)
-
     def _get_filter(self, condition: str, parameters: tuple | None) -> None:
         """
         Building the query needed for retrieving specific data.

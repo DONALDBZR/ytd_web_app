@@ -133,7 +133,7 @@ class Object_Relational_Mapper(Database_Handler):
         self.query(self.getQuery(), self.getParameters())
         self.execute()
 
-    def update_data(self, table: str, values: str, parameters: list | None, condition: str = "") -> None:
+    def update_data(self, table: str, values: str, parameters: tuple | None, condition: str = "") -> None:
         """
         Updating a specific table in the database.
 

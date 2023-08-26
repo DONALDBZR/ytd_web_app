@@ -1,8 +1,8 @@
 # Importing the requirements for the application
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from datetime import date
 from SessionManagementSystem import Session_Manager
-from ObjectRelationalMapper import Object_Relational_Mapper
+from DatabaseHandler import Database_Handler
 from Media import Media
 import json
 from SecurityManagementSystem import Security_Management_System
@@ -17,6 +17,13 @@ template configuration and much more.
 
 Type: Flask
 """
+DatabaseHandler = Database_Handler()
+"""
+The database handler that will communicate with the database
+server.
+
+Type: Database_Handler
+"""
 SecurityManagementSystem = Security_Management_System()
 """
 It will be a major component that will assure the security
@@ -24,37 +31,25 @@ of the data that will be stored across the application.
 
 Type: Security_Management_System
 """
-ObjectRelationalMapper = Object_Relational_Mapper()
+data = DatabaseHandler.get_data(
+    None,
+    "Session",
+    filter_condition="date_created = CURRENT_DATE()",
+    column_names="hash",
+    sort_condition="identifier ASC",
+    limit_condition=1
+)
+key: str = data[0][0]
 """
-It is the object relational mapper that will be used to
-simplify the process to entering queries.
+Encryption key of the application
 
-Type: Object_Relational_Mapper
+Type: string
 """
-SessionManager = Session_Manager(request)
-"""
-It will be a major component that will assure the security
-of the data that will be stored across the application.
-
-Type: Session_Manager
-"""
-"""
-SELECT *
-FROM `Session`
-WHERE date_created = :date_created
-ORDER BY date_created DESC;
-"""
-Application.secret_key = ObjectRelationalMapper.get_table_records(parameters=[date.today(
-)], table_name="Session", filter_condition="date_created = %s", sort_condition="identifier ASC")[1]
+Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
-"""
-It allows the application to manage the session.
-
-Type: Session_Management
-"""
 
 
-@Application.route('/')
+@Application.route('/', methods=['GET'])
 def homepage() -> str:
     """
     Rendering the template needed which will import the web-worker
@@ -64,13 +59,19 @@ def homepage() -> str:
     return render_template('page.html')
 
 
-@Application.route('/Session')
+@Application.route('/Session', methods=['GET'])
 def getSession() -> str:
     """
     Sending the session data in the form of JSON.
 
     Returns: string
     """
+    user_request = {
+        "ip_address": str(request.environ.get('REMOTE_ADDR')),
+        "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
+        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
+    }
+    SessionManager = Session_Manager(user_request, session)
     session_data = {
         "Client": {
             "timestamp": SessionManager.getSession()["Client"]["timestamp"],
@@ -88,6 +89,12 @@ def setSession() -> str:
     Returns: string
     """
     get_data = request.json
+    user_request = {
+        "ip_address": str(request.environ.get('REMOTE_ADDR')),
+        "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
+        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
+    }
+    SessionManager = Session_Manager(user_request, session)
     SessionManager.updateSession(get_data)
     session_data = {
         "Client": {
@@ -118,12 +125,18 @@ def search() -> str:
     Returns: string
     """
     data = request.json
-    media = Media(data["Media"]["search"], None, data["Media"]["platform"])
+    user_request = {
+        "referer": None,
+        "search": str(data["Media"]["search"]),
+        "platform": str(data["Media"]["platform"]),
+        "ip_address": str(request.environ.get("REMOTE_ADDR"))
+    }
+    media = Media(user_request)
     return json.dumps(media.verifyPlatform(), indent=4)
 
 
-@Application.route('/Search/<string:identifier>')
-def searchPageWithMedia(identifier: str):
+@Application.route('/Search/<string:identifier>', methods=['GET'])
+def searchPageWithMedia(identifier: str) -> str:
     """
     Rendering the template needed which will import the
     web-worker.
@@ -131,38 +144,23 @@ def searchPageWithMedia(identifier: str):
     Parameters:
         identifier: string: Identifier of the media conetent to be searched.
 
-    Returns: (string | void)
+    Returns: string
     """
-    # if 'identifier' in session["Media"]["YouTube"] and identifier == session["Media"]["YouTube"]["identifier"]:
     return render_template('page.html')
 
 
-# @Application.route('/Media')
-# def getMedia():
-#     """
-#     Sending the data for the media that has been searched in the
-#     form of JSON.
+@Application.route('/Media', methods=["GET"])
+def getMedia() -> str:
+    """
+    Sending the data for the media that has been searched in the
+    form of JSON.
 
-#     Returns: string
-#     """
-#     media_data = {
-#         "Media": {
-#             "YouTube": {
-#                 "uniform_resource_locator": session["Media"]["YouTube"]["uniform_resource_locator"],
-#                 "title": session["Media"]["YouTube"]["title"],
-#                 "author": session["Media"]["YouTube"]["author"],
-#                 "author_channel": session["Media"]["YouTube"]["author_channel"],
-#                 "views": session["Media"]["YouTube"]["views"],
-#                 "published_at": session["Media"]["YouTube"]["published_at"],
-#                 "thumbnail": session["Media"]["YouTube"]["thumbnail"],
-#                 "duration": session["Media"]["YouTube"]["duration"]
-#             }
-#         }
-#     }
-#     headers = {
-#         "Content-Type": "application/json",
-#     }
-#     return jsonify(media_data), 200, headers
+    Returns: string
+    """
+    file_name = f"./Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
+    file = open(file_name)
+    media_data = file.read()
+    return media_data
 
 
 # @Application.route('/Media/Download')

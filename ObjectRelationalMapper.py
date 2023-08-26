@@ -151,7 +151,7 @@ class Object_Relational_Mapper(Database_Handler):
         self.query(self.getQuery(), self.getParameters())
         self.execute()
 
-    def delete_records(self, table: str, parameters: list | None, condition: str = "") -> None:
+    def delete_records(self, table: str, parameters: tuple | None, condition: str = "") -> None:
         """
         Deleting data from the database.
 

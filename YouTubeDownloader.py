@@ -214,11 +214,6 @@ class YouTube_Downloader:
 
         Returns: object
         """
-        """
-        SELECT *
-        FROM `YouTube`
-        WHERE identifier = :identifier;
-        """
         media = self.getDatabaseHandler().get_data(
             tuple([self.getIdentifier()]), "YouTube", filter_condition="identifier = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
@@ -243,9 +238,5 @@ class YouTube_Downloader:
 
         Returns: void
         """
-        """
-        INSERT INTO `YouTube` (identifier, `length`, published_at, author, title, `Media`)
-        VALUES (identifier, `length`, published_at, author, title, `Media`);
-        """
-        self.getObjectRelationalMapper().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s",
-                                                   [self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()])
+        self.getDatabaseHandler().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s",
+                                            (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))

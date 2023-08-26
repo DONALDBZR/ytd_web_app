@@ -191,7 +191,7 @@ class Session_Manager:
         """
         return json.dumps(self.getSession(), indent=4)
 
-    def updateSession(self, data) -> ("SessionMixin" | None):
+    def updateSession(self, data) -> SessionMixin | None:
         """
         Modifying the session.
 

@@ -63,9 +63,12 @@ class Object_Relational_Mapper(Database_Handler):
         self._get_filter(filter_condition, parameters)
         self._get_sort(sort_condition)
         self._get_limit(limit_condition)
-        self.query(self.getQuery(), self.getParameters())
-        self.execute()
-        return self.resultSet()
+        super().query(self.getQuery(), self.getParameters())
+        super().execute()
+        return super().resultSet()
+        # self.query(self.getQuery(), self.getParameters())
+        # self.execute()
+        # return self.resultSet()
 
     def _get_join(self, condition: str) -> None:
         """

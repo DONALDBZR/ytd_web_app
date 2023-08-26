@@ -160,7 +160,7 @@ class Media:
             self.verifyPlatform()
         else:
             self.setIdentifier(media["data"][0][0])
-        # Verifying the platform data to redirecto to the correct system.
+        # Verifying the platform data to redirect to the correct system.
         if "youtube" in self.getValue():
             response = {
                 "status": 200,

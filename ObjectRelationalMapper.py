@@ -14,34 +14,6 @@ class Object_Relational_Mapper(Database_Handler):
         super().__init__()
         self.setParameters(None)
 
-    def get_table_records(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: str = "") -> list:
-        """
-        Retrieving data from the database.
-
-        Parameters:
-            parameters:         array|null: The parameters to be passed into the query.
-            table_name:         string:     The name of the table.
-            column_names:       string:     The name of the columns.
-            join_condition      string:     Joining table condition.
-            filter_condition    string:     Items to be filtered with.
-            sort_condition      string:     The items to be sorted.
-            limit_condition     string:     The amount of items to be returned
-
-        Returns: array
-        """
-        query = f"SELECT {column_names} FROM {table_name}"
-        self.setQuery(query)
-        self._get_join(join_condition)
-        self._get_filter(filter_condition, parameters)
-        self._get_sort(sort_condition)
-        self._get_limit(limit_condition)
-        super().query(self.getQuery(), self.getParameters())
-        super().execute()
-        return super().resultSet()
-        # self.query(self.getQuery(), self.getParameters())
-        # self.execute()
-        # return self.resultSet()
-
     def _get_join(self, condition: str) -> None:
         """
         Building the query needed for retrieving data that is in at

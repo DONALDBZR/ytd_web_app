@@ -161,3 +161,29 @@ class Database_Handler:
         Returns: array
         """
         return self.__getStatement().fetchall()
+
+    def get_records(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: str = "") -> list:
+        """
+        Retrieving data from the database.
+
+        Parameters:
+            parameters:         array|null: The parameters to be passed into the query.
+            table_name:         string:     The name of the table.
+            column_names:       string:     The name of the columns.
+            join_condition      string:     Joining table condition.
+            filter_condition    string:     Items to be filtered with.
+            sort_condition      string:     The items to be sorted.
+            limit_condition     string:     The amount of items to be returned
+
+        Returns: array
+        """
+        query = f"SELECT {column_names} FROM {table_name}"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._get_join(join_condition)
+        self._get_filter(filter_condition, parameters)
+        self._get_sort(sort_condition)
+        self._get_limit(limit_condition)
+        self._query(self.getQuery(), self.getParameters())
+        self._execute()
+        return self._resultSet()

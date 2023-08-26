@@ -88,10 +88,10 @@ class Media:
             value: string: The value of the required media which have to correspond to the name of the platform from which the media comes from.
         """
         self.setDirectory("./Cache/Media/")
-        self.setObjectRelationalMapper(Object_Relational_Mapper())
-        self.getObjectRelationalMapper().query(
+        self.setDatabaseHandler(Database_Handler())
+        self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
-        self.getObjectRelationalMapper().execute()
+        self.getDatabaseHandler()._execute()
         self.setSearch(search)
         self.setReferer(referer)
         self.setValue(value)

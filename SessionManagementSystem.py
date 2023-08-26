@@ -148,7 +148,7 @@ class Session_Manager:
         """
         Creating the session
 
-        Returns: void
+        Returns: SessionMixin
         """
         self.getSession().clear()
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))

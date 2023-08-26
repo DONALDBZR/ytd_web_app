@@ -62,6 +62,14 @@ class Database_Handler:
     Type: string
     Visibility: private
     """
+    __parameters: tuple | None
+    """
+    Parameters that the will be used to sanitize the query which
+    is either  get, post, update or delete.
+
+    Type: array|null
+    Visibility: private
+    """
 
     def __init__(self):
         """
@@ -119,6 +127,12 @@ class Database_Handler:
 
     def setQuery(self, query: str) -> None:
         self.__query = query
+
+    def getParameters(self) -> tuple | None:
+        return self.__parameters
+
+    def setParameters(self, parameters: tuple | None) -> None:
+        self.__parameters = parameters
 
     def query(self, query: str, parameters: None | tuple):
         """

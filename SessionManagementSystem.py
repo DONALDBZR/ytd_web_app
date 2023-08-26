@@ -73,24 +73,20 @@ class Session_Manager:
     Type: SessionMixin
     Visibility: private
     """
-    __request: "Request"
-    """
-    The request from the application.
 
-    Type: Request
-    Visibility: private
-    """
-
-    def __init__(self, request: "Request") -> None:
+    def __init__(self, request: dict, session: "SessionMixin") -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users
 
         Parameters:
-            request: Request: The request from the application.
+            request: object:        The request from the application.
+            session: SessionMixin:  The session of the user.
         """
         self.setDirectory("./Cache/Session/Users/")
-        self.setRequest(request)
+        self.setIpAddress(request["ip_address"])
+        self.setHttpClientIpAddress(request["http_client_ip_address"])
+        self.setProxyIpAddress(request["proxe_ip_address"])
         self.setSession(session)
         self.verifySession()
 
@@ -147,12 +143,6 @@ class Session_Manager:
 
     def setSession(self, session: "SessionMixin") -> None:
         self.__session = session
-
-    def getRequest(self) -> "Request":
-        return self.__request
-
-    def setRequest(self, request: "Request") -> None:
-        self.__request = request
 
     def createSession(self) -> None:
         """

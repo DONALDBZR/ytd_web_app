@@ -1,4 +1,4 @@
-from ObjectRelationalMapper import Object_Relational_Mapper
+from DatabaseHandler import Database_Handler
 from datetime import datetime
 from flask import request
 import json
@@ -32,12 +32,12 @@ class Media:
     Type: string|null
     Visibility: private
     """
-    __object_relational_mapper: "Object_Relational_Mapper"
+    __database_handler: "Database_Handler"
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
 
-    Type: Object_Relational_Mapper
+    Type: Database_Handler
     Visibility: private
     """
     __identifier: int
@@ -108,11 +108,11 @@ class Media:
     def setReferer(self, referer: str | None) -> None:
         self.__referer = referer
 
-    def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
-        return self.__object_relational_mapper
+    def getDatabaseHandler(self) -> "Database_Handler":
+        return self.__database_handler
 
-    def setObjectRelationalMapper(self, object_relational_mapper: "Object_Relational_Mapper") -> None:
-        self.__object_relational_mapper = object_relational_mapper
+    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+        self.__database_handler = database_handler
 
     def getIdentifier(self) -> int:
         return self.__identifier

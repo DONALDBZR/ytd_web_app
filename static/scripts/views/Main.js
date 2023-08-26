@@ -153,7 +153,7 @@ class Main extends React.Component {
                 this.setState((previous) => ({
                     System: {
                         ...previous.System,
-                        url: data.url,
+                        url: data.data.data.url,
                     },
                 }))
             )

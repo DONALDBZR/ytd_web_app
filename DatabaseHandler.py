@@ -60,13 +60,13 @@ class Database_Handler:
         Instantiating the class which will try to connect to the
         database.
         """
-        self.setHost(Environment.HOST)
-        self.setDatabase(Environment.DATABASE)
-        self.setUsername(Environment.USERNAME)
-        self.setPassword(Environment.PASSWORD)
+        self.__setHost(Environment.HOST)
+        self.__setDatabase(Environment.DATABASE)
+        self.__setUsername(Environment.USERNAME)
+        self.__setPassword(Environment.PASSWORD)
         try:
-            self.setDatabaseHandler(mysql.connector.connect(host=self.getHost(
-            ), database=self.getDatabase(), username=self.getUsername(), password=self.getPassword()))
+            self.__setDatabaseHandler(mysql.connector.connect(host=self.__getHost(
+            ), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()))
         except mysql.connector.Error as error:
             print("Connection Failed: " + str(error))
 

@@ -203,3 +203,18 @@ class Database_Handler:
         else:
             query = f"{self.getQuery()} JOIN {condition}"
         self.setQuery(query)
+
+    def _get_filter(self, condition: str) -> None:
+        """
+        Building the query needed for retrieving specific data.
+
+        Parameters:
+            condition:  string: The WHERE statement that will be used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} WHERE {condition}"
+        self.setQuery(query)

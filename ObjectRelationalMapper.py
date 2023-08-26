@@ -14,24 +14,6 @@ class Object_Relational_Mapper(Database_Handler):
         super().__init__()
         self.setParameters(None)
 
-    def _get_filter(self, condition: str, parameters: tuple | None) -> None:
-        """
-        Building the query needed for retrieving specific data.
-
-        Parameters:
-            condition:  string:     The WHERE statement that will be used.
-            parameters: array|null: Parameters to be used to filter the data.
-
-        Returns: void
-        """
-        if condition == "":
-            query = self.getQuery()
-            self.setParameters(None)
-        else:
-            query = f"{self.getQuery()} WHERE {condition}"
-            self.setParameters(parameters)
-        self.setQuery(query)
-
     def _get_sort(self, condition: str) -> None:
         """
         Building the query needed to be used to sort the result set.

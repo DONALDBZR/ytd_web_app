@@ -160,7 +160,9 @@ class Database_Handler:
 
         Returns: array
         """
-        return self.__getStatement().fetchall()
+        result_set = self.__getStatement().fetchall()
+        self.__getStatement().close()
+        return result_set
 
     def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: str = "") -> list:
         """

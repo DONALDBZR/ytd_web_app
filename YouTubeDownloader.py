@@ -219,8 +219,8 @@ class YouTube_Downloader:
         FROM `YouTube`
         WHERE identifier = :identifier;
         """
-        media = self.getObjectRelationalMapper().get_table_records(
-            [self.getIdentifier()], "YouTube", filter_condition="identifier = %s")
+        media = self.getDatabaseHandler().get_data(
+            tuple([self.getIdentifier()]), "YouTube", filter_condition="identifier = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}
         if len(media) == 0:

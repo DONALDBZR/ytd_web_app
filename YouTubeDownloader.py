@@ -1,7 +1,7 @@
 from pytube import YouTube
 from DatabaseHandler import Database_Handler
 from datetime import datetime
-from time import time
+import time
 
 
 class YouTube_Downloader:
@@ -177,8 +177,8 @@ class YouTube_Downloader:
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.getIdentifier().replace(
             "https://www.youtube.com/watch?v=", ""))
-        meta_data = self.getYouTube()
         response = {}
+        meta_data = self.getYouTube()
         # Verifying the response of the metadata to retrieve the needed response
         if meta_data["status"] == 200:
             self.setLength(meta_data["data"][0][1])

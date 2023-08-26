@@ -257,7 +257,7 @@ class Homepage extends Main {
      */
     render() {
         return (
-            <main>
+            <>
                 <p>
                     The aim of the application is that software and contents
                     must be free and it allows anyone to get content from
@@ -269,7 +269,7 @@ class Homepage extends Main {
                         <i class="fa-brands fa-youtube"></i>
                     </div>
                 </div>
-            </main>
+            </>
         );
     }
 }

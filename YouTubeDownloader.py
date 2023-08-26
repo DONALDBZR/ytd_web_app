@@ -95,9 +95,9 @@ class YouTube_Downloader:
             uniform_resource_locator: string: The uniform resource locator to be searched.
             media_identifier: int: The media type for the system. 
         """
-        self.setObjectRelationalMapper(Database_Handler())
-        self.getObjectRelationalMapper().query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
-        self.getObjectRelationalMapper().execute()
+        self.setDatabaseHandler(Database_Handler())
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
+        self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
 

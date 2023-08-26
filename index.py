@@ -127,8 +127,8 @@ def search() -> str:
     data = request.json
     user_request = {
         "referer": None,
-        "search": str(data["Media"]["search"]),
-        "platform": str(data["Media"]["platform"]),
+        "search": str(data["Media"]["search"]),  # type: ignore
+        "platform": str(data["Media"]["platform"]),  # type: ignore
         "ip_address": str(request.environ.get("REMOTE_ADDR"))
     }
     media = Media(user_request)
@@ -163,17 +163,23 @@ def getMedia() -> str:
     return media_data
 
 
-# @Application.route('/Media/Download')
-# def retrieveMedia():
-#     """
-#     Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
-#     """
-#     SessionManager = Session_Manager()
-#     referer = request.referrer
-#     data = request.json
-#     if 'Search' in referer:
-#         media = Media(data["Media"]["uniform_resource_locator"],
-#                       referer, data["media"]["platform"])
-#         headers = {
-#             "Content-Type": "application/json",
-#         }
+@Application.route('/Media/Download', methods=['POST'])
+def retrieveMedia() -> str:
+    """
+    Retrieving the media needed from the uniform resource
+    locator and stores it in the server while allowing the user
+    to download it.
+
+    Returns: string
+    """
+    request_json = request.json
+    data = request_json["Media"]  # type: ignore
+    user_request = {
+        "referer": request.referrer,
+        "search": str(data["uniform_resource_locator"]),  # type: ignore
+        "platform": str(data["platform"]),  # type: ignore
+        "ip_address": str(request.environ.get("REMOTE_ADDR"))
+    }
+    if "Search" in request.referrer:
+        media = Media(user_request)
+    return json.dumps(media.verifyPlatform(), indent=4)  # type: ignore

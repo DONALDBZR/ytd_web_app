@@ -142,13 +142,7 @@ class Database_Handler:
         Returns: Generator[MySQLCursor, None, None] | None
         """
         self.__setStatement(self.__getDatabaseHandler().cursor(prepared=True))
-        if self.__getStatement().close:
-            self.__getStatement().execute(query, parameters)
-        else:
-            self.__getStatement().close
-            self.__setStatement(
-                self.__getDatabaseHandler().cursor(prepared=True))
-            self.__getStatement().execute(query, parameters)
+        self.__getStatement().execute(query, parameters)
 
     def _execute(self) -> None:
         """

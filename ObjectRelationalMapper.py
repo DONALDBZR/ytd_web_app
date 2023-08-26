@@ -6,14 +6,6 @@ class Object_Relational_Mapper(Database_Handler):
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
     """
-    __query: str
-    """
-    The query to be used to be sent to the database server to
-    either get, post, update or delete data.
-
-    Type: string
-    Visibility: private
-    """
     __parameters: tuple | None
     """
     Parameters that the will be used to sanitize the query which
@@ -29,12 +21,6 @@ class Object_Relational_Mapper(Database_Handler):
         """
         super().__init__()
         self.setParameters(None)
-
-    def getQuery(self) -> str:
-        return self.__query
-
-    def setQuery(self, query: str) -> None:
-        self.__query = query
 
     def getParameters(self) -> tuple | None:
         return self.__parameters

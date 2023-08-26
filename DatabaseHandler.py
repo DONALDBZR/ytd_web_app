@@ -54,6 +54,14 @@ class Database_Handler:
     Type: MySQLCursor
     visibility: private
     """
+    __query: str
+    """
+    The query to be used to be sent to the database server to
+    either get, post, update or delete data.
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self):
         """
@@ -105,6 +113,12 @@ class Database_Handler:
 
     def __setStatement(self, statement: "MySQLCursor") -> None:
         self.__statement = statement
+
+    def getQuery(self) -> str:
+        return self.__query
+
+    def setQuery(self, query: str) -> None:
+        self.__query = query
 
     def query(self, query: str, parameters: None | tuple):
         """

@@ -83,7 +83,7 @@ class Object_Relational_Mapper(Database_Handler):
             query = f"{self.getQuery()} JOIN {condition}"
         self.setQuery(query)
 
-    def _get_filter(self, condition: str, parameters: list | None) -> None:
+    def _get_filter(self, condition: str, parameters: tuple | None) -> None:
         """
         Building the query needed for retrieving specific data.
 
@@ -95,25 +95,11 @@ class Object_Relational_Mapper(Database_Handler):
         """
         if condition == "":
             query = self.getQuery()
+            self.setParameters(None)
         else:
             query = f"{self.getQuery()} WHERE {condition}"
-            self.__handle_parameters(parameters)
+            self.setParameters(parameters)
         self.setQuery(query)
-
-    def __handle_parameters(self, parameters: list | None) -> None:
-        """
-        Building the array to be used as parameters to sanitize the
-        query for more security.
-
-        Parameters:
-            parameters: array|null: The parameters to be used.
-
-        Returns: void
-        """
-        if type(parameters) is list:
-            self.setParameters(tuple(parameters))
-        else:
-            self.setParameters(None)
 
     def _get_sort(self, condition: str) -> None:
         """

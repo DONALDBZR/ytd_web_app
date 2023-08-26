@@ -123,7 +123,7 @@ class Database_Handler:
 
         Returns: None
         """
-        self.getDatabaseHandler().commit()
+        self.__getDatabaseHandler().commit()
 
     def resultSet(self) -> list:
         """

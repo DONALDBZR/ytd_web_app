@@ -181,7 +181,7 @@ class Database_Handler:
         self.setQuery(query)
         self.setParameters(parameters)
         self._get_join(join_condition)
-        self._get_filter(filter_condition, parameters)
+        self._get_filter(filter_condition)
         self._get_sort(sort_condition)
         self._get_limit(limit_condition)
         self._query(self.getQuery(), self.getParameters())

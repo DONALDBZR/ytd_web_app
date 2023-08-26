@@ -290,7 +290,7 @@ class Search extends Main {
      */
     render() {
         return (
-            <main>
+            <>
                 <form method="POST" onSubmit={this.handleSubmit.bind(this)}>
                     <input
                         type="search"
@@ -305,7 +305,7 @@ class Search extends Main {
                     </button>
                 </form>
                 <Media />
-            </main>
+            </>
         );
     }
 }

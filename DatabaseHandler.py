@@ -218,3 +218,18 @@ class Database_Handler:
         else:
             query = f"{self.getQuery()} WHERE {condition}"
         self.setQuery(query)
+
+    def _get_sort(self, condition: str) -> None:
+        """
+        Building the query needed to be used to sort the result set.
+
+        Parameters:
+            condition:  string: The ORDER BY statement that will be used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} ORDER BY {condition}"
+        self.setQuery(query)

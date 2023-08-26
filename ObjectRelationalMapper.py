@@ -14,21 +14,6 @@ class Object_Relational_Mapper(Database_Handler):
         super().__init__()
         self.setParameters(None)
 
-    def _get_sort(self, condition: str) -> None:
-        """
-        Building the query needed to be used to sort the result set.
-
-        Parameters:
-            condition:  string: The ORDER BY statement that will be used.
-
-        Returns: void
-        """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} ORDER BY {condition}"
-        self.setQuery(query)
-
     def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
         """
         Creating records to store data into the database server.

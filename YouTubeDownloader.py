@@ -2,6 +2,7 @@ from pytube import YouTube
 from DatabaseHandler import Database_Handler
 from datetime import datetime
 import time
+import os
 
 
 class YouTube_Downloader:
@@ -103,6 +104,7 @@ class YouTube_Downloader:
             media_identifier: int: The media type for the system. 
         """
         self.setDirectory("./Public")
+        self.mediaDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
         self.getDatabaseHandler()._execute()
@@ -255,6 +257,16 @@ class YouTube_Downloader:
         self.getDatabaseHandler().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s",
                                             (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
 
+    def mediaDirectory(self):
+        """
+        Creating the directories for storing the media files.
+
+        Returns: void
+        """
+        if not os.path.exists(f"{self.getDirectory()}/Video"):
+            os.makedirs(f"{self.getDirectory()}/Video")
+        if not os.path.exists(f"{self.getDirectory()}/Audio"):
+            os.makedirs(f"{self.getDirectory()}/Audio")
     # def donwloadContent(self):
     #     """
     #     Downloading the content from YouTube.

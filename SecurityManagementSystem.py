@@ -116,5 +116,5 @@ class Security_Management_System:
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
         self.setDateCreated(datetime.fromtimestamp(
             self.getDatestamp()).strftime("%Y-%m-%d"))
-        self.getObjectRelationalMapper().post_data(
-            "Session", "hash, date_created", "%s, %s", [self.getHash(), self.getDateCreated()])
+        self.getDatabaseHandler().post_data(
+            "Session", "hash, date_created", "%s, %s", (self.getHash(), self.getDateCreated()))

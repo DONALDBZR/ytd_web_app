@@ -162,7 +162,7 @@ class Database_Handler:
         """
         return self.__getStatement().fetchall()
 
-    def get_records(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: str = "") -> list:
+    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: str = "") -> list:
         """
         Retrieving data from the database.
 

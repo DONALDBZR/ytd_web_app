@@ -8,9 +8,9 @@ class Footer extends React.Component {
      */
     render() {
         return (
-            <footer>
+            <>
                 <div>Extractio</div>
-            </footer>
+            </>
         );
     }
 }

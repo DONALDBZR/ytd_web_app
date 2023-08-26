@@ -86,6 +86,13 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
+    __directory: str
+    """
+    The directory of the media files.
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
@@ -95,6 +102,7 @@ class YouTube_Downloader:
             uniform_resource_locator: string: The uniform resource locator to be searched.
             media_identifier: int: The media type for the system. 
         """
+        self.setDirectory("./Public")
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
         self.getDatabaseHandler()._execute()
@@ -166,6 +174,12 @@ class YouTube_Downloader:
 
     def setTimestamp(self, timestamp: str) -> None:
         self.__timestamp = timestamp
+
+    def getDirectory(self) -> str:
+        return self.__directory
+
+    def setDirectory(self, directory: str) -> None:
+        self.__directory = directory
 
     def search(self) -> dict:
         """
@@ -240,3 +254,8 @@ class YouTube_Downloader:
         """
         self.getDatabaseHandler().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s",
                                             (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
+
+    # def donwloadContent(self):
+    #     """
+    #     Downloading the content from YouTube.
+    #     """

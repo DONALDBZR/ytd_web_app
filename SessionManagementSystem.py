@@ -86,7 +86,7 @@ class Session_Manager:
         self.setDirectory("./Cache/Session/Users/")
         self.setIpAddress(request["ip_address"])
         self.setHttpClientIpAddress(request["http_client_ip_address"])
-        self.setProxyIpAddress(request["proxe_ip_address"])
+        self.setProxyIpAddress(request["proxy_ip_address"])
         self.setSession(session)
         self.verifySession()
 

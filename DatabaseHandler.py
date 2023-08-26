@@ -70,40 +70,40 @@ class Database_Handler:
         except mysql.connector.Error as error:
             print("Connection Failed: " + str(error))
 
-    def getHost(self) -> str:
+    def __getHost(self) -> str:
         return self.__host
 
-    def setHost(self, host: str) -> None:
+    def __setHost(self, host: str) -> None:
         self.__host = host
 
-    def getDatabase(self) -> str:
+    def __getDatabase(self) -> str:
         return self.__database
 
-    def setDatabase(self, database: str) -> None:
+    def __setDatabase(self, database: str) -> None:
         self.__database = database
 
-    def getUsername(self) -> str:
+    def __getUsername(self) -> str:
         return self.__username
 
-    def setUsername(self, username: str) -> None:
+    def __setUsername(self, username: str) -> None:
         self.__username = username
 
-    def getPassword(self) -> str:
+    def __getPassword(self) -> str:
         return self.__password
 
-    def setPassword(self, password: str) -> None:
+    def __setPassword(self, password: str) -> None:
         self.__password = password
 
-    def getDatabaseHandler(self) -> "PooledMySQLConnection | MySQLConnection":
+    def __getDatabaseHandler(self) -> "PooledMySQLConnection | MySQLConnection":
         return self.__database_handler
 
-    def setDatabaseHandler(self, database_handler: "PooledMySQLConnection | MySQLConnection") -> None:
+    def __setDatabaseHandler(self, database_handler: "PooledMySQLConnection | MySQLConnection") -> None:
         self.__database_handler = database_handler
 
-    def getStatement(self) -> "MySQLCursor":
+    def __getStatement(self) -> "MySQLCursor":
         return self.__statement
 
-    def setStatement(self, statement: "MySQLCursor") -> None:
+    def __setStatement(self, statement: "MySQLCursor") -> None:
         self.__statement = statement
 
     def query(self, query: str, parameters: None | tuple):

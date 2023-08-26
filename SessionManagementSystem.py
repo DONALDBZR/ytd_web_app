@@ -261,7 +261,7 @@ class Session_Manager:
         response = {}
         # Ensuring that the session files are of JSON file type.
         if file_name.endswith(".json"):
-            file_path = str(self.getDirectory() + "/" + file_name)
+            file_path = f"{self.getDirectory()}/{file_name}"
             file = open(file_path)
             data = json.load(file)
             response = {

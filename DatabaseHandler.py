@@ -235,20 +235,20 @@ class Database_Handler:
             query = f"{self.getQuery()} ORDER BY {condition}"
         self.setQuery(query)
 
-    def _get_limit(self, condition: str) -> None:
+    def _get_limit(self, limit: int) -> None:
         """
         Building the query needed to be used to limit the amount of
         data from the result set.
 
         Parameters:
-            condition:  string: The ORDER BY statement that will be used.
+            limit:  int: The ORDER BY statement that will be used.
 
         Returns: void
         """
-        if condition == "":
-            query = self.getQuery()
+        if limit > 0:
+            query = f"{self.getQuery()} LIMIT {limit}"
         else:
-            query = f"{self.getQuery()} LIMIT {condition}"
+            query = self.getQuery()
         self.setQuery(query)
 
     def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:

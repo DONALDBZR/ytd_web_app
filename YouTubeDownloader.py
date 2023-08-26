@@ -105,7 +105,22 @@ class YouTube_Downloader:
     """
     Container for stream manifest data.
 
-    Type: Stream
+    Type: Stream|null
+    Visibility: private
+    """
+    __itag: int
+    """
+    YouTube format identifier code
+
+    Type: integer
+    Visibility: private
+    """
+    __mime_type: str
+    """
+    Two-part identifier for file formats and format contents
+    composed of a "type" and a "subtype".
+
+    Type: string
     Visibility: private
     """
 
@@ -209,6 +224,18 @@ class YouTube_Downloader:
     def setStream(self, stream: "Stream") -> None:
         self.__stream = stream
 
+    def getITAG(self) -> int:
+        return self.__itag
+
+    def setITAG(self, itag: int) -> None:
+        self.__itag = itag
+
+    def getMimeType(self) -> str:
+        return self.__mime_type
+
+    def setMimeType(self, mime_type: str) -> None:
+        self.__mime_type = mime_type
+
     def search(self) -> dict:
         """
         Searching for the video in YouTube.
@@ -294,25 +321,48 @@ class YouTube_Downloader:
         if not os.path.exists(f"{self.getDirectory()}/Audio"):
             os.makedirs(f"{self.getDirectory()}/Audio")
 
-    def retrievingStreams(self):
+    def retrievingStreams(self) -> dict:
         """
-        Downloading the content from YouTube.
+        Downloading the contents of the media from the platform to
+        save on the server.
+
+        Returns: object
         """
+        response = {}
         self.setVideo(
             YouTube(self.getUniformResourceLocator(), use_oauth=True))
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
+        self.getDatabaseHandler()._execute()
+        self.setIdentifier(self.getUniformResourceLocator())
+        self.setIdentifier(self.getIdentifier().replace(
+            "https://www.youtube.com/watch?v=", ""))
+        self.setTitle(self.getYouTube()["data"][0][4])
         self.setStreams(self.getVideo().streams)
-        audio_streams = self.getStreams().filter(
-            mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")
-        video_streams = self.getStreams().filter(
-            mime_type="video/mp4", res="1080p", video_codec="avc1.640028")
-        audio_stream_itag = 0
-        video_stream_itag = 0
-        for index in range(0, len(audio_streams), 1):
-            audio_stream_itag = audio_streams[index].itag
-        audio_stream = audio_streams.get_by_itag(audio_stream_itag)
-        for index in range(0, len(video_streams), 1):
-            video_stream_itag = video_streams[index].itag
-        video_stream = video_streams.get_by_itag(video_stream_itag)
-        print(
-            f"Uniform Resource Locator: {self.getUniformResourceLocator()}\nStreams: {self.getStreams()}\nAudio Stream ITAG: {audio_stream_itag}\nAudio Stream: {audio_stream}\nVideo Stream ITAG: {video_stream_itag}\nVideo Stream: {video_stream}")
-        return {}
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        # Iterating throughout the streams to set the ITAG needed
+        for index in range(0, len(self.getStreams().filter(mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")), 1):
+            self.setITAG(self.getStreams().filter(
+                mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")[index].itag)
+        self.setStream(self.getStreams().get_by_itag(
+            self.getITAG()))  # type: ignore
+        self.setMimeType(self.getStream().mime_type)
+        self.getStream().download(f"{self.getDirectory()}/Audio")
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
+                                            (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4", self.getIdentifier()))
+        # Iterating throughout the streams to set the ITAG needed
+        for index in range(0, len(self.getStreams().filter(mime_type="video/mp4", audio_codec="mp4a.40.2", resolution="720p")), 1):
+            self.setITAG(self.getStreams().filter(
+                mime_type="video/mp4", audio_codec="mp4a.40.2", resolution="720p")[index].itag)
+        self.setStream(self.getStreams().get_by_itag(
+            self.getITAG()))  # type: ignore
+        self.setMimeType(self.getStream().mime_type)
+        self.getStream().download(f"{self.getDirectory()}/Video")
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
+                                            (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Video/{self.getTitle()}.mp4", self.getIdentifier()))
+        response = {
+            "status": 200,
+            "url": f"/Download/YouTube/{self.getIdentifier()}"
+        }
+        return response

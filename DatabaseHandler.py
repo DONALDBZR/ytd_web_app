@@ -113,8 +113,8 @@ class Database_Handler:
 
         Returns: Generator[MySQLCursor, None, None] | None
         """
-        self.setStatement(self.getDatabaseHandler().cursor(prepared=True))
-        self.getStatement().execute(query, parameters)
+        self.__setStatement(self.__getDatabaseHandler().cursor(prepared=True))
+        self.__getStatement().execute(query, parameters)
 
     def execute(self) -> None:
         """

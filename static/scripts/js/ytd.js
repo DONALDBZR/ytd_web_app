@@ -149,7 +149,7 @@ class YTD {
             this.setBodyId(this.getRequestURI().replaceAll("/", ""));
         }
         this.getBody().id = this.getBodyId();
-        this.changeReferrerPolicy();
+        this.style();
     }
     /**
      * Styling the application
@@ -184,24 +184,6 @@ class YTD {
         const width = `${root.clientWidth}px`;
         root.style.setProperty("--height", height);
         root.style.setProperty("--width", width);
-    }
-    /**
-     * Changing the referrer policy of the application
-     * @returns {void}
-     */
-    changeReferrerPolicy() {
-        const head = document.head;
-        const meta = document.createElement("meta");
-        if (
-            this.getRequestURI().includes("/Search") &&
-            this.getRequestURI() != "/Search" &&
-            window.location.protocol == "http:"
-        ) {
-            meta.name = "referrer";
-            meta.content = "no-referrer";
-            head.appendChild(meta);
-        }
-        this.style();
     }
 }
 const application = new YTD();

@@ -144,18 +144,13 @@ class Session_Manager:
     def setSession(self, session: "SessionMixin") -> None:
         self.__session = session
 
-    def createSession(self) -> None:
+    def createSession(self) -> "SessionMixin":
         """
         Creating the session
 
         Returns: void
         """
         self.getSession().clear()
-        self.setIpAddress(str(self.getRequest().environ.get('REMOTE_ADDR')))
-        self.setHttpClientIpAddress(
-            str(self.getRequest().environ.get('HTTP_CLIENT_IP')))
-        self.setProxyIpAddress(
-            str(self.getRequest().environ.get('HTTP_X_FORWARDED_FOR')))
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.setColorScheme("light")
         data = {
@@ -172,7 +167,7 @@ class Session_Manager:
         session_file = open(file_path, 'w')
         session_file.write(session_data)
         session_file.close()
-        session = self.getSession()
+        return self.getSession()
 
     def verifySession(self) -> None:
         """

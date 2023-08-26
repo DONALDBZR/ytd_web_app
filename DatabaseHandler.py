@@ -285,3 +285,21 @@ class Database_Handler:
         self._get_filter(condition)
         self._query(self.getQuery(), self.getParameters())
         self._execute()
+
+    def delete_records(self, table: str, parameters: tuple | None, condition: str = "") -> None:
+        """
+        Deleting data from the database.
+
+        Parameters:
+            table:      string: Table
+            parameters: array:  Data to be used for data manipulation.
+            condition:  string: Specification
+
+        Returns: void
+        """
+        query = f"DELETE FROM {table}"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._get_filter(condition)
+        self._query(self.getQuery(), self.getParameters())
+        self._execute()

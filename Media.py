@@ -198,12 +198,8 @@ class Media:
 
         Returns: void
         """
-        """
-        INSERT INTO `Media` (value)
-        VALUES (:value);
-        """
-        self.getObjectRelationalMapper().post_data(
-            "Media", "value", "%s", [self.getValue()])
+        self.getDatabaseHandler().post_data(
+            "Media", "value", "%s", tuple([self.getValue()]))
 
     def handleYouTube(self) -> dict:
         """

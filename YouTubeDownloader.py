@@ -1,5 +1,5 @@
 from pytube import YouTube
-from ObjectRelationalMapper import Object_Relational_Mapper
+from DatabaseHandler import Database_Handler
 from datetime import datetime
 from time import time
 
@@ -57,12 +57,12 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
-    __object_relational_mapper: "Object_Relational_Mapper"
+    __database_handler: "Database_Handler"
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
 
-    Type: Object_Relational_Mapper
+    Type: Database_Handler
     Visibility: private
     """
     __author: str
@@ -95,7 +95,7 @@ class YouTube_Downloader:
             uniform_resource_locator: string: The uniform resource locator to be searched.
             media_identifier: int: The media type for the system. 
         """
-        self.setObjectRelationalMapper(Object_Relational_Mapper())
+        self.setObjectRelationalMapper(Database_Handler())
         self.getObjectRelationalMapper().query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
         self.getObjectRelationalMapper().execute()
         self.setUniformResourceLocator(uniform_resource_locator)
@@ -143,11 +143,11 @@ class YouTube_Downloader:
     def setPublishedAt(self, published_at: str | datetime | None) -> None:
         self.__published_at = str(published_at)
 
-    def getObjectRelationalMapper(self) -> "Object_Relational_Mapper":
-        return self.__object_relational_mapper
+    def getDatabaseHandler(self) -> "Database_Handler":
+        return self.__database_handler
 
-    def setObjectRelationalMapper(self, object_relational_mapper: "Object_Relational_Mapper") -> None:
-        self.__object_relational_mapper = object_relational_mapper
+    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+        self.__database_handler = database_handler
 
     def getAuthor(self) -> str:
         return self.__author

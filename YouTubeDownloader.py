@@ -294,18 +294,25 @@ class YouTube_Downloader:
         if not os.path.exists(f"{self.getDirectory()}/Audio"):
             os.makedirs(f"{self.getDirectory()}/Audio")
 
-    def downloadContent(self):
+    def retrievingStreams(self):
         """
         Downloading the content from YouTube.
         """
         self.setVideo(
             YouTube(self.getUniformResourceLocator(), use_oauth=True))
         self.setStreams(self.getVideo().streams)
-        audio_streams = self.getStreams().filter(mime_type="audio/mp4", abr="128kbps")
+        audio_streams = self.getStreams().filter(
+            mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")
+        video_streams = self.getStreams().filter(
+            mime_type="video/mp4", res="1080p", video_codec="avc1.640028")
         audio_stream_itag = 0
+        video_stream_itag = 0
         for index in range(0, len(audio_streams), 1):
             audio_stream_itag = audio_streams[index].itag
         audio_stream = audio_streams.get_by_itag(audio_stream_itag)
+        for index in range(0, len(video_streams), 1):
+            video_stream_itag = video_streams[index].itag
+        video_stream = video_streams.get_by_itag(video_stream_itag)
         print(
-            f"Uniform Resource Locator: {self.getUniformResourceLocator()}\nStreams: {self.getStreams()}\nAudio Streams: {audio_streams}\nAudio Stream ITAG: {audio_stream_itag}\nAudio Stream: {audio_stream}")
+            f"Uniform Resource Locator: {self.getUniformResourceLocator()}\nStreams: {self.getStreams()}\nAudio Stream ITAG: {audio_stream_itag}\nAudio Stream: {audio_stream}\nVideo Stream ITAG: {video_stream_itag}\nVideo Stream: {video_stream}")
         return {}

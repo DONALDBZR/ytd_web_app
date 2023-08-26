@@ -212,7 +212,9 @@ class Media:
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
             media = {
-                "YouTube": self._YouTubeDownloader.search()
+                "Media": {
+                    "YouTube": self._YouTubeDownloader.search()
+                }
             }
             filename = f"{self.getDirectory()}/{self.getIpAddress()}.json"
             file = open(filename, "w")

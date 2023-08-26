@@ -222,6 +222,4 @@ class Media:
                 "status": 200,
                 "data": self._YouTubeDownloader.search()
             }
-        print(
-            f"Identifier: {self.getIdentifier()}\nSearch: {self.getSearch()}\nMedia: {media}\nFile Name: {filename}\nResponse: {response}")
         return response

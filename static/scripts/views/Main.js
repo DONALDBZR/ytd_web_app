@@ -149,15 +149,11 @@ class Main extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) =>
-                this.setState((previous) => ({
-                    System: {
-                        ...previous.System,
-                        url: data.data.data.url,
-                    },
-                }))
-            )
-            .then(() => this.redirector(delay, this.state.System.url));
+            .then((data) => {
+                setTimeout(() => {
+                    window.location.href = data.data.data.url;
+                }, delay);
+            });
     }
     /**
      * Redirecting the user to an intended url

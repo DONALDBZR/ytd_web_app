@@ -95,7 +95,8 @@ class Main extends React.Component {
             .then(() => this.redirector(delay, this.state.System.url));
     }
     /**
-     * Retrieving the data of the media content that is searched by the user
+     * Retrieving the data of the media content that is searched by
+     * the user.
      * @returns {void}
      */
     getMedia() {
@@ -104,7 +105,11 @@ class Main extends React.Component {
         })
             .then((response) => response.json())
             .then((data) => {
-                if (typeof data.Media.YouTube != "undefined") {
+                if (
+                    typeof data.Media.YouTube != "undefined" &&
+                    typeof data.Media.YouTube.audio == "undefined" &&
+                    typeof data.Media.YouTube.video == "undefined"
+                ) {
                     this.setState((previous) => ({
                         Media: {
                             ...previous.Media,
@@ -119,6 +124,33 @@ class Main extends React.Component {
                                 published_at: data.Media.YouTube.published_at,
                                 thumbnail: data.Media.YouTube.thumbnail,
                                 duration: data.Media.YouTube.duration,
+                            },
+                        },
+                    }));
+                } else if (
+                    typeof data.Media.YouTube != "undefined" &&
+                    typeof data.Media.YouTube.audio != "undefined" &&
+                    typeof data.Media.YouTube.video != "undefined"
+                ) {
+                    this.setState((previous) => ({
+                        Media: {
+                            ...previous.Media,
+                            YouTube: {
+                                uniform_resource_locator:
+                                    data.Media.YouTube.uniform_resource_locator,
+                                title: data.Media.YouTube.title,
+                                author: data.Media.YouTube.author,
+                                author_channel:
+                                    data.Media.YouTube.author_channel,
+                                views: data.Media.YouTube.views,
+                                published_at: data.Media.YouTube.published_at,
+                                thumbnail: data.Media.YouTube.thumbnail,
+                                duration: data.Media.YouTube.duration,
+                                ...Media.YouTube,
+                                File: {
+                                    audio: data.Media.YouTube.audio,
+                                    video: data.Media.YouTube.video,
+                                },
                             },
                         },
                     }));
@@ -435,6 +467,50 @@ class Download extends Main {
                 </>
             );
         }
+    }
+}
+/**
+ * The component to be rendered for the Download page but only when it is for media from YouTube
+ */
+class YouTubeDownloader extends Main {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Running the methods needed as soon as the component has been successfully mounted
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getMedia();
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return (
+            <div class="YouTube">
+                <div>
+                    <a href={this.state.Media.YouTube.uniform_resource_locator}>
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+                </div>
+                <div>
+                    <a href="{this.state.Media.YouTube.File.audio}" download>
+                        <i class="fa-solid fa-music"></i>
+                    </a>
+                </div>
+                <div>
+                    <a href="{this.state.Media.YouTube.File.video}" download>
+                        <i class="fa-solid fa-video"></i>
+                    </a>
+                </div>
+            </div>
+        );
     }
 }
 // Rendering the page

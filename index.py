@@ -183,3 +183,17 @@ def retrieveMedia() -> str:
     if "Search" in request.referrer:
         media = Media(user_request)
     return json.dumps(media.verifyPlatform(), indent=4)  # type: ignore
+
+
+@Application.route('/Download/YouTube/<string:identifier>', methods=['GET'])
+def downloadPage(identifier: str) -> str:
+    """
+    Rendering the template needed which will import the
+    web-worker.
+
+    Parameters:
+        identifier: string: Identifier of the media conetent to be searched.
+
+    Returns: string
+    """
+    return render_template('page.html')

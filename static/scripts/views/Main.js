@@ -412,5 +412,30 @@ class YouTube extends Media {
         );
     }
 }
+/**
+ * The component to be rendered for the Download page
+ */
+class Download extends Main {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLMainElement}
+     */
+    render() {
+        if (this.state.System.view_route.includes("YouTube")) {
+            return (
+                <>
+                    <YouTubeDownloader />
+                </>
+            );
+        }
+    }
+}
 // Rendering the page
 ReactDOM.render(<Main />, document.querySelector("main"));

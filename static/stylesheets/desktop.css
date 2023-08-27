@@ -14,27 +14,32 @@ body {
 #Homepage header,
 #Homepage footer,
 body[id*="Search"] header,
-body[id*="Search"] footer {
+body[id*="Search"] footer,
+body[id*="Download"] header {
     height: calc(var(--height) / 10);
 }
 #Homepage header nav,
-body[id*="Search"] header nav {
+body[id*="Search"] header nav,
+body[id*="Download"] header nav {
     display: flex;
     height: inherit;
 }
 #Homepage header nav div,
-body[id*="Search"] header nav div {
+body[id*="Search"] header nav div,
+body[id*="Download"] header nav div {
     width: calc(var(--width) / 2);
     display: flex;
 }
 #Homepage header nav div:nth-child(1),
-body[id*="Search"] header nav div:nth-child(1) {
+body[id*="Search"] header nav div:nth-child(1),
+body[id*="Download"] header nav div:nth-child(1) {
     justify-content: center;
     align-items: center;
     font-size: calc(var(--textSize) * 2);
 }
 #Homepage header nav div:nth-child(2) div,
-body[id*="Search"] header nav div:nth-child(2) div {
+body[id*="Search"] header nav div:nth-child(2) div,
+body[id*="Download"] header nav div:nth-child(2) div {
     width: calc(var(--width) / 4);
     display: flex;
     justify-content: center;
@@ -42,11 +47,13 @@ body[id*="Search"] header nav div:nth-child(2) div {
     font-size: calc(var(--textSize) * 1);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(1) a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a {
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a,
+body[id*="Download"] header nav div:nth-child(2) div:nth-child(1) a {
     font-size: calc(var(--textSize) * 1.331);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button {
+body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
+body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button {
     border: none;
     font-size: calc(var(--textSize) * 1.331);
 }

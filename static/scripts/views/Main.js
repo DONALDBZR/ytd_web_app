@@ -8,6 +8,10 @@ class Main extends React.Component {
      */
     constructor(props) {
         super(props);
+        /**
+         * States of the application
+         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string, video: string } } } }}
+         */
         this.state = {
             System: {
                 view_route: "",
@@ -27,6 +31,10 @@ class Main extends React.Component {
                     thumbnail: "",
                     duration: "",
                     identifier: "",
+                    File: {
+                        audio: "",
+                        video: "",
+                    },
                 },
             },
         };

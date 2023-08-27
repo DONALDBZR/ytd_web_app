@@ -276,5 +276,55 @@ class Search extends Header {
         );
     }
 }
+/**
+ * The component to be rendered for the Download page
+ */
+class Download extends Header {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Running the methods needed as soon as the component has been successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getSession();
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLHeaderElement}
+     */
+    render() {
+        return (
+            <>
+                <nav>
+                    <div>
+                        <a href="/">Extractio</a>
+                    </div>
+                    <div>
+                        <div>
+                            <a href="/Search">
+                                <i class="fa fa-search"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <button
+                                name="colorSchemeChanger"
+                                value={this.state.System.color_scheme}
+                                onClick={this.setColorScheme}
+                            >
+                                <ColorScheme />
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </>
+        );
+    }
+}
 // Rendering the page
 ReactDOM.render(<Header />, document.querySelector("header"));

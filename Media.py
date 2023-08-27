@@ -213,9 +213,10 @@ class Media:
             self.getSearch(), self.getIdentifier())
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
+            youtube = self._YouTubeDownloader.search()
             media = {
                 "Media": {
-                    "YouTube": self._YouTubeDownloader.search()
+                    "YouTube": youtube
                 }
             }
             filename = f"{self.getDirectory()}/{self.getIpAddress()}.json"
@@ -224,12 +225,22 @@ class Media:
             file.close()
             response = {
                 "status": 200,
-                "data": self._YouTubeDownloader.search()
+                "data": youtube
             }
         else:
+            youtube = self._YouTubeDownloader.retrievingStreams()
+            media = {
+                "Media": {
+                    "YouTube": youtube
+                }
+            }
+            filename = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+            file = open(filename, "w")
+            file.write(json.dumps(media, indent=4))
+            file.close()
             response = {
                 "status": 200,
-                "data": self._YouTubeDownloader.retrievingStreams()
+                "data": youtube
             }
         return response
 

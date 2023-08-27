@@ -122,6 +122,7 @@ class Main extends React.Component {
                         Media: {
                             ...previous.Media,
                             YouTube: {
+                                ...previous.Media.YouTube,
                                 uniform_resource_locator:
                                     data.Media.YouTube.uniform_resource_locator,
                                 title: data.Media.YouTube.title,
@@ -144,6 +145,7 @@ class Main extends React.Component {
                         Media: {
                             ...previous.Media,
                             YouTube: {
+                                ...previous.Media.YouTube,
                                 uniform_resource_locator:
                                     data.Media.YouTube.uniform_resource_locator,
                                 title: data.Media.YouTube.title,
@@ -189,11 +191,12 @@ class Main extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) => {
-                setTimeout(() => {
-                    window.location.href = data.data.data.url;
-                }, delay);
-            });
+            .then((data) => console.log(data));
+        // .then((data) => {
+        //     setTimeout(() => {
+        //         window.location.href = data.data.data.url;
+        //     }, delay);
+        // });
     }
     /**
      * Redirecting the user to an intended url
@@ -428,11 +431,11 @@ class YouTube extends Media {
                         </div>
                         <div id="views">
                             <div>Views:</div>
-                            <div>
+                            {/* <div>
                                 {this.state.Media.YouTube.views.toLocaleString(
                                     "en-US"
                                 )}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                     <div>

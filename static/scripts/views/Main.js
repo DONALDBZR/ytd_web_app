@@ -508,12 +508,12 @@ class YouTubeDownloader extends Main {
                     </a>
                 </div>
                 <div>
-                    <a href="{this.state.Media.YouTube.File.audio}" download>
+                    <a href={this.state.Media.YouTube.File.audio} download>
                         <i class="fa-solid fa-music"></i>
                     </a>
                 </div>
                 <div>
-                    <a href="{this.state.Media.YouTube.File.video}" download>
+                    <a href={this.state.Media.YouTube.File.video} download>
                         <i class="fa-solid fa-video"></i>
                     </a>
                 </div>

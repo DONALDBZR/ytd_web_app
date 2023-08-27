@@ -341,7 +341,6 @@ class YouTube_Downloader:
                 "https://www.youtube.com/watch?v=", ""))
             audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
             video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
-            status = 200
         else:
             self.setVideo(
                 YouTube(self.getUniformResourceLocator(), use_oauth=True))
@@ -353,22 +352,18 @@ class YouTube_Downloader:
             self.setStreams(self.getVideo().streams)
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()
-            status = 201
         response = {
-            "status": status,
-            "data": {
-                "uniform_resource_locator": self.getUniformResourceLocator(),
-                "author": self.getAuthor(),
-                "title": self.getTitle(),
-                "identifier": self.getIdentifier(),
-                "author_channel": self.getVideo().channel_url,
-                "views": self.getVideo().views,
-                "published_at": self.getPublishedAt(),
-                "thumbnail": self.getVideo().thumbnail_url,
-                "duration": self.getDuration(),
-                "audio": audio_file_location,
-                "video": video_file_location
-            }
+            "uniform_resource_locator": self.getUniformResourceLocator(),
+            "author": self.getAuthor(),
+            "title": self.getTitle(),
+            "identifier": self.getIdentifier(),
+            "author_channel": self.getVideo().channel_url,
+            "views": self.getVideo().views,
+            "published_at": self.getPublishedAt(),
+            "thumbnail": self.getVideo().thumbnail_url,
+            "duration": self.getDuration(),
+            "audio": audio_file_location,
+            "video": video_file_location
         }
         return response
 

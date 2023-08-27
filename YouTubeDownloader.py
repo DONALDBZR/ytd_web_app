@@ -336,7 +336,7 @@ class YouTube_Downloader:
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.getIdentifier().replace(
             "https://www.youtube.com/watch?v=", ""))
-        self.setTitle(self.getYouTube()["data"][0][4])
+        metadata = self.search()
         self.setStreams(self.getVideo().streams)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         # Iterating throughout the streams to set the ITAG needed
@@ -350,6 +350,7 @@ class YouTube_Downloader:
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4", self.getIdentifier()))
+        audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
         # Iterating throughout the streams to set the ITAG needed
         for index in range(0, len(self.getStreams().filter(mime_type="video/mp4", audio_codec="mp4a.40.2", resolution="720p")), 1):
             self.setITAG(self.getStreams().filter(
@@ -361,8 +362,21 @@ class YouTube_Downloader:
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Video/{self.getTitle()}.mp4", self.getIdentifier()))
+        video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         response = {
             "status": 200,
-            "url": f"/Download/YouTube/{self.getIdentifier()}"
+            "data": {
+                "uniform_resource_locator": self.getUniformResourceLocator(),
+                "author": self.getAuthor(),
+                "title": self.getTitle(),
+                "identifier": self.getIdentifier(),
+                "author_channel": self.getVideo().channel_url,
+                "views": self.getVideo().views,
+                "published_at": self.getPublishedAt(),
+                "thumbnail": self.getVideo().thumbnail_url,
+                "duration": self.getDuration(),
+                "audio": audio_file_location,
+                "video": video_file_location
+            }
         }
         return response

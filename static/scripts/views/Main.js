@@ -231,6 +231,8 @@ class Main extends React.Component {
     render() {
         if (this.state.System.view_route.includes("Search")) {
             return <Search />;
+        } else if (this.state.System.view_route.includes("Download")) {
+            return <Download />;
         } else {
             return <Homepage />;
         }

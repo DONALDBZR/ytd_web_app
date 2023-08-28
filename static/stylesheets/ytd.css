@@ -254,13 +254,16 @@ body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
 #Homepage header nav div:nth-child(1),
 body[id*="Search"] header nav div:nth-child(1),
 body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
+body[id*="Download"] header nav div:nth-child(1) {
     font-family: var(--sourceCodePro);
 }
 #Homepage header nav div:nth-child(1) a,
 #Homepage footer div,
 body[id*="Search"] header nav div:nth-child(1) a,
-body[id*="Search"] footer div {
+body[id*="Search"] footer div,
+body[id*="Download"] header nav div:nth-child(1) a,
+body[id*="Download"] footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
@@ -274,11 +277,16 @@ body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a,
 body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button:hover,
 body[id*="Search"] main form button:hover,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button:hover,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover {
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
+body[id*="Download"] header nav div:nth-child(1) a:hover,
+body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button:hover,
+body[id*="Download"] main .YouTube div button:hover {
     color: var(--color3);
 }
 #Homepage header nav div:nth-child(1) a:hover,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover {
+body[id*="Search"] header nav div:nth-child(1) a:hover,
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
+body[id*="Download"] header nav div:nth-child(1) a:hover {
     text-decoration: underline;
 }
 #Homepage header nav div:nth-child(2) div:nth-child(1) a,
@@ -288,19 +296,25 @@ body[id*="Search"] header nav div:nth-child(1) a,
 body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
 body[id*="Search"] footer div,
 body[id*="Search"] main form input::placeholder,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
+body[id*="Download"] header nav div:nth-child(1) a,
+body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
+body[id*="Download"] main .YouTube div button {
     color: var(--color2);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
 body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
+body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button,
+body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
+body[id*="Download"] main .YouTube div button {
     background: none;
     cursor: pointer;
 }
 #Homepage main p {
     font-family: var(--proximaNova);
 }
-#Homepage main div div:nth-child(1) {
+#Homepage main div div:nth-child(1),
+body[id*="Download"] main .YouTube div a {
     color: var(--color4);
 }
 body[id*="Search"] main form input::placeholder {
@@ -348,4 +362,7 @@ body[id*="Search"]
     #views
     div:nth-child(2) {
     font-weight: normal;
+}
+body[id*="Download"] main .YouTube div a:hover {
+    opacity: calc(var(--percentage) / 2);
 }

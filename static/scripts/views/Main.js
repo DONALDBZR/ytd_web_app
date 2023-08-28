@@ -10,7 +10,7 @@ class Main extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string, video: string } } } }}
+         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } } }}
          */
         this.state = {
             System: {
@@ -115,8 +115,10 @@ class Main extends React.Component {
             .then((data) => {
                 if (
                     typeof data.Media.YouTube != "undefined" &&
-                    typeof data.Media.YouTube.audio == "undefined" &&
-                    typeof data.Media.YouTube.video == "undefined"
+                    ((typeof data.Media.YouTube.audio == "undefined" &&
+                        typeof data.Media.YouTube.video == "undefined") ||
+                        (typeof data.Media.YouTube.audio == "null" &&
+                            typeof data.Media.YouTube.video == "null"))
                 ) {
                     this.setState((previous) => ({
                         Media: {
@@ -133,14 +135,16 @@ class Main extends React.Component {
                                 published_at: data.Media.YouTube.published_at,
                                 thumbnail: data.Media.YouTube.thumbnail,
                                 duration: data.Media.YouTube.duration,
+                                identifier: data.Media.YouTube.identifier,
+                                File: {
+                                    ...previous.Media.YouTube.File,
+                                    audio: null,
+                                    video: null,
+                                },
                             },
                         },
                     }));
-                } else if (
-                    typeof data.Media.YouTube != "undefined" &&
-                    typeof data.Media.YouTube.audio != "undefined" &&
-                    typeof data.Media.YouTube.video != "undefined"
-                ) {
+                } else {
                     this.setState((previous) => ({
                         Media: {
                             ...previous.Media,
@@ -156,8 +160,9 @@ class Main extends React.Component {
                                 published_at: data.Media.YouTube.published_at,
                                 thumbnail: data.Media.YouTube.thumbnail,
                                 duration: data.Media.YouTube.duration,
-                                ...Media.YouTube,
+                                identifier: data.Media.YouTube.identifier,
                                 File: {
+                                    ...previous.Media.YouTube.File,
                                     audio: data.Media.YouTube.audio,
                                     video: data.Media.YouTube.video,
                                 },
@@ -191,12 +196,12 @@ class Main extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) => console.log(data));
-        // .then((data) => {
-        //     setTimeout(() => {
-        //         window.location.href = data.data.data.url;
-        //     }, delay);
-        // });
+            .then((data) => console.log(data))
+            .then((data) => {
+                setTimeout(() => {
+                    window.location.href = data.data.data.url;
+                }, delay);
+            });
     }
     /**
      * Redirecting the user to an intended url
@@ -431,11 +436,11 @@ class YouTube extends Media {
                         </div>
                         <div id="views">
                             <div>Views:</div>
-                            {/* <div>
+                            <div>
                                 {this.state.Media.YouTube.views.toLocaleString(
                                     "en-US"
                                 )}
-                            </div> */}
+                            </div>
                         </div>
                     </div>
                     <div>

@@ -284,12 +284,16 @@ class Main extends React.Component {
         let file_location = document.querySelector(
             "button[name='file_downloader']"
         ).value;
-        fetch(`${window.location.host}${file_location}`, {})
-            .then((response) => response.blob())
-            .then((blob) => {
-                let file = window.URL.createObjectURL(blob);
-                window.location.assign(file);
-            });
+        fetch("/Download", {
+            method: "POST",
+            body: JSON.stringify({
+                file: file_location,
+            }),
+            headers: {
+                "Content-Type": "application/json",
+                "Content-Disposition": "attachment",
+            },
+        });
     }
     /**
      * Rendering the component
@@ -541,7 +545,7 @@ class YouTubeDownloader extends Main {
                             ".",
                             ""
                         )}
-                        onclick={this.getFile}
+                        onClick={this.getFile}
                     >
                         <i class="fa-solid fa-music"></i>
                     </button>
@@ -553,7 +557,7 @@ class YouTubeDownloader extends Main {
                             ".",
                             ""
                         )}
-                        onclick={this.getFile}
+                        onClick={this.getFile}
                     >
                         <i class="fa-solid fa-video"></i>
                     </button>

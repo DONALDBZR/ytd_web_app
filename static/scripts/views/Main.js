@@ -273,6 +273,25 @@ class Main extends React.Component {
         }
     }
     /**
+     * Downloading the file retrieved from the server.
+     * @returns {void}
+     */
+    getFile() {
+        /**
+         * Uniform resource locator of the file needed.
+         * @type {string}
+         */
+        file_location = document.querySelector(
+            "button[name='file_downloader']"
+        ).value;
+        fetch(file_location, {})
+            .then((response) => response.blob())
+            .then((blob) => {
+                let file = window.URL.createObjectURL(blob);
+                window.location.assign(file);
+            });
+    }
+    /**
      * Rendering the component
      * @returns {HTMLElement}
      */
@@ -517,6 +536,7 @@ class YouTubeDownloader extends Main {
                 </div>
                 <div>
                     <button
+                        name="file_downloader"
                         value={this.state.Media.YouTube.File.audio}
                         onclick={this.getFile}
                     >
@@ -525,6 +545,7 @@ class YouTubeDownloader extends Main {
                 </div>
                 <div>
                     <button
+                        name="file_downloader"
                         value={this.state.Media.YouTube.File.video}
                         onclick={this.getFile}
                     >

@@ -1,11 +1,12 @@
 # Importing the requirements for the application
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, send_file, Response
 from datetime import date
 from SessionManagementSystem import Session_Manager
 from DatabaseHandler import Database_Handler
 from Media import Media
 import json
 from SecurityManagementSystem import Security_Management_System
+import os
 
 Application = Flask(__name__)
 """
@@ -197,3 +198,16 @@ def downloadPage(identifier: str) -> str:
     Returns: string
     """
     return render_template('page.html')
+
+
+@Application.route('/Download', methods=['POST'])
+def downloadFile() -> Response:
+    """
+    Downloading the file from the file location that is sent
+    from the view.
+
+    Returns: Response
+    """
+    request_json = request.json
+    file_path = f"./{request_json['file']}"  # type: ignore
+    return send_file(file_path, as_attachment=True)

@@ -284,16 +284,32 @@ class Main extends React.Component {
         let file_location = document.querySelector(
             "button[name='file_downloader']"
         ).value;
+        let file_name = "";
+        let file_directory = "";
+        if (file_location.includes("/Public/Audio/")) {
+            file_name = file_location.replace("/Public/Audio/", "");
+        } else if (file_location.includes("/Public/Video/")) {
+            file_name = file_location.replace("/Public/Video/", "");
+        }
+        file_directory = file_location.replace(file_name, "");
         fetch("/Download", {
             method: "POST",
             body: JSON.stringify({
                 file: file_location,
+                file_name: file_name,
+                file_directory: file_directory,
             }),
             headers: {
                 "Content-Type": "application/json",
-                "Content-Disposition": "attachment",
             },
-        });
+        })
+            .then((response) => response.blob())
+            .then((data) => {
+                let a = document.createElement("a");
+                a.href = window.URL.createObjectURL(data);
+                a.download = file_name;
+                a.click();
+            });
     }
     /**
      * Rendering the component

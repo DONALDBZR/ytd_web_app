@@ -240,7 +240,9 @@ class Media:
             file.close()
             response = {
                 "status": 200,
-                "data": youtube
+                "data": {
+                    "url": f"/Download/YouTube/{youtube['identifier']}"
+                }
             }
         return response
 

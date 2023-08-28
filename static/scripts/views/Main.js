@@ -537,7 +537,10 @@ class YouTubeDownloader extends Main {
                 <div>
                     <button
                         name="file_downloader"
-                        value={this.state.Media.YouTube.File.audio}
+                        value={this.state.Media.YouTube.File.audio.replace(
+                            ".",
+                            ""
+                        )}
                         onclick={this.getFile}
                     >
                         <i class="fa-solid fa-music"></i>
@@ -546,7 +549,10 @@ class YouTubeDownloader extends Main {
                 <div>
                     <button
                         name="file_downloader"
-                        value={this.state.Media.YouTube.File.video}
+                        value={this.state.Media.YouTube.File.video.replace(
+                            ".",
+                            ""
+                        )}
                         onclick={this.getFile}
                     >
                         <i class="fa-solid fa-video"></i>

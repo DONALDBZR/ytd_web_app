@@ -281,10 +281,10 @@ class Main extends React.Component {
          * Uniform resource locator of the file needed.
          * @type {string}
          */
-        file_location = document.querySelector(
+        let file_location = document.querySelector(
             "button[name='file_downloader']"
         ).value;
-        fetch(file_location, {})
+        fetch(`${window.location.host}${file_location}`, {})
             .then((response) => response.blob())
             .then((blob) => {
                 let file = window.URL.createObjectURL(blob);

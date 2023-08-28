@@ -274,30 +274,31 @@ class Main extends React.Component {
     }
     /**
      * Downloading the file retrieved from the server.
+     * @param {Event} event
      * @returns {void}
      */
-    getFile() {
+    getFile(event) {
+        /**
+         * Button that was clicked
+         * @type {HTMLButtonElement}
+         */
+        const button = event.target.parentElement.parentElement;
         /**
          * Uniform resource locator of the file needed.
          * @type {string}
          */
-        let file_location = document.querySelector(
-            "button[name='file_downloader']"
-        ).value;
+        const file_location = button.value;
         let file_name = "";
-        let file_directory = "";
         if (file_location.includes("/Public/Audio/")) {
             file_name = file_location.replace("/Public/Audio/", "");
         } else if (file_location.includes("/Public/Video/")) {
             file_name = file_location.replace("/Public/Video/", "");
         }
-        file_directory = file_location.replace(file_name, "");
         fetch("/Download", {
             method: "POST",
             body: JSON.stringify({
                 file: file_location,
                 file_name: file_name,
-                file_directory: file_directory,
             }),
             headers: {
                 "Content-Type": "application/json",
@@ -561,7 +562,7 @@ class YouTubeDownloader extends Main {
                             ".",
                             ""
                         )}
-                        onClick={this.getFile}
+                        onClick={this.getFile.bind(this)}
                     >
                         <i class="fa-solid fa-music"></i>
                     </button>
@@ -573,7 +574,7 @@ class YouTubeDownloader extends Main {
                             ".",
                             ""
                         )}
-                        onClick={this.getFile}
+                        onClick={this.getFile.bind(this)}
                     >
                         <i class="fa-solid fa-video"></i>
                     </button>

@@ -173,7 +173,8 @@ class Main extends React.Component {
             });
     }
     /**
-     * Retrieving Media from the server by using its uniform resource locator.
+     * Retrieving Media from the server by using its uniform
+     * resource locator.
      * @returns {void}
      */
     retrieveMedia() {
@@ -196,7 +197,6 @@ class Main extends React.Component {
             },
         })
             .then((response) => response.json())
-            .then((data) => console.log(data))
             .then((data) => {
                 setTimeout(() => {
                     window.location.href = data.data.data.url;

@@ -329,16 +329,52 @@ class YouTube_Downloader:
         Returns: object
         """
         response = {}
-        self.setVideo(
-            YouTube(self.getUniformResourceLocator(), use_oauth=True))
-        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
-        self.getDatabaseHandler()._execute()
-        self.setIdentifier(self.getUniformResourceLocator())
-        self.setIdentifier(self.getIdentifier().replace(
-            "https://www.youtube.com/watch?v=", ""))
-        self.setTitle(self.getYouTube()["data"][0][4])
-        self.setStreams(self.getVideo().streams)
-        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        metadata = self.search()
+        audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
+        video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
+        # Verifying that the files exist in the server before downloading them
+        if os.path.isfile(audio_file_location) and os.path.isfile(video_file_location):
+            audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
+            video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
+            self.setIdentifier(self.getUniformResourceLocator())
+            self.setIdentifier(self.getIdentifier().replace(
+                "https://www.youtube.com/watch?v=", ""))
+            audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
+            video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
+        else:
+            self.setVideo(
+                YouTube(self.getUniformResourceLocator(), use_oauth=True))
+            self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
+            self.getDatabaseHandler()._execute()
+            self.setIdentifier(self.getUniformResourceLocator())
+            self.setIdentifier(self.getIdentifier().replace(
+                "https://www.youtube.com/watch?v=", ""))
+            self.setStreams(self.getVideo().streams)
+            audio_file_location = self.getAudioFile()
+            video_file_location = self.getVideoFile()
+        response = {
+            "uniform_resource_locator": self.getUniformResourceLocator(),
+            "author": self.getAuthor(),
+            "title": self.getTitle(),
+            "identifier": self.getIdentifier(),
+            "author_channel": self.getVideo().channel_url,
+            "views": self.getVideo().views,
+            "published_at": self.getPublishedAt(),
+            "thumbnail": self.getVideo().thumbnail_url,
+            "duration": self.getDuration(),
+            "audio": audio_file_location,
+            "video": video_file_location
+        }
+        return response
+
+    def getAudioFile(self) -> str:
+        """
+        Retrieving the audio file and saving it on the server as
+        well as adding its meta data in the database.
+
+        Returns: string
+        """
+        response = ""
         # Iterating throughout the streams to set the ITAG needed
         for index in range(0, len(self.getStreams().filter(mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")), 1):
             self.setITAG(self.getStreams().filter(
@@ -350,6 +386,17 @@ class YouTube_Downloader:
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4", self.getIdentifier()))
+        response = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
+        return response
+
+    def getVideoFile(self) -> str:
+        """
+        Retrieving the video file and saving it on the server as
+        well as adding its meta data in the database.
+
+        Returns: string
+        """
+        response = ""
         # Iterating throughout the streams to set the ITAG needed
         for index in range(0, len(self.getStreams().filter(mime_type="video/mp4", audio_codec="mp4a.40.2", resolution="720p")), 1):
             self.setITAG(self.getStreams().filter(
@@ -361,8 +408,5 @@ class YouTube_Downloader:
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Video/{self.getTitle()}.mp4", self.getIdentifier()))
-        response = {
-            "status": 200,
-            "url": f"/Download/YouTube/{self.getIdentifier()}"
-        }
+        response = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         return response

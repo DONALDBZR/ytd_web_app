@@ -8,6 +8,10 @@ class Main extends React.Component {
      */
     constructor(props) {
         super(props);
+        /**
+         * States of the application
+         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } } }}
+         */
         this.state = {
             System: {
                 view_route: "",
@@ -27,6 +31,10 @@ class Main extends React.Component {
                     thumbnail: "",
                     duration: "",
                     identifier: "",
+                    File: {
+                        audio: "",
+                        video: "",
+                    },
                 },
             },
         };
@@ -95,7 +103,8 @@ class Main extends React.Component {
             .then(() => this.redirector(delay, this.state.System.url));
     }
     /**
-     * Retrieving the data of the media content that is searched by the user
+     * Retrieving the data of the media content that is searched by
+     * the user.
      * @returns {void}
      */
     getMedia() {
@@ -104,11 +113,18 @@ class Main extends React.Component {
         })
             .then((response) => response.json())
             .then((data) => {
-                if (typeof data.Media.YouTube != "undefined") {
+                if (
+                    typeof data.Media.YouTube != "undefined" &&
+                    ((typeof data.Media.YouTube.audio == "undefined" &&
+                        typeof data.Media.YouTube.video == "undefined") ||
+                        (typeof data.Media.YouTube.audio == "null" &&
+                            typeof data.Media.YouTube.video == "null"))
+                ) {
                     this.setState((previous) => ({
                         Media: {
                             ...previous.Media,
                             YouTube: {
+                                ...previous.Media.YouTube,
                                 uniform_resource_locator:
                                     data.Media.YouTube.uniform_resource_locator,
                                 title: data.Media.YouTube.title,
@@ -119,6 +135,37 @@ class Main extends React.Component {
                                 published_at: data.Media.YouTube.published_at,
                                 thumbnail: data.Media.YouTube.thumbnail,
                                 duration: data.Media.YouTube.duration,
+                                identifier: data.Media.YouTube.identifier,
+                                File: {
+                                    ...previous.Media.YouTube.File,
+                                    audio: null,
+                                    video: null,
+                                },
+                            },
+                        },
+                    }));
+                } else {
+                    this.setState((previous) => ({
+                        Media: {
+                            ...previous.Media,
+                            YouTube: {
+                                ...previous.Media.YouTube,
+                                uniform_resource_locator:
+                                    data.Media.YouTube.uniform_resource_locator,
+                                title: data.Media.YouTube.title,
+                                author: data.Media.YouTube.author,
+                                author_channel:
+                                    data.Media.YouTube.author_channel,
+                                views: data.Media.YouTube.views,
+                                published_at: data.Media.YouTube.published_at,
+                                thumbnail: data.Media.YouTube.thumbnail,
+                                duration: data.Media.YouTube.duration,
+                                identifier: data.Media.YouTube.identifier,
+                                File: {
+                                    ...previous.Media.YouTube.File,
+                                    audio: data.Media.YouTube.audio,
+                                    video: data.Media.YouTube.video,
+                                },
                             },
                         },
                     }));
@@ -126,7 +173,8 @@ class Main extends React.Component {
             });
     }
     /**
-     * Retrieving Media from the server by using its uniform resource locator.
+     * Retrieving Media from the server by using its uniform
+     * resource locator.
      * @returns {void}
      */
     retrieveMedia() {
@@ -225,12 +273,54 @@ class Main extends React.Component {
         }
     }
     /**
+     * Downloading the file retrieved from the server.
+     * @param {Event} event
+     * @returns {void}
+     */
+    getFile(event) {
+        /**
+         * Button that was clicked
+         * @type {HTMLButtonElement}
+         */
+        const button = event.target.parentElement.parentElement;
+        /**
+         * Uniform resource locator of the file needed.
+         * @type {string}
+         */
+        const file_location = button.value;
+        let file_name = "";
+        if (file_location.includes("/Public/Audio/")) {
+            file_name = file_location.replace("/Public/Audio/", "");
+        } else if (file_location.includes("/Public/Video/")) {
+            file_name = file_location.replace("/Public/Video/", "");
+        }
+        fetch("/Download", {
+            method: "POST",
+            body: JSON.stringify({
+                file: file_location,
+                file_name: file_name,
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => response.blob())
+            .then((data) => {
+                let a = document.createElement("a");
+                a.href = window.URL.createObjectURL(data);
+                a.download = file_name;
+                a.click();
+            });
+    }
+    /**
      * Rendering the component
      * @returns {HTMLElement}
      */
     render() {
         if (this.state.System.view_route.includes("Search")) {
             return <Search />;
+        } else if (this.state.System.view_route.includes("Download")) {
+            return <Download />;
         } else {
             return <Homepage />;
         }
@@ -405,6 +495,92 @@ class YouTube extends Media {
                             <i class="fa-solid fa-download"></i>
                         </button>
                     </div>
+                </div>
+            </div>
+        );
+    }
+}
+/**
+ * The component to be rendered for the Download page
+ */
+class Download extends Main {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLMainElement}
+     */
+    render() {
+        if (this.state.System.view_route.includes("YouTube")) {
+            return (
+                <>
+                    <YouTubeDownloader />
+                </>
+            );
+        }
+    }
+}
+/**
+ * The component to be rendered for the Download page but only when it is for media from YouTube
+ */
+class YouTubeDownloader extends Main {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Running the methods needed as soon as the component has been successfully mounted
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.getMedia();
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return (
+            <div class="YouTube">
+                <div>
+                    <a
+                        href={this.state.Media.YouTube.uniform_resource_locator}
+                        target="__blank"
+                    >
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+                </div>
+                <div>
+                    <button
+                        name="file_downloader"
+                        value={this.state.Media.YouTube.File.audio.replace(
+                            ".",
+                            ""
+                        )}
+                        onClick={this.getFile.bind(this)}
+                    >
+                        <i class="fa-solid fa-music"></i>
+                    </button>
+                </div>
+                <div>
+                    <button
+                        name="file_downloader"
+                        value={this.state.Media.YouTube.File.video.replace(
+                            ".",
+                            ""
+                        )}
+                        onClick={this.getFile.bind(this)}
+                    >
+                        <i class="fa-solid fa-video"></i>
+                    </button>
                 </div>
             </div>
         );

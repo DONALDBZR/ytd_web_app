@@ -3,6 +3,7 @@ from DatabaseHandler import Database_Handler
 from datetime import datetime
 import time
 import os
+from moviepy.editor import VideoFileClip
 
 
 class YouTube_Downloader:
@@ -123,6 +124,13 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
+    __video_file_clip: "VideoFileClip"
+    """
+    A video clip originating from a movie file.
+
+    Type: VideoFileClip
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
@@ -235,6 +243,12 @@ class YouTube_Downloader:
 
     def setMimeType(self, mime_type: str) -> None:
         self.__mime_type = mime_type
+
+    def getVideoFileClip(self) -> "VideoFileClip":
+        return self.__video_file_clip
+
+    def setVideoFileClip(self, video_file_clip: "VideoFileClip") -> None:
+        self.__video_file_clip = video_file_clip
 
     def search(self) -> dict:
         """
@@ -383,10 +397,15 @@ class YouTube_Downloader:
             self.getITAG()))  # type: ignore
         self.setMimeType(self.getStream().mime_type)
         self.getStream().download(f"{self.getDirectory()}/Audio")
+        file_path = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
+        self.setVideoFileClip(VideoFileClip(file_path))
+        self.getVideoFileClip().audio.write_audiofile(  # type:ignore
+            f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3")  # type:ignore
+        os.remove(file_path)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
-                                            (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4", self.getIdentifier()))
-        response = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
+                                            (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3", self.getIdentifier()))
+        response = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3"
         return response
 
     def getVideoFile(self) -> str:

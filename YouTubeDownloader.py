@@ -381,12 +381,14 @@ class YouTube_Downloader:
                 mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")[index].itag)
         self.setStream(self.getStreams().get_by_itag(
             self.getITAG()))  # type: ignore
-        self.setMimeType(self.getStream().mime_type)
-        self.getStream().download(f"{self.getDirectory()}/Audio")
+        self.setMimeType("audio/mp3")
+        self.getStream().download(
+            output_path=f"{self.getDirectory()}/Audio", filename=f"{self.getTitle()}.mp3")
+        file_name = f"{self.getTitle()}.mp3"
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
-                                            (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4", self.getIdentifier()))
-        response = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
+                                            (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3", self.getIdentifier()))
+        response = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3"
         return response
 
     def getVideoFile(self) -> str:

@@ -73,10 +73,10 @@ class Session_Manager:
     Visibility: private
     """
 
-    def __init__(self, request: dict, session: "SessionMixin") -> None:
+    def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
         """
         Instantiating the session's manager which will verify the
-        session of the users
+        session of the users.
 
         Parameters:
             request: object:        The request from the application.

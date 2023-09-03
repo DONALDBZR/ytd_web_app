@@ -176,22 +176,29 @@ def searchPage() -> Response:
 
 
 @Application.route("/Media/Search", methods=["POST"])
-def search() -> str:
+def search() -> Response:
     """
     Searching for the media by the uniform resouce locator that
     has been retrieved from the client.
 
-    Returns: string
+    Returns: Response
     """
-    data = request.json
+    payload = request.json
+    mime_type = ""
+    status = 500
     user_request = {
         "referer": None,
-        "search": str(data["Media"]["search"]),  # type: ignore
-        "platform": str(data["Media"]["platform"]),  # type: ignore
+        "search": str(payload["Media"]["search"]),  # type: ignore
+        "platform": str(payload["Media"]["platform"]),  # type: ignore
         "ip_address": str(request.environ.get("REMOTE_ADDR"))
     }
     media = Media(user_request)
-    return json.dumps(media.verifyPlatform(), indent=4)
+    response = json.dumps(media.verifyPlatform(), indent=4)
+    status = int(media.verifyPlatform()["data"]["status"])
+    mime_type = "application/json"
+    debug(
+        mime_type=mime_type, status=status, response=response)
+    return Response(response, status, mimetype=mime_type)
 
 
 @Application.route('/Search/<string:identifier>', methods=['GET'])

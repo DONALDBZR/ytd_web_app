@@ -89,7 +89,7 @@ def homepage() -> Response:
     if type(template) is str:
         mime_type = "text/html"
         status = 200
-    debug(mime_type, status, template)
+    debug(status=status)
     return Response(template, status, mimetype=mime_type)
 
 

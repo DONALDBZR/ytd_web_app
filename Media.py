@@ -85,8 +85,8 @@ class Media:
         Parameters:
             request:    object: The request from the user.
         """
-        self.setDirectory("./Cache/Media")
-        self.metadataDirectory()
+        self.setDirectory("/var/www/html/ytd_web_app/Cache/Media")
+        # self.metadataDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)

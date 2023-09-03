@@ -84,7 +84,7 @@ def homepage() -> Response:
         mime_type = "text/html"
         status = 200
     debug(mime_type, status)
-    return Response(template, 200, mimetype=mime_type)
+    return Response(template, status, mimetype=mime_type)
 
 
 @Application.route('/Session', methods=['GET'])

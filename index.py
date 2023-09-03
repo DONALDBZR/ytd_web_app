@@ -7,6 +7,7 @@ from Media import Media
 import json
 from SecurityManagementSystem import Security_Management_System
 import os
+import logging
 
 Application = Flask(__name__)
 """
@@ -50,14 +51,40 @@ Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 
-@Application.route('/', methods=['GET'])
-def homepage() -> str:
+def debug(mime_type: str, status: int) -> None:
     """
-    Rendering the template needed which will import the web-worker
+    Debugging the application.
 
-    Returns: string
+    Parameters:
+        mime_type:  string: The MIME type of the application.
+        status:     int:    The status of the response
+
+    Returns: void
     """
-    return render_template('page.html')
+    directory = "/var/www/html/ytd_web_app/Access.log"
+    file = open(directory, "a")
+    file.write(
+        f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\n")  # type: ignore
+    file.close()
+
+
+@Application.route('/', methods=['GET'])
+def homepage() -> Response:
+    """
+    Rendering the template needed which will import the
+    web-worker.
+
+    Returns: Response
+    """
+    template = render_template('page.html')
+    mime_type = ""
+    status = 404
+    # Verifying that the template is returned
+    if type(template) is str:
+        mime_type = "text/html"
+        status = 200
+    debug(mime_type, status)
+    return Response(template, 200, mimetype=mime_type)
 
 
 @Application.route('/Session', methods=['GET'])
@@ -183,7 +210,9 @@ def retrieveMedia() -> str:
     }
     if "Search" in request.referrer:
         media = Media(user_request)
-    return json.dumps(media.verifyPlatform(), indent=4)  # type: ignore
+    print(f"Media Data: {media.verifyPlatform()}")
+    return media.verifyPlatform()
+    # return json.dumps(media.verifyPlatform(), indent=4)  # type: ignore
 
 
 @Application.route('/Download/YouTube/<string:identifier>', methods=['GET'])

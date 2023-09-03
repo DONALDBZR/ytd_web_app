@@ -5,4 +5,5 @@
 /Cache/
 /Public/
 /*.sql
-./ytd.wsgi
+/ytd.wsgi
+/Access.log

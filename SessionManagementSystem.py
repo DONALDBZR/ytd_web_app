@@ -398,4 +398,4 @@ class Session_Manager:
         Returns: void
         """
         if not os.path.exists(self.getDirectory()):
-            os.makedirs(self.getDirectory())
+            os.makedirs(self.getDirectory(), 777)

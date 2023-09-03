@@ -5,3 +5,4 @@
 /Cache/
 /Public/
 /*.sql
+./ytd.wsgi

@@ -51,20 +51,26 @@ Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 
-def debug(mime_type: str, status: int) -> None:
+def debug(mime_type: str, status: int, response: str) -> None:
     """
     Debugging the application.
 
     Parameters:
         mime_type:  string: The MIME type of the application.
         status:     int:    The status of the response
+        response:   string: The response data
 
     Returns: void
     """
     directory = "/var/www/html/ytd_web_app/Access.log"
     file = open(directory, "a")
-    file.write(
-        f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\n")  # type: ignore
+    # Verifying the MIME type of the file for the correct logging
+    if "html" in mime_type:
+        file.write(
+            f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\n")  # type: ignore
+    else:
+        file.write(
+            f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nResponse: {response}\n")  # type: ignore
     file.close()
 
 
@@ -83,7 +89,7 @@ def homepage() -> Response:
     if type(template) is str:
         mime_type = "text/html"
         status = 200
-    debug(mime_type, status)
+    debug(mime_type, status, template)
     return Response(template, status, mimetype=mime_type)
 
 
@@ -109,8 +115,9 @@ def getSession() -> Response:
         }
     }
     response = json.dumps(session_data, indent=4)
+    mime_type = "application/json"
     status = 200
-    debug(mime_type, status)
+    debug(mime_type, status, response)
     return Response(response, status, mimetype=mime_type)
 
 

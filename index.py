@@ -157,14 +157,22 @@ def setSession() -> Response:
 
 
 @Application.route('/Search')
-def searchPage() -> str:
+def searchPage() -> Response:
     """
     Rendering the template needed which will import the
     web-worker.
 
-    Returns: string
+    Returns: Response
     """
-    return render_template('page.html')
+    template = render_template('page.html')
+    mime_type = ""
+    status = 404
+    # Verifying that the template is returned
+    if type(template) is str:
+        mime_type = "text/html"
+        status = 200
+    debug(status=status, mime_type=mime_type)
+    return Response(template, status, mimetype=mime_type)
 
 
 @Application.route("/Media/Search", methods=["POST"])

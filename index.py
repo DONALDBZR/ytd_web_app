@@ -158,7 +158,7 @@ def getMedia() -> str:
 
     Returns: string
     """
-    file_name = f"./Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
+    file_name = f"/var/www/html/ytd_web_app/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
     file = open(file_name)
     media_data = file.read()
     return media_data

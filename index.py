@@ -88,12 +88,14 @@ def homepage() -> Response:
 
 
 @Application.route('/Session', methods=['GET'])
-def getSession() -> str:
+def getSession() -> Response:
     """
     Sending the session data in the form of JSON.
 
-    Returns: string
+    Returns: Response
     """
+    mime_type = ""
+    status = 500
     user_request = {
         "ip_address": str(request.environ.get('REMOTE_ADDR')),
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
@@ -106,7 +108,10 @@ def getSession() -> str:
             "color_scheme": SessionManager.getSession()["Client"]["color_scheme"]
         }
     }
-    return json.dumps(session_data, indent=4)
+    response = json.dumps(session_data, indent=4)
+    status = 200
+    debug(mime_type, status)
+    return Response(response, status, mimetype=mime_type)
 
 
 @Application.route('/Session/Post', methods=['POST'])

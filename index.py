@@ -56,21 +56,25 @@ def debug(mime_type: str = "", status: int = 500, response: str = "") -> None:
     Debugging the application.
 
     Parameters:
-        mime_type:  string: The MIME type of the application.
-        status:     int:    The status of the response
-        response:   string: The response data
+        mime_type:  string:         The MIME type of the application.
+        status:     int:            The status of the response
+        response:   string:         The response data
 
     Returns: void
     """
     directory = "/var/www/html/ytd_web_app/Access.log"
     file = open(directory, "a")
     # Verifying the MIME type of the file for the correct logging
-    if "html" in mime_type:
+    if mime_type.find("html") != -1:
         file.write(
             f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\n")  # type: ignore
     else:
-        file.write(
-            f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nResponse: {response}\n")  # type: ignore
+        if mime_type.find("json") and request.environ.get("POST"):
+            file.write(
+                f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nRequest: {request.json}\nResponse: {response}\n")  # type: ignore
+        else:
+            file.write(
+                f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nResponse: {response}\n")  # type: ignore
     file.close()
 
 
@@ -89,7 +93,7 @@ def homepage() -> Response:
     if type(template) is str:
         mime_type = "text/html"
         status = 200
-    debug(status=status)
+    debug(status=status, mime_type=mime_type)
     return Response(template, status, mimetype=mime_type)
 
 
@@ -122,27 +126,34 @@ def getSession() -> Response:
 
 
 @Application.route('/Session/Post', methods=['POST'])
-def setSession() -> str:
+def setSession() -> Response:
     """
     Allowing the Session Manager to update the session.
 
-    Returns: string
+    Returns: Response
     """
-    get_data = request.json
+    payload = request.json
+    mime_type = ""
+    status = 500
     user_request = {
         "ip_address": str(request.environ.get('REMOTE_ADDR')),
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
         "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
     }
     SessionManager = Session_Manager(user_request, session)
-    SessionManager.updateSession(get_data)
+    SessionManager.updateSession(payload)
+    mime_type = "application/json"
+    status = 201
     session_data = {
         "Client": {
             "timestamp": SessionManager.getSession()["Client"]["timestamp"],
             "color_scheme": SessionManager.getSession()["Client"]["color_scheme"]
         }
     }
-    return json.dumps(session_data, indent=4)
+    response = json.dumps(session_data, indent=4)
+    debug(
+        mime_type=mime_type, status=status, response=response)
+    return Response(response, status, mimetype=mime_type)
 
 
 @Application.route('/Search')

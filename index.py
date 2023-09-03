@@ -51,7 +51,7 @@ Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 
-def debug(mime_type: str, status: int, response: str) -> None:
+def debug(mime_type: str = "", status: int = 500, response: str = "") -> None:
     """
     Debugging the application.
 

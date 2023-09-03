@@ -82,8 +82,8 @@ class Session_Manager:
             request: object:        The request from the application.
             session: SessionMixin:  The session of the user.
         """
-        self.setDirectory("./Cache/Session/Users/")
-        self.sessionDirectory()
+        self.setDirectory("/var/www/html/ytd_web_app/Cache/Session/Users/")
+        # self.sessionDirectory()
         self.setIpAddress(request["ip_address"])
         self.setHttpClientIpAddress(request["http_client_ip_address"])
         self.setProxyIpAddress(request["proxy_ip_address"])

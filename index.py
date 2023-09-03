@@ -117,7 +117,7 @@ def getSession() -> Response:
     response = json.dumps(session_data, indent=4)
     mime_type = "application/json"
     status = 200
-    debug(mime_type, status, response)
+    debug(mime_type=mime_type, status=status, response=response)
     return Response(response, status, mimetype=mime_type)
 
 

@@ -243,7 +243,7 @@ def getMedia() -> Response:
 
 
 @Application.route('/Media/Download', methods=['POST'])
-def retrieveMedia() -> str:
+def retrieveMedia() -> Response:
     """
     Retrieving the media needed from the uniform resource
     locator and stores it in the server while allowing the user
@@ -251,19 +251,25 @@ def retrieveMedia() -> str:
 
     Returns: string
     """
-    request_json = request.json
-    data = request_json["Media"]  # type: ignore
+    mime_type = ""
+    status = 500
+    payload = request.json
+    data = payload["Media"]  # type: ignore
     user_request = {
         "referer": request.referrer,
         "search": str(data["uniform_resource_locator"]),  # type: ignore
         "platform": str(data["platform"]),  # type: ignore
         "ip_address": str(request.environ.get("REMOTE_ADDR"))
     }
+    response = {}
+    # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
         media = Media(user_request)
-    print(f"Media Data: {media.verifyPlatform()}")
-    return media.verifyPlatform()
-    # return json.dumps(media.verifyPlatform(), indent=4)  # type: ignore
+        response = media.verifyPlatform()
+    mime_type = "application/json"
+    status = response["data"]["status"]
+    debug(status=status, mime_type=mime_type, response=response)
+    return Response(response, status, mimetype=mime_type)
 
 
 @Application.route('/Download/YouTube/<string:identifier>', methods=['GET'])

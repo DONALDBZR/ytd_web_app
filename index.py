@@ -274,7 +274,7 @@ def retrieveMedia() -> Response:
 
 
 @Application.route('/Download/YouTube/<string:identifier>', methods=['GET'])
-def downloadPage(identifier: str) -> str:
+def downloadPage(identifier: str) -> Response:
     """
     Rendering the template needed which will import the
     web-worker.
@@ -282,9 +282,17 @@ def downloadPage(identifier: str) -> str:
     Parameters:
         identifier: string: Identifier of the media conetent to be searched.
 
-    Returns: string
+    Returns: Response
     """
-    return render_template('page.html')
+    template = render_template('page.html')
+    mime_type = ""
+    status = 404
+    # Verifying that the template is returned
+    if type(template) is str:
+        mime_type = "text/html"
+        status = 200
+    debug(status=status, mime_type=mime_type)
+    return Response(template, status, mimetype=mime_type)
 
 
 @Application.route('/Download', methods=['POST'])

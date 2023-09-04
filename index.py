@@ -224,17 +224,22 @@ def searchPageWithMedia(identifier: str) -> Response:
 
 
 @Application.route('/Media', methods=["GET"])
-def getMedia() -> str:
+def getMedia() -> Response:
     """
     Sending the data for the media that has been searched in the
     form of JSON.
 
-    Returns: string
+    Returns: Response
     """
+    mime_type = ""
+    status = 404
     file_name = f"/var/www/html/ytd_web_app/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
     file = open(file_name)
-    media_data = file.read()
-    return media_data
+    response = file.read()
+    mime_type = "application/json"
+    status = 200
+    debug(status=status, mime_type=mime_type, response=response)
+    return Response(response, status, mimetype=mime_type)
 
 
 @Application.route('/Media/Download', methods=['POST'])

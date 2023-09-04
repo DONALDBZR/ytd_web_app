@@ -51,14 +51,14 @@ Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 
-def debug(mime_type: str = "", status: int = 500, response: str = "") -> None:
+def debug(mime_type: str = None, status: int = 500, response: str = None) -> None:
     """
     Debugging the application.
 
     Parameters:
-        mime_type:  string:         The MIME type of the application.
+        mime_type:  string|null:    The MIME type of the application.
         status:     int:            The status of the response
-        response:   string:         The response data
+        response:   string|null:    The response data
 
     Returns: void
     """
@@ -69,7 +69,7 @@ def debug(mime_type: str = "", status: int = 500, response: str = "") -> None:
         file.write(
             f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\n")  # type: ignore
     else:
-        if mime_type.find("json") and request.environ.get("POST"):
+        if mime_type.find("json") != -1 and request.environ.get("POST"):
             file.write(
                 f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nRequest: {request.json}\nResponse: {response}\n")  # type: ignore
         else:
@@ -202,7 +202,7 @@ def search() -> Response:
 
 
 @Application.route('/Search/<string:identifier>', methods=['GET'])
-def searchPageWithMedia(identifier: str) -> str:
+def searchPageWithMedia(identifier: str) -> Response:
     """
     Rendering the template needed which will import the
     web-worker.
@@ -210,9 +210,17 @@ def searchPageWithMedia(identifier: str) -> str:
     Parameters:
         identifier: string: Identifier of the media conetent to be searched.
 
-    Returns: string
+    Returns: Response
     """
-    return render_template('page.html')
+    template = render_template('page.html')
+    mime_type = ""
+    status = 404
+    # Verifying that the template is returned
+    if type(template) is str:
+        mime_type = "text/html"
+        status = 200
+    debug(status=status, mime_type=mime_type)
+    return Response(template, status, mimetype=mime_type)
 
 
 @Application.route('/Media', methods=["GET"])

@@ -343,7 +343,7 @@ class YouTube_Downloader:
             video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         else:
             self.setVideo(
-                YouTube(self.getUniformResourceLocator(), use_oauth=True))
+                YouTube(self.getUniformResourceLocator()))
             self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
             self.getDatabaseHandler()._execute()
             self.setIdentifier(self.getUniformResourceLocator())

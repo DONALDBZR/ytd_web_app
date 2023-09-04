@@ -268,6 +268,7 @@ def retrieveMedia() -> Response:
         response = media.verifyPlatform()
     mime_type = "application/json"
     status = response["data"]["status"]
+    response = json.dumps(response, indent=4)
     debug(status=status, mime_type=mime_type, response=response)
     return Response(response, status, mimetype=mime_type)
 

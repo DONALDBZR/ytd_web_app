@@ -304,11 +304,11 @@ def downloadFile() -> Response:
     Returns: Response
     """
     request_json = request.json
-    file_path = f"./{request_json['file']}"  # type: ignore
+    file_path = request_json['file']  # type: ignore
     file_name = request_json['file_name']  # type: ignore
     mime_type = ""
     if "Audio" in file_path:
-        mime_type = "audio/mp4"
+        mime_type = "audio/mp3"
     elif "Video" in file_path:
         mime_type = "video/mp4"
     return send_file(path_or_file=file_path, mimetype=mime_type, as_attachment=True, download_name=file_name)

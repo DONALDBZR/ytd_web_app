@@ -6,8 +6,6 @@ from DatabaseHandler import Database_Handler
 from Media import Media
 import json
 from SecurityManagementSystem import Security_Management_System
-import os
-import logging
 
 Application = Flask(__name__)
 """

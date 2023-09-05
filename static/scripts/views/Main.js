@@ -290,9 +290,13 @@ class Main extends React.Component {
         const file_location = button.value;
         let file_name = "";
         if (file_location.includes("/Public/Audio/")) {
-            file_name = file_location.replace("/Public/Audio/", "");
+            file_name = file_location
+                .replace("/Public/Audio/", "")
+                .replace(".mp3", "");
         } else if (file_location.includes("/Public/Video/")) {
-            file_name = file_location.replace("/Public/Video/", "");
+            file_name = file_location
+                .replace("/Public/Video/", "")
+                .replace(".mp4", "");
         }
         fetch("/Download", {
             method: "POST",
@@ -561,10 +565,7 @@ class YouTubeDownloader extends Main {
                 <div>
                     <button
                         name="file_downloader"
-                        value={this.state.Media.YouTube.File.audio.replace(
-                            ".",
-                            ""
-                        )}
+                        value={this.state.Media.YouTube.File.audio}
                         onClick={this.getFile.bind(this)}
                     >
                         <i class="fa-solid fa-music"></i>
@@ -573,10 +574,7 @@ class YouTubeDownloader extends Main {
                 <div>
                     <button
                         name="file_downloader"
-                        value={this.state.Media.YouTube.File.video.replace(
-                            ".",
-                            ""
-                        )}
+                        value={this.state.Media.YouTube.File.video}
                         onClick={this.getFile.bind(this)}
                     >
                         <i class="fa-solid fa-video"></i>

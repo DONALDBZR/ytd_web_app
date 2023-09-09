@@ -8,7 +8,7 @@ Type: Blueprint
 """
 
 
-@Search_Portal.route('/Search', methods=['GET'])
+@Search_Portal.route('/', methods=['GET'])
 def searchPage() -> Response:
     """
     Rendering the template needed which will import the
@@ -22,7 +22,7 @@ def searchPage() -> Response:
     return Response(template, status, mimetype=mime_type)
 
 
-@Search_Portal.route('/Search/<string:identifier>', methods=['GET'])
+@Search_Portal.route('/<string:identifier>', methods=['GET'])
 def searchPageWithMedia(identifier: str) -> Response:
     """
     Rendering the template needed which will import the

@@ -114,9 +114,10 @@ def getSession() -> Response:
     user_request = {
         "ip_address": str(request.environ.get('REMOTE_ADDR')),
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
-        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
+        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR")),
+        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
     }
-    SessionManager = Session_Manager(user_request, session, host)
+    SessionManager = Session_Manager(user_request, session)
     session_data = {
         "Client": {
             "timestamp": SessionManager.getSession()["Client"]["timestamp"],
@@ -143,9 +144,10 @@ def setSession() -> Response:
     user_request = {
         "ip_address": str(request.environ.get('REMOTE_ADDR')),
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
-        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
+        "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR")),
+        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
     }
-    SessionManager = Session_Manager(user_request, session, host)
+    SessionManager = Session_Manager(user_request, session)
     SessionManager.updateSession(payload)
     mime_type = "application/json"
     status = 201
@@ -195,9 +197,10 @@ def search() -> Response:
         "referer": None,
         "search": str(payload["Media"]["search"]),  # type: ignore
         "platform": str(payload["Media"]["platform"]),  # type: ignore
-        "ip_address": str(request.environ.get("REMOTE_ADDR"))
+        "ip_address": str(request.environ.get("REMOTE_ADDR")),
+        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
     }
-    media = Media(user_request, host)
+    media = Media(user_request)
     response = json.dumps(media.verifyPlatform(), indent=4)
     status = int(media.verifyPlatform()["data"]["status"])
     mime_type = "application/json"
@@ -236,9 +239,15 @@ def getMedia() -> Response:
 
     Returns: Response
     """
+    directory = ""
+    # Verifying that the port is for either Apache HTTPD or Werkzeug
+    if request.environ.get("SERVER_PORT") == 80:
+        directory = "/var/www/html/ytd_web_app"
+    else:
+        directory = ""
     mime_type = ""
     status = 404
-    file_name = f"{ENV.getDirectory()}/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
+    file_name = f"{directory}/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
     file = open(file_name)
     response = file.read()
     mime_type = "application/json"
@@ -264,12 +273,13 @@ def retrieveMedia() -> Response:
         "referer": request.referrer,
         "search": str(data["uniform_resource_locator"]),  # type: ignore
         "platform": str(data["platform"]),  # type: ignore
-        "ip_address": str(request.environ.get("REMOTE_ADDR"))
+        "ip_address": str(request.environ.get("REMOTE_ADDR")),
+        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
     }
     response = {}
     # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
-        media = Media(user_request, host)
+        media = Media(user_request)
         response = media.verifyPlatform()
     mime_type = "application/json"
     status = response["data"]["status"]

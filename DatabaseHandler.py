@@ -71,15 +71,19 @@ class Database_Handler:
     Visibility: private
     """
 
-    def __init__(self):
+    def __init__(self, host: str):
         """
         Instantiating the class which will try to connect to the
         database.
+
+        Parameters:
+            host:   string: The server on which the application is being hosted on which ti will be either Apache HTTPD or Werkzeug.
         """
-        self.__setHost(Environment.HOST)
-        self.__setDatabase(Environment.DATABASE)
-        self.__setUsername(Environment.USERNAME)
-        self.__setPassword(Environment.PASSWORD)
+        ENV = Environment(host)
+        self.__setHost(ENV.HOST)
+        self.__setDatabase(ENV.DATABASE)
+        self.__setUsername(ENV.USERNAME)
+        self.__setPassword(ENV.PASSWORD)
         try:
             self.__setDatabaseHandler(mysql.connector.connect(host=self.__getHost(
             ), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()))

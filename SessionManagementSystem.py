@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import os
 import json
 from flask.sessions import SessionMixin
+from Environment import Environment
 
 
 class Session_Manager:
@@ -73,16 +74,18 @@ class Session_Manager:
     Visibility: private
     """
 
-    def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
+    def __init__(self, request: dict[str, str], session: "SessionMixin", host: str) -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users.
 
         Parameters:
-            request: object:        The request from the application.
-            session: SessionMixin:  The session of the user.
+            request:    object:         The request from the application.
+            session:    SessionMixin:   The session of the user.
+            host:       string:         The server on which the application is being hosted on which ti will be either Apache HTTPD or Werkzeug.
         """
-        self.setDirectory("/var/www/html/ytd_web_app/Cache/Session/Users/")
+        ENV = Environment(host)
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users/")
         # self.sessionDirectory()
         self.setIpAddress(request["ip_address"])
         self.setHttpClientIpAddress(request["http_client_ip_address"])

@@ -416,7 +416,7 @@ class Media extends Search {
      * @returns {void}
      */
     componentDidMount() {
-        if (window.location.pathname != "/Search") {
+        if (window.location.pathname != "/Search/") {
             this.getMedia();
         }
     }
@@ -426,7 +426,7 @@ class Media extends Search {
      */
     render() {
         if (
-            window.location.pathname != "/Search" &&
+            window.location.pathname != "/Search/" &&
             this.state.Media.YouTube.identifier != ""
         ) {
             return (

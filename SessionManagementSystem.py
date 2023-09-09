@@ -72,21 +72,31 @@ class Session_Manager:
     Type: SessionMixin
     Visibility: private
     """
+    __port: int
+    """
+    The port of the application
 
-    def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
+    Type: int
+    Visibility: private
+    """
+
+    def __init__(self, request: dict[str, str | int], session: "SessionMixin") -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users.
 
         Parameters:
-            request: object:        The request from the application.
-            session: SessionMixin:  The session of the user.
+            request:    object:         The request from the application.
+            session:    SessionMixin:   The session of the user.
         """
-        self.setDirectory("/var/www/html/ytd_web_app/Cache/Session/Users/")
+        self.setPort(request["port"])  # type: ignore
+        self.__server()
+        self.setDirectory(f"{self.getDirectory()}/Cache/Session/Users/")
         # self.sessionDirectory()
-        self.setIpAddress(request["ip_address"])
-        self.setHttpClientIpAddress(request["http_client_ip_address"])
-        self.setProxyIpAddress(request["proxy_ip_address"])
+        self.setIpAddress(request["ip_address"])  # type: ignore
+        self.setHttpClientIpAddress(
+            request["http_client_ip_address"])  # type: ignore
+        self.setProxyIpAddress(request["proxy_ip_address"])  # type: ignore
         self.setSession(session)
         self.verifySession()
 
@@ -143,6 +153,12 @@ class Session_Manager:
 
     def setSession(self, session: "SessionMixin") -> None:
         self.__session = session
+
+    def getPort(self) -> int:
+        return self.__port
+
+    def setPort(self, port: int) -> None:
+        self.__port = port
 
     def createSession(self) -> "SessionMixin":
         """
@@ -399,3 +415,15 @@ class Session_Manager:
         """
         if not os.path.exists(self.getDirectory()):
             os.makedirs(self.getDirectory(), 777)
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if self.getPort() == 80:
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("/home/darkness4869/Documents/extractio")

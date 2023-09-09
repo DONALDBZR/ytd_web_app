@@ -76,6 +76,13 @@ class Media:
     Type: string
     Visibility: private
     """
+    __port: int
+    """
+    The port of the application
+
+    Type: int
+    Visibility: private
+    """
 
     def __init__(self, request: dict) -> None:
         """
@@ -85,7 +92,9 @@ class Media:
         Parameters:
             request:    object: The request from the user.
         """
-        self.setDirectory("/var/www/html/ytd_web_app/Cache/Media")
+        self.setPort(request["port"])  # type: ignore
+        self.__server()
+        self.setDirectory(f"{self.getDirectory()}/Cache/Media")
         # self.metadataDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
@@ -143,6 +152,12 @@ class Media:
 
     def setIpAddress(self, ip_address: str) -> None:
         self.__ip_address = ip_address
+
+    def getPort(self) -> int:
+        return self.__port
+
+    def setPort(self, port: int) -> None:
+        self.__port = port
 
     def verifyPlatform(self) -> dict:
         """
@@ -210,7 +225,7 @@ class Media:
         """
         response = {}
         self._YouTubeDownloader = YouTube_Downloader(
-            self.getSearch(), self.getIdentifier())
+            self.getSearch(), self.getIdentifier(), self.getPort())
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()
@@ -254,3 +269,15 @@ class Media:
         """
         if not os.path.exists(self.getDirectory()):
             os.makedirs(self.getDirectory())
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if self.getPort() == 80:
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("/home/darkness4869/Documents/extractio")

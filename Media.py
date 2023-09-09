@@ -76,7 +76,7 @@ class Media:
     Type: string
     Visibility: private
     """
-    __port: int | str
+    __port: str
     """
     The port of the application
 
@@ -153,10 +153,10 @@ class Media:
     def setIpAddress(self, ip_address: str) -> None:
         self.__ip_address = ip_address
 
-    def getPort(self) -> int | str:
+    def getPort(self) -> str:
         return self.__port
 
-    def setPort(self, port: int | str) -> None:
+    def setPort(self, port: str) -> None:
         self.__port = port
 
     def verifyPlatform(self) -> dict:
@@ -277,7 +277,7 @@ class Media:
         Returns: void
         """
         # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == 80 or self.getPort() == "":
+        if self.getPort() == '80':
             self.setDirectory("/var/www/html/ytd_web_app")
         else:
             self.setDirectory("/home/darkness4869/Documents/extractio")

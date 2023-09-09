@@ -72,7 +72,7 @@ class Session_Manager:
     Type: SessionMixin
     Visibility: private
     """
-    __port: int | str
+    __port: str
     """
     The port of the application
 
@@ -80,7 +80,7 @@ class Session_Manager:
     Visibility: private
     """
 
-    def __init__(self, request: dict[str, str | int], session: "SessionMixin") -> None:
+    def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users.
@@ -154,10 +154,10 @@ class Session_Manager:
     def setSession(self, session: "SessionMixin") -> None:
         self.__session = session
 
-    def getPort(self) -> int | str:
+    def getPort(self) -> str:
         return self.__port
 
-    def setPort(self, port: int | str) -> None:
+    def setPort(self, port: str) -> None:
         self.__port = port
 
     def createSession(self) -> "SessionMixin":
@@ -423,7 +423,7 @@ class Session_Manager:
         Returns: void
         """
         # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == 80 or self.getPort() == "":
+        if self.getPort() == '80':
             self.setDirectory("/var/www/html/ytd_web_app")
         else:
             self.setDirectory("/home/darkness4869/Documents/extractio")

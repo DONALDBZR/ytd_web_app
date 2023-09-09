@@ -124,14 +124,14 @@ class YouTube_Downloader:
     Visibility: private
     """
 
-    def __init__(self, uniform_resource_locator: str, media_identifier: int, port: int | str):
+    def __init__(self, uniform_resource_locator: str, media_identifier: int, port: str):
         """
         Instantiating the class and launching the operations needed.
 
         Parameters:
             uniform_resource_locator:   string: The uniform resource locator to be searched.
             media_identifier:           int:    The media type for the system.
-            port:                       int:    The port of the application
+            port:                       string: The port of the application
         """
         self.__server(port)
         self.setDirectory(f"{self.getDirectory()}/Public")
@@ -415,17 +415,17 @@ class YouTube_Downloader:
         response = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         return response
 
-    def __server(self, port: int | str) -> None:
+    def __server(self, port: str) -> None:
         """
         Setting the directory for the application.
 
         Parameters:
-            port:   int|string: The port of the application
+            port:   string: The port of the application
 
         Returns: void
         """
         # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if port == 80:
+        if port == '80':
             self.setDirectory("/var/www/html/ytd_web_app")
         else:
             self.setDirectory("/home/darkness4869/Documents/extractio")

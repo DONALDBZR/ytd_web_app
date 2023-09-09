@@ -18,27 +18,14 @@ template configuration and much more.
 
 Type: Flask
 """
-host = f"{request.environ.get('SERVER_NAME')}:{request.environ.get('SERVER_PORT')}"
-"""
-The server on which the application is being hosted on which
-it will be either Apache HTTPD or Werkzeug.
-
-Type: string
-"""
-ENV = Environment(host)
-"""
-ENV File of the application
-
-Type: Environment
-"""
-DatabaseHandler = Database_Handler(host)
+DatabaseHandler = Database_Handler()
 """
 The database handler that will communicate with the database
 server.
 
 Type: Database_Handler
 """
-SecurityManagementSystem = Security_Management_System(host)
+SecurityManagementSystem = Security_Management_System()
 """
 It will be a major component that will assure the security
 of the data that will be stored across the application.
@@ -74,8 +61,14 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
 
     Returns: void
     """
-    directory = f"{ENV.getDirectory()}/Access.log"
-    file = open(directory, "a")
+    directory = ""
+    # Verifying that the port is for either Apache HTTPD or Werkzeug
+    if request.environ.get("SERVER_PORT") == 80:
+        directory = "/var/www/html/ytd_web_app"
+    else:
+        directory = ""
+    log = f"{directory}/Access.log"
+    file = open(log, "a")
     # Verifying the MIME type of the file for the correct logging
     if mime_type.find("html") != -1:
         file.write(

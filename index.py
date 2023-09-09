@@ -114,7 +114,7 @@ def getSession() -> Response:
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
         "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
     }
-    SessionManager = Session_Manager(user_request, session)
+    SessionManager = Session_Manager(user_request, session, host)
     session_data = {
         "Client": {
             "timestamp": SessionManager.getSession()["Client"]["timestamp"],
@@ -143,7 +143,7 @@ def setSession() -> Response:
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
         "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR"))
     }
-    SessionManager = Session_Manager(user_request, session)
+    SessionManager = Session_Manager(user_request, session, host)
     SessionManager.updateSession(payload)
     mime_type = "application/json"
     status = 201

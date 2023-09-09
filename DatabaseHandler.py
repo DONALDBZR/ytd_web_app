@@ -71,7 +71,7 @@ class Database_Handler:
     Visibility: private
     """
 
-    def __init__(self, host: str):
+    def __init__(self):
         """
         Instantiating the class which will try to connect to the
         database.

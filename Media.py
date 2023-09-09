@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 from YouTubeDownloader import YouTube_Downloader
 import os
+from Environment import Environment
 
 
 class Media:
@@ -77,17 +78,19 @@ class Media:
     Visibility: private
     """
 
-    def __init__(self, request: dict) -> None:
+    def __init__(self, request: dict, host: str) -> None:
         """
         Instantiating the media's manager which will interact with
         the media's dataset and do the required processing.
 
         Parameters:
             request:    object: The request from the user.
+            host:       string: The server on which the application is being hosted on which ti will be either Apache HTTPD or Werkzeug.
         """
-        self.setDirectory("/var/www/html/ytd_web_app/Cache/Media")
+        ENV = Environment(host)
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
         # self.metadataDirectory()
-        self.setDatabaseHandler(Database_Handler())
+        self.setDatabaseHandler(Database_Handler(host))
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
         self.getDatabaseHandler()._execute()

@@ -195,7 +195,7 @@ def search() -> Response:
         "platform": str(payload["Media"]["platform"]),  # type: ignore
         "ip_address": str(request.environ.get("REMOTE_ADDR"))
     }
-    media = Media(user_request)
+    media = Media(user_request, host)
     response = json.dumps(media.verifyPlatform(), indent=4)
     status = int(media.verifyPlatform()["data"]["status"])
     mime_type = "application/json"
@@ -267,7 +267,7 @@ def retrieveMedia() -> Response:
     response = {}
     # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
-        media = Media(user_request)
+        media = Media(user_request, host)
         response = media.verifyPlatform()
     mime_type = "application/json"
     status = response["data"]["status"]

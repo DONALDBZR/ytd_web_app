@@ -426,4 +426,4 @@ class Session_Manager:
         if self.getPort() == 80:
             self.setDirectory("/var/www/html/ytd_web_app")
         else:
-            self.setDirectory("")
+            self.setDirectory("/home/darkness4869/Documents/extractio")

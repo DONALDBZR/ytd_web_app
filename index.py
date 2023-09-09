@@ -66,8 +66,9 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
     if request.environ.get("SERVER_PORT") == 80:
         directory = "/var/www/html/ytd_web_app"
     else:
-        directory = ""
+        directory = "/home/darkness4869/Documents/extractio"
     log = f"{directory}/Access.log"
+    print(log)
     file = open(log, "a")
     # Verifying the MIME type of the file for the correct logging
     if mime_type.find("html") != -1:
@@ -244,7 +245,7 @@ def getMedia() -> Response:
     if request.environ.get("SERVER_PORT") == 80:
         directory = "/var/www/html/ytd_web_app"
     else:
-        directory = ""
+        directory = "/home/darkness4869/Documents/extractio"
     mime_type = ""
     status = 404
     file_name = f"{directory}/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"

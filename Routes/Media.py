@@ -53,3 +53,32 @@ def getMedia() -> Response:
     mime_type = "application/json"
     status = 200
     return Response(response, status, mimetype=mime_type)
+
+
+@Media_Portal.route('/Download', methods=['POST'])
+def retrieveMedia() -> Response:
+    """
+    Retrieving the media needed from the uniform resource
+    locator and stores it in the server while allowing the user
+    to download it.
+
+    Returns: string
+    """
+    payload = request.json
+    data = payload["Media"]  # type: ignore
+    user_request = {
+        "referer": request.referrer,
+        "search": str(data["uniform_resource_locator"]),  # type: ignore
+        "platform": str(data["platform"]),  # type: ignore
+        "ip_address": str(request.environ.get("REMOTE_ADDR")),
+        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
+    }
+    response = {}
+    # Ensuring that the payload is from the search page
+    if "Search" in request.referrer:
+        media = Media(user_request)
+        response = media.verifyPlatform()
+    mime_type = "application/json"
+    status = response["data"]["status"]
+    response = json.dumps(response, indent=4)
+    return Response(response, status, mimetype=mime_type)

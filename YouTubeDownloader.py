@@ -3,7 +3,6 @@ from DatabaseHandler import Database_Handler
 from datetime import datetime
 import time
 import os
-from Environment import Environment
 
 
 class YouTube_Downloader:
@@ -125,19 +124,19 @@ class YouTube_Downloader:
     Visibility: private
     """
 
-    def __init__(self, uniform_resource_locator: str, media_identifier: int, host: str):
+    def __init__(self, uniform_resource_locator: str, media_identifier: int, port: int):
         """
         Instantiating the class and launching the operations needed.
 
         Parameters:
             uniform_resource_locator:   string: The uniform resource locator to be searched.
             media_identifier:           int:    The media type for the system.
-            host:                       string: The server on which the application is being hosted on which ti will be either Apache HTTPD or Werkzeug.
+            port:                       int:    The port of the application
         """
-        ENV = Environment(host)
-        self.setDirectory(f"{ENV.getDirectory()}/Public")
+        self.__server(port)
+        self.setDirectory(f"{self.getDirectory()}/Public")
         self.mediaDirectory()
-        self.setDatabaseHandler(Database_Handler(host))
+        self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
@@ -415,3 +414,18 @@ class YouTube_Downloader:
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Video/{self.getTitle()}.mp4", self.getIdentifier()))
         response = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         return response
+
+    def __server(self, port: int) -> None:
+        """
+        Setting the directory for the application
+
+        Parameters:
+            port:   int:    The port of the application
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if port == 80:
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("")

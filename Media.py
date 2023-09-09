@@ -3,7 +3,6 @@ from datetime import datetime
 import json
 from YouTubeDownloader import YouTube_Downloader
 import os
-from Environment import Environment
 
 
 class Media:
@@ -154,12 +153,6 @@ class Media:
     def setIpAddress(self, ip_address: str) -> None:
         self.__ip_address = ip_address
 
-    def getHost(self) -> str:
-        return self.__host
-
-    def setHost(self, host: str) -> None:
-        self.__host = host
-
     def getPort(self) -> int:
         return self.__port
 
@@ -232,7 +225,7 @@ class Media:
         """
         response = {}
         self._YouTubeDownloader = YouTube_Downloader(
-            self.getSearch(), self.getIdentifier(), self.getHost())
+            self.getSearch(), self.getIdentifier(), self.getPort())
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()

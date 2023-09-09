@@ -29,7 +29,7 @@ server.
 
 Type: Database_Handler
 """
-SecurityManagementSystem = Security_Management_System()
+SecurityManagementSystem = Security_Management_System(host)
 """
 It will be a major component that will assure the security
 of the data that will be stored across the application.

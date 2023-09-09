@@ -68,7 +68,6 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
     else:
         directory = "/home/darkness4869/Documents/extractio"
     log = f"{directory}/Access.log"
-    print(log)
     file = open(log, "a")
     # Verifying the MIME type of the file for the correct logging
     if mime_type.find("html") != -1:

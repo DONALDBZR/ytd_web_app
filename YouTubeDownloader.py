@@ -124,7 +124,7 @@ class YouTube_Downloader:
     Visibility: private
     """
 
-    def __init__(self, uniform_resource_locator: str, media_identifier: int, port: int):
+    def __init__(self, uniform_resource_locator: str, media_identifier: int, port: int | str):
         """
         Instantiating the class and launching the operations needed.
 
@@ -415,12 +415,12 @@ class YouTube_Downloader:
         response = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         return response
 
-    def __server(self, port: int) -> None:
+    def __server(self, port: int | str) -> None:
         """
-        Setting the directory for the application
+        Setting the directory for the application.
 
         Parameters:
-            port:   int:    The port of the application
+            port:   int|string: The port of the application
 
         Returns: void
         """

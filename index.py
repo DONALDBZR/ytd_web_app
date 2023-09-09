@@ -1,12 +1,10 @@
 # Importing the requirements for the application
 from flask import Flask, render_template, request, session, send_file, Response
-from datetime import date
 from SessionManagementSystem import Session_Manager
 from DatabaseHandler import Database_Handler
 from Media import Media
 import json
 from SecurityManagementSystem import Security_Management_System
-from Environment import Environment
 
 Application = Flask(__name__)
 """

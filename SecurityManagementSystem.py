@@ -54,18 +54,14 @@ class Security_Management_System:
     Visibility: private
     """
 
-    def __init__(self, host: str) -> None:
+    def __init__(self) -> None:
         """
         Instantiating the system which will allow the application to
         encrypt and decrypt the data that moves around in the
         application.
-
-        Parameters:
-            host:   string: The server on which the application is being hosted on which ti will be either Apache HTTPD or Werkzeug.
         """
-        ENV = Environment(host)
-        self.setDatabaseHandler(Database_Handler(host))
-        self.setApplicationName(ENV.APPLICATION_NAME)
+        self.setDatabaseHandler(Database_Handler())
+        self.setApplicationName(Environment.APPLICATION_NAME)
         self.setDatestamp(int(time()))
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
         self.getDatabaseHandler()._execute()

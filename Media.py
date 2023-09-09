@@ -77,28 +77,27 @@ class Media:
     Type: string
     Visibility: private
     """
-    __host: str
+    __port: int
     """
-    The server on which the application is being hosted on which it will be either Apache HTTPD or Werkzeug.
+    The port of the application
 
-    Type: string
+    Type: int
     Visibility: private
     """
 
-    def __init__(self, request: dict, host: str) -> None:
+    def __init__(self, request: dict) -> None:
         """
         Instantiating the media's manager which will interact with
         the media's dataset and do the required processing.
 
         Parameters:
             request:    object: The request from the user.
-            host:       string: The server on which the application is being hosted on which it will be either Apache HTTPD or Werkzeug.
         """
-        self.setHost(host)
-        ENV = Environment(self.getHost())
-        self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
+        self.setPort(request["port"])  # type: ignore
+        self.__server()
+        self.setDirectory(f"{self.getDirectory()}/Cache/Media")
         # self.metadataDirectory()
-        self.setDatabaseHandler(Database_Handler(host))
+        self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
         self.getDatabaseHandler()._execute()
@@ -160,6 +159,12 @@ class Media:
 
     def setHost(self, host: str) -> None:
         self.__host = host
+
+    def getPort(self) -> int:
+        return self.__port
+
+    def setPort(self, port: int) -> None:
+        self.__port = port
 
     def verifyPlatform(self) -> dict:
         """
@@ -271,3 +276,15 @@ class Media:
         """
         if not os.path.exists(self.getDirectory()):
             os.makedirs(self.getDirectory())
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if self.getPort() == 80:
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("")

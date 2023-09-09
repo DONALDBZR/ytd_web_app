@@ -17,7 +17,12 @@ template configuration and much more.
 
 Type: Flask
 """
-DatabaseHandler = Database_Handler()
+host = f"{request.environ.get('SERVER_NAME')}:{request.environ.get('SERVER_PORT')}"
+"""
+The server on which the application is being hosted on which
+it will be either Apache HTTPD or Werkzeug.
+"""
+DatabaseHandler = Database_Handler(host)
 """
 The database handler that will communicate with the database
 server.
@@ -49,7 +54,7 @@ Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 
 
-def debug(mime_type: str = None, status: int = 500, response: str = None) -> None:
+def debug(mime_type: str = None, status: int = 500, response: str = None) -> None:  # type: ignore
     """
     Debugging the application.
 

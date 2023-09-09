@@ -66,7 +66,7 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
     """
     directory = ""
     # Verifying that the port is for either Apache HTTPD or Werkzeug
-    if request.environ.get("SERVER_PORT") == 80:
+    if request.environ.get("SERVER_PORT") == 80 or request.environ.get("SERVER_PORT") == "":
         directory = "/var/www/html/ytd_web_app"
     else:
         directory = "/home/darkness4869/Documents/extractio"

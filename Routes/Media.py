@@ -31,3 +31,25 @@ def search() -> Response:
     status = int(media.verifyPlatform()["data"]["status"])
     mime_type = "application/json"
     return Response(response, status, mimetype=mime_type)
+
+
+@Media_Portal.route('/', methods=["GET"])
+def getMedia() -> Response:
+    """
+    Sending the data for the media that has been searched in the
+    form of JSON.
+
+    Returns: Response
+    """
+    directory = ""
+    # Verifying that the port is for either Apache HTTPD or Werkzeug
+    if request.environ.get("SERVER_PORT") == 80:
+        directory = "/var/www/html/ytd_web_app"
+    else:
+        directory = "/home/darkness4869/Documents/extractio"
+    file_name = f"{directory}/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
+    file = open(file_name)
+    response = file.read()
+    mime_type = "application/json"
+    status = 200
+    return Response(response, status, mimetype=mime_type)

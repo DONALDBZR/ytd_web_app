@@ -6,6 +6,7 @@ from DatabaseHandler import Database_Handler
 from Media import Media
 import json
 from SecurityManagementSystem import Security_Management_System
+from Environment import Environment
 
 Application = Flask(__name__)
 """
@@ -21,6 +22,14 @@ host = f"{request.environ.get('SERVER_NAME')}:{request.environ.get('SERVER_PORT'
 """
 The server on which the application is being hosted on which
 it will be either Apache HTTPD or Werkzeug.
+
+Type: string
+"""
+ENV = Environment(host)
+"""
+ENV File of the application
+
+Type: Environment
 """
 DatabaseHandler = Database_Handler(host)
 """
@@ -65,7 +74,7 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
 
     Returns: void
     """
-    directory = "/var/www/html/ytd_web_app/Access.log"
+    directory = f"{ENV.getDirectory()}/Access.log"
     file = open(directory, "a")
     # Verifying the MIME type of the file for the correct logging
     if mime_type.find("html") != -1:
@@ -236,7 +245,7 @@ def getMedia() -> Response:
     """
     mime_type = ""
     status = 404
-    file_name = f"/var/www/html/ytd_web_app/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
+    file_name = f"{ENV.getDirectory()}/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
     file = open(file_name)
     response = file.read()
     mime_type = "application/json"

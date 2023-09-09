@@ -3,6 +3,7 @@ from DatabaseHandler import Database_Handler
 from datetime import datetime
 import time
 import os
+from Environment import Environment
 
 
 class YouTube_Downloader:
@@ -124,17 +125,19 @@ class YouTube_Downloader:
     Visibility: private
     """
 
-    def __init__(self, uniform_resource_locator: str, media_identifier: int):
+    def __init__(self, uniform_resource_locator: str, media_identifier: int, host: str):
         """
         Instantiating the class and launching the operations needed.
 
         Parameters:
-            uniform_resource_locator: string: The uniform resource locator to be searched.
-            media_identifier: int: The media type for the system. 
+            uniform_resource_locator:   string: The uniform resource locator to be searched.
+            media_identifier:           int:    The media type for the system.
+            host:                       string: The server on which the application is being hosted on which ti will be either Apache HTTPD or Werkzeug.
         """
-        self.setDirectory("/var/www/html/ytd_web_app/Public")
+        ENV = Environment(host)
+        self.setDirectory(f"{ENV.getDirectory()}/Public")
         self.mediaDirectory()
-        self.setDatabaseHandler(Database_Handler())
+        self.setDatabaseHandler(Database_Handler(host))
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)

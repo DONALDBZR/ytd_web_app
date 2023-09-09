@@ -77,6 +77,13 @@ class Media:
     Type: string
     Visibility: private
     """
+    __host: str
+    """
+    The server on which the application is being hosted on which it will be either Apache HTTPD or Werkzeug.
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, request: dict, host: str) -> None:
         """
@@ -85,9 +92,10 @@ class Media:
 
         Parameters:
             request:    object: The request from the user.
-            host:       string: The server on which the application is being hosted on which ti will be either Apache HTTPD or Werkzeug.
+            host:       string: The server on which the application is being hosted on which it will be either Apache HTTPD or Werkzeug.
         """
-        ENV = Environment(host)
+        self.setHost(host)
+        ENV = Environment(self.getHost())
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
         # self.metadataDirectory()
         self.setDatabaseHandler(Database_Handler(host))
@@ -146,6 +154,12 @@ class Media:
 
     def setIpAddress(self, ip_address: str) -> None:
         self.__ip_address = ip_address
+
+    def getHost(self) -> str:
+        return self.__host
+
+    def setHost(self, host: str) -> None:
+        self.__host = host
 
     def verifyPlatform(self) -> dict:
         """
@@ -213,7 +227,7 @@ class Media:
         """
         response = {}
         self._YouTubeDownloader = YouTube_Downloader(
-            self.getSearch(), self.getIdentifier())
+            self.getSearch(), self.getIdentifier(), self.getHost())
         # Verifying the referer to retrieve to required data
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()

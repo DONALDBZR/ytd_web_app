@@ -24,7 +24,7 @@ def search() -> Response:
         "search": str(payload["Media"]["search"]),  # type: ignore
         "platform": str(payload["Media"]["platform"]),  # type: ignore
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
-        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
     }
     media = Media(user_request)
     response = json.dumps(media.verifyPlatform(), indent=4)
@@ -71,7 +71,7 @@ def retrieveMedia() -> Response:
         "search": str(data["uniform_resource_locator"]),  # type: ignore
         "platform": str(data["platform"]),  # type: ignore
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
-        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
     }
     response = {}
     # Ensuring that the payload is from the search page

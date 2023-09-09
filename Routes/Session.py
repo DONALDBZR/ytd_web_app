@@ -21,7 +21,7 @@ def getSession() -> Response:
         "ip_address": str(request.environ.get('REMOTE_ADDR')),
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
         "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR")),
-        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
     }
     SessionManager = Session_Manager(user_request, session)
     session_data = {
@@ -48,7 +48,7 @@ def setSession() -> Response:
         "ip_address": str(request.environ.get('REMOTE_ADDR')),
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
         "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR")),
-        "port": int(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
     }
     SessionManager = Session_Manager(user_request, session)
     SessionManager.updateSession(payload)

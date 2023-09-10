@@ -334,6 +334,24 @@ class Main extends React.Component {
             });
     }
     /**
+     * Retrieving the media file for the application to load.
+     * @returns {string}
+     */
+    getMediaFile() {
+        // Verifying the directory of the file to get its relative directory.
+        if (this.state.Media.YouTube.File.video.includes("extractio")) {
+            return this.state.Media.YouTube.File.video.replace(
+                "/home/darkness4869/Documents/extractio",
+                ""
+            );
+        } else {
+            return this.state.Media.YouTube.File.video.replace(
+                "/var/www/html/ytd_web_app",
+                ""
+            );
+        }
+    }
+    /**
      * Rendering the component
      * @returns {HTMLElement}
      */
@@ -575,9 +593,7 @@ class YouTubeDownloader extends Main {
         return (
             <div class="YouTube">
                 <div>
-                    <video controls autoplay>
-                        <source src={this.getMediaFile()} type="video/mp4" />
-                    </video>
+                    <video src={this.getMediaFile()} controls autoplay></video>
                 </div>
                 <div>
                     <button

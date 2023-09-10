@@ -366,3 +366,7 @@ body[id*="Search"]
 body[id*="Download"] main .YouTube div a:hover {
     opacity: calc(var(--percentage) / 2);
 }
+body[id*="Search"] main #loading {
+    color: var(--color3);
+    background-color: var(--color5);
+}

@@ -1,11 +1,12 @@
 # Importing the requirements for the application
-from flask import Flask, render_template, request, send_file, Response
+from flask import Flask, render_template, request, Response
 from DatabaseHandler import Database_Handler
 from SecurityManagementSystem import Security_Management_System
 from Routes.Session import Session_Portal
 from Routes.Search import Search_Portal
 from Routes.Media import Media_Portal
 from Routes.Download import Download_Portal
+from Routes.Video import Video_Portal
 
 Application = Flask(__name__)
 """
@@ -51,6 +52,7 @@ Application.register_blueprint(Session_Portal, url_prefix="/Session")
 Application.register_blueprint(Search_Portal, url_prefix="/Search")
 Application.register_blueprint(Media_Portal, url_prefix="/Media")
 Application.register_blueprint(Download_Portal, url_prefix="/Download")
+Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 
 
 def debug(mime_type: str = None, status: int = 500, response: str = None) -> None:  # type: ignore

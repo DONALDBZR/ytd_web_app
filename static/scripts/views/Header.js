@@ -72,9 +72,12 @@ class Header extends React.Component {
                 "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
             const color3 =
                 "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
+            const color5 =
+                "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))";
             root.style.setProperty("--color1", color1);
             root.style.setProperty("--color2", color2);
             root.style.setProperty("--color3", color3);
+            root.style.setProperty("--color5", color5);
         } else {
             const color1 =
                 "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
@@ -82,9 +85,12 @@ class Header extends React.Component {
                 "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
             const color3 =
                 "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
+            const color5 =
+                "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))";
             root.style.setProperty("--color1", color1);
             root.style.setProperty("--color2", color2);
             root.style.setProperty("--color3", color3);
+            root.style.setProperty("--color5", color5);
         }
     }
     /**

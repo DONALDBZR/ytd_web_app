@@ -575,12 +575,9 @@ class YouTubeDownloader extends Main {
         return (
             <div class="YouTube">
                 <div>
-                    <a
-                        href={this.state.Media.YouTube.uniform_resource_locator}
-                        target="__blank"
-                    >
-                        <i class="fa-brands fa-youtube"></i>
-                    </a>
+                    <video controls autoplay>
+                        <source src={this.getMediaFile()} type="video/mp4" />
+                    </video>
                 </div>
                 <div>
                     <button

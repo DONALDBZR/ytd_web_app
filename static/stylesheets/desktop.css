@@ -199,7 +199,7 @@ body[id*="Download"] main .YouTube {
     height: var(--component-height);
 }
 body[id*="Download"] main .YouTube div {
-    height: calc(var(--component-height) / 2);
+    height: calc(var(--component-height) / 10);
     width: calc(var(--width) / 2);
     display: flex;
     justify-content: center;
@@ -207,10 +207,11 @@ body[id*="Download"] main .YouTube div {
 }
 body[id*="Download"] main .YouTube div:nth-child(1) {
     width: var(--width);
+    height: calc(var(--component-height) * 0.9);
 }
 body[id*="Download"] main .YouTube div a,
 body[id*="Download"] main .YouTube div button {
-    font-size: calc(var(--textSize) * 4);
+    font-size: calc(var(--textSize) * 2.36196);
 }
 body[id*="Download"] main .YouTube div button {
     border: none;
@@ -226,4 +227,8 @@ body[id*="Search"] main #loading {
     justify-content: center;
     align-items: center;
     font-size: calc(var(--textSize) * 6.727499949);
+}
+body[id*="Download"] main .YouTube div video {
+    height: inherit;
+    width: auto;
 }

@@ -179,6 +179,7 @@ class Main extends React.Component {
      * @returns {void}
      */
     retrieveMedia() {
+        document.querySelector("#loading").style.display = "flex";
         const delay = 200;
         const uniform_resource_locator = document.querySelector(
             "button[name='mediaDownloader']"

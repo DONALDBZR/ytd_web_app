@@ -215,3 +215,15 @@ body[id*="Download"] main .YouTube div button {
 body[id*="Download"] main .YouTube div button {
     border: none;
 }
+body[id*="Search"] main #loading {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--width) * 0);
+    top: calc(var(--height) * 0);
+    width: var(--width);
+    height: var(--height);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 6.727499949);
+}

@@ -195,3 +195,15 @@ body[id*="Download"] main .YouTube div a,
 body[id*="Download"] main .YouTube div button {
     font-size: calc(var(--textSize) * 2.59374246);
 }
+body[id*="Search"] main #loading {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--width) * 0);
+    top: calc(var(--height) * 0);
+    width: var(--width);
+    height: var(--height);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 6.727499949);
+}

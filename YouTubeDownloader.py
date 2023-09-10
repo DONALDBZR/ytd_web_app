@@ -343,8 +343,16 @@ class YouTube_Downloader:
             audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
             video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
             self.setIdentifier(self.getUniformResourceLocator())
+            if "youtube" in self.getUniformResourceLocator():
+                self.setIdentifier(self.getIdentifier().replace(
+                    "https://www.youtube.com/watch?v=", ""))
+            else:
+                self.setIdentifier(self.getIdentifier().replace(
+                    "https://youtu.be/", "").rsplit("?")[0])
+            #
             self.setIdentifier(self.getIdentifier().replace(
                 "https://www.youtube.com/watch?v=", ""))
+            #
             audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
             video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         else:

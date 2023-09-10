@@ -176,10 +176,11 @@ body[id*="Download"] main .YouTube div {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(var(--component-height) / 2);
+    height: calc(var(--component-height) * 0.6);
 }
 body[id*="Download"] main .YouTube div:nth-child(1) {
     width: var(--width);
+    height: calc(var(--component-height) * 0.4);
 }
 body[id*="Download"] main .YouTube div a,
 body[id*="Download"] main .YouTube div button {
@@ -196,4 +197,8 @@ body[id*="Search"] main #loading {
     justify-content: center;
     align-items: center;
     font-size: calc(var(--textSize) * 6.727499949);
+}
+body[id*="Download"] main .YouTube div video {
+    height: inherit;
+    width: auto;
 }

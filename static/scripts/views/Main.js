@@ -80,6 +80,7 @@ class Main extends React.Component {
      * @returns {void}
      */
     handleSubmit(event) {
+        document.querySelector("#loading").style.display = "flex";
         const delay = 200;
         const url = new URL(this.state.Media.search);
         const platform = url.host.replaceAll("www.", "").replaceAll(".com", "");
@@ -377,6 +378,9 @@ class Search extends Main {
     render() {
         return (
             <>
+                <div id="loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
                 <form method="POST" onSubmit={this.handleSubmit.bind(this)}>
                     <input
                         type="search"

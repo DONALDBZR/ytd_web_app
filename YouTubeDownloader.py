@@ -246,8 +246,12 @@ class YouTube_Downloader:
         """
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
-        self.setIdentifier(self.getIdentifier().replace(
-            "https://www.youtube.com/watch?v=", ""))
+        if "youtube" in self.getUniformResourceLocator():
+            self.setIdentifier(self.getIdentifier().replace(
+                "https://www.youtube.com/watch?v=", ""))
+        else:
+            self.setIdentifier(self.getIdentifier().replace(
+                "https://youtu.be/", "").rsplit("?")[0])
         response = {}
         meta_data = self.getYouTube()
         # Verifying the response of the metadata to retrieve the needed response
@@ -339,8 +343,12 @@ class YouTube_Downloader:
             audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
             video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
             self.setIdentifier(self.getUniformResourceLocator())
-            self.setIdentifier(self.getIdentifier().replace(
-                "https://www.youtube.com/watch?v=", ""))
+            if "youtube" in self.getUniformResourceLocator():
+                self.setIdentifier(self.getIdentifier().replace(
+                    "https://www.youtube.com/watch?v=", ""))
+            else:
+                self.setIdentifier(self.getIdentifier().replace(
+                    "https://youtu.be/", "").rsplit("?")[0])
             audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
             video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
         else:
@@ -349,8 +357,12 @@ class YouTube_Downloader:
             self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
             self.getDatabaseHandler()._execute()
             self.setIdentifier(self.getUniformResourceLocator())
-            self.setIdentifier(self.getIdentifier().replace(
-                "https://www.youtube.com/watch?v=", ""))
+            if "youtube" in self.getUniformResourceLocator():
+                self.setIdentifier(self.getIdentifier().replace(
+                    "https://www.youtube.com/watch?v=", ""))
+            else:
+                self.setIdentifier(self.getIdentifier().replace(
+                    "https://youtu.be/", "").rsplit("?")[0])
             self.setStreams(self.getVideo().streams)
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()

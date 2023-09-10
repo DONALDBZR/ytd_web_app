@@ -238,19 +238,38 @@ class Main extends React.Component {
      * @returns {void}
      */
     setMediaYouTubeIdentifier() {
-        this.setState((previous) => ({
-            Media: {
-                ...previous.Media,
-                YouTube: {
-                    ...previous.Media.YouTube,
-                    identifier:
-                        this.state.Media.YouTube.uniform_resource_locator.replace(
-                            "https://www.youtube.com/watch?v=",
-                            ""
-                        ),
+        if (
+            this.state.Media.YouTube.uniform_resource_locator.includes(
+                "youtube"
+            )
+        ) {
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        identifier:
+                            this.state.Media.YouTube.uniform_resource_locator.replace(
+                                "https://www.youtube.com/watch?v=",
+                                ""
+                            ),
+                    },
                 },
-            },
-        }));
+            }));
+        } else {
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        identifier:
+                            this.state.Media.YouTube.uniform_resource_locator
+                                .replace("https://youtu.be/", "")
+                                .replace(/\?.*/, ""),
+                    },
+                },
+            }));
+        }
     }
     /**
      * Setting the route to be redirected.

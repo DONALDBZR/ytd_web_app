@@ -11,6 +11,20 @@ Type: Blueprint
 """
 
 
+def getDirectory() -> str:
+    """
+    Retrieving the directory of the application which depends on
+    the server that is used.
+
+    Returns: string
+    """
+    # Verifying that the port is for either Apache HTTPD or Werkzeug
+    if request.environ.get("SERVER_PORT") == '80':
+        return "/var/www/html/ytd_web_app"
+    else:
+        return "/home/darkness4869/Documents/extractio"
+
+
 @Media_Portal.route("/Search", methods=["POST"])
 def search() -> Response:
     """
@@ -65,20 +79,6 @@ def getMedia(identifier: str) -> Response:
     mime_type = "application/json"
     status = 200
     return Response(response, status, mimetype=mime_type)
-
-
-def getDirectory() -> str:
-    """
-    Retrieving the directory of the application which depends on
-    the server that is used.
-
-    Returns: string
-    """
-    # Verifying that the port is for either Apache HTTPD or Werkzeug
-    if request.environ.get("SERVER_PORT") == '80':
-        return "/var/www/html/ytd_web_app"
-    else:
-        return "/home/darkness4869/Documents/extractio"
 
 
 @Media_Portal.route('/Download', methods=['POST'])

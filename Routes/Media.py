@@ -33,11 +33,14 @@ def search() -> Response:
     return Response(response, status, mimetype=mime_type)
 
 
-@Media_Portal.route('/', methods=["GET"])
-def getMedia() -> Response:
+@Media_Portal.route('/<string:identifier>', methods=["GET"])
+def getMedia(identifier: str) -> Response:
     """
     Sending the data for the media that has been searched in the
     form of JSON.
+
+    Parameters:
+        identifier: string: Identifier of the content.
 
     Returns: Response
     """
@@ -47,7 +50,7 @@ def getMedia() -> Response:
         directory = "/var/www/html/ytd_web_app"
     else:
         directory = "/home/darkness4869/Documents/extractio"
-    file_name = f"{directory}/Cache/Media/{request.environ.get('REMOTE_ADDR')}.json"
+    file_name = f"{directory}/Cache/Media/{identifier}.json"
     file = open(file_name)
     response = file.read()
     mime_type = "application/json"

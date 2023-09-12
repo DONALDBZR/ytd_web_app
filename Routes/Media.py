@@ -35,6 +35,20 @@ def search() -> Response:
 
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
+def getDirectory() -> str:
+    """
+    Retrieving the directory of the application which depends on
+    the server that is used.
+
+    Returns: string
+    """
+    # Verifying that the port is for either Apache HTTPD or Werkzeug
+    if request.environ.get("SERVER_PORT") == '80':
+        return "/var/www/html/ytd_web_app"
+    else:
+        return "/home/darkness4869/Documents/extractio"
+
+
 def getMedia(identifier: str) -> Response:
     """
     Sending the data for the media that has been searched in the
@@ -45,12 +59,7 @@ def getMedia(identifier: str) -> Response:
 
     Returns: Response
     """
-    directory = ""
-    # Verifying that the port is for either Apache HTTPD or Werkzeug
-    if request.environ.get("SERVER_PORT") == '80':
-        directory = "/var/www/html/ytd_web_app"
-    else:
-        directory = "/home/darkness4869/Documents/extractio"
+    directory = getDirectory()
     file_name = f"{directory}/Cache/Media/{identifier}.json"
     # Verifying that the file with the metadata exists to return its content.
     if os.path.isfile(file_name):

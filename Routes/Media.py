@@ -35,20 +35,6 @@ def search() -> Response:
 
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
-def getDirectory() -> str:
-    """
-    Retrieving the directory of the application which depends on
-    the server that is used.
-
-    Returns: string
-    """
-    # Verifying that the port is for either Apache HTTPD or Werkzeug
-    if request.environ.get("SERVER_PORT") == '80':
-        return "/var/www/html/ytd_web_app"
-    else:
-        return "/home/darkness4869/Documents/extractio"
-
-
 def getMedia(identifier: str) -> Response:
     """
     Sending the data for the media that has been searched in the
@@ -79,6 +65,20 @@ def getMedia(identifier: str) -> Response:
     mime_type = "application/json"
     status = 200
     return Response(response, status, mimetype=mime_type)
+
+
+def getDirectory() -> str:
+    """
+    Retrieving the directory of the application which depends on
+    the server that is used.
+
+    Returns: string
+    """
+    # Verifying that the port is for either Apache HTTPD or Werkzeug
+    if request.environ.get("SERVER_PORT") == '80':
+        return "/var/www/html/ytd_web_app"
+    else:
+        return "/home/darkness4869/Documents/extractio"
 
 
 @Media_Portal.route('/Download', methods=['POST'])

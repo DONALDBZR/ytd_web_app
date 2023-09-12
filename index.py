@@ -40,7 +40,7 @@ data = DatabaseHandler.get_data(
     sort_condition="identifier ASC",
     limit_condition=1
 )
-key: str = data[0][0]
+key = str(data[0][0])
 """
 Encryption key of the application
 

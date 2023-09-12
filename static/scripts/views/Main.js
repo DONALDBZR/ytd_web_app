@@ -122,6 +122,68 @@ class Main extends React.Component {
         }
     }
     /**
+     * Setting the metadata into the state of the application.
+     * @param {object} data Metadata
+     * @returns {void}
+     */
+    setMetadata(data) {
+        if (
+            typeof data.Media.YouTube != "undefined" &&
+            ((typeof data.Media.YouTube.audio == "undefined" &&
+                typeof data.Media.YouTube.video == "undefined") ||
+                (typeof data.Media.YouTube.audio == "null" &&
+                    typeof data.Media.YouTube.video == "null"))
+        ) {
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator:
+                            data.Media.YouTube.uniform_resource_locator,
+                        title: data.Media.YouTube.title,
+                        author: data.Media.YouTube.author,
+                        author_channel: data.Media.YouTube.author_channel,
+                        views: data.Media.YouTube.views,
+                        published_at: data.Media.YouTube.published_at,
+                        thumbnail: data.Media.YouTube.thumbnail,
+                        duration: data.Media.YouTube.duration,
+                        identifier: data.Media.YouTube.identifier,
+                        File: {
+                            ...previous.Media.YouTube.File,
+                            audio: null,
+                            video: null,
+                        },
+                    },
+                },
+            }));
+        } else {
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator:
+                            data.Media.YouTube.uniform_resource_locator,
+                        title: data.Media.YouTube.title,
+                        author: data.Media.YouTube.author,
+                        author_channel: data.Media.YouTube.author_channel,
+                        views: data.Media.YouTube.views,
+                        published_at: data.Media.YouTube.published_at,
+                        thumbnail: data.Media.YouTube.thumbnail,
+                        duration: data.Media.YouTube.duration,
+                        identifier: data.Media.YouTube.identifier,
+                        File: {
+                            ...previous.Media.YouTube.File,
+                            audio: data.Media.YouTube.audio,
+                            video: data.Media.YouTube.video,
+                        },
+                    },
+                },
+            }));
+        }
+    }
+    /**
      * Retrieving the data of the media content that is searched by
      * the user.
      * @returns {void}
@@ -131,65 +193,7 @@ class Main extends React.Component {
             method: "GET",
         })
             .then((response) => response.json())
-            .then((data) => {
-                if (
-                    typeof data.Media.YouTube != "undefined" &&
-                    ((typeof data.Media.YouTube.audio == "undefined" &&
-                        typeof data.Media.YouTube.video == "undefined") ||
-                        (typeof data.Media.YouTube.audio == "null" &&
-                            typeof data.Media.YouTube.video == "null"))
-                ) {
-                    this.setState((previous) => ({
-                        Media: {
-                            ...previous.Media,
-                            YouTube: {
-                                ...previous.Media.YouTube,
-                                uniform_resource_locator:
-                                    data.Media.YouTube.uniform_resource_locator,
-                                title: data.Media.YouTube.title,
-                                author: data.Media.YouTube.author,
-                                author_channel:
-                                    data.Media.YouTube.author_channel,
-                                views: data.Media.YouTube.views,
-                                published_at: data.Media.YouTube.published_at,
-                                thumbnail: data.Media.YouTube.thumbnail,
-                                duration: data.Media.YouTube.duration,
-                                identifier: data.Media.YouTube.identifier,
-                                File: {
-                                    ...previous.Media.YouTube.File,
-                                    audio: null,
-                                    video: null,
-                                },
-                            },
-                        },
-                    }));
-                } else {
-                    this.setState((previous) => ({
-                        Media: {
-                            ...previous.Media,
-                            YouTube: {
-                                ...previous.Media.YouTube,
-                                uniform_resource_locator:
-                                    data.Media.YouTube.uniform_resource_locator,
-                                title: data.Media.YouTube.title,
-                                author: data.Media.YouTube.author,
-                                author_channel:
-                                    data.Media.YouTube.author_channel,
-                                views: data.Media.YouTube.views,
-                                published_at: data.Media.YouTube.published_at,
-                                thumbnail: data.Media.YouTube.thumbnail,
-                                duration: data.Media.YouTube.duration,
-                                identifier: data.Media.YouTube.identifier,
-                                File: {
-                                    ...previous.Media.YouTube.File,
-                                    audio: data.Media.YouTube.audio,
-                                    video: data.Media.YouTube.video,
-                                },
-                            },
-                        },
-                    }));
-                }
-            });
+            .then((data) => this.setMetadata(data));
     }
     /**
      * Retrieving Media from the server by using its uniform

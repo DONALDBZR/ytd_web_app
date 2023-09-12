@@ -1,4 +1,5 @@
 import json
+import os
 from flask import Blueprint, Response, request
 from Media import Media
 
@@ -51,7 +52,20 @@ def getMedia(identifier: str) -> Response:
     else:
         directory = "/home/darkness4869/Documents/extractio"
     file_name = f"{directory}/Cache/Media/{identifier}.json"
-    file = open(file_name)
+    # Verifying that the file with the metadata exists to return its content.
+    if os.path.isfile(file_name):
+        file = open(file_name)
+    else:
+        user_request = {
+            "referer": None,
+            "search": f"https://www.youtube.com/watch?v={identifier}",
+            "platform": "youtube",
+            "ip_address": str(request.environ.get("REMOTE_ADDR")),
+            "port": str(request.environ.get("SERVER_PORT"))
+        }
+        media = Media(user_request)
+        response = json.dumps(media.verifyPlatform(), indent=4)
+        file = open(file_name)
     response = file.read()
     mime_type = "application/json"
     status = 200

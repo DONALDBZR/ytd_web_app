@@ -255,7 +255,13 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            filename = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+            identifier: str
+            if "youtube" in self.getSearch():
+                identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+            else:
+                identifier = self.getSearch().replace(
+                    "https://youtu.be/", "").rsplit("?")[0]
+            filename = f"{self.getDirectory()}/{identifier}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
             file.close()

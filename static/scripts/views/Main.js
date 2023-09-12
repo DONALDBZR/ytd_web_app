@@ -109,10 +109,18 @@ class Main extends React.Component {
      * @returns {void}
      */
     getMedia() {
-        const media_metadata = `/Media/${this.state.System.view_route.replace(
-            "/Search/",
-            ""
-        )}`;
+        let media_metadata = "/Media/";
+        if (this.state.System.view_route.includes("Search")) {
+            media_metadata = `/Media/${this.state.System.view_route.replace(
+                "/Search/",
+                ""
+            )}`;
+        } else {
+            media_metadata = `/Media/${this.state.System.view_route.replace(
+                "/Download/YouTube/",
+                ""
+            )}`;
+        }
         fetch(media_metadata, {
             method: "GET",
         })

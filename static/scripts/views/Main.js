@@ -108,7 +108,7 @@ class Main extends React.Component {
      * metadata of the content.
      * @returns {string}
      */
-    getMetaData() {
+    generateMetadata() {
         if (this.state.System.view_route.includes("Search")) {
             return `/Media/${this.state.System.view_route.replace(
                 "/Search/",
@@ -127,7 +127,7 @@ class Main extends React.Component {
      * @returns {void}
      */
     getMedia() {
-        fetch(this.getMetaData(), {
+        fetch(this.generateMetadata(), {
             method: "GET",
         })
             .then((response) => response.json())

@@ -38,7 +38,9 @@ def getMetaData(file_name: str) -> TextIOWrapper:
     if os.path.isfile(file_name):
         return open(file_name)
     else:
-        identifier = file_name.replace("https://www.youtube.com/watch?v=", "")
+        directory = getDirectory()
+        identifier = file_name.replace(
+            f"{directory}/Cache/Media/", "").replace(".json", "")
         user_request = {
             "referer": None,
             "search": f"https://www.youtube.com/watch?v={identifier}",

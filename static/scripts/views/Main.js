@@ -193,7 +193,11 @@ class Main extends React.Component {
             method: "GET",
         })
             .then((response) => response.json())
-            .then((data) => this.setMetadata(data));
+            .then((data) => this.setMetadata(data))
+            .then(
+                () =>
+                    (document.querySelector("#loading").style.display = "none")
+            );
     }
     /**
      * Retrieving Media from the server by using its uniform
@@ -476,6 +480,7 @@ class Media extends Search {
      * @returns {void}
      */
     componentDidMount() {
+        document.querySelector("#loading").style.display = "flex";
         this.getRoute();
         setTimeout(() => {
             if (window.location.pathname != "/Search/") {

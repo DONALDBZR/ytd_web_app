@@ -109,7 +109,11 @@ class Main extends React.Component {
      * @returns {void}
      */
     getMedia() {
-        fetch("/Media", {
+        const media_metadata = `/Media/${this.state.System.view_route.replace(
+            "/Search/",
+            ""
+        )}`;
+        fetch(media_metadata, {
             method: "GET",
         })
             .then((response) => response.json())
@@ -454,9 +458,12 @@ class Media extends Search {
      * @returns {void}
      */
     componentDidMount() {
-        if (window.location.pathname != "/Search/") {
-            this.getMedia();
-        }
+        this.getRoute();
+        setTimeout(() => {
+            if (window.location.pathname != "/Search/") {
+                this.getMedia();
+            }
+        }, 1);
     }
     /**
      * Rendering the component
@@ -583,7 +590,12 @@ class YouTubeDownloader extends Main {
      * @returns {void}
      */
     componentDidMount() {
-        this.getMedia();
+        this.getRoute();
+        setTimeout(() => {
+            if (window.location.pathname != "/Search/") {
+                this.getMedia();
+            }
+        }, 1);
     }
     /**
      * Rendering the component

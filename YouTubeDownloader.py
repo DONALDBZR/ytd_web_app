@@ -349,8 +349,8 @@ class YouTube_Downloader:
             else:
                 self.setIdentifier(self.getIdentifier().replace(
                     "https://youtu.be/", "").rsplit("?")[0])
-            audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
-            video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
+            audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp4"
+            video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         else:
             self.setVideo(
                 YouTube(self.getUniformResourceLocator()))

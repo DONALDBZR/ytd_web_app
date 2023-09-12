@@ -104,24 +104,30 @@ class Main extends React.Component {
             .then(() => this.redirector(delay, this.state.System.url));
     }
     /**
+     * Generating the uniform resource locator for retrieving the
+     * metadata of the content.
+     * @returns {string}
+     */
+    getMetaData() {
+        if (this.state.System.view_route.includes("Search")) {
+            return `/Media/${this.state.System.view_route.replace(
+                "/Search/",
+                ""
+            )}`;
+        } else {
+            return `/Media/${this.state.System.view_route.replace(
+                "/Download/YouTube/",
+                ""
+            )}`;
+        }
+    }
+    /**
      * Retrieving the data of the media content that is searched by
      * the user.
      * @returns {void}
      */
     getMedia() {
-        let media_metadata = "/Media/";
-        if (this.state.System.view_route.includes("Search")) {
-            media_metadata = `/Media/${this.state.System.view_route.replace(
-                "/Search/",
-                ""
-            )}`;
-        } else {
-            media_metadata = `/Media/${this.state.System.view_route.replace(
-                "/Download/YouTube/",
-                ""
-            )}`;
-        }
-        fetch(media_metadata, {
+        fetch(this.getMetaData(), {
             method: "GET",
         })
             .then((response) => response.json())

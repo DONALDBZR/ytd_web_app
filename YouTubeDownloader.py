@@ -349,8 +349,8 @@ class YouTube_Downloader:
             else:
                 self.setIdentifier(self.getIdentifier().replace(
                     "https://youtu.be/", "").rsplit("?")[0])
-            audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
-            video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
+            audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp4"
+            video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         else:
             self.setVideo(
                 YouTube(self.getUniformResourceLocator()))
@@ -397,12 +397,12 @@ class YouTube_Downloader:
             self.getITAG()))  # type: ignore
         self.setMimeType("audio/mp3")
         self.getStream().download(
-            output_path=f"{self.getDirectory()}/Audio", filename=f"{self.getTitle()}.mp3")
+            output_path=f"{self.getDirectory()}/Audio", filename=f"{self.getIdentifier()}.mp3")
         file_name = f"{self.getTitle()}.mp3"
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3", self.getIdentifier()))
-        response = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3"
+        response = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
         return response
 
     def getVideoFile(self) -> str:
@@ -420,11 +420,12 @@ class YouTube_Downloader:
         self.setStream(self.getStreams().get_by_itag(
             self.getITAG()))  # type: ignore
         self.setMimeType(self.getStream().mime_type)
-        self.getStream().download(f"{self.getDirectory()}/Video")
+        self.getStream().download(
+            output_path=f"{self.getDirectory()}/Video", filename=f"{self.getIdentifier()}.mp4")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Video/{self.getTitle()}.mp4", self.getIdentifier()))
-        response = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
+        response = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         return response
 
     def __server(self, port: str) -> None:

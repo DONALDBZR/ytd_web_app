@@ -336,33 +336,14 @@ class YouTube_Downloader:
         """
         response = {}
         metadata = self.search()
-        audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
-        video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
-        # Verifying that the files exist in the server before downloading them
-        if os.path.isfile(audio_file_location) and os.path.isfile(video_file_location):
-            audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
-            video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
-            self.setIdentifier(self.getUniformResourceLocator())
-            if "youtube" in self.getUniformResourceLocator():
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://www.youtube.com/watch?v=", ""))
-            else:
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://youtu.be/", "").rsplit("?")[0])
-            audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp4"
-            video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        else:
-            self.setVideo(
-                YouTube(self.getUniformResourceLocator()))
+        self.setIdentifier(metadata["identifier"])
+        audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+        video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+        # Ensuring that the files do not exist in the server to download them
+        if os.path.isfile(audio_file_location) == False and os.path.isfile(video_file_location) == False:
+            self.setVideo(YouTube(self.getUniformResourceLocator()))
             self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
             self.getDatabaseHandler()._execute()
-            self.setIdentifier(self.getUniformResourceLocator())
-            if "youtube" in self.getUniformResourceLocator():
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://www.youtube.com/watch?v=", ""))
-            else:
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://youtu.be/", "").rsplit("?")[0])
             self.setStreams(self.getVideo().streams)
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()

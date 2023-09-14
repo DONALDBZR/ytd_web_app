@@ -476,14 +476,15 @@ class Media extends Search {
         super(props);
     }
     /**
-     * Running the methods needed as soon as the component has been successfully mounted
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
-        document.querySelector("#loading").style.display = "flex";
         this.getRoute();
         setTimeout(() => {
-            if (window.location.pathname != "/Search/") {
+            if (this.state.System.view_route != "/Search/") {
+                document.querySelector("#loading").style.display = "flex";
                 this.getMedia();
             }
         }, 1);

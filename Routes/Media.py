@@ -70,10 +70,10 @@ def search() -> Response:
         "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
     }
     media = Media(user_request)
-    response = json.dumps(media.verifyPlatform(), indent=4)
-    status = int(media.verifyPlatform()["data"]["status"])
+    response = media.verifyPlatform()
+    status = int(response["data"]["status"])  # type: ignore
     mime_type = "application/json"
-    return Response(response, status, mimetype=mime_type)
+    return Response(json.dumps(response, indent=4), status, mimetype=mime_type)
 
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])

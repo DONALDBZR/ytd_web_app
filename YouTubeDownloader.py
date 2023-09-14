@@ -379,7 +379,6 @@ class YouTube_Downloader:
         self.setMimeType("audio/mp3")
         self.getStream().download(
             output_path=f"{self.getDirectory()}/Audio", filename=f"{self.getIdentifier()}.mp3")
-        file_name = f"{self.getTitle()}.mp3"
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3", self.getIdentifier()))

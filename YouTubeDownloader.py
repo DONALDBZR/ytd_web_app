@@ -138,6 +138,7 @@ class YouTube_Downloader:
         self.mediaDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
@@ -254,14 +255,18 @@ class YouTube_Downloader:
                 "https://youtu.be/", "").rsplit("?")[0])
         response = {}
         meta_data = self.getYouTube()
+        audio_file: str | None
+        video_file: str | None
         # Verifying the response of the metadata to retrieve the needed response
         if meta_data["status"] == 200:
-            self.setLength(meta_data["data"][0][1])
-            self.setPublishedAt(meta_data["data"][0][2])
-            self.setAuthor(meta_data["data"][0][3])
-            self.setTitle(meta_data["data"][0][4])
+            self.setLength(meta_data["data"][0][4])
+            self.setPublishedAt(meta_data["data"][0][3])
+            self.setAuthor(meta_data["data"][0][0])
+            self.setTitle(meta_data["data"][0][1])
             self.setDuration(time.strftime(
                 "%H:%M:%S", time.gmtime(self.getLength())))
+            audio_file = str(meta_data["data"][0][5])
+            video_file = str(meta_data["data"][1][5])
         else:
             self.setLength(self.getVideo().length)
             self.setPublishedAt(self.getVideo().publish_date)
@@ -269,6 +274,8 @@ class YouTube_Downloader:
             self.setTitle(self.getVideo().title)
             self.setDuration(time.strftime(
                 "%H:%M:%S", time.gmtime(self.getLength())))
+            audio_file = None
+            video_file = None
             self.postYouTube()
         response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
@@ -279,7 +286,9 @@ class YouTube_Downloader:
             "views": self.getVideo().views,
             "published_at": self.getPublishedAt(),
             "thumbnail": self.getVideo().thumbnail_url,
-            "duration": self.getDuration()
+            "duration": self.getDuration(),
+            "audio_file": audio_file,
+            "video_file": video_file
         }
         return response
 
@@ -315,8 +324,8 @@ class YouTube_Downloader:
 
         Returns: void
         """
-        self.getDatabaseHandler().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s",
-                                            (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
+        self.getDatabaseHandler().post_data(
+            "YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s", (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
 
     def mediaDirectory(self):
         """
@@ -344,7 +353,6 @@ class YouTube_Downloader:
         # Ensuring that the files do not exist in the server to download them
         if os.path.isfile(audio_file_location) == False and os.path.isfile(video_file_location) == False:
             self.setVideo(YouTube(self.getUniformResourceLocator()))
-            self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
             self.getDatabaseHandler()._execute()
             self.setStreams(self.getVideo().streams)
             audio_file_location = self.getAudioFile()

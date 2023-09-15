@@ -159,7 +159,7 @@ class Media:
     def setPort(self, port: str) -> None:
         self.__port = port
 
-    def verifyPlatform(self) -> dict[str, int | dict]:
+    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -167,7 +167,7 @@ class Media:
 
         Returns: object
         """
-        response: dict[str, int | dict]
+        response: dict[str, int | dict[str, str | int | None]]
         media = self.getMedia()
         # Verifying that the media does not exist to create one.
         if media["status"] != 200:
@@ -216,14 +216,14 @@ class Media:
         self.getDatabaseHandler().post_data(
             "Media", "value", "%s", tuple([self.getValue()]))
 
-    def handleYouTube(self) -> dict[str, str | int | None] | dict[str, int | str]:
+    def handleYouTube(self) -> dict[str, str | int | None]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
 
         Returns: object
         """
-        response: dict[str, str | int | None] | dict[str, int | str]
+        response: dict[str, str | int | None]
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(), self.getIdentifier(), self.getPort())
         # Verifying the referer to retrieve to required data

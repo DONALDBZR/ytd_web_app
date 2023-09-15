@@ -239,7 +239,7 @@ class YouTube_Downloader:
     def setMimeType(self, mime_type: str) -> None:
         self.__mime_type = mime_type
 
-    def search(self) -> dict:
+    def search(self) -> dict[str, str | int | None]:
         """
         Searching for the video in YouTube.
 
@@ -253,7 +253,7 @@ class YouTube_Downloader:
         else:
             self.setIdentifier(self.getIdentifier().replace(
                 "https://youtu.be/", "").rsplit("?")[0])
-        response = {}
+        response: dict[str, str | int | None]
         meta_data = self.getYouTube()
         audio_file: str | None
         video_file: str | None
@@ -284,7 +284,7 @@ class YouTube_Downloader:
             "identifier": self.getIdentifier(),
             "author_channel": self.getVideo().channel_url,
             "views": self.getVideo().views,
-            "published_at": self.getPublishedAt(),
+            "published_at": self.getPublishedAt(),  # type: ignore
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration(),
             "audio_file": audio_file,

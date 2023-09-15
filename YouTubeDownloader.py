@@ -338,14 +338,14 @@ class YouTube_Downloader:
         if not os.path.exists(f"{self.getDirectory()}/Audio"):
             os.makedirs(f"{self.getDirectory()}/Audio")
 
-    def retrievingStreams(self) -> dict:
+    def retrievingStreams(self) -> dict[str, str | int]:
         """
         Downloading the contents of the media from the platform to
         save on the server.
 
         Returns: object
         """
-        response = {}
+        response: dict[str, str | int]
         metadata = self.search()
         self.setIdentifier(str(metadata["identifier"]))
         audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
@@ -364,7 +364,7 @@ class YouTube_Downloader:
             "identifier": self.getIdentifier(),
             "author_channel": self.getVideo().channel_url,
             "views": self.getVideo().views,
-            "published_at": self.getPublishedAt(),
+            "published_at": self.getPublishedAt(),  # type: ignore
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration(),
             "audio": audio_file_location,

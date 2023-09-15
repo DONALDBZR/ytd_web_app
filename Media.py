@@ -246,7 +246,7 @@ class Media:
             file.close()
             response = {
                 "status": 200,
-                "data": youtube
+                "data": youtube  # type: ignore
             }  # type: ignore
         else:
             youtube = self._YouTubeDownloader.retrievingStreams()
@@ -269,7 +269,7 @@ class Media:
                 "status": 200,
                 "data": {
                     "url": f"/Download/YouTube/{youtube['identifier']}"
-                }
+                }  # type: ignore
             }  # type: ignore
         return response
 

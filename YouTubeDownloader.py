@@ -347,7 +347,7 @@ class YouTube_Downloader:
         """
         response = {}
         metadata = self.search()
-        self.setIdentifier(metadata["identifier"])
+        self.setIdentifier(str(metadata["identifier"]))
         audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
         video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         # Ensuring that the files do not exist in the server to download them

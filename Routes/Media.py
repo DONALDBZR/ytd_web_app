@@ -114,12 +114,12 @@ def retrieveMedia() -> Response:
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
         "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
     }
-    response = {}
+    response: dict[str, int | dict[str, str | int | None]] | str
     # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
         media = Media(user_request)
         response = media.verifyPlatform()
     mime_type = "application/json"
-    status = response["data"]["status"]
-    response = json.dumps(response, indent=4)
+    status = int(response["data"]["status"])  # type: ignore
+    response = json.dumps(response, indent=4)  # type: ignore
     return Response(response, status, mimetype=mime_type)

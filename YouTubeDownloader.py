@@ -259,14 +259,14 @@ class YouTube_Downloader:
         video_file: str | None
         # Verifying the response of the metadata to retrieve the needed response
         if meta_data["status"] == 200:
-            self.setLength(meta_data["data"][0][4])
-            self.setPublishedAt(meta_data["data"][0][3])
-            self.setAuthor(meta_data["data"][0][0])
-            self.setTitle(meta_data["data"][0][1])
+            self.setLength(str(meta_data["data"][0][4]))  # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
+            self.setAuthor(str(meta_data["data"][0][0]))  # type: ignore
+            self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
             self.setDuration(time.strftime(
                 "%H:%M:%S", time.gmtime(self.getLength())))
-            audio_file = str(meta_data["data"][0][5])
-            video_file = str(meta_data["data"][1][5])
+            audio_file = str(meta_data["data"][0][5])  # type: ignore
+            video_file = str(meta_data["data"][1][5])  # type: ignore
         else:
             self.setLength(self.getVideo().length)
             self.setPublishedAt(self.getVideo().publish_date)
@@ -292,7 +292,7 @@ class YouTube_Downloader:
         }
         return response
 
-    def getYouTube(self) -> dict:
+    def getYouTube(self) -> dict[str, int | list[str | int] | str]:
         """
         Retrieving the metadata from the YouTube table.
 

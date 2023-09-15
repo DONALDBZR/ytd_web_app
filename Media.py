@@ -159,7 +159,7 @@ class Media:
     def setPort(self, port: str) -> None:
         self.__port = port
 
-    def verifyPlatform(self) -> dict:
+    def verifyPlatform(self) -> dict[str, int | dict]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -167,7 +167,7 @@ class Media:
 
         Returns: object
         """
-        response = {}
+        response: dict[str, int | dict]
         media = self.getMedia()
         # Verifying that the media does not exist to create one.
         if media["status"] != 200:
@@ -181,7 +181,7 @@ class Media:
                 "status": 200,
                 "data": self.handleYouTube()
             }
-        return response
+        return response  # type: ignore
 
     def getMedia(self) -> dict:
         """
@@ -216,14 +216,14 @@ class Media:
         self.getDatabaseHandler().post_data(
             "Media", "value", "%s", tuple([self.getValue()]))
 
-    def handleYouTube(self) -> dict:
+    def handleYouTube(self) -> dict[str, str | int | None] | dict[str, int | str]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
 
         Returns: object
         """
-        response = {}
+        response: dict[str, str | int | None] | dict[str, int | str]
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(), self.getIdentifier(), self.getPort())
         # Verifying the referer to retrieve to required data
@@ -247,7 +247,7 @@ class Media:
             response = {
                 "status": 200,
                 "data": youtube
-            }
+            }  # type: ignore
         else:
             youtube = self._YouTubeDownloader.retrievingStreams()
             media = {
@@ -270,7 +270,7 @@ class Media:
                 "data": {
                     "url": f"/Download/YouTube/{youtube['identifier']}"
                 }
-            }
+            }  # type: ignore
         return response
 
     def metadataDirectory(self):

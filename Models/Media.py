@@ -1,7 +1,7 @@
-from DatabaseHandler import Database_Handler
+from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
 import json
-from YouTubeDownloader import YouTube_Downloader
+from Models.YouTubeDownloader import YouTube_Downloader
 import os
 
 

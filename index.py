@@ -1,7 +1,7 @@
 # Importing the requirements for the application
 from flask import Flask, render_template, request, Response
-from DatabaseHandler import Database_Handler
-from SecurityManagementSystem import Security_Management_System
+from Models.DatabaseHandler import Database_Handler
+from Models.SecurityManagementSystem import Security_Management_System
 from Routes.Session import Session_Portal
 from Routes.Search import Search_Portal
 from Routes.Media import Media_Portal

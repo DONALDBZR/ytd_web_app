@@ -1,7 +1,7 @@
 import json
 import os
 from flask import Blueprint, Response, request
-from Media import Media
+from Models.Media import Media
 from io import TextIOWrapper
 
 Media_Portal = Blueprint("Media", __name__)

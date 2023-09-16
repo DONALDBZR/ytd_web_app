@@ -1,4 +1,4 @@
-from DatabaseHandler import Database_Handler
+from Models.DatabaseHandler import Database_Handler
 from Environment import Environment
 from time import time
 from argon2 import PasswordHasher

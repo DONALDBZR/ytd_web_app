@@ -20,7 +20,7 @@ def getDirectory() -> str:
     Returns: string
     """
     # Verifying that the port is for either Apache HTTPD or Werkzeug
-    if request.environ.get("SERVER_PORT") == '80':
+    if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443':
         return "/var/www/html/ytd_web_app"
     else:
         return "/home/darkness4869/Documents/extractio"

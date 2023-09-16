@@ -195,7 +195,7 @@ class Media:
         response = {}
         if len(media) == 0:
             response = {
-                'status': 204,
+                'status': 404,
                 'data': media,
                 'timestamp': self.getTimestamp()
             }
@@ -224,6 +224,7 @@ class Media:
         Returns: object
         """
         response: dict[str, str | int | None]
+        identifier: str
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(), self.getIdentifier(), self.getPort())
         # Verifying the referer to retrieve to required data
@@ -234,7 +235,6 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            identifier: str
             if "youtube" in self.getSearch():
                 identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
             else:
@@ -255,7 +255,6 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            identifier: str
             if "youtube" in self.getSearch():
                 identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
             else:

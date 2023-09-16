@@ -14,7 +14,7 @@ class Crawler:
 
     Type: WebDriver
     """
-    __data: list[str]
+    __data: list[dict]
     """
     The data from the cache data.
 
@@ -30,8 +30,8 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[str]:
+    def getData(self) -> list[dict]:
         return self.__data
 
-    def setData(self, data: list[str]) -> None:
+    def setData(self, data: list[dict]) -> None:
         self.__data = data

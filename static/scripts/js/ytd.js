@@ -56,6 +56,12 @@ class YTD {
          * @type {string}
          */
         this.__bodyClassName;
+        /**
+         * Contains the title for a document. This element inherits all
+         * of the properties and methods of the HTMLElement interface.
+         * @type {HTMLTitleElement}
+         */
+        this.__title;
         this.init();
     }
     /**
@@ -135,6 +141,19 @@ class YTD {
      */
     setBodyClassName(body_class_name) {
         this.__bodyClassName = body_class_name;
+    }
+    /**
+     * @returns {HTMLTitleElement}
+     */
+    getTitle() {
+        return this.__title;
+    }
+    /**
+     * @param {HTMLTitleElement} title
+     * @returns {void}
+     */
+    setTitle(title) {
+        this.__title = title;
     }
     /**
      * Initializing the application

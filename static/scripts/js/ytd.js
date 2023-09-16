@@ -67,7 +67,7 @@ class YTD {
          * Contains descriptive metadata about a document.  It inherits
          * all of the properties and methods described in the
          * HTMLElement interface.
-         * @type {HTMLMetaElement}
+         * @type {HTMLMetaElement|null}
          */
         this.__meta;
         this.init();
@@ -164,13 +164,13 @@ class YTD {
         this.__title = title;
     }
     /**
-     * @returns {HTMLMetaElement}
+     * @returns {HTMLMetaElement|null}
      */
     getMeta() {
         return this.__meta;
     }
     /**
-     * @param {HTMLMetaElement} meta
+     * @param {HTMLMetaElement|null} meta
      * @returns {void}
      */
     setMeta(meta) {
@@ -280,6 +280,29 @@ class YTD {
                         .replace(".com", "");
                     this.getMeta().content = `Content from ${data.Media.YouTube.author} on ${platform} entitled ${data.Media.YouTube.title}`;
                 });
+        }
+        document.head.appendChild(this.getMeta());
+        setTimeout(() => this.configureRobot(), 200);
+    }
+    /**
+     * Configuring the pages for which the web crawlers can index
+     * on the application.
+     * @returns {void}
+     */
+    configureRobot() {
+        this.setMeta(document.createElement("meta"));
+        this.getMeta().name = "robots";
+        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
+            this.getMeta().content = "index, follow";
+        } else if (this.getRequestURI() == "/Search/") {
+            this.getMeta().content = "index, follow";
+        } else if (
+            this.getRequestURI().includes("/Search/") &&
+            this.getRequestURI() != "/Search/"
+        ) {
+            this.getMeta().content = "index, nofollow";
+        } else if (this.getRequestURI().includes("/Download/")) {
+            this.getMeta().content = "index, nofollow";
         }
         document.head.appendChild(this.getMeta());
     }

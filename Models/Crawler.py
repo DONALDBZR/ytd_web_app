@@ -74,10 +74,28 @@ class Crawler:
     def setFiles(self, files: list[str]) -> None:
         self.__files = files
 
+    def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None]) -> None:
+        """
+        Verifying that the data is not processed to append them to
+        the array to be processed.
+
+        Parameters:
+            key:    string: The key to be verified.
+            keys:   array:  The list of keys.
+            data:   object: Data to be processed.
+
+        Returns:
+        """
+        # Verifying that the web-scrawler has processed the data
+        if keys.count(key) == 0:
+            self.getData().append(data)
+
     def setUpData(self):
         """
         Setting up the data to be used to be used by the web
         crawler.
+
+        Returns:
         """
         self.setData([])
         self.setFiles(os.listdir(self.getDirectory()))
@@ -88,9 +106,8 @@ class Crawler:
                 "Media"]["YouTube"]
             key = "likes"
             keys = list(data.keys())
-            # Verifying that the web-scrawler has processed the data
-            if keys.count(key) == 0:
-                self.getData().append(data)
+            self.addUnprocessedData(key, keys, data)
+
         print(self.getData())
 
     def __server(self, port: str) -> None:

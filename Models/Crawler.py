@@ -1,5 +1,8 @@
+from io import TextIOWrapper
+import json
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
+import os
 
 
 class Crawler:
@@ -14,7 +17,7 @@ class Crawler:
 
     Type: WebDriver
     """
-    __data: list[dict]
+    __data: list[dict[str, str | int | None]]
     """
     The data from the cache data.
 
@@ -27,6 +30,13 @@ class Crawler:
     Type: string
     Visibility: private
     """
+    __files: list[str]
+    """
+    The files that are inside of the directory.
+
+    Type: array
+    Visibility: private
+    """
 
     def __init__(self, port: str) -> None:
         """
@@ -37,6 +47,8 @@ class Crawler:
         """
         self.setDriver(webdriver.Chrome())
         self.__server(port)
+        self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
+        self.setUpData()
 
     def getDriver(self) -> WebDriver:
         return self.__driver
@@ -44,10 +56,10 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict]:
+    def getData(self) -> list[dict[str, str | int | None]]:
         return self.__data
 
-    def setData(self, data: list[dict]) -> None:
+    def setData(self, data: list[dict[str, str | int | None]]) -> None:
         self.__data = data
 
     def getDirectory(self) -> str:
@@ -55,6 +67,31 @@ class Crawler:
 
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
+
+    def getFiles(self) -> list[str]:
+        return self.__files
+
+    def setFiles(self, files: list[str]) -> None:
+        self.__files = files
+
+    def setUpData(self):
+        """
+        Setting up the data to be used to be used by the web
+        crawler.
+        """
+        self.setData([])
+        self.setFiles(os.listdir(self.getDirectory()))
+        # Iterating throughout the files to append their data to the array to be processed.
+        for index in range(0, len(self.getFiles()), 1):
+            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}")
+            data: dict[str, str | int | None] = json.load(file)[
+                "Media"]["YouTube"]
+            key = "likes"
+            keys = list(data.keys())
+            # Verifying that the web-scrawler has processed the data
+            if keys.count(key) == 0:
+                self.getData().append(data)
+        print(self.getData())
 
     def __server(self, port: str) -> None:
         """

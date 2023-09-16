@@ -8,11 +8,14 @@ Type: Blueprint
 """
 
 
-@Video_Portal.route("/<string:title>")
-def serveVideo(title: str) -> Response:
+@Video_Portal.route("/<string:identifier>")
+def serveVideo(identifier: str) -> Response:
     """
     Sending the static file from the server.
 
+    Parameters:
+        identifier: string: Identifier of the video
+
     Returns: Response
     """
-    return Video_Portal.send_static_file(title)
+    return Video_Portal.send_static_file(identifier)

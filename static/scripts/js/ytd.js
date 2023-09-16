@@ -152,6 +152,46 @@ class YTD {
         this.optimize();
     }
     /**
+     * Optimizing the web application for search engines
+     * @returns {void}
+     */
+    optimize() {
+        const title = document.createElement("title");
+        // Verifying the request uniform resource indicator to set up the title of the page
+        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
+            title.text = "Extractio";
+        } else if (this.getRequestURI() == "/Search/") {
+            title.text = "Extractio: Search";
+        } else if (
+            this.getRequestURI().includes("/Search/") &&
+            this.getRequestURI() != "/Search/"
+        ) {
+            fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
+                method: "GET",
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    title.text = `Extractio Data: ${data.Media.YouTube.title}`;
+                });
+        } else if (this.getRequestURI().includes("/Download/")) {
+            fetch(
+                `/Media/${this.getRequestURI().replace(
+                    "/Download/YouTube/",
+                    ""
+                )}`,
+                {
+                    method: "GET",
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    title.text = `Extractio: ${data.Media.YouTube.title}`;
+                });
+        }
+        document.head.appendChild(title);
+        this.style();
+    }
+    /**
      * Styling the application
      * @returns {void}
      */

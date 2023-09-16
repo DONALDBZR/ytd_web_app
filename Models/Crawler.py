@@ -21,8 +21,15 @@ class Crawler:
     Type: array
     """
 
-    def __init__(self) -> None:
+    def __init__(self, port: str) -> None:
+        """
+        Initializing the crawler to scrape the data needed.
+
+        Parameters:
+            port: string:   port of the server for the application.
+        """
         self.setDriver(webdriver.Chrome())
+        self.__server(port)
 
     def getDriver(self) -> WebDriver:
         return self.__driver
@@ -35,3 +42,18 @@ class Crawler:
 
     def setData(self, data: list[dict]) -> None:
         self.__data = data
+
+    def __server(self, port: str) -> None:
+        """
+        Setting the directory for the application.
+
+        Parameters:
+            port:   string: The port of the application
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if port == '80' or port == '443':
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("/home/darkness4869/Documents/extractio")

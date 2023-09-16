@@ -360,6 +360,19 @@ class Main extends React.Component {
             });
     }
     /**
+     * Checking that the location of the media file needed is in
+     * the state of the application.
+     * @returns {string|void}
+     */
+    verifyFile() {
+        // Verifying that the file exists in the server to be able to verify the directory of the file, else, redirect the user.
+        if (this.state.Media.YouTube.File.video != null) {
+            return this.getMediaFile();
+        } else {
+            window.location.href = `/Search/${this.state.Media.YouTube.identifier}`;
+        }
+    }
+    /**
      * Retrieving the media file for the application to load.
      * @returns {string}
      */

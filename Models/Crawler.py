@@ -37,6 +37,13 @@ class Crawler:
     Type: array
     Visibility: private
     """
+    __targets: list[str]
+    """
+    The targets of the web-crawler.
+
+    Type: array
+    Visibility: private
+    """
 
     def __init__(self, port: str) -> None:
         """
@@ -74,6 +81,12 @@ class Crawler:
     def setFiles(self, files: list[str]) -> None:
         self.__files = files
 
+    def getTargets(self) -> list[str]:
+        return self.__targets
+
+    def setTargets(self, targets: list[str]) -> None:
+        self.__targets = targets
+
     def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None]) -> None:
         """
         Verifying that the data is not processed to append them to
@@ -84,18 +97,18 @@ class Crawler:
             keys:   array:  The list of keys.
             data:   object: Data to be processed.
 
-        Returns:
+        Returns: void
         """
         # Verifying that the web-scrawler has processed the data
         if keys.count(key) == 0:
             self.getData().append(data)
 
-    def setUpData(self):
+    def setUpData(self) -> None:
         """
         Setting up the data to be used to be used by the web
         crawler.
 
-        Returns:
+        Returns: void
         """
         self.setData([])
         self.setFiles(os.listdir(self.getDirectory()))
@@ -107,8 +120,21 @@ class Crawler:
             key = "likes"
             keys = list(data.keys())
             self.addUnprocessedData(key, keys, data)
+        self.prepareFirstRun()
 
-        print(self.getData())
+    def prepareFirstRun(self) -> None:
+        """
+        Preparing for the first run of crawling based on the data in
+        the cache.
+
+        Returns: void
+        """
+        self.setTargets([])
+        # Iterating thoughout the data to retrieve the targets for the first run.
+        for index in range(0, len(self.getData()), 1):
+            self.getTargets().append(
+                str(self.getData()[index]["uniform_resource_locator"]))
+        self.firstRun()
 
     def __server(self, port: str) -> None:
         """

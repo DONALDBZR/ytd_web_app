@@ -431,7 +431,7 @@ class YouTube_Downloader:
         Returns: void
         """
         # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if port == '80':
+        if port == '80' or port == '443':
             self.setDirectory("/var/www/html/ytd_web_app")
         else:
             self.setDirectory("/home/darkness4869/Documents/extractio")

@@ -159,7 +159,7 @@ class Media:
     def setPort(self, port: str) -> None:
         self.__port = port
 
-    def verifyPlatform(self) -> dict:
+    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -167,7 +167,7 @@ class Media:
 
         Returns: object
         """
-        response = {}
+        response: dict[str, int | dict[str, str | int | None]]
         media = self.getMedia()
         # Verifying that the media does not exist to create one.
         if media["status"] != 200:
@@ -181,7 +181,7 @@ class Media:
                 "status": 200,
                 "data": self.handleYouTube()
             }
-        return response
+        return response  # type: ignore
 
     def getMedia(self) -> dict:
         """
@@ -195,7 +195,7 @@ class Media:
         response = {}
         if len(media) == 0:
             response = {
-                'status': 204,
+                'status': 404,
                 'data': media,
                 'timestamp': self.getTimestamp()
             }
@@ -216,14 +216,15 @@ class Media:
         self.getDatabaseHandler().post_data(
             "Media", "value", "%s", tuple([self.getValue()]))
 
-    def handleYouTube(self) -> dict:
+    def handleYouTube(self) -> dict[str, str | int | None]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
 
         Returns: object
         """
-        response = {}
+        response: dict[str, str | int | None]
+        identifier: str
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(), self.getIdentifier(), self.getPort())
         # Verifying the referer to retrieve to required data
@@ -234,14 +235,19 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            filename = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+            if "youtube" in self.getSearch():
+                identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+            else:
+                identifier = self.getSearch().replace(
+                    "https://youtu.be/", "").rsplit("?")[0]
+            filename = f"{self.getDirectory()}/{identifier}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
             file.close()
             response = {
                 "status": 200,
-                "data": youtube
-            }
+                "data": youtube  # type: ignore
+            }  # type: ignore
         else:
             youtube = self._YouTubeDownloader.retrievingStreams()
             media = {
@@ -249,7 +255,12 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            filename = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+            if "youtube" in self.getSearch():
+                identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+            else:
+                identifier = self.getSearch().replace(
+                    "https://youtu.be/", "").rsplit("?")[0]
+            filename = f"{self.getDirectory()}/{identifier}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
             file.close()
@@ -257,8 +268,8 @@ class Media:
                 "status": 200,
                 "data": {
                     "url": f"/Download/YouTube/{youtube['identifier']}"
-                }
-            }
+                }  # type: ignore
+            }  # type: ignore
         return response
 
     def metadataDirectory(self):

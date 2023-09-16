@@ -104,74 +104,100 @@ class Main extends React.Component {
             .then(() => this.redirector(delay, this.state.System.url));
     }
     /**
+     * Generating the uniform resource locator for retrieving the
+     * metadata of the content.
+     * @returns {string}
+     */
+    generateMetadata() {
+        if (this.state.System.view_route.includes("Search")) {
+            return `/Media/${this.state.System.view_route.replace(
+                "/Search/",
+                ""
+            )}`;
+        } else {
+            return `/Media/${this.state.System.view_route.replace(
+                "/Download/YouTube/",
+                ""
+            )}`;
+        }
+    }
+    /**
+     * Setting the metadata into the state of the application.
+     * @param {object} data Metadata
+     * @returns {void}
+     */
+    setMetadata(data) {
+        if (
+            typeof data.Media.YouTube != "undefined" &&
+            ((typeof data.Media.YouTube.audio == "undefined" &&
+                typeof data.Media.YouTube.video == "undefined") ||
+                (typeof data.Media.YouTube.audio == "null" &&
+                    typeof data.Media.YouTube.video == "null"))
+        ) {
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator:
+                            data.Media.YouTube.uniform_resource_locator,
+                        title: data.Media.YouTube.title,
+                        author: data.Media.YouTube.author,
+                        author_channel: data.Media.YouTube.author_channel,
+                        views: data.Media.YouTube.views,
+                        published_at: data.Media.YouTube.published_at,
+                        thumbnail: data.Media.YouTube.thumbnail,
+                        duration: data.Media.YouTube.duration,
+                        identifier: data.Media.YouTube.identifier,
+                        File: {
+                            ...previous.Media.YouTube.File,
+                            audio: null,
+                            video: null,
+                        },
+                    },
+                },
+            }));
+        } else {
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator:
+                            data.Media.YouTube.uniform_resource_locator,
+                        title: data.Media.YouTube.title,
+                        author: data.Media.YouTube.author,
+                        author_channel: data.Media.YouTube.author_channel,
+                        views: data.Media.YouTube.views,
+                        published_at: data.Media.YouTube.published_at,
+                        thumbnail: data.Media.YouTube.thumbnail,
+                        duration: data.Media.YouTube.duration,
+                        identifier: data.Media.YouTube.identifier,
+                        File: {
+                            ...previous.Media.YouTube.File,
+                            audio: data.Media.YouTube.audio,
+                            video: data.Media.YouTube.video,
+                        },
+                    },
+                },
+            }));
+        }
+    }
+    /**
      * Retrieving the data of the media content that is searched by
      * the user.
      * @returns {void}
      */
     getMedia() {
-        fetch("/Media", {
+        fetch(this.generateMetadata(), {
             method: "GET",
         })
             .then((response) => response.json())
-            .then((data) => {
-                if (
-                    typeof data.Media.YouTube != "undefined" &&
-                    ((typeof data.Media.YouTube.audio == "undefined" &&
-                        typeof data.Media.YouTube.video == "undefined") ||
-                        (typeof data.Media.YouTube.audio == "null" &&
-                            typeof data.Media.YouTube.video == "null"))
-                ) {
-                    this.setState((previous) => ({
-                        Media: {
-                            ...previous.Media,
-                            YouTube: {
-                                ...previous.Media.YouTube,
-                                uniform_resource_locator:
-                                    data.Media.YouTube.uniform_resource_locator,
-                                title: data.Media.YouTube.title,
-                                author: data.Media.YouTube.author,
-                                author_channel:
-                                    data.Media.YouTube.author_channel,
-                                views: data.Media.YouTube.views,
-                                published_at: data.Media.YouTube.published_at,
-                                thumbnail: data.Media.YouTube.thumbnail,
-                                duration: data.Media.YouTube.duration,
-                                identifier: data.Media.YouTube.identifier,
-                                File: {
-                                    ...previous.Media.YouTube.File,
-                                    audio: null,
-                                    video: null,
-                                },
-                            },
-                        },
-                    }));
-                } else {
-                    this.setState((previous) => ({
-                        Media: {
-                            ...previous.Media,
-                            YouTube: {
-                                ...previous.Media.YouTube,
-                                uniform_resource_locator:
-                                    data.Media.YouTube.uniform_resource_locator,
-                                title: data.Media.YouTube.title,
-                                author: data.Media.YouTube.author,
-                                author_channel:
-                                    data.Media.YouTube.author_channel,
-                                views: data.Media.YouTube.views,
-                                published_at: data.Media.YouTube.published_at,
-                                thumbnail: data.Media.YouTube.thumbnail,
-                                duration: data.Media.YouTube.duration,
-                                identifier: data.Media.YouTube.identifier,
-                                File: {
-                                    ...previous.Media.YouTube.File,
-                                    audio: data.Media.YouTube.audio,
-                                    video: data.Media.YouTube.video,
-                                },
-                            },
-                        },
-                    }));
-                }
-            });
+            .then((data) => this.setMetadata(data))
+            .then(
+                () =>
+                    (document.querySelector("#loading").style.display = "none")
+            );
     }
     /**
      * Retrieving Media from the server by using its uniform
@@ -334,6 +360,19 @@ class Main extends React.Component {
             });
     }
     /**
+     * Checking that the location of the media file needed is in
+     * the state of the application.
+     * @returns {string|void}
+     */
+    verifyFile() {
+        // Verifying that the file exists in the server to be able to verify the directory of the file, else, redirect the user.
+        if (this.state.Media.YouTube.File.video != null) {
+            return this.getMediaFile();
+        } else {
+            window.location.href = `/Search/${this.state.Media.YouTube.identifier}`;
+        }
+    }
+    /**
      * Retrieving the media file for the application to load.
      * @returns {string}
      */
@@ -450,13 +489,18 @@ class Media extends Search {
         super(props);
     }
     /**
-     * Running the methods needed as soon as the component has been successfully mounted
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
-        if (window.location.pathname != "/Search/") {
-            this.getMedia();
-        }
+        this.getRoute();
+        setTimeout(() => {
+            if (this.state.System.view_route != "/Search/") {
+                document.querySelector("#loading").style.display = "flex";
+                this.getMedia();
+            }
+        }, 1);
     }
     /**
      * Rendering the component
@@ -568,7 +612,8 @@ class Download extends Main {
     }
 }
 /**
- * The component to be rendered for the Download page but only when it is for media from YouTube
+ * The component to be rendered for the Download page but only
+ * when it is for media from YouTube
  */
 class YouTubeDownloader extends Main {
     /**
@@ -583,7 +628,12 @@ class YouTubeDownloader extends Main {
      * @returns {void}
      */
     componentDidMount() {
-        this.getMedia();
+        this.getRoute();
+        setTimeout(() => {
+            if (window.location.pathname != "/Search/") {
+                this.getMedia();
+            }
+        }, 1);
     }
     /**
      * Rendering the component
@@ -593,7 +643,7 @@ class YouTubeDownloader extends Main {
         return (
             <div class="YouTube">
                 <div>
-                    <video src={this.getMediaFile()} controls autoplay></video>
+                    <video src={this.verifyFile()} controls autoplay></video>
                 </div>
                 <div>
                     <button

@@ -138,6 +138,7 @@ class YouTube_Downloader:
         self.mediaDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
@@ -238,7 +239,7 @@ class YouTube_Downloader:
     def setMimeType(self, mime_type: str) -> None:
         self.__mime_type = mime_type
 
-    def search(self) -> dict:
+    def search(self) -> dict[str, str | int | None]:
         """
         Searching for the video in YouTube.
 
@@ -252,16 +253,25 @@ class YouTube_Downloader:
         else:
             self.setIdentifier(self.getIdentifier().replace(
                 "https://youtu.be/", "").rsplit("?")[0])
-        response = {}
+        response: dict[str, str | int | None]
         meta_data = self.getYouTube()
+        audio_file: str | None
+        video_file: str | None
         # Verifying the response of the metadata to retrieve the needed response
         if meta_data["status"] == 200:
-            self.setLength(meta_data["data"][0][1])
-            self.setPublishedAt(meta_data["data"][0][2])
-            self.setAuthor(meta_data["data"][0][3])
-            self.setTitle(meta_data["data"][0][4])
+            self.setLength(int(meta_data["data"][0][4]))  # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
+            self.setAuthor(str(meta_data["data"][0][0]))  # type: ignore
+            self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
             self.setDuration(time.strftime(
                 "%H:%M:%S", time.gmtime(self.getLength())))
+            # Verifying base on the length to set the file location
+            if len(list(meta_data["data"])) == 2:  # type: ignore
+                audio_file = str(meta_data["data"][0][5])  # type: ignore
+                video_file = str(meta_data["data"][1][5])  # type: ignore
+            else:
+                audio_file = None
+                video_file = None
         else:
             self.setLength(self.getVideo().length)
             self.setPublishedAt(self.getVideo().publish_date)
@@ -269,6 +279,8 @@ class YouTube_Downloader:
             self.setTitle(self.getVideo().title)
             self.setDuration(time.strftime(
                 "%H:%M:%S", time.gmtime(self.getLength())))
+            audio_file = None
+            video_file = None
             self.postYouTube()
         response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
@@ -277,22 +289,24 @@ class YouTube_Downloader:
             "identifier": self.getIdentifier(),
             "author_channel": self.getVideo().channel_url,
             "views": self.getVideo().views,
-            "published_at": self.getPublishedAt(),
+            "published_at": self.getPublishedAt(),  # type: ignore
             "thumbnail": self.getVideo().thumbnail_url,
-            "duration": self.getDuration()
+            "duration": self.getDuration(),
+            "audio_file": audio_file,
+            "video_file": video_file
         }
         return response
 
-    def getYouTube(self) -> dict:
+    def getYouTube(self) -> dict[str, int | list[str | int] | str]:
         """
         Retrieving the metadata from the YouTube table.
 
         Returns: object
         """
         media = self.getDatabaseHandler().get_data(
-            tuple([self.getIdentifier()]), "YouTube", filter_condition="identifier = %s")
+            tuple([self.getIdentifier()]), "YouTube", "MediaFile ON MediaFile.YouTube = YouTube.identifier", "YouTube.identifier = %s", "author, title, YouTube.identifier, published_at, length, location", "MediaFile.identifier ASC", 2)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response = {}
+        response: dict[str, int | list[str | int] | str]
         if len(media) == 0:
             response = {
                 'status': 204,
@@ -313,8 +327,8 @@ class YouTube_Downloader:
 
         Returns: void
         """
-        self.getDatabaseHandler().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s",
-                                            (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
+        self.getDatabaseHandler().post_data(
+            "YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s", (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
 
     def mediaDirectory(self):
         """
@@ -327,42 +341,22 @@ class YouTube_Downloader:
         if not os.path.exists(f"{self.getDirectory()}/Audio"):
             os.makedirs(f"{self.getDirectory()}/Audio")
 
-    def retrievingStreams(self) -> dict:
+    def retrievingStreams(self) -> dict[str, str | int]:
         """
         Downloading the contents of the media from the platform to
         save on the server.
 
         Returns: object
         """
-        response = {}
+        response: dict[str, str | int]
         metadata = self.search()
-        audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
-        video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
-        # Verifying that the files exist in the server before downloading them
-        if os.path.isfile(audio_file_location) and os.path.isfile(video_file_location):
-            audio_file_location = f"{self.getDirectory()}/Audio/{self.getTitle()}.mp4"
-            video_file_location = f"{self.getDirectory()}/Video/{self.getTitle()}.mp4"
-            self.setIdentifier(self.getUniformResourceLocator())
-            if "youtube" in self.getUniformResourceLocator():
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://www.youtube.com/watch?v=", ""))
-            else:
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://youtu.be/", "").rsplit("?")[0])
-            audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp4"
-            video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        else:
-            self.setVideo(
-                YouTube(self.getUniformResourceLocator()))
-            self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
+        self.setIdentifier(str(metadata["identifier"]))
+        audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+        video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+        # Ensuring that the files do not exist in the server to download them
+        if os.path.isfile(audio_file_location) == False and os.path.isfile(video_file_location) == False:
+            self.setVideo(YouTube(self.getUniformResourceLocator()))
             self.getDatabaseHandler()._execute()
-            self.setIdentifier(self.getUniformResourceLocator())
-            if "youtube" in self.getUniformResourceLocator():
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://www.youtube.com/watch?v=", ""))
-            else:
-                self.setIdentifier(self.getIdentifier().replace(
-                    "https://youtu.be/", "").rsplit("?")[0])
             self.setStreams(self.getVideo().streams)
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()
@@ -373,7 +367,7 @@ class YouTube_Downloader:
             "identifier": self.getIdentifier(),
             "author_channel": self.getVideo().channel_url,
             "views": self.getVideo().views,
-            "published_at": self.getPublishedAt(),
+            "published_at": self.getPublishedAt(),  # type: ignore
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration(),
             "audio": audio_file_location,
@@ -398,7 +392,6 @@ class YouTube_Downloader:
         self.setMimeType("audio/mp3")
         self.getStream().download(
             output_path=f"{self.getDirectory()}/Audio", filename=f"{self.getIdentifier()}.mp3")
-        file_name = f"{self.getTitle()}.mp3"
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Audio/{self.getTitle()}.mp3", self.getIdentifier()))

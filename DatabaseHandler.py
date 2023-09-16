@@ -202,7 +202,7 @@ class Database_Handler:
         if condition == "":
             query = self.getQuery()
         else:
-            query = f"{self.getQuery()} JOIN {condition}"
+            query = f"{self.getQuery()} LEFT JOIN {condition}"
         self.setQuery(query)
 
     def _get_filter(self, condition: str) -> None:

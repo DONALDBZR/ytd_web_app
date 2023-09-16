@@ -20,6 +20,13 @@ class Crawler:
 
     Type: array
     """
+    __directory: str
+    """
+    The directory of the metadata files.
+
+    Type: string
+    Visibility: private
+    """
 
     def __init__(self, port: str) -> None:
         """
@@ -42,6 +49,12 @@ class Crawler:
 
     def setData(self, data: list[dict]) -> None:
         self.__data = data
+
+    def getDirectory(self) -> str:
+        return self.__directory
+
+    def setDirectory(self, directory: str) -> None:
+        self.__directory = directory
 
     def __server(self, port: str) -> None:
         """

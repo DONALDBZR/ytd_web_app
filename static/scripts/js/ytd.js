@@ -171,16 +171,16 @@ class YTD {
         this.optimize();
     }
     /**
-     * Optimizing the web application for search engines
+     * Defining the title of the page for the application.
      * @returns {void}
      */
-    optimize() {
-        const title = document.createElement("title");
+    addTitle() {
+        this.setTitle(document.createElement("title"));
         // Verifying the request uniform resource indicator to set up the title of the page
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
-            title.text = "Extractio";
+            this.getTitle().text = "Extractio";
         } else if (this.getRequestURI() == "/Search/") {
-            title.text = "Extractio: Search";
+            this.getTitle().text = "Extractio: Search";
         } else if (
             this.getRequestURI().includes("/Search/") &&
             this.getRequestURI() != "/Search/"
@@ -190,7 +190,7 @@ class YTD {
             })
                 .then((response) => response.json())
                 .then((data) => {
-                    title.text = `Extractio Data: ${data.Media.YouTube.title}`;
+                    this.getTitle().text = `Extractio Data: ${data.Media.YouTube.title}`;
                 });
         } else if (this.getRequestURI().includes("/Download/")) {
             fetch(
@@ -204,10 +204,17 @@ class YTD {
             )
                 .then((response) => response.json())
                 .then((data) => {
-                    title.text = `Extractio: ${data.Media.YouTube.title}`;
+                    this.getTitle().text = `Extractio: ${data.Media.YouTube.title}`;
                 });
         }
-        document.head.appendChild(title);
+        document.head.appendChild(this.getTitle());
+    }
+    /**
+     * Optimizing the web application for search engines
+     * @returns {void}
+     */
+    optimize() {
+        this.addTitle();
         this.style();
     }
     /**

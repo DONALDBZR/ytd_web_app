@@ -377,22 +377,17 @@ class Main extends React.Component {
      * @returns {string}
      */
     getMediaFile() {
-        // Verifying that the file exists in the server to be able to verify the directory of the file, else, redirect the user.
-        if (this.state.Media.YouTube.File.video != null) {
-            // Verifying the directory of the file to get its relative directory.
-            if (this.state.Media.YouTube.File.video.includes("extractio")) {
-                return this.state.Media.YouTube.File.video.replace(
-                    "/home/darkness4869/Documents/extractio",
-                    ""
-                );
-            } else {
-                return this.state.Media.YouTube.File.video.replace(
-                    "/var/www/html/ytd_web_app",
-                    ""
-                );
-            }
+        // Verifying the directory of the file to get its relative directory.
+        if (this.state.Media.YouTube.File.video.includes("extractio")) {
+            return this.state.Media.YouTube.File.video.replace(
+                "/home/darkness4869/Documents/extractio",
+                ""
+            );
         } else {
-            window.location.href = `/Search/${this.state.Media.YouTube.identifier}`;
+            return this.state.Media.YouTube.File.video.replace(
+                "/var/www/html/ytd_web_app",
+                ""
+            );
         }
     }
     /**

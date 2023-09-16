@@ -57,11 +57,19 @@ class YTD {
          */
         this.__bodyClassName;
         /**
-         * Contains the title for a document. This element inherits all
-         * of the properties and methods of the HTMLElement interface.
+         * Contains the title for a document.  This element inherits
+         * all of the properties and methods of the HTMLElement
+         * interface.
          * @type {HTMLTitleElement}
          */
         this.__title;
+        /**
+         * Contains descriptive metadata about a document.  It inherits
+         * all of the properties and methods described in the
+         * HTMLElement interface.
+         * @type {HTMLMetaElement}
+         */
+        this.__meta;
         this.init();
     }
     /**
@@ -154,6 +162,19 @@ class YTD {
      */
     setTitle(title) {
         this.__title = title;
+    }
+    /**
+     * @returns {HTMLMetaElement}
+     */
+    getMeta() {
+        return this.__meta;
+    }
+    /**
+     * @param {HTMLMetaElement} meta
+     * @returns {void}
+     */
+    setMeta(title) {
+        this.__meta = meta;
     }
     /**
      * Initializing the application

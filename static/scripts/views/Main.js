@@ -604,7 +604,8 @@ class Download extends Main {
     }
 }
 /**
- * The component to be rendered for the Download page but only when it is for media from YouTube
+ * The component to be rendered for the Download page but only
+ * when it is for media from YouTube
  */
 class YouTubeDownloader extends Main {
     /**
@@ -634,7 +635,7 @@ class YouTubeDownloader extends Main {
         return (
             <div class="YouTube">
                 <div>
-                    <video src={this.getMediaFile()} controls autoplay></video>
+                    <video src={this.verifyFile()} controls autoplay></video>
                 </div>
                 <div>
                     <button

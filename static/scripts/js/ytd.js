@@ -173,7 +173,7 @@ class YTD {
      * @param {HTMLMetaElement} meta
      * @returns {void}
      */
-    setMeta(title) {
+    setMeta(meta) {
         this.__meta = meta;
     }
     /**
@@ -231,11 +231,65 @@ class YTD {
         document.head.appendChild(this.getTitle());
     }
     /**
+     * Defining the description of the page.
+     * @returns {void}
+     */
+    addDescription() {
+        this.setMeta(document.createElement("meta"));
+        this.getMeta().name = "description";
+        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
+            this.getMeta().content =
+                "Extractio extracts content from various platforms for various needs.";
+        } else if (this.getRequestURI() == "/Search/") {
+            this.getMeta().content =
+                "The content needed can be searched, here.";
+        } else if (
+            this.getRequestURI().includes("/Search/") &&
+            this.getRequestURI() != "/Search/"
+        ) {
+            fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
+                method: "GET",
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    const uniform_resource_locator = new URL(
+                        data.Media.YouTube.uniform_resource_locator
+                    );
+                    const platform = uniform_resource_locator.hostname
+                        .replace("www.", "")
+                        .replace(".com", "");
+                    this.getMeta().content = `Metadata for the content from ${data.Media.YouTube.author} on ${platform} entitled ${data.Media.YouTube.title}`;
+                });
+        } else if (this.getRequestURI().includes("/Download/")) {
+            fetch(
+                `/Media/${this.getRequestURI().replace(
+                    "/Download/YouTube/",
+                    ""
+                )}`,
+                {
+                    method: "GET",
+                }
+            )
+                .then((response) => response.json())
+                .then((data) => {
+                    const uniform_resource_locator = new URL(
+                        data.Media.YouTube.uniform_resource_locator
+                    );
+                    const platform = uniform_resource_locator.hostname
+                        .replace("www.", "")
+                        .replace(".com", "");
+                    this.getMeta().content = `Content from ${data.Media.YouTube.author} on ${platform} entitled ${data.Media.YouTube.title}`;
+                });
+        }
+        document.head.appendChild(this.getMeta());
+    }
+    /**
      * Optimizing the web application for search engines
      * @returns {void}
      */
     optimize() {
         this.addTitle();
+        this.addDescription();
         this.style();
     }
     /**

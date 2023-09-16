@@ -149,7 +149,7 @@ class YTD {
             this.setBodyId(this.getRequestURI().replaceAll("/", ""));
         }
         this.getBody().id = this.getBodyId();
-        this.style();
+        this.optimize();
     }
     /**
      * Styling the application

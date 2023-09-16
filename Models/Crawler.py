@@ -1,8 +1,25 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.webdriver import WebDriver
+
+
 class Crawler:
     """
     It is a web-scrapper meant to scrape analytical data to be
     process later on.
     """
+    __driver: WebDriver
+    """
+    Controls the ChromeDriver and allows you to drive the
+    browser.
+
+    Type: WebDriver
+    """
 
     def __init__(self) -> None:
-        pass
+        self.setDriver(webdriver.Chrome())
+
+    def getDriver(self) -> WebDriver:
+        return self.__driver
+
+    def setDriver(self, driver: WebDriver) -> None:
+        self.__driver = driver

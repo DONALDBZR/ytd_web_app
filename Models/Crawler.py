@@ -21,13 +21,13 @@ class Crawler:
 
     Type: WebDriver
     """
-    __data: list[dict[str, str | int | None]]
+    __data: list[dict[str, str | int | None | float]]
     """
     The data from the cache data.
 
     Type: array
     """
-    __unprocessed_data: list[dict[str, str | int | None]]
+    __unprocessed_data: list[dict[str, str | int | None | float]]
     """
     The data from the cache data that have been left behind.
 
@@ -73,16 +73,16 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int | None]]:
+    def getData(self) -> list[dict[str, str | int | None | float]]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int | None]]) -> None:
+    def setData(self, data: list[dict[str, str | int | None | float]]) -> None:
         self.__data = data
 
-    def getUnprocessedData(self) -> list[dict[str, str | int | None]]:
+    def getUnprocessedData(self) -> list[dict[str, str | int | None | float]]:
         return self.__unprocessed_data
 
-    def setUnprocessedData(self, unprocessed_data: list[dict[str, str | int | None]]) -> None:
+    def setUnprocessedData(self, unprocessed_data: list[dict[str, str | int | None | float]]) -> None:
         self.__unprocessed_data = unprocessed_data
 
     def getDirectory(self) -> str:
@@ -103,7 +103,7 @@ class Crawler:
     def setTargets(self, targets: list[str]) -> None:
         self.__targets = targets
 
-    def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None]) -> None:
+    def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:
         """
         Verifying that the data is not processed to append them to
         the array to be processed.
@@ -135,7 +135,7 @@ class Crawler:
         # Iterating throughout the files to append their data to the array to be processed.
         for index in range(0, len(self.getFiles()), 1):
             file = open(f"{self.getDirectory()}/{self.getFiles()[index]}")
-            data: dict[str, str | int | None] = json.load(file)[
+            data: dict[str, str | int | None | float] = json.load(file)[
                 "Media"]["YouTube"]
             key = "likes"
             keys = list(data.keys())
@@ -243,7 +243,19 @@ class Crawler:
         if len(self.getUnprocessedData()) > 0:
             self.prepareFirstRun()
         else:
-            pass
+            self.calculateRating()
+
+    def calculateRating(self) -> None:
+        """
+        Calculating the rating of the content.
+
+        Returns: void
+        """
+        # Iterating throughout the data to calculate the rating
+        for index in range(0, len(self.getData()), 1):
+            rating = round(int(self.getData()[
+                           index]["likes"]) / int(self.getData()[index]["views"]), 4)  # type: ignore
+            self.getData()[index]["rating"] = rating
 
     def consolidateData(self) -> None:
         """

@@ -124,7 +124,7 @@ class Crawler:
                 self.getUnprocessedData().append(data)
         elif keys.count(key) == 1:
             # Verifying that the data has been set up.
-            if inspect.stack()[1][3] == "setUpData":
+            if inspect.stack()[1][3] == "setUpDataSecondRun":
                 self.getData().append(data)
 
     def setUpData(self) -> None:
@@ -139,8 +139,24 @@ class Crawler:
         # Verifying the amount of data to be processed
         if self.setUpDataFirstRun() > 0:
             self.prepareFirstRun()
-        # elif self.setUpDataSecondRun() > 0:
-        #     print(len(self.getData()))
+        elif self.setUpDataSecondRun() > 0:
+            self.prepareSecondRun()
+
+    def prepareSecondRun(self) -> None:
+        """
+        Preparing for the second run of crawling based on the data
+        in the cache.
+
+        Returns: void
+        """
+        self.setTargets([])
+        # Verifying that the data has been set up.
+        if inspect.stack()[1][3] == "setUpData":
+            # Iterating thoughout the data to retrieve the targets for the first run.
+            for index in range(0, len(self.getData()), 1):
+                self.getTargets().append(
+                    str(self.getData()[index]["author_channel"]))
+        print(self.getTargets())
 
     def setUpDataSecondRun(self) -> int:
         """

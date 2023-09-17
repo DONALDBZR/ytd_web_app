@@ -256,6 +256,18 @@ class Crawler:
             rating = round(int(self.getData()[
                            index]["likes"]) / int(self.getData()[index]["views"]), 4)  # type: ignore
             self.getData()[index]["rating"] = rating
+        self.saveData()
+
+    def saveData(self) -> None:
+        """
+        Saving the data into the cache after processing it.
+
+        Returns: void
+        """
+        # Iterating throughout the files to update them.
+        for index in range(0, len(self.getFiles()), 1):
+            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "w")
+            file.write(json.dumps(self.getData()[index], indent=4))
 
     def consolidateData(self) -> None:
         """

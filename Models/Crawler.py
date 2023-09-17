@@ -136,9 +136,9 @@ class Crawler:
         """
         self.setData([])
         self.setFiles(os.listdir(self.getDirectory()))
-        print(self.setUpDataFirstRun())
-        # if self.setUpDataFirstRun() > 0:
-        #     self.prepareFirstRun()
+        # Verifying the amount of data to be processed
+        if self.setUpDataFirstRun() > 0:
+            self.prepareFirstRun()
         # elif self.setUpDataSecondRun() > 0:
         #     print(len(self.getData()))
 

@@ -232,23 +232,32 @@ class Crawler:
 
         Returns: void
         """
+        referrer = inspect.stack()[1][3]
         self.getDriver().get(target)
-        time.sleep(2.34375)
-        # self.retrieveData()
+        # Verifying the run of the crawler
+        if referrer == "firstRun":
+            time.sleep(2.34375)
+        elif referrer == "secondRun":
+            time.sleep(117.1875)
+        self.retrieveData(referrer)
 
-    def retrieveData(self):
+    def retrieveData(self, referrer: str):
         """
         Retrieving the data needed from the target page.
 
+        Parameters:
+            referrer:   string: Referrer of the function
+
         Returns: void
         """
-        likes = str(self.getDriver().find_element(
-            By.XPATH, '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button').get_attribute("aria-label"))
-        likes = re.sub("[a-zA-Z]", "", likes)
-        likes = re.sub("\s", "", likes)  # type: ignore
-        likes = int(re.sub(",", "", likes))
-        target = self.getDriver().current_url
-        self.addRawData(target, likes)
+        if referrer == "firstRun":
+            likes = str(self.getDriver().find_element(
+                By.XPATH, '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button').get_attribute("aria-label"))
+            likes = re.sub("[a-zA-Z]", "", likes)
+            likes = re.sub("\s", "", likes)  # type: ignore
+            likes = int(re.sub(",", "", likes))
+            target = self.getDriver().current_url
+            self.addRawData(target, likes)
 
     def addRawData(self, target: str, likes: int) -> None:
         """

@@ -285,13 +285,15 @@ class Crawler:
         """
         # Iterating throughout the data to calculate the rating
         for index in range(0, len(self.getData()), 1):
-            rating = round(int(self.getData()[
-                           index]["likes"]) / int(self.getData()[index]["views"]), 4)  # type: ignore
-            self.getData()[index]["rating"] = rating
-            self.getData()[index]["YouTube"] = self.getData()[  # type: ignore
-                index]  # type: ignore
-            self.getData()[index]["Media"] = self.getData()[
-                index]["YouTube"]  # type: ignore
+            data = {
+                "Media": {
+                    "YouTube": self.getData()[index]
+                }
+            }
+            rating = round(int(data["Media"]["YouTube"]["likes"]) /  # type: ignore
+                           int(data["Media"]["YouTube"]["views"]), 4)  # type: ignore
+            data["Media"]["YouTube"]["rating"] = rating
+            self.getData()[index] = data  # type: ignore
         self.saveData()
 
     def saveData(self) -> None:

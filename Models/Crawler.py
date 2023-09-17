@@ -118,7 +118,7 @@ class Crawler:
         # Verifying that the web-scrawler has processed the data
         if keys.count(key) == 0:
             # Verifying that the data has been set up.
-            if inspect.stack()[1][3] == "setUpData":
+            if inspect.stack()[1][3] == "setUpDataFirstRun":
                 self.getData().append(data)
             elif inspect.stack()[1][3] == "consolidateData":
                 self.getUnprocessedData().append(data)
@@ -136,10 +136,11 @@ class Crawler:
         """
         self.setData([])
         self.setFiles(os.listdir(self.getDirectory()))
-        if self.setUpDataFirstRun() > 0:
-            self.prepareFirstRun()
-        elif self.setUpDataSecondRun() > 0:
-            print(len(self.getData()))
+        print(self.setUpDataFirstRun())
+        # if self.setUpDataFirstRun() > 0:
+        #     self.prepareFirstRun()
+        # elif self.setUpDataSecondRun() > 0:
+        #     print(len(self.getData()))
 
     def setUpDataSecondRun(self) -> int:
         """
@@ -287,6 +288,10 @@ class Crawler:
             rating = round(int(self.getData()[
                            index]["likes"]) / int(self.getData()[index]["views"]), 4)  # type: ignore
             self.getData()[index]["rating"] = rating
+            self.getData()[index]["YouTube"] = self.getData()[  # type: ignore
+                index]  # type: ignore
+            self.getData()[index]["Media"] = self.getData()[  # type: ignore
+                index]  # type: ignore
         self.saveData()
 
     def saveData(self) -> None:

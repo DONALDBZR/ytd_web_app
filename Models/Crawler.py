@@ -156,7 +156,19 @@ class Crawler:
             for index in range(0, len(self.getData()), 1):
                 self.getTargets().append(
                     str(self.getData()[index]["author_channel"]))
-        print(self.getTargets())
+        self.secondRun()
+
+    def secondRun(self):
+        """
+        The second run for the web-crawler to seek for the data
+        needed from the targets.
+
+        Returns: void
+        """
+        # Iterating throughout the targets to run throughout them
+        for index in range(0, len(self.getTargets()), 1):
+            self.enterTarget(self.getTargets()[index])
+        # self.buildUpRating()
 
     def setUpDataSecondRun(self) -> int:
         """
@@ -222,7 +234,7 @@ class Crawler:
         """
         self.getDriver().get(target)
         time.sleep(2.34375)
-        self.retrieveData()
+        # self.retrieveData()
 
     def retrieveData(self):
         """

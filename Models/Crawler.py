@@ -233,7 +233,7 @@ class Crawler:
             rating = round(((rating + new_rating) / 2), 4)
         return rating
 
-    def extractAuthors(self) -> list[str]:
+    def extractAuthors(self, dataset: list[dict[str, str | int | float | None]]) -> list[str]:
         """
         Extracting the authors from the data.
 
@@ -241,8 +241,8 @@ class Crawler:
         """
         authors: list[str] = []
         # Iterating throughout the data to return an array of the authors.
-        for index in range(0, len(self.getData()), 1):
-            authors.append(str(self.getData()[index]["author"]))
+        for index in range(0, len(dataset), 1):
+            authors.append(str(dataset[index]["author"]))
         return authors
 
     def secondRun(self):

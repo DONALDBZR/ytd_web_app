@@ -132,6 +132,15 @@ class Crawler:
         """
         self.setData([])
         self.setFiles(os.listdir(self.getDirectory()))
+        if self.setUpDataFirstRun() > 0:
+            self.prepareFirstRun()
+
+    def setUpDataFirstRun(self) -> int:
+        """
+        Setting up the data for the first run.
+
+        Returns: int
+        """
         # Iterating throughout the files to append their data to the array to be processed.
         for index in range(0, len(self.getFiles()), 1):
             file = open(f"{self.getDirectory()}/{self.getFiles()[index]}")
@@ -140,7 +149,7 @@ class Crawler:
             key = "likes"
             keys = list(data.keys())
             self.addUnprocessedData(key, keys, data)
-        self.prepareFirstRun()
+        return len(self.getData())
 
     def prepareFirstRun(self) -> None:
         """

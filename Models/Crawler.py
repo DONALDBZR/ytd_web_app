@@ -176,8 +176,19 @@ class Crawler:
         data: dict[str, str | int | float | None]
         indices: list[int]
         rating: float
-        new_data = self.calculateAverageRating(
-            self.extractAuthors(self.getData()))
+        new_data = self.removeDuplicateData(self.extractAuthors(self.getData(
+        )), self.calculateAverageRating(self.extractAuthors(self.getData())))
+
+    def removeDuplicateData(self, authors: list[str], dataset: list[dict[str, str | int | float | None]]) -> list[dict[str, str | int | float | None]]:
+        """
+        Removing the duplicates from the data.
+
+        Parameters:
+            authors:    array:  The list of authors that is in the crawler.
+            dataset:    array:  The dataset to be used.
+
+        Returns: array
+        """
         # Iterating throughout the list of authors to remove the duplicate data.
         for first_index in range(0, len(authors), 1):
             # Ensuring that there is more than one occurence of the author needed.
@@ -191,7 +202,8 @@ class Crawler:
                 for second_index in range(0, len(indices), 1):
                     # Removing every occurences after the first one.
                     if second_index != 0:
-                        new_data.remove(new_data[indices[second_index]])
+                        dataset.remove(dataset[indices[second_index]])
+        return dataset
 
     def calculateAverageRating(self, authors: list[str]) -> list[dict[str, str | int | float | None]]:
         """

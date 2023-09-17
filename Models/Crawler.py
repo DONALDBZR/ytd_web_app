@@ -150,32 +150,35 @@ class Crawler:
         Returns: void
         """
         self.setTargets([])
-        # Iterating thoughout the data to retrieve the targets for the first run.
-        for index in range(0, len(self.getData()), 1):
-            self.getTargets().append(
-                str(self.getData()[index]["uniform_resource_locator"]))
+        # Verifying that the data has been set up.
+        if inspect.stack()[1][3] == "setUpData":
+            # Iterating thoughout the data to retrieve the targets for the first run.
+            for index in range(0, len(self.getData()), 1):
+                self.getTargets().append(
+                    str(self.getData()[index]["uniform_resource_locator"]))
+        elif inspect.stack()[1][3] == "consolidateData":
+            # Iterating thoughout the data to retrieve the targets for the first run.
+            for index in range(0, len(self.getUnprocessedData()), 1):
+                self.getTargets().append(
+                    str(self.getUnprocessedData()[index]["uniform_resource_locator"]))
         self.firstRun()
 
-    def enterTarget(self, target: str, index: int) -> None:
+    def enterTarget(self, target: str) -> None:
         """
         Entering the targeted page.
 
         Parameters:
             target: string: The uniform resource locator of the targeted page.
-            index:  int:    The index of the target.
 
         Returns: void
         """
         self.getDriver().get(target)
         time.sleep(2.34375)
-        self.retrieveData(index)
+        self.retrieveData()
 
-    def retrieveData(self, index: int):
+    def retrieveData(self):
         """
         Retrieving the data needed from the target page.
-
-        Parameters:
-            index:  int:    The index of the target
 
         Returns: void
         """
@@ -184,7 +187,37 @@ class Crawler:
         likes = re.sub("[a-zA-Z]", "", likes)
         likes = re.sub("\s", "", likes)  # type: ignore
         likes = int(re.sub(",", "", likes))
-        self.getData()[index]["likes"] = likes
+        target = self.getDriver().current_url
+        self.addRawData(target, likes)
+
+    def addRawData(self, target: str, likes: int) -> None:
+        """
+        Adding the raw data in its related data object.
+
+        Parameters:
+            target: string: Target of the web-crawler.
+            likes:  int:    Likes of the content.
+
+        Returns: void
+        """
+        # Iterating throughout the data to retrieve is related object.
+        for index in range(0, len(self.getData()), 1):
+            self.setLikes(target, likes, index)
+
+    def setLikes(self, target: str, likes: int, index: int) -> None:
+        """
+        Adding the data from the content
+
+        Parameters:
+            target: string: Target of the web-crawler.
+            likes:  int:    Likes of the content.
+            index:  int:    Index of the content.
+
+        Returns: void
+        """
+        # Verifying that the the target exists in the data.
+        if self.getData()[index]["uniform_resource_locator"] == target:
+            self.getData()[index]["likes"] = likes
 
     def firstRun(self):
         """
@@ -195,7 +228,7 @@ class Crawler:
         """
         # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getTargets()), 1):
-            self.enterTarget(self.getTargets()[index], index)
+            self.enterTarget(self.getTargets()[index])
         self.buildUpRating()
 
     def buildUpRating(self) -> None:
@@ -206,6 +239,11 @@ class Crawler:
         """
         self.setUnprocessedData([])
         self.consolidateData()
+        # Verifying that there is no data that have been left behind in the process.
+        if len(self.getUnprocessedData()) > 0:
+            self.prepareFirstRun()
+        else:
+            pass
 
     def consolidateData(self) -> None:
         """

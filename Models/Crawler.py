@@ -1,8 +1,11 @@
 from io import TextIOWrapper
 import json
+import time
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 import os
+from selenium.webdriver.common.by import By
+import re
 
 
 class Crawler:
@@ -135,6 +138,48 @@ class Crawler:
             self.getTargets().append(
                 str(self.getData()[index]["uniform_resource_locator"]))
         self.firstRun()
+
+    def enterTarget(self, target: str, index: int) -> None:
+        """
+        Entering the targeted page.
+
+        Parameters:
+            target: string: The uniform resource locator of the targeted page.
+            index:  int:    The index of the target.
+
+        Returns: void
+        """
+        self.getDriver().get(target)
+        time.sleep(1.25)
+        self.retrieveData(index)
+
+    def retrieveData(self, index: int):
+        """
+        Retrieving the data needed from the target page.
+
+        Parameters:
+            index:  int:    The index of the target
+
+        Returns: void
+        """
+        likes = str(self.getDriver().find_element(
+            By.XPATH, '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button').get_attribute("aria-label"))
+        likes = re.sub("[a-zA-Z]", "", likes)
+        likes = re.sub("\s", "", likes)
+        likes = int(re.sub(",", "", likes))
+        self.getData()[index]["likes"] = likes
+
+    def firstRun(self):
+        """
+        The first run for the web-crawler to seek for the data
+        needed from the targets.
+
+        Returns: void
+        """
+        # Iterating throughout the targets to run throughout them
+        for index in range(0, len(self.getTargets()), 1):
+            self.enterTarget(self.getTargets()[index], index)
+        self.buildUpRating()
 
     def __server(self, port: str) -> None:
         """

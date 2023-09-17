@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 import os
 from selenium.webdriver.common.by import By
 import re
+import inspect
 
 
 class Crawler:
@@ -23,6 +24,12 @@ class Crawler:
     __data: list[dict[str, str | int | None]]
     """
     The data from the cache data.
+
+    Type: array
+    """
+    __unprocessed_data: list[dict[str, str | int | None]]
+    """
+    The data from the cache data that have been left behind.
 
     Type: array
     """
@@ -72,6 +79,12 @@ class Crawler:
     def setData(self, data: list[dict[str, str | int | None]]) -> None:
         self.__data = data
 
+    def getUnprocessedData(self) -> list[dict[str, str | int | None]]:
+        return self.__unprocessed_data
+
+    def setUnprocessedData(self, unprocessed_data: list[dict[str, str | int | None]]) -> None:
+        self.__unprocessed_data = unprocessed_data
+
     def getDirectory(self) -> str:
         return self.__directory
 
@@ -104,7 +117,11 @@ class Crawler:
         """
         # Verifying that the web-scrawler has processed the data
         if keys.count(key) == 0:
-            self.getData().append(data)
+            # Verifying that the data has been set up.
+            if inspect.stack()[1][3] == "setUpData":
+                self.getData().append(data)
+            elif inspect.stack()[1][3] == "consolidateData":
+                self.getUnprocessedData().append(data)
 
     def setUpData(self) -> None:
         """
@@ -150,7 +167,7 @@ class Crawler:
         Returns: void
         """
         self.getDriver().get(target)
-        time.sleep(1.25)
+        time.sleep(2.34375)
         self.retrieveData(index)
 
     def retrieveData(self, index: int):
@@ -165,7 +182,7 @@ class Crawler:
         likes = str(self.getDriver().find_element(
             By.XPATH, '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button').get_attribute("aria-label"))
         likes = re.sub("[a-zA-Z]", "", likes)
-        likes = re.sub("\s", "", likes)
+        likes = re.sub("\s", "", likes)  # type: ignore
         likes = int(re.sub(",", "", likes))
         self.getData()[index]["likes"] = likes
 
@@ -180,6 +197,29 @@ class Crawler:
         for index in range(0, len(self.getTargets()), 1):
             self.enterTarget(self.getTargets()[index], index)
         self.buildUpRating()
+
+    def buildUpRating(self) -> None:
+        """
+        Building up the rating based on the data in the cache.
+
+        Returns: void
+        """
+        self.setUnprocessedData([])
+        self.consolidateData()
+
+    def consolidateData(self) -> None:
+        """
+        Consolidating the data by not leaving the data that have
+        been retrieved behind.
+
+        Returns: void
+        """
+        # Iterating throughout the data to set up the data that have not been processed.
+        for index in range(0, len(self.getData()), 1):
+            data = self.getData()[index]
+            key = "likes"
+            keys = list(data.keys())
+            self.addUnprocessedData(key, keys, data)
 
     def __server(self, port: str) -> None:
         """

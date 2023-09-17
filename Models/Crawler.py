@@ -122,6 +122,10 @@ class Crawler:
                 self.getData().append(data)
             elif inspect.stack()[1][3] == "consolidateData":
                 self.getUnprocessedData().append(data)
+        elif keys.count(key) == 1:
+            # Verifying that the data has been set up.
+            if inspect.stack()[1][3] == "setUpData":
+                self.getData().append(data)
 
     def setUpData(self) -> None:
         """
@@ -134,6 +138,24 @@ class Crawler:
         self.setFiles(os.listdir(self.getDirectory()))
         if self.setUpDataFirstRun() > 0:
             self.prepareFirstRun()
+        elif self.setUpDataSecondRun() > 0:
+            print(len(self.getData()))
+
+    def setUpDataSecondRun(self) -> int:
+        """
+        Setting up the data for the second run.
+
+        Returns: int
+        """
+        # Iterating throughout the files to append their data to the array to be processed.
+        for index in range(0, len(self.getFiles()), 1):
+            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}")
+            data: dict[str, str | int | None | float] = json.load(file)[
+                "Media"]["YouTube"]
+            key = "rating"
+            keys = list(data.keys())
+            self.addUnprocessedData(key, keys, data)
+        return len(self.getData())
 
     def setUpDataFirstRun(self) -> int:
         """

@@ -172,11 +172,26 @@ class Crawler:
         Returns: void
         """
         new_data: list[dict[str, str | int | float | None]]
-        authors = self.extractAuthors()
+        authors = self.extractAuthors(self.getData())
         data: dict[str, str | int | float | None]
         indices: list[int]
         rating: float
-        new_data = self.calculateAverageRating(self.extractAuthors())
+        new_data = self.calculateAverageRating(
+            self.extractAuthors(self.getData()))
+        # Iterating throughout the list of authors to remove the duplicate data.
+        for first_index in range(0, len(authors), 1):
+            # Ensuring that there is more than one occurence of the author needed.
+            if authors.count(authors[first_index]):
+                indices = [
+                    author_index for author_index,
+                    item in enumerate(authors)
+                    if item == authors[first_index]
+                ]
+                # Iterating throughout the list of indices to remove the duplicates
+                for second_index in range(0, len(indices), 1):
+                    # Removing every occurences after the first one.
+                    if second_index != 0:
+                        new_data.remove(new_data[indices[second_index]])
 
     def calculateAverageRating(self, authors: list[str]) -> list[dict[str, str | int | float | None]]:
         """
@@ -209,8 +224,11 @@ class Crawler:
         """
         # Ensuring that there are more than one occurence of the authors.
         if authors.count(authors[index]) != 1:
-            indices = [author_index for author_index, item in enumerate(
-                authors) if item == authors[index]]
+            indices = [
+                author_index for author_index,
+                item in enumerate(authors)
+                if item == authors[index]
+            ]
             rating: float = data["rating"]  # type: ignore
             data["rating"] = self.calculateDuplicateAverageRating(
                 indices, rating)
@@ -227,9 +245,9 @@ class Crawler:
         Returns:    float
         """
         # Iterating throughout the indices of the duplicates to calculate the average rating.
-        for second_index in range(0, len(indices), 1):
+        for index in range(0, len(indices), 1):
             new_rating = float(
-                self.getData()[indices[second_index]]["rating"])  # type: ignore
+                self.getData()[indices[index]]["rating"])  # type: ignore
             rating = round(((rating + new_rating) / 2), 4)
         return rating
 

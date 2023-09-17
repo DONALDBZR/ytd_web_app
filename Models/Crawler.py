@@ -290,8 +290,8 @@ class Crawler:
             self.getData()[index]["rating"] = rating
             self.getData()[index]["YouTube"] = self.getData()[  # type: ignore
                 index]  # type: ignore
-            self.getData()[index]["Media"] = self.getData()[  # type: ignore
-                index]  # type: ignore
+            self.getData()[index]["Media"] = self.getData()[
+                index]["YouTube"]  # type: ignore
         self.saveData()
 
     def saveData(self) -> None:

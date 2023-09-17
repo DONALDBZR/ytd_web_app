@@ -154,9 +154,96 @@ class Crawler:
         if inspect.stack()[1][3] == "setUpData":
             # Iterating thoughout the data to retrieve the targets for the first run.
             for index in range(0, len(self.getData()), 1):
-                self.getTargets().append(
-                    str(self.getData()[index]["author_channel"]))
-        self.secondRun()
+                data = {
+                    "author": self.getData()[index]["author"],
+                    "author_channel": self.getData()[index]["author_channel"],
+                    "rating": self.getData()[index]["rating"]
+                }
+                self.getData()[index] = data
+                self.getTargets().append(str(data["author_channel"]))
+        print(self.getData())
+        self.refineData()
+        # self.secondRun()
+
+    def refineData(self) -> None:
+        """
+        Refining the data when there is duplicate data.
+
+        Returns: void
+        """
+        new_data: list[dict[str, str | int | float | None]]
+        authors = self.extractAuthors()
+        data: dict[str, str | int | float | None]
+        indices: list[int]
+        rating: float
+        new_data = self.calculateAverageRating(self.extractAuthors())
+
+    def calculateAverageRating(self, authors: list[str]) -> list[dict[str, str | int | float | None]]:
+        """
+        Calculating the average rating based on the data that is in
+        the crawler.
+
+        Parameters:
+            authors:    array:  The list of authors that is in the crawler.
+
+        Returns: array
+        """
+        new_data: list[dict[str, str | int | float | None]] = []
+        # Iterating throughout the data to calculate the rating.
+        for first_index in range(0, len(authors), 1):
+            data = self.getData()[first_index]
+            new_data.append(self.verifyAuthor(first_index, authors, data))
+        return new_data
+
+    def verifyAuthor(self, index: int, authors: list[str], data: dict[str, str | int | float | None]) -> dict[str, str | int | float | None]:
+        """
+        Verifying the amount of occurences for an author to
+        calculate their average rating.
+
+        Parameters:
+            index:      int:    The index of the data in the array.
+            authors:    array:  The list of authors that is in the crawler.
+            data:       object: The data to be refined
+
+        Returns: object
+        """
+        # Ensuring that there are more than one occurence of the authors.
+        if authors.count(authors[index]) != 1:
+            indices = [author_index for author_index, item in enumerate(
+                authors) if item == authors[index]]
+            rating: float = data["rating"]  # type: ignore
+            data["rating"] = self.calculateDuplicateAverageRating(
+                indices, rating)
+        return data
+
+    def calculateDuplicateAverageRating(self, indices: list[int], rating: float) -> float:
+        """
+        Calculating the average rating of the duplicate data.
+
+        Parameters:
+            indices:    array:  The list of indices of the duplicate data.
+            rating:     float:  The rating of a media of the author.
+
+        Returns:    float
+        """
+        # Iterating throughout the indices of the duplicates to calculate the average rating.
+        for second_index in range(0, len(indices), 1):
+            new_rating = float(
+                self.getData()[indices[second_index]]["rating"])  # type: ignore
+            rating = round(((rating + new_rating) / 2), 4)
+        return rating
+
+    def extractAuthors(self) -> list[str]:
+        """
+        Extracting the authors from the data.
+
+        Returns: array
+        """
+        authors: list[str] = []
+        # Iterating throughout the data to return an array of the authors.
+        for index in range(0, len(self.getData()), 1):
+            authors.append(str(self.getData()[index]["author"]))
+        return authors
 
     def secondRun(self):
         """
@@ -233,11 +320,12 @@ class Crawler:
         Returns: void
         """
         referrer = inspect.stack()[1][3]
-        self.getDriver().get(target)
         # Verifying the run of the crawler
         if referrer == "firstRun":
+            self.getDriver().get(target)
             time.sleep(2.34375)
         elif referrer == "secondRun":
+            self.getDriver().get(f"{target}/videos")
             time.sleep(117.1875)
         self.retrieveData(referrer)
 
@@ -258,6 +346,9 @@ class Crawler:
             likes = int(re.sub(",", "", likes))
             target = self.getDriver().current_url
             self.addRawData(target, likes)
+        elif referrer == "secondRun":
+            videos_tab = self.getDriver().find_element(
+                By.XPATH, '//*[@id="tabsContent"]/tp-yt-paper-tab[2]').click()
 
     def addRawData(self, target: str, likes: int) -> None:
         """

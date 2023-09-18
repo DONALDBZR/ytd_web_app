@@ -171,134 +171,39 @@ class Crawler:
 
         Returns: void
         """
-        new_data: list[dict[str, str | int | float | None]]
-        authors = self.extractAuthors(self.getData())
-        data: dict[str, str | int | float | None]
-        indices: list[int]
-        rating: float
-        new_data = self.removeDuplicateData(self.extractAuthors(self.getData(
-        )), self.calculateAverageRating(self.extractAuthors(self.getData())))
-
-    def removeDuplicateData(self, authors: list[str], dataset: list[dict[str, str | int | float | None]]) -> list[dict[str, str | int | float | None]]:
-        """
-        Removing the duplicates from the data.
-
-        Parameters:
-            authors:    array:  The list of authors that is in the crawler.
-            dataset:    array:  The dataset to be used.
-
-        Returns: array
-        """
-        # Iterating throughout the list of authors to remove the duplicate data.
-        for first_index in range(0, len(authors), 1):
-            self.verifyDuplicateAuthor(authors, first_index, dataset)
-        return dataset
-
-    def verifyDuplicateAuthor(self, authors: list[str], index: int, dataset: list[dict[str, str | int | float | None]]) -> None:
-        """
-        Verifying that there is a duplicate author to remove it from
-        the dataset.
-
-        Parameters:
-            authors:    array:  The list of authors that is in the crawler.
-            index:      int:    The index of the data.
-            dataset     array:  The dataset to be processed.
-
-        Returns: void
-        """
-        # Ensuring that there is more than one occurence of the author needed.
-        if authors.count(authors[index]):
-            indices = [
-                author_index for author_index,
-                item in enumerate(authors)
-                if item == authors[index]
-            ]
-            self.findDuplicateAuthor(indices, dataset)
-
-    def findDuplicateAuthor(self, indices: list[int], dataset: list[dict[str, str | int | float | None]]):
-        """
-        Finding the duplicate authors.
-
-        Parameters:
-            indices:    array:  The identifiers of the duplicate authors.
-
-        Return: None
-        """
-        # Iterating throughout the list of indices to remove the duplicates
-        for index in range(0, len(indices), 1):
-            # Removing every occurences after the first one.
-            if index != 0:
-                dataset.remove(dataset[indices[index]])
-
-    def calculateAverageRating(self, authors: list[str]) -> list[dict[str, str | int | float | None]]:
-        """
-        Calculating the average rating based on the data that is in
-        the crawler.
-
-        Parameters:
-            authors:    array:  The list of authors that is in the crawler.
-
-        Returns: array
-        """
         new_data: list[dict[str, str | int | float | None]] = []
-        # Iterating throughout the data to calculate the rating.
-        for first_index in range(0, len(authors), 1):
-            data = self.getData()[first_index]
-            new_data.append(self.verifyAuthor(first_index, authors, data))
-        return new_data
-
-    def verifyAuthor(self, index: int, authors: list[str], data: dict[str, str | int | float | None]) -> dict[str, str | int | float | None]:
-        """
-        Verifying the amount of occurences for an author to
-        calculate their average rating.
-
-        Parameters:
-            index:      int:    The index of the data in the array.
-            authors:    array:  The list of authors that is in the crawler.
-            data:       object: The data to be refined
-
-        Returns: object
-        """
-        # Ensuring that there are more than one occurence of the authors.
-        if authors.count(authors[index]) != 1:
-            indices = [
-                author_index for author_index,
-                item in enumerate(authors)
-                if item == authors[index]
-            ]
-            rating: float = data["rating"]  # type: ignore
-            data["rating"] = self.calculateDuplicateAverageRating(
-                indices, rating)
-        return data
-
-    def calculateDuplicateAverageRating(self, indices: list[int], rating: float) -> float:
-        """
-        Calculating the average rating of the duplicate data.
-
-        Parameters:
-            indices:    array:  The list of indices of the duplicate data.
-            rating:     float:  The rating of a media of the author.
-
-        Returns:    float
-        """
-        # Iterating throughout the indices of the duplicates to calculate the average rating.
-        for index in range(0, len(indices), 1):
-            new_rating = float(
-                self.getData()[indices[index]]["rating"])  # type: ignore
-            rating = round(((rating + new_rating) / 2), 4)
-        return rating
-
-    def extractAuthors(self, dataset: list[dict[str, str | int | float | None]]) -> list[str]:
-        """
-        Extracting the authors from the data.
-
-        Returns: array
-        """
+        rating: float
+        ratings: dict[str, float] = {}
+        author: str
         authors: list[str] = []
-        # Iterating throughout the data to return an array of the authors.
-        for index in range(0, len(dataset), 1):
-            authors.append(str(dataset[index]["author"]))
-        return authors
+        author_channels: dict[str, str] = {}
+        data: dict[str, str | int | float | None]
+        # Iterating throughout the data to refine the rating of the authors.
+        for index in range(0, len(self.getData()), 1):
+            author = self.getData()[index]["author"]  # type: ignore
+            rating = self.getData()[index]["rating"]  # type: ignore
+            author_channel = self.getData(
+            )[index]["author_channel"]  # type: ignore
+            # Verifying that the ratings and the author's channels are declared
+            if author in ratings and author in author_channels:
+                rating = (ratings[author] +
+                          float(self.getData()[index]["rating"])) / 2  # type: ignore
+            else:
+                rating = self.getData()[index]["rating"]  # type: ignore
+                author_channels[author] = str(
+                    self.getData()[index]["author_channel"])
+            ratings[author] = rating
+            authors.append(author)
+        authors = list(set(authors))
+        # Iterating throughout the artists, ratings and author channels to build the new data.
+        for index in range(0, len(authors), 1):
+            data = {
+                "author": authors[index],
+                "rating": ratings[authors[index]],
+                "author_channel": author_channels[authors[index]]
+            }
+            new_data.append(data)
+        self.setData(new_data)
 
     def secondRun(self):
         """

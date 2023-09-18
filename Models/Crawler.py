@@ -213,11 +213,22 @@ class Crawler:
                 item in enumerate(authors)
                 if item == authors[index]
             ]
-            # Iterating throughout the list of indices to remove the duplicates
-            for second_index in range(0, len(indices), 1):
-                # Removing every occurences after the first one.
-                if second_index != 0:
-                    dataset.remove(dataset[indices[second_index]])
+            self.findDuplicateAuthor(indices, dataset)
+
+    def findDuplicateAuthor(self, indices: list[int], dataset: list[dict[str, str | int | float | None]]):
+        """
+        Finding the duplicate authors.
+
+        Parameters:
+            indices:    array:  The identifiers of the duplicate authors.
+
+        Return: None
+        """
+        # Iterating throughout the list of indices to remove the duplicates
+        for index in range(0, len(indices), 1):
+            # Removing every occurences after the first one.
+            if index != 0:
+                dataset.remove(dataset[indices[index]])
 
     def calculateAverageRating(self, authors: list[str]) -> list[dict[str, str | int | float | None]]:
         """

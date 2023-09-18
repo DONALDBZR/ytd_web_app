@@ -263,19 +263,7 @@ class Crawler:
 
         Returns: void
         """
-        self.setTargets([])
-        # Verifying that the data has been set up.
-        if inspect.stack()[1][3] == "setUpData":
-            # Iterating thoughout the data to retrieve the targets for the first run.
-            for index in range(0, len(self.getData()), 1):
-                self.getTargets().append(
-                    str(self.getData()[index]["uniform_resource_locator"]))
-        elif inspect.stack()[1][3] == "consolidateData":
-            # Iterating thoughout the data to retrieve the targets for the first run.
-            for index in range(0, len(self.getUnprocessedData()), 1):
-                self.getTargets().append(
-                    str(self.getUnprocessedData()[index]["uniform_resource_locator"]))
-        self.firstRun()
+        self.firstRun(inspect.stack()[1][3])
 
     def enterTarget(self, target: str) -> None:
         """
@@ -293,7 +281,7 @@ class Crawler:
             time.sleep(2.34375)
         elif referrer == "secondRun":
             self.getDriver().get(f"{target}/videos")
-            time.sleep(117.1875)
+            time.sleep(1.171875)
         self.retrieveData(referrer)
 
     def retrieveData(self, referrer: str):
@@ -314,8 +302,9 @@ class Crawler:
             target = self.getDriver().current_url
             self.addRawData(target, likes)
         elif referrer == "secondRun":
-            videos_tab = self.getDriver().find_element(
-                By.XPATH, '//*[@id="tabsContent"]/tp-yt-paper-tab[2]').click()
+            videos_container = self.getDriver().find_elements(
+                By.XPATH, '//*[@id="primary"]/ytd-rich-grid-renderer')
+            print(len(videos_container))
 
     def addRawData(self, target: str, likes: int) -> None:
         """
@@ -346,16 +335,27 @@ class Crawler:
         if self.getData()[index]["uniform_resource_locator"] == target:
             self.getData()[index]["likes"] = likes
 
-    def firstRun(self):
+    def firstRun(self, referrer: str):
         """
         The first run for the web-crawler to seek for the data
         needed from the targets.
 
+        Parameters:
+            referrer:   string: The function that is calling it.
+
         Returns: void
         """
-        # Iterating throughout the targets to run throughout them
-        for index in range(0, len(self.getTargets()), 1):
-            self.enterTarget(self.getTargets()[index])
+        # Verifying the referer take the correct target.
+        if referrer == "setUpData":
+            # Iterating throughout the targets to run throughout them
+            for index in range(0, len(self.getData()), 1):
+                self.enterTarget(
+                    str(self.getData()[index]["uniform_resource_locator"]))
+        elif referrer == "buildUpRating":
+            # Iterating throughout the targets to run throughout them
+            for index in range(0, len(self.getUnprocessedData()), 1):
+                self.enterTarget(str(self.getUnprocessedData()[
+                                 index]["uniform_resource_locator"]))
         self.buildUpRating()
 
     def buildUpRating(self) -> None:
@@ -385,9 +385,8 @@ class Crawler:
                     "YouTube": self.getData()[index]
                 }
             }
-            rating = round(int(data["Media"]["YouTube"]["likes"]) /  # type: ignore
-                           int(data["Media"]["YouTube"]["views"]), 4)  # type: ignore
-            data["Media"]["YouTube"]["rating"] = rating
+            data["Media"]["YouTube"]["rating"] = round(int(
+                data["Media"]["YouTube"]["likes"]) / int(data["Media"]["YouTube"]["views"]), 4)  # type: ignore
             self.getData()[index] = data  # type: ignore
         self.saveData()
 

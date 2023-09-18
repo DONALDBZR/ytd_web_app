@@ -172,7 +172,7 @@ class Crawler:
         """
         new_data: list[dict[str, str | int | float | None]] = []
         data: dict[str, str | int | float | None]
-        crude_data = self.refineandExtract()
+        crude_data = self.refineAndExtract()
         # Iterating throughout the artists, ratings and author channels to build the new data.
         for index in range(0, len(crude_data["authors"]), 1):
             data = {
@@ -186,7 +186,7 @@ class Crawler:
         self.setData(new_data)
         print(self.getData())
 
-    def refineandExtract(self) -> dict[str, list[str] | dict[str, float] | dict[str, str]]:
+    def refineAndExtract(self) -> dict[str, list[str] | dict[str, float] | dict[str, str]]:
         """
         Refining the rating and extracting the channels of the
         authors.

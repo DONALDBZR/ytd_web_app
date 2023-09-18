@@ -191,19 +191,33 @@ class Crawler:
         """
         # Iterating throughout the list of authors to remove the duplicate data.
         for first_index in range(0, len(authors), 1):
-            # Ensuring that there is more than one occurence of the author needed.
-            if authors.count(authors[first_index]):
-                indices = [
-                    author_index for author_index,
-                    item in enumerate(authors)
-                    if item == authors[first_index]
-                ]
-                # Iterating throughout the list of indices to remove the duplicates
-                for second_index in range(0, len(indices), 1):
-                    # Removing every occurences after the first one.
-                    if second_index != 0:
-                        dataset.remove(dataset[indices[second_index]])
+            self.verifyDuplicateAuthor(authors, first_index, dataset)
         return dataset
+
+    def verifyDuplicateAuthor(self, authors: list[str], index: int, dataset: list[dict[str, str | int | float | None]]) -> None:
+        """
+        Verifying that there is a duplicate author to remove it from
+        the dataset.
+
+        Parameters:
+            authors:    array:  The list of authors that is in the crawler.
+            index:      int:    The index of the data.
+            dataset     array:  The dataset to be processed.
+
+        Returns: void
+        """
+        # Ensuring that there is more than one occurence of the author needed.
+        if authors.count(authors[index]):
+            indices = [
+                author_index for author_index,
+                item in enumerate(authors)
+                if item == authors[index]
+            ]
+            # Iterating throughout the list of indices to remove the duplicates
+            for second_index in range(0, len(indices), 1):
+                # Removing every occurences after the first one.
+                if second_index != 0:
+                    dataset.remove(dataset[indices[second_index]])
 
     def calculateAverageRating(self, authors: list[str]) -> list[dict[str, str | int | float | None]]:
         """

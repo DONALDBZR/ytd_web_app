@@ -150,19 +150,14 @@ class Crawler:
         Returns: void
         """
         self.setTargets([])
+        self.refineData()
         # Verifying that the data has been set up.
         if inspect.stack()[1][3] == "setUpData":
-            # Iterating thoughout the data to retrieve the targets for the first run.
+            # Iterating thoughout the data to retrieve the targets for the second run.
             for index in range(0, len(self.getData()), 1):
-                data = {
-                    "author": self.getData()[index]["author"],
-                    "author_channel": self.getData()[index]["author_channel"],
-                    "rating": self.getData()[index]["rating"]
-                }
-                self.getData()[index] = data
-                self.getTargets().append(str(data["author_channel"]))
-        self.refineData()
-        # self.secondRun()
+                self.getTargets().append(
+                    str(self.getData()[index]["author_channel"]))
+        self.secondRun()
 
     def refineData(self) -> None:
         """
@@ -184,7 +179,6 @@ class Crawler:
             }
             new_data.append(data)
         self.setData(new_data)
-        print(self.getData())
 
     def refineAndExtract(self) -> dict[str, list[str] | dict[str, float] | dict[str, str]]:
         """

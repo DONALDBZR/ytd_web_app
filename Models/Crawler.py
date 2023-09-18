@@ -161,7 +161,6 @@ class Crawler:
                 }
                 self.getData()[index] = data
                 self.getTargets().append(str(data["author_channel"]))
-        print(self.getData())
         self.refineData()
         # self.secondRun()
 
@@ -172,38 +171,51 @@ class Crawler:
         Returns: void
         """
         new_data: list[dict[str, str | int | float | None]] = []
-        rating: float
-        ratings: dict[str, float] = {}
-        author: str
-        authors: list[str] = []
-        author_channels: dict[str, str] = {}
         data: dict[str, str | int | float | None]
-        # Iterating throughout the data to refine the rating of the authors.
+        crude_data = self.refineandExtract()
+        # Iterating throughout the artists, ratings and author channels to build the new data.
+        for index in range(0, len(crude_data["authors"]), 1):
+            data = {
+                "author": crude_data["authors"][index],  # type: ignore
+                "rating": crude_data["ratings"][
+                    crude_data["authors"][index]],  # type: ignore
+                "author_channel": crude_data["author_channels"][
+                    crude_data["authors"][index]]  # type: ignore
+            }
+            new_data.append(data)
+        self.setData(new_data)
+        print(self.getData())
+
+    def refineandExtract(self) -> dict[str, list[str] | dict[str, float] | dict[str, str]]:
+        """
+        Refining the rating and extracting the channels of the
+        authors.
+
+        Returns: object
+        """
+        ratings: dict[str, float] = {}
+        author_channels: dict[str, str] = {}
+        authors: list[str] = []
+        # Iterating throughout the data to refine the rating and extract the channels of the authors
         for index in range(0, len(self.getData()), 1):
-            author = self.getData()[index]["author"]  # type: ignore
-            rating = self.getData()[index]["rating"]  # type: ignore
-            author_channel = self.getData(
-            )[index]["author_channel"]  # type: ignore
+            author = str(self.getData()[index]["author"])  # type: ignore
+            rating = float(self.getData()[index]["rating"])  # type: ignore
             # Verifying that the ratings and the author's channels are declared
             if author in ratings and author in author_channels:
                 rating = (ratings[author] +
                           float(self.getData()[index]["rating"])) / 2  # type: ignore
             else:
-                rating = self.getData()[index]["rating"]  # type: ignore
+                rating = float(self.getData()[index]["rating"])  # type: ignore
                 author_channels[author] = str(
                     self.getData()[index]["author_channel"])
             ratings[author] = rating
             authors.append(author)
         authors = list(set(authors))
-        # Iterating throughout the artists, ratings and author channels to build the new data.
-        for index in range(0, len(authors), 1):
-            data = {
-                "author": authors[index],
-                "rating": ratings[authors[index]],
-                "author_channel": author_channels[authors[index]]
-            }
-            new_data.append(data)
-        self.setData(new_data)
+        return {
+            "authors": authors,
+            "author_channels": author_channels,
+            "ratings": ratings
+        }
 
     def secondRun(self):
         """
@@ -225,6 +237,7 @@ class Crawler:
         """
         # Iterating throughout the files to append their data to the array to be processed.
         for index in range(0, len(self.getFiles()), 1):
+            # type: ignore
             file = open(f"{self.getDirectory()}/{self.getFiles()[index]}")
             data: dict[str, str | int | None | float] = json.load(file)[
                 "Media"]["YouTube"]

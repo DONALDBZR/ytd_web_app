@@ -1,10 +1,11 @@
 from io import TextIOWrapper
-import json
-import time
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
-import os
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
+import json
+import time
+import os
 import re
 import inspect
 
@@ -47,9 +48,20 @@ class Crawler:
     Type: array
     Visibility: private
     """
-    __targets: list[str]
+    __html_tags: list[WebElement]
     """
-    The targets of the web-crawler.
+    A list of HTML tags which are pieces of markup language
+    used to indicate the beginning and end of an HTML element in
+    an HTML document.
+
+    Type: array
+    Visibility: private
+    """
+    __html_tag: WebElement
+    """
+    An HTML tag which is pieces of markup language used to
+    indicate the beginning and end of an HTML element in an HTML
+    document.
 
     Type: array
     Visibility: private
@@ -97,11 +109,17 @@ class Crawler:
     def setFiles(self, files: list[str]) -> None:
         self.__files = files
 
-    def getTargets(self) -> list[str]:
-        return self.__targets
+    def getHtmlTags(self) -> list[WebElement]:
+        return self.__html_tags
 
-    def setTargets(self, targets: list[str]) -> None:
-        self.__targets = targets
+    def setHtmlTags(self, html_tags: list[WebElement]) -> None:
+        self.__html_tags = html_tags
+
+    def getHtmlTag(self) -> WebElement:
+        return self.__html_tag
+
+    def setHtmlTag(self, html_tag: WebElement) -> None:
+        self.__html_tag = html_tag
 
     def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:
         """
@@ -218,7 +236,8 @@ class Crawler:
         if referer == "setUpData":
             # Iterating throughout the targets to run throughout them
             for index in range(0, len(self.getData()), 1):
-                self.enterTarget(str(self.getData()[index]["author_channel"]))
+                self.enterTarget(
+                    str(self.getData()[index]["author_channel"]), index)
         # self.buildUpRating()
 
     def setUpDataSecondRun(self) -> int:
@@ -229,8 +248,7 @@ class Crawler:
         """
         # Iterating throughout the files to append their data to the array to be processed.
         for index in range(0, len(self.getFiles()), 1):
-            file_name = f"{self.getDirectory()}/{self.getFiles()[index]}"
-            file = open(file_name)
+            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "r")
             data: dict[str, str | int | None | float] = json.load(file)[
                 "Media"]["YouTube"]
             key = "rating"
@@ -246,7 +264,7 @@ class Crawler:
         """
         # Iterating throughout the files to append their data to the array to be processed.
         for index in range(0, len(self.getFiles()), 1):
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}")
+            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "r")
             data: dict[str, str | int | None | float] = json.load(file)[
                 "Media"]["YouTube"]
             key = "likes"
@@ -263,12 +281,13 @@ class Crawler:
         """
         self.firstRun(inspect.stack()[1][3])
 
-    def enterTarget(self, target: str) -> None:
+    def enterTarget(self, target: str, index: int = 0) -> None:
         """
         Entering the targeted page.
 
         Parameters:
             target: string: The uniform resource locator of the targeted page.
+            index:  int:    The identifier of the data.
 
         Returns: void
         """
@@ -280,14 +299,15 @@ class Crawler:
         elif referrer == "secondRun":
             self.getDriver().get(f"{target}/videos")
             time.sleep(1.171875)
-        self.retrieveData(referrer)
+        self.retrieveData(referrer, index)
 
-    def retrieveData(self, referrer: str):
+    def retrieveData(self, referrer: str, index: int = 0) -> None | list[str]:
         """
         Retrieving the data needed from the target page.
 
         Parameters:
-            referrer:   string: Referrer of the function
+            referrer:   string: Referrer of the function.
+            index:      int:    The identifier of the data.
 
         Returns: void
         """
@@ -300,9 +320,11 @@ class Crawler:
             target = self.getDriver().current_url
             self.addRawData(target, likes)
         elif referrer == "secondRun":
-            videos_container = self.getDriver().find_elements(
-                By.XPATH, '//*[@id="primary"]/ytd-rich-grid-renderer')
-            print(len(videos_container))
+            new_data: list[str] = []
+            self.setHtmlTags(self.getDriver().find_elements(
+                By.XPATH, '//a[@id="thumbnail"]'))
+            self.getData()[index]["latest_content"] = str(
+                self.getHtmlTags()[1].get_attribute("href"))
 
     def addRawData(self, target: str, likes: int) -> None:
         """

@@ -149,15 +149,8 @@ class Crawler:
 
         Returns: void
         """
-        self.setTargets([])
         self.refineData()
-        # Verifying that the data has been set up.
-        if inspect.stack()[1][3] == "setUpData":
-            # Iterating thoughout the data to retrieve the targets for the second run.
-            for index in range(0, len(self.getData()), 1):
-                self.getTargets().append(
-                    str(self.getData()[index]["author_channel"]))
-        self.secondRun()
+        self.secondRun(inspect.stack()[1][3])
 
     def refineData(self) -> None:
         """
@@ -211,16 +204,21 @@ class Crawler:
             "ratings": ratings
         }
 
-    def secondRun(self):
+    def secondRun(self, referer: str):
         """
         The second run for the web-crawler to seek for the data
         needed from the targets.
 
+        Parameters:
+            referer:    string: The function that is calling it.
+
         Returns: void
         """
-        # Iterating throughout the targets to run throughout them
-        for index in range(0, len(self.getTargets()), 1):
-            self.enterTarget(self.getTargets()[index])
+        # Verifying that the data has been set up.
+        if referer == "setUpData":
+            # Iterating throughout the targets to run throughout them
+            for index in range(0, len(self.getData()), 1):
+                self.enterTarget(str(self.getData()[index]["author_channel"]))
         # self.buildUpRating()
 
     def setUpDataSecondRun(self) -> int:
@@ -231,8 +229,8 @@ class Crawler:
         """
         # Iterating throughout the files to append their data to the array to be processed.
         for index in range(0, len(self.getFiles()), 1):
-            # type: ignore
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}")
+            file_name = f"{self.getDirectory()}/{self.getFiles()[index]}"
+            file = open(file_name)
             data: dict[str, str | int | None | float] = json.load(file)[
                 "Media"]["YouTube"]
             key = "rating"

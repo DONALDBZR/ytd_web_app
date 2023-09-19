@@ -452,7 +452,64 @@ class Homepage extends Main {
                         <i class="fa-brands fa-youtube"></i>
                     </div>
                 </div>
+                <Trend />
             </>
+        );
+    }
+}
+/**
+ * The component to be rendered for the trends
+ */
+class Trend extends Homepage {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return (
+            <div className="Trend">
+                {this.state.Media.YouTube.Trend.map((content) => {
+                    return (
+                        <div class="card">
+                            <div>
+                                <img src={content.thumbnail} />
+                            </div>
+                            <div>
+                                <div>{content.title}</div>
+                                <div>
+                                    <a href={content.author_channel}>
+                                        {content.author}
+                                    </a>
+                                </div>
+                                <div>
+                                    <div>Duration:</div>
+                                    <div>{content.duration}</div>
+                                </div>
+                                <div>
+                                    <div>Views:</div>
+                                    <div>
+                                        {content.views.toLocaleString("en-US")}
+                                    </div>
+                                </div>
+                                <div>
+                                    <a
+                                        href={`/Download/YouTube/${content.identifier}`}
+                                    >
+                                        <i class="fa-solid fa-download"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         );
     }
 }

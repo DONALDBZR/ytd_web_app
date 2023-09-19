@@ -475,45 +475,49 @@ class Trend extends Homepage {
     render() {
         return (
             <div className="Trend">
-                {this.state.Trend.map((content) => {
-                    return (
-                        <div class="card">
-                            <div>
-                                <a
-                                    href={content.uniform_resource_locator}
-                                    target="__blank"
-                                >
-                                    <img src={content.thumbnail} />
-                                </a>
-                            </div>
-                            <div>
-                                <div>{content.title}</div>
-                                <div>
-                                    <a href={content.author_channel}>
-                                        {content.author}
-                                    </a>
-                                </div>
-                                <div>
-                                    <div>Duration:</div>
-                                    <div>{content.duration}</div>
-                                </div>
-                                <div>
-                                    <div>Views:</div>
-                                    <div>
-                                        {content.views.toLocaleString("en-US")}
-                                    </div>
-                                </div>
+                <div>
+                    {this.state.Trend.map((content) => {
+                        return (
+                            <div class="card">
                                 <div>
                                     <a
-                                        href={`/Download/YouTube/${content.identifier}`}
+                                        href={content.uniform_resource_locator}
+                                        target="__blank"
                                     >
-                                        <i class="fa-solid fa-download"></i>
+                                        <img src={content.thumbnail} />
                                     </a>
                                 </div>
+                                <div>
+                                    <div>{content.title}</div>
+                                    <div>
+                                        <a href={content.author_channel}>
+                                            {content.author}
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <div>Duration:</div>
+                                        <div>{content.duration}</div>
+                                    </div>
+                                    <div>
+                                        <div>Views:</div>
+                                        <div>
+                                            {content.views.toLocaleString(
+                                                "en-US"
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <a
+                                            href={`/Download/YouTube/${content.identifier}`}
+                                        >
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    );
-                })}
+                        );
+                    })}
+                </div>
             </div>
         );
     }

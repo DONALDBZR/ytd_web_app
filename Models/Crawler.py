@@ -294,6 +294,19 @@ class Crawler:
         self.setData(new_data)  # type: ignore
         self.save()
 
+    def save(self) -> None:
+        """
+        Saving the data.
+
+        Returns: void
+        """
+        timestamp = int(time.time())
+        filename = f"{self.getDirectory()}/Trend/{timestamp}.json"
+        file = open(filename, "w")
+        file.write(json.dumps(self.getData(), indent=4))
+        file.close()
+        self.getDriver().quit()
+
     def setUpDataSecondRun(self) -> int:
         """
         Setting up the data for the second run.

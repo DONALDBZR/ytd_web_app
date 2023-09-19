@@ -93,7 +93,8 @@ class Crawler:
         self.setDriver(webdriver.Chrome())
         self.__server(str(self.getRequest()["port"]))
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
-        self.setUpData()
+        self.__schedule()
+        # self.setUpData()
 
     def getDriver(self) -> WebDriver:
         return self.__driver
@@ -148,6 +149,19 @@ class Crawler:
 
     def setRequest(self, request: dict[str, str | None]) -> None:
         self.__request = request
+
+    def __schedule(self) -> None:
+        """
+        Automating the web scrapper.
+
+        Returns: void
+        """
+        trend_dataset: list[str] = os.listdir(f"{self.getDirectory()}../Trend")
+        filename: int = int(trend_dataset[-1].replace(".json", ""))
+        expiry_time: int = int(time.time()) + 86400
+        # Ensuring the file is older than a week.
+        if filename > expiry_time:
+            self.setUpData()
 
     def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:
         """

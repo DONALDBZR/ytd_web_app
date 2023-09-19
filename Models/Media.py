@@ -84,7 +84,7 @@ class Media:
     Visibility: private
     """
 
-    def __init__(self, request: dict) -> None:
+    def __init__(self, request: dict[str, str | None]) -> None:
         """
         Instantiating the media's manager which will interact with
         the media's dataset and do the required processing.
@@ -100,10 +100,10 @@ class Media:
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
         self.getDatabaseHandler()._execute()
-        self.setSearch(request["search"])
+        self.setSearch(str(request["search"]))
         self.setReferer(request["referer"])
-        self.setValue(request["platform"])
-        self.setIpAddress(request["ip_address"])
+        self.setValue(str(request["platform"]))
+        self.setIpAddress(str(request["ip_address"]))
 
     def getSearch(self) -> str:
         return self.__search

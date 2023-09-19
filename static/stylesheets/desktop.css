@@ -70,6 +70,7 @@ body[id*="Download"] main {
     margin-bottom: calc(var(--height) / 50);
     font-size: calc(var(--textSize) * 1.1);
     letter-spacing: calc(var(--width) / 1000);
+    height: calc(var(--component-height) / 10);
 }
 #Homepage main div {
     display: flex;
@@ -231,4 +232,64 @@ body[id*="Search"] main #loading {
 body[id*="Download"] main .YouTube div video {
     height: inherit;
     width: auto;
+}
+#Homepage main .Trend {
+    height: calc(var(--component-height) * 0.8);
+    justify-content: normal;
+    align-items: normal;
+    flex-wrap: wrap;
+}
+#Homepage main .Trend .card {
+    height: var(--card-height);
+    width: calc(var(--width) / 3);
+    display: flex;
+    --card-height: calc(var(--component-height) / 3);
+    --card-width: calc(var(--width) / 3);
+}
+#Homepage main .Trend .card div {
+    width: calc(var(--card-width) / 2);
+    height: inherit;
+}
+#Homepage main .Trend .card div:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#Homepage main .Trend .card div:nth-child(1) a {
+    height: var(--card-height);
+}
+#Homepage main .Trend .card div:nth-child(1) a img {
+    width: auto;
+    height: var(--card-height);
+}
+#Homepage main .Trend .card div:nth-child(2) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: normal;
+}
+#Homepage main .Trend .card div:nth-child(2) div {
+    height: calc(var(--card-height) / 5);
+    font-size: calc(var(--textSize) * 0.254186583);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(1) {
+    align-items: center;
+    justify-content: normal;
+    word-wrap: break-word;
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) {
+    justify-content: normal;
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
+    font-size: calc(var(--textSize) * 1.1);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(3),
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) {
+    width: calc(var(--card-width) / 4);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div {
+    font-size: var(--textSize);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a {
+    font-size: calc(var(--textSize) * 1.9487171);
 }

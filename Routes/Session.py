@@ -1,6 +1,6 @@
 import json
 from flask import Blueprint, Response, request, session
-from SessionManagementSystem import Session_Manager
+from Models.SessionManagementSystem import Session_Manager
 
 Session_Portal = Blueprint("Session", __name__)
 """

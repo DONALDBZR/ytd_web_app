@@ -10,7 +10,7 @@ class Main extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } } }}
+         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, } }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] }}
          */
         this.state = {
             System: {
@@ -37,7 +37,23 @@ class Main extends React.Component {
                     },
                 },
             },
+            Trend: [],
         };
+    }
+    /**
+     * Retrieving the current trend.
+     * @returns {void}
+     */
+    getTrend() {
+        fetch("/Trend/", {
+            method: "GET",
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                this.setState({
+                    Trend: data,
+                })
+            );
     }
     /**
      * Running the methods needed as soon as the component has been successfully mounted.
@@ -415,6 +431,9 @@ class Homepage extends Main {
     constructor(props) {
         super(props);
     }
+    componentDidMount() {
+        this.getTrend();
+    }
     /**
      * Rendering the component
      * @returns {HTMLElement}
@@ -433,7 +452,73 @@ class Homepage extends Main {
                         <i class="fa-brands fa-youtube"></i>
                     </div>
                 </div>
+                <Trend />
             </>
+        );
+    }
+}
+/**
+ * The component to be rendered for the trends
+ */
+class Trend extends Homepage {
+    /**
+     * Constructing the application from React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
+    /**
+     * Rendering the component
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return (
+            <div className="Trend">
+                <div>
+                    {this.state.Trend.map((content) => {
+                        return (
+                            <div class="card">
+                                <div>
+                                    <a
+                                        href={content.uniform_resource_locator}
+                                        target="__blank"
+                                    >
+                                        <img src={content.thumbnail} />
+                                    </a>
+                                </div>
+                                <div>
+                                    <div>{content.title}</div>
+                                    <div>
+                                        <a href={content.author_channel}>
+                                            {content.author}
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <div>Duration:</div>
+                                        <div>{content.duration}</div>
+                                    </div>
+                                    <div>
+                                        <div>Views:</div>
+                                        <div>
+                                            {content.views.toLocaleString(
+                                                "en-US"
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <a
+                                            href={`/Download/YouTube/${content.identifier}`}
+                                        >
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
         );
     }
 }

@@ -117,7 +117,7 @@ def retrieveMedia() -> Response:
     response: dict[str, int | dict[str, str | int | None]] | str
     # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
-        media = Media(user_request)
+        media = Media(user_request)  # type: ignore
         response = media.verifyPlatform()
     mime_type = "application/json"
     status = int(response["data"]["status"])  # type: ignore

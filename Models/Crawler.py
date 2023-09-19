@@ -94,7 +94,6 @@ class Crawler:
         self.__server(str(self.getRequest()["port"]))
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
         self.__schedule()
-        # self.setUpData()
 
     def getDriver(self) -> WebDriver:
         return self.__driver

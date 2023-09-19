@@ -479,7 +479,12 @@ class Trend extends Homepage {
                     return (
                         <div class="card">
                             <div>
-                                <img src={content.thumbnail} />
+                                <a
+                                    href={content.uniform_resource_locator}
+                                    target="__blank"
+                                >
+                                    <img src={content.thumbnail} />
+                                </a>
                             </div>
                             <div>
                                 <div>{content.title}</div>

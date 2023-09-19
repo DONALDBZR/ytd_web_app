@@ -10,7 +10,7 @@ class Main extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } } }}
+         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] } } }}
          */
         this.state = {
             System: {
@@ -37,7 +37,23 @@ class Main extends React.Component {
                     },
                 },
             },
+            Trend: [],
         };
+    }
+    /**
+     * Retrieving the current trend.
+     * @returns {void}
+     */
+    getTrend() {
+        fetch("/Trend/", {
+            method: "GET",
+        })
+            .then((response) => response.json())
+            .then((data) =>
+                this.setState({
+                    Trend: data,
+                })
+            );
     }
     /**
      * Running the methods needed as soon as the component has been successfully mounted.
@@ -414,6 +430,9 @@ class Homepage extends Main {
      */
     constructor(props) {
         super(props);
+    }
+    componentDidMount() {
+        this.getTrend();
     }
     /**
      * Rendering the component

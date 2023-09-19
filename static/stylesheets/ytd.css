@@ -255,7 +255,8 @@ body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
 body[id*="Search"] header nav div:nth-child(1),
 body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
-body[id*="Download"] header nav div:nth-child(1) {
+body[id*="Download"] header nav div:nth-child(1),
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
     font-family: var(--sourceCodePro);
 }
 #Homepage header nav div:nth-child(1) a,
@@ -280,13 +281,16 @@ body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button:hover,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
 body[id*="Download"] header nav div:nth-child(1) a:hover,
 body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button:hover,
-body[id*="Download"] main .YouTube div button:hover {
+body[id*="Download"] main .YouTube div button:hover,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a:hover,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a:hover {
     color: var(--color3);
 }
 #Homepage header nav div:nth-child(1) a:hover,
 body[id*="Search"] header nav div:nth-child(1) a:hover,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
-body[id*="Download"] header nav div:nth-child(1) a:hover {
+body[id*="Download"] header nav div:nth-child(1) a:hover,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a:hover {
     text-decoration: underline;
 }
 #Homepage header nav div:nth-child(2) div:nth-child(1) a,
@@ -299,7 +303,10 @@ body[id*="Search"] main form input::placeholder,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
 body[id*="Download"] header nav div:nth-child(1) a,
 body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Download"] main .YouTube div button {
+body[id*="Download"] main .YouTube div button,
+#Homepage main .Trend .card div:nth-child(2) div,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a {
     color: var(--color2);
 }
 #Homepage header nav div:nth-child(2) div:nth-child(2) button,
@@ -310,7 +317,8 @@ body[id*="Download"] main .YouTube div button {
     background: none;
     cursor: pointer;
 }
-#Homepage main p {
+#Homepage main p,
+#Homepage main .Trend .card div:nth-child(2) div {
     font-family: var(--proximaNova);
 }
 #Homepage main div div:nth-child(1),
@@ -339,10 +347,12 @@ body[id*="Search"]
     .data
     div:nth-child(3)
     #views
-    div:nth-child(1) {
+    div:nth-child(1),
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(1) {
     font-weight: bold;
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
     text-decoration: none;
 }
 body[id*="Search"]
@@ -363,7 +373,8 @@ body[id*="Search"]
     div:nth-child(2) {
     font-weight: normal;
 }
-body[id*="Download"] main .YouTube div a:hover {
+body[id*="Download"] main .YouTube div a:hover,
+#Homepage main .Trend .card div:nth-child(1) a:hover img {
     opacity: calc(var(--percentage) / 2);
 }
 body[id*="Search"] main #loading {

@@ -7,6 +7,7 @@ from Routes.Search import Search_Portal
 from Routes.Media import Media_Portal
 from Routes.Download import Download_Portal
 from Routes.Video import Video_Portal
+from Models.Crawler import Crawler
 
 Application = Flask(__name__)
 """
@@ -96,6 +97,14 @@ def homepage() -> Response:
 
     Returns: Response
     """
+    system_request: dict[str, None | str] = {
+        "referer": None,
+        "search": "",
+        "platform": "youtube",
+        "ip_address": "",
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    test = Crawler(system_request)
     template = render_template('page.html')
     mime_type = "text/html"
     status = 200

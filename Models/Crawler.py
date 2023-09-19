@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from Models.Media import Media
 import json
 import time
 import os
@@ -66,16 +67,31 @@ class Crawler:
     Type: array
     Visibility: private
     """
+    __media_management_system: Media
+    """
+    It allows the application to manage the media.
 
-    def __init__(self, port: str) -> None:
+    Type: Media
+    Visibility: private
+    """
+    __request: dict[str, None | str]
+    """
+    The request data from the view.
+
+    Type: object
+    Visibility: private
+    """
+
+    def __init__(self, request: dict[str, None | str]) -> None:
         """
         Initializing the crawler to scrape the data needed.
 
         Parameters:
-            port: string:   port of the server for the application.
+            request:    object: The request data from the view.
         """
+        self.setRequest(request)
         self.setDriver(webdriver.Chrome())
-        self.__server(port)
+        self.__server(str(self.getRequest()["port"]))
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
         self.setUpData()
 
@@ -120,6 +136,18 @@ class Crawler:
 
     def setHtmlTag(self, html_tag: WebElement) -> None:
         self.__html_tag = html_tag
+
+    def getMedia(self) -> Media:
+        return self.__media_management_system
+
+    def setMedia(self, media_management_system: Media) -> None:
+        self.__media_management_system = media_management_system
+
+    def getRequest(self) -> dict[str, str | None]:
+        return self.__request
+
+    def setRequest(self, request: dict[str, str | None]) -> None:
+        self.__request = request
 
     def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:
         """
@@ -238,7 +266,33 @@ class Crawler:
             for index in range(0, len(self.getData()), 1):
                 self.enterTarget(
                     str(self.getData()[index]["author_channel"]), index)
-        # self.buildUpRating()
+        self.__buildData()
+
+    def __buildData(self) -> None:
+        """
+        Building the data to be displayed to the user.
+
+        Returns: void
+        """
+        new_data: list[dict[str, str | int | None]] = []
+        data: dict[str, str | int | None]
+        request: dict[str, str | None]
+        # Iterating throughout the data to get metadata.
+        for index in range(0, len(self.getData()), 1):
+            request = {
+                "referer": None,
+                "search": str(self.getData()[index]["latest_content"]),
+                "platform": "youtube",
+                "ip_address": "127.0.0.1",
+                "port": self.getRequest()["port"]
+            }
+            self.setRequest(request)
+            self.setMedia(Media(self.getRequest()))
+            response = self.getMedia().verifyPlatform()
+            data = response["data"]["data"]  # type: ignore
+            new_data.append(data)
+        self.setData(new_data)  # type: ignore
+        self.save()
 
     def setUpDataSecondRun(self) -> int:
         """

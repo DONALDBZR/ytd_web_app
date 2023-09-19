@@ -431,9 +431,6 @@ class Homepage extends Main {
     constructor(props) {
         super(props);
     }
-    componentDidMount() {
-        this.getTrend();
-    }
     /**
      * Rendering the component
      * @returns {HTMLElement}
@@ -467,6 +464,9 @@ class Trend extends Homepage {
      */
     constructor(props) {
         super(props);
+    }
+    componentDidMount() {
+        this.getTrend();
     }
     /**
      * Rendering the component

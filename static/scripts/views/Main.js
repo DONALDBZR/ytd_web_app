@@ -10,7 +10,7 @@ class Main extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] } } }}
+         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, } }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] }}
          */
         this.state = {
             System: {
@@ -431,6 +431,9 @@ class Homepage extends Main {
     constructor(props) {
         super(props);
     }
+    componentDidMount() {
+        this.getTrend();
+    }
     /**
      * Rendering the component
      * @returns {HTMLElement}
@@ -465,9 +468,6 @@ class Trend extends Homepage {
     constructor(props) {
         super(props);
     }
-    componentDidMount() {
-        this.getTrend();
-    }
     /**
      * Rendering the component
      * @returns {HTMLDivElement}
@@ -475,7 +475,7 @@ class Trend extends Homepage {
     render() {
         return (
             <div className="Trend">
-                {this.state.Media.YouTube.Trend.map((content) => {
+                {this.state.Trend.map((content) => {
                     return (
                         <div class="card">
                             <div>

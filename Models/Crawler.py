@@ -207,7 +207,7 @@ class Crawler:
         """
         trend_dataset: list[str] = os.listdir(f"{self.getDirectory()}../Trend")
         filename: int
-        expiry_time: int = int(time.time()) + 86400
+        expiry_time: int = int(time.time()) + 604800
         # Verifying that there is data.
         if len(trend_dataset) > 0:
             filename = int(trend_dataset[-1].replace(".json", ""))

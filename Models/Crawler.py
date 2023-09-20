@@ -206,10 +206,15 @@ class Crawler:
         Returns: void
         """
         trend_dataset: list[str] = os.listdir(f"{self.getDirectory()}../Trend")
-        filename: int = int(trend_dataset[-1].replace(".json", ""))
+        filename: int
         expiry_time: int = int(time.time()) + 86400
-        # Ensuring the file is older than a week.
-        if filename > expiry_time:
+        # Verifying that there is data.
+        if len(trend_dataset) > 0:
+            filename = int(trend_dataset[-1].replace(".json", ""))
+            # Ensuring the file is older than a week.
+            if filename > expiry_time:
+                self.setUpData()
+        else:
             self.setUpData()
 
     def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:

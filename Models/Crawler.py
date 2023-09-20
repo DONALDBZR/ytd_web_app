@@ -207,12 +207,13 @@ class Crawler:
         """
         trend_dataset: list[str] = os.listdir(f"{self.getDirectory()}../Trend")
         filename: int
-        expiry_time: int = int(time.time()) + 604800
+        current_time: int = int(time.time())
         # Verifying that there is data.
         if len(trend_dataset) > 0:
             filename = int(trend_dataset[-1].replace(".json", ""))
+            age = current_time - filename
             # Ensuring the file is older than a week.
-            if filename > expiry_time:
+            if age > 604800:
                 self.setUpData()
         else:
             self.setUpData()

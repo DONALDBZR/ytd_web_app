@@ -1,14 +1,16 @@
+import inspect
+import re
+import os
+import time
+import json
+from Models.Media import Media
 from io import TextIOWrapper
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from Models.Media import Media
-import json
-import time
-import os
-import re
-import inspect
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 
 
 class Crawler:
@@ -81,6 +83,13 @@ class Crawler:
     Type: object
     Visibility: private
     """
+    __services: Service
+    """
+    It is responsible for controlling of chromedriver.
+
+    Type: Service
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, None | str]) -> None:
         """
@@ -89,6 +98,7 @@ class Crawler:
         Parameters:
             request:    object: The request data from the view.
         """
+        # self.__setServices()
         self.setRequest(request)
         self.setDriver(webdriver.Chrome())
         self.__server(str(self.getRequest()["port"]))
@@ -148,6 +158,12 @@ class Crawler:
 
     def setRequest(self, request: dict[str, str | None]) -> None:
         self.__request = request
+
+    def getService(self) -> Service:
+        return self.__services
+
+    def setService(self, service__services: Service) -> None:
+        self.__services = service__services
 
     def __schedule(self) -> None:
         """

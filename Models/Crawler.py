@@ -11,6 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
 
 class Crawler:
@@ -90,6 +91,13 @@ class Crawler:
     Type: Service
     Visibility: private
     """
+    __options: Options
+    """
+    It is responsible for setting the options for the webdriver.
+
+    Type: Options
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, None | str]) -> None:
         """
@@ -99,8 +107,9 @@ class Crawler:
             request:    object: The request data from the view.
         """
         self.__setServices()
+        self.__setOptions()
         self.setRequest(request)
-        self.setDriver(webdriver.Chrome(service=self.getService()))
+        self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
         self.__server(str(self.getRequest()["port"]))
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
         self.__schedule()
@@ -162,8 +171,14 @@ class Crawler:
     def getService(self) -> Service:
         return self.__services
 
-    def setService(self, service__services: Service) -> None:
-        self.__services = service__services
+    def setService(self, services: Service) -> None:
+        self.__services = services
+
+    def getOption(self) -> Options:
+        return self.__options
+
+    def setOption(self, options: Options) -> None:
+        self.__options = options
 
     def __setServices(self) -> None:
         """
@@ -172,6 +187,17 @@ class Crawler:
         Returns: void
         """
         self.setService(Service(ChromeDriverManager().install()))
+
+    def __setOptions(self) -> None:
+        """
+        Setting the options for the ChromeDriver.
+
+        Returns: void
+        """
+        self.setOption(Options())
+        self.getOption().add_argument('--headless')
+        self.getOption().add_argument('--no-sandbox')
+        self.getOption().add_argument('--disable-dev-shm-usage')
 
     def __schedule(self) -> None:
         """

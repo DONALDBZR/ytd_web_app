@@ -100,7 +100,7 @@ class Crawler:
         """
         self.__setServices()
         self.setRequest(request)
-        self.setDriver(webdriver.Chrome())
+        self.setDriver(webdriver.Chrome(service=self.getService()))
         self.__server(str(self.getRequest()["port"]))
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
         self.__schedule()

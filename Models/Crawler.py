@@ -98,7 +98,7 @@ class Crawler:
         Parameters:
             request:    object: The request data from the view.
         """
-        # self.__setServices()
+        self.__setServices()
         self.setRequest(request)
         self.setDriver(webdriver.Chrome())
         self.__server(str(self.getRequest()["port"]))

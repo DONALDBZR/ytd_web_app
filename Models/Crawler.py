@@ -165,6 +165,14 @@ class Crawler:
     def setService(self, service__services: Service) -> None:
         self.__services = service__services
 
+    def __setServices(self) -> None:
+        """
+        Setting the services for the ChromeDriver.
+
+        Returns: void
+        """
+        self.setService(Service(ChromeDriverManager().install()))
+
     def __schedule(self) -> None:
         """
         Automating the web scrapper.

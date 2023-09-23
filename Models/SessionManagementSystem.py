@@ -44,7 +44,7 @@ class Session_Manager:
     Type: string
     Visibility: private
     """
-    __session_files: list
+    __session_files: list[str]
     """
     The files containing the session of the users
 
@@ -92,7 +92,6 @@ class Session_Manager:
         self.setPort(request["port"])  # type: ignore
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Session/Users/")
-        # self.sessionDirectory()
         self.setIpAddress(request["ip_address"])  # type: ignore
         self.setHttpClientIpAddress(
             request["http_client_ip_address"])  # type: ignore
@@ -130,10 +129,10 @@ class Session_Manager:
     def setTimestamp(self, timestamp: str) -> None:
         self.__timestamp = timestamp
 
-    def getSessionFiles(self) -> list:
+    def getSessionFiles(self) -> list[str]:
         return self.__session_files
 
-    def setSessionFiles(self, session_files: list) -> None:
+    def setSessionFiles(self, session_files: list[str]) -> None:
         self.__session_files = session_files
 
     def getColorScheme(self) -> str:
@@ -234,7 +233,7 @@ class Session_Manager:
             file.close()
             return self.getSession()
 
-    def sessionsLoader(self, sessions: list) -> dict:
+    def sessionsLoader(self, sessions: list[str]) -> dict[str, int]:
         """
         Iterating throughout the session files to process them
         depending on the response from the system.
@@ -265,7 +264,7 @@ class Session_Manager:
                 continue
         return response
 
-    def handleFile(self, file_name: str) -> dict:
+    def handleFile(self, file_name: str) -> dict[str, int]:
         """
         Ensuring that the file is of type JSON in order to process
         it further more.
@@ -289,7 +288,7 @@ class Session_Manager:
             }
         return response
 
-    def validateIpAddress(self, data) -> dict:
+    def validateIpAddress(self, data) -> dict[str, int]:
         """
         Validating the IP Address against the one stored in the
         cache file.
@@ -313,7 +312,7 @@ class Session_Manager:
             }
         return response
 
-    def handleExpiryTime(self, expiry_time: datetime) -> dict:
+    def handleExpiryTime(self, expiry_time: datetime) -> dict[str, int]:
         """
         Handling the expiry time of the session
 
@@ -334,7 +333,7 @@ class Session_Manager:
             }
         return response
 
-    def handleSession(self, status: int, name: str) -> dict:
+    def handleSession(self, status: int, name: str) -> dict[str, int]:
         """
         Handling the session based on the status retrieved from the
         system.
@@ -366,7 +365,7 @@ class Session_Manager:
             }
         return response
 
-    def handleSessionData(self, session_data: dict) -> None:
+    def handleSessionData(self, session_data: dict[str, int]) -> None:
         """
         Verifying that the data has not been tampered in order to
         renew the session.

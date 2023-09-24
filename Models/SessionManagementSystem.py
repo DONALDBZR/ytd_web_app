@@ -159,6 +159,18 @@ class Session_Manager:
     def setPort(self, port: str) -> None:
         self.__port = port
 
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if self.getPort() == '80' or self.getPort() == '443':
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("/home/darkness4869/Documents/extractio")
+
     def createSession(self) -> "SessionMixin":
         """
         Creating the session
@@ -413,15 +425,3 @@ class Session_Manager:
         """
         if not os.path.exists(self.getDirectory()):
             os.makedirs(self.getDirectory(), 777)
-
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")

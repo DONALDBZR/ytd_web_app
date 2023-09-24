@@ -1,8 +1,9 @@
 # Importing the requirements
+from flask.sessions import SessionMixin
 from datetime import datetime, timedelta
 import os
 import json
-from flask.sessions import SessionMixin
+import time
 
 
 class Session_Manager:
@@ -37,11 +38,11 @@ class Session_Manager:
     Type: string
     Visibility: private
     """
-    __timestamp: str
+    __timestamp: int
     """
     The timestamp at which the session has been created
 
-    Type: string
+    Type: int
     Visibility: private
     """
     __session_files: list[str]
@@ -123,10 +124,10 @@ class Session_Manager:
     def setProxyIpAddress(self, proxy_ip_address: str) -> None:
         self.__proxy_ip_address = proxy_ip_address
 
-    def getTimestamp(self) -> str:
+    def getTimestamp(self) -> int:
         return self.__timestamp
 
-    def setTimestamp(self, timestamp: str) -> None:
+    def setTimestamp(self, timestamp: int) -> None:
         self.__timestamp = timestamp
 
     def getSessionFiles(self) -> list[str]:
@@ -166,9 +167,9 @@ class Session_Manager:
         Returns: SessionMixin
         """
         self.getSession().clear()
-        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        self.setTimestamp(int(time.time()))
         self.setColorScheme("light")
-        data: dict[str, str] = {
+        data: dict[str, str | int] = {
             "ip_address": self.getIpAddress(),
             "http_client_ip_address": self.getHttpClientIpAddress(),
             "proxy_ip_address": self.getProxyIpAddress(),
@@ -187,7 +188,7 @@ class Session_Manager:
         """
         Verifying that the session is not hijacked
 
-        Returns: (void)
+        Returns: void
         """
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
@@ -205,11 +206,12 @@ class Session_Manager:
         """
         return json.dumps(self.getSession(), indent=4)
 
-    def updateSession(self, data) -> SessionMixin | None:
+    def updateSession(self, data: dict[str, dict[str, str]]) -> SessionMixin | None:
         """
         Modifying the session.
 
-        Parameters: data: object: Data from the view
+        Parameters:
+            data:   object: Data from the view
 
         Returns: SessionMixin | void
         """

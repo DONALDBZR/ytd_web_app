@@ -302,9 +302,9 @@ class Session_Manager:
         response = {}
         # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
         if self.getIpAddress() == str(data['Client']['ip_address']):
-            timestamp = int(time.time())
+            expiry_time = int(data['Client']['timestamp']) - int(time.time())
             response = {
-                "status": self.handleExpiryTime(timestamp)["status"]
+                "status": self.handleExpiryTime(expiry_time)["status"]
             }
         else:
             response = {

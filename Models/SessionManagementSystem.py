@@ -1,6 +1,6 @@
 # Importing the requirements
 from flask.sessions import SessionMixin
-from datetime import datetime, timedelta
+from Models.DatabaseHandler import Database_Handler
 import os
 import json
 import time
@@ -80,6 +80,14 @@ class Session_Manager:
     Type: int
     Visibility: private
     """
+    __database_handler: Database_Handler
+    """
+    The database handler that will communicate with the database
+    server.
+
+    Type: Database_Handler
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
         """
@@ -91,8 +99,10 @@ class Session_Manager:
             session:    SessionMixin:   The session of the user.
         """
         self.setPort(request["port"])  # type: ignore
+        self.setDatabaseHandler(Database_Handler())
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Session/Users/")
+        self.__maintain()
         self.setIpAddress(request["ip_address"])  # type: ignore
         self.setHttpClientIpAddress(
             request["http_client_ip_address"])  # type: ignore
@@ -156,9 +166,81 @@ class Session_Manager:
 
     def getPort(self) -> str:
         return self.__port
+# self.metadataDirectory()
 
     def setPort(self, port: str) -> None:
         self.__port = port
+
+    def getDatabaseHandler(self) -> Database_Handler:
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
+        self.__database_handler = database_handler
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if self.getPort() == '80' or self.getPort() == '443':
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("/home/darkness4869/Documents/extractio")
+
+    def __maintain(self) -> None:
+        """
+        Maintaining the database of the Session Management System by
+        doing regular checks to keep only the active sessions and
+        store inactive sessions in the database.
+
+        Returns: void
+        """
+        self.getDatabaseHandler()._query(
+            "CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))", None)
+        self.setSessionFiles(os.listdir(self.getDirectory()))
+        self.setLength(len(self.getSessionFiles()))
+        # Ensuring that there are sessions in the document database to verify them.
+        if self.getLength() > 0:
+            self.verifyExistingSessions()
+
+    def verifyExistingSessions(self) -> None:
+        """
+        Verifying existing sessions to remove expired ones.
+
+        Returns: void
+        """
+        age: int
+        data: dict[str, dict[str, str | int]]
+        # Iterating throughout the sessions to verify that they are inactive.
+        for index in range(0, self.getLength(), 1):
+            file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
+            file = open(file_name, "r")
+            data = json.load(file)
+            age = int(time.time()) - int(data["Client"]["timestamp"])
+            file.close()
+            self.verifyInactiveSession(age, data, file_name)
+
+    def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name) -> None:
+        """
+        Verifying that the session is inactive to remove it from the
+        document database and to store it in the relational database.
+
+        Parameters:
+            age:        int:    Age of the session.
+            session:    object: The data of the session.
+            file_name:  string: The name of the file.
+
+        Returns: void
+        """
+        # Verifying that the session is inactive to remove it from the document database to store it in the relational database.
+        if age > 3600:
+            expired_sessions = (
+                session["Client"]["timestamp"], session["Client"]["ip_address"])
+            self.getDatabaseHandler().post_data(
+                "Visitors", "timestamp, client", "%s, %s", expired_sessions)
+            os.remove(file_name)
 
     def createSession(self) -> "SessionMixin":
         """
@@ -414,15 +496,3 @@ class Session_Manager:
         """
         if not os.path.exists(self.getDirectory()):
             os.makedirs(self.getDirectory(), 777)
-
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")

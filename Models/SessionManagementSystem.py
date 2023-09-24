@@ -197,8 +197,6 @@ class Session_Manager:
 
         Returns: void
         """
-        age: int
-        data: dict[str, dict[str, str | int]]
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))", None)
         self.setSessionFiles(os.listdir(self.getDirectory()))
@@ -213,6 +211,8 @@ class Session_Manager:
 
         Returns: void
         """
+        age: int
+        data: dict[str, dict[str, str | int]]
         # Iterating throughout the sessions to verify that they are inactive.
         for index in range(0, self.getLength(), 1):
             file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"

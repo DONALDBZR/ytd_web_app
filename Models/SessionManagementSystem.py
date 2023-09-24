@@ -1,8 +1,9 @@
 # Importing the requirements
+from flask.sessions import SessionMixin
 from datetime import datetime, timedelta
 import os
 import json
-from flask.sessions import SessionMixin
+import time
 
 
 class Session_Manager:
@@ -37,14 +38,14 @@ class Session_Manager:
     Type: string
     Visibility: private
     """
-    __timestamp: str
+    __timestamp: int
     """
     The timestamp at which the session has been created
 
-    Type: string
+    Type: int
     Visibility: private
     """
-    __session_files: list
+    __session_files: list[str]
     """
     The files containing the session of the users
 
@@ -92,7 +93,6 @@ class Session_Manager:
         self.setPort(request["port"])  # type: ignore
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Session/Users/")
-        # self.sessionDirectory()
         self.setIpAddress(request["ip_address"])  # type: ignore
         self.setHttpClientIpAddress(
             request["http_client_ip_address"])  # type: ignore
@@ -124,16 +124,16 @@ class Session_Manager:
     def setProxyIpAddress(self, proxy_ip_address: str) -> None:
         self.__proxy_ip_address = proxy_ip_address
 
-    def getTimestamp(self) -> str:
+    def getTimestamp(self) -> int:
         return self.__timestamp
 
-    def setTimestamp(self, timestamp: str) -> None:
+    def setTimestamp(self, timestamp: int) -> None:
         self.__timestamp = timestamp
 
-    def getSessionFiles(self) -> list:
+    def getSessionFiles(self) -> list[str]:
         return self.__session_files
 
-    def setSessionFiles(self, session_files: list) -> None:
+    def setSessionFiles(self, session_files: list[str]) -> None:
         self.__session_files = session_files
 
     def getColorScheme(self) -> str:
@@ -167,9 +167,9 @@ class Session_Manager:
         Returns: SessionMixin
         """
         self.getSession().clear()
-        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        self.setTimestamp(int(time.time()))
         self.setColorScheme("light")
-        data = {
+        data: dict[str, str | int] = {
             "ip_address": self.getIpAddress(),
             "http_client_ip_address": self.getHttpClientIpAddress(),
             "proxy_ip_address": self.getProxyIpAddress(),
@@ -178,8 +178,7 @@ class Session_Manager:
         }
         self.getSession()['Client'] = data
         session_data = self.retrieveSession()
-        file_name = self.getIpAddress() + ".json"
-        file_path = self.getDirectory() + file_name
+        file_path = f"{self.getDirectory()}{self.getIpAddress()}.json"
         session_file = open(file_path, 'w')
         session_file.write(session_data)
         session_file.close()
@@ -189,7 +188,7 @@ class Session_Manager:
         """
         Verifying that the session is not hijacked
 
-        Returns: (void)
+        Returns: void
         """
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
@@ -207,16 +206,17 @@ class Session_Manager:
         """
         return json.dumps(self.getSession(), indent=4)
 
-    def updateSession(self, data) -> SessionMixin | None:
+    def updateSession(self, data: dict[str, dict[str, str | int]]) -> SessionMixin | None:
         """
         Modifying the session.
 
-        Parameters: data: object: Data from the view
+        Parameters:
+            data:   object: Data from the view
 
         Returns: SessionMixin | void
         """
-        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        self.setColorScheme(data["Client"]["color_scheme"])
+        self.setTimestamp(int(time.time()))
+        self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         data = json.load(open(file_name))
         # Ensuring that the IP Addresses corresponds in order to update the session.
@@ -234,7 +234,7 @@ class Session_Manager:
             file.close()
             return self.getSession()
 
-    def sessionsLoader(self, sessions: list) -> dict:
+    def sessionsLoader(self, sessions: list[str]) -> dict[str, int]:
         """
         Iterating throughout the session files to process them
         depending on the response from the system.
@@ -265,7 +265,7 @@ class Session_Manager:
                 continue
         return response
 
-    def handleFile(self, file_name: str) -> dict:
+    def handleFile(self, file_name: str) -> dict[str, int]:
         """
         Ensuring that the file is of type JSON in order to process
         it further more.
@@ -289,7 +289,7 @@ class Session_Manager:
             }
         return response
 
-    def validateIpAddress(self, data) -> dict:
+    def validateIpAddress(self, data) -> dict[str, int]:
         """
         Validating the IP Address against the one stored in the
         cache file.
@@ -302,10 +302,9 @@ class Session_Manager:
         response = {}
         # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
         if self.getIpAddress() == str(data['Client']['ip_address']):
-            timestamp = datetime.strptime(
-                str(data['Client']['timestamp']), "%Y-%m-%d - %H:%M:%S") + timedelta(hours=1)
+            age = int(time.time()) - int(data['Client']['timestamp'])
             response = {
-                "status": self.handleExpiryTime(timestamp)["status"]
+                "status": self.handleExpiryTime(age)["status"]
             }
         else:
             response = {
@@ -313,7 +312,7 @@ class Session_Manager:
             }
         return response
 
-    def handleExpiryTime(self, expiry_time: datetime) -> dict:
+    def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
         """
         Handling the expiry time of the session
 
@@ -324,7 +323,7 @@ class Session_Manager:
         """
         response = {}
         # Verifying that the session has not expired
-        if expiry_time > datetime.now():
+        if expiry_time < 3600:
             response = {
                 "status": 200
             }
@@ -334,7 +333,7 @@ class Session_Manager:
             }
         return response
 
-    def handleSession(self, status: int, name: str) -> dict:
+    def handleSession(self, status: int, name: str) -> dict[str, int]:
         """
         Handling the session based on the status retrieved from the
         system.
@@ -366,7 +365,7 @@ class Session_Manager:
             }
         return response
 
-    def handleSessionData(self, session_data: dict) -> None:
+    def handleSessionData(self, session_data: dict[str, int]) -> None:
         """
         Verifying that the data has not been tampered in order to
         renew the session.
@@ -377,7 +376,7 @@ class Session_Manager:
         Returns: void
         """
         # Verifying that the data has been received or created in order to verify it to renew access.
-        if session_data["status"] == 200 or session_data == 201:
+        if session_data["status"] == 200 or session_data["status"] == 201:
             self.renew(self.getSession())
         else:
             self.createSession()
@@ -395,7 +394,7 @@ class Session_Manager:
         file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         # Comparing the IP Addresses to either renew the timestamp or to clear the session.
         if session_data['Client']['ip_address'] == self.getIpAddress():
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+            self.setTimestamp(int(time.time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
             file = open(file_path, "w")

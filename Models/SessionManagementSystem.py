@@ -312,7 +312,7 @@ class Session_Manager:
             }
         return response
 
-    def handleExpiryTime(self, expiry_time: datetime) -> dict[str, int]:
+    def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
         """
         Handling the expiry time of the session
 
@@ -323,7 +323,7 @@ class Session_Manager:
         """
         response = {}
         # Verifying that the session has not expired
-        if expiry_time > datetime.now():
+        if expiry_time < 3600:
             response = {
                 "status": 200
             }

@@ -376,7 +376,7 @@ class Session_Manager:
         Returns: void
         """
         # Verifying that the data has been received or created in order to verify it to renew access.
-        if session_data["status"] == 200 or session_data == 201:
+        if session_data["status"] == 200 or session_data["status"] == 201:
             self.renew(self.getSession())
         else:
             self.createSession()

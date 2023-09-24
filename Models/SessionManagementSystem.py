@@ -1,6 +1,5 @@
 # Importing the requirements
 from flask.sessions import SessionMixin
-from datetime import datetime, timedelta
 import os
 import json
 import time

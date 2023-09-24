@@ -83,6 +83,14 @@ class Media:
     Type: int
     Visibility: private
     """
+    __metadata_media_files: list[str]
+    """
+    The metadata of the media content that is stored in the
+    document database.
+
+    Type: array
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, str | None]) -> None:
         """
@@ -95,7 +103,6 @@ class Media:
         self.setPort(request["port"])  # type: ignore
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Media")
-        # self.metadataDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
@@ -158,6 +165,12 @@ class Media:
 
     def setPort(self, port: str) -> None:
         self.__port = port
+
+    def getMetadataMediaFiles(self) -> list[str]:
+        return self.__metadata_media_files
+
+    def setMetadataMediaFiles(self, metadata_media_files: list[str]) -> None:
+        self.__metadata_media_files = metadata_media_files
 
     def __server(self) -> None:
         """

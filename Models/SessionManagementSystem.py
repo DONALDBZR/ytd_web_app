@@ -168,7 +168,7 @@ class Session_Manager:
         self.getSession().clear()
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         self.setColorScheme("light")
-        data = {
+        data: dict[str, str] = {
             "ip_address": self.getIpAddress(),
             "http_client_ip_address": self.getHttpClientIpAddress(),
             "proxy_ip_address": self.getProxyIpAddress(),
@@ -177,8 +177,7 @@ class Session_Manager:
         }
         self.getSession()['Client'] = data
         session_data = self.retrieveSession()
-        file_name = self.getIpAddress() + ".json"
-        file_path = self.getDirectory() + file_name
+        file_path = f"{self.getDirectory()}{self.getIpAddress()}.json"
         session_file = open(file_path, 'w')
         session_file.write(session_data)
         session_file.close()

@@ -159,6 +159,18 @@ class Media:
     def setPort(self, port: str) -> None:
         self.__port = port
 
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if self.getPort() == '80' or self.getPort() == '443':
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("/home/darkness4869/Documents/extractio")
+
     def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
         """
         Verifying the uniform resource locator in order to switch to
@@ -280,15 +292,3 @@ class Media:
         """
         if not os.path.exists(self.getDirectory()):
             os.makedirs(self.getDirectory())
-
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")

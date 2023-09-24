@@ -101,8 +101,8 @@ class Session_Manager:
         self.setPort(request["port"])  # type: ignore
         self.setDatabaseHandler(Database_Handler())
         self.__server()
-        self.__maintain()
         self.setDirectory(f"{self.getDirectory()}/Cache/Session/Users/")
+        self.__maintain()
         self.setIpAddress(request["ip_address"])  # type: ignore
         self.setHttpClientIpAddress(
             request["http_client_ip_address"])  # type: ignore

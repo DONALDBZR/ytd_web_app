@@ -394,7 +394,7 @@ class Session_Manager:
         file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         # Comparing the IP Addresses to either renew the timestamp or to clear the session.
         if session_data['Client']['ip_address'] == self.getIpAddress():
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+            self.setTimestamp(int(time.time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
             file = open(file_path, "w")

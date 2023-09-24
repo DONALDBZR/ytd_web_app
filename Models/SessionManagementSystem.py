@@ -220,13 +220,27 @@ class Session_Manager:
             data = json.load(file)
             age = int(time.time()) - int(data["Client"]["timestamp"])
             file.close()
-            # Verifying that the session is inactive to remove it from the document database to store it in the relational database.
-            if age > 3600:
-                expired_sessions = (
-                    data["Client"]["timestamp"], data["Client"]["ip_address"])
-                self.getDatabaseHandler().post_data(
-                    "Visitors", "timestamp, client", "%s, %s", expired_sessions)
-                os.remove(file_name)
+            self.verifyInactiveSession(age, data, file_name)
+
+    def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name) -> None:
+        """
+        Verifying that the session is inactive to remove it from the
+        document database and to store it in the relational database.
+
+        Parameters:
+            age:        int:    Age of the session.
+            session:    object: The data of the session.
+            file_name:  string: The name of the file.
+
+        Returns: void
+        """
+        # Verifying that the session is inactive to remove it from the document database to store it in the relational database.
+        if age > 3600:
+            expired_sessions = (
+                session["Client"]["timestamp"], session["Client"]["ip_address"])
+            self.getDatabaseHandler().post_data(
+                "Visitors", "timestamp, client", "%s, %s", expired_sessions)
+            os.remove(file_name)
 
     def createSession(self) -> "SessionMixin":
         """

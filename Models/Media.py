@@ -217,6 +217,30 @@ class Media:
             audio_media_files, audio_media_files_directory, destination_directory)
         self.optimizeDirectory(
             video_media_files, video_media_files_directory, destination_directory)
+        # Iterating throughout the metadata to check that they have rating to be able to delete them.
+        for index in range(0, len(self.getMetadataMediaFiles()), 1):
+            file_name = f"{self.getDirectory()}/{self.getMetadataMediaFiles()[index]}"
+            file = open(file_name, "r")
+            data: dict[str, str | int | None | float] = json.load(file)[
+                "Media"]["YouTube"]
+            key = "likes"
+            keys = list(data.keys())
+            self.deleteMetadata(keys, key, file_name)
+
+    def deleteMetadata(self, keys: list[str], key: str, file_name: str) -> None:
+        """
+        Deleting the metadata from the document database.
+
+        Parameters:
+            keys:   array:  The list of keys.
+            key:    string: The key.
+            file_name:  string: The name of the file.
+
+        Returns: void
+        """
+        # Ensuring that there is a rating to be able to delete the metadata from the document database.
+        if keys.count(key) == 1:
+            os.remove(file_name)
 
     def optimizeDirectory(self, media_files: list[str], original_directory: str, new_directory: str) -> None:
         """

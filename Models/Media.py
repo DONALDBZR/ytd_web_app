@@ -236,26 +236,38 @@ class Media:
         # Ensuring that the audio file is at most three days old to make a backup of it from the server.
         if age > 259200:
             os.mkdir(destination_directory)
-            # Verifying that the file type of the media file.
-            if ".mp3" in media_file:
-                identifier: str = media_file.replace(".mp3", "")
-                parameters = tuple([identifier])
-                metadata = self.getDatabaseHandler().get_data(
-                    table_name="YouTube",
-                    filter_condition="identifier = %s",
-                    parameters=parameters
-                )[0]
-                new_file = f"{destination_directory}/{metadata[4]}.mp3"
-            else:
-                identifier: str = media_file.replace(".mp4", "")
-                parameters = tuple([identifier])
-                metadata = self.getDatabaseHandler().get_data(
-                    table_name="YouTube",
-                    filter_condition="identifier = %s",
-                    parameters=parameters
-                )[0]
-                new_file = f"{destination_directory}/{metadata[4]}.mp4"
+            new_file = f"{destination_directory}/{self.setNewFile(media_file)}"
             self.removeFile(original_file, new_file)
+
+    def setNewFile(self, media_file: str) -> str:
+        """
+        Setting the new path for the media file.
+
+        Parameters:
+            media_file: string: The media file.
+
+        Returns: string
+        """
+        # Verifying that the file type of the media file.
+        if ".mp3" in media_file:
+            identifier: str = media_file.replace(".mp3", "")
+            parameters = tuple([identifier])
+            metadata = self.getDatabaseHandler().get_data(
+                table_name="YouTube",
+                filter_condition="identifier = %s",
+                parameters=parameters
+            )[0]
+            new_file = f"{metadata[4]}.mp3"
+        else:
+            identifier: str = media_file.replace(".mp4", "")
+            parameters = tuple([identifier])
+            metadata = self.getDatabaseHandler().get_data(
+                table_name="YouTube",
+                filter_condition="identifier = %s",
+                parameters=parameters
+            )[0]
+            new_file = f"{metadata[4]}.mp4"
+        return new_file
 
     def removeFile(self, original_file: str, new_file: str) -> None:
         """

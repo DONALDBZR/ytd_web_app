@@ -207,7 +207,6 @@ class Media:
 
         Returns: void
         """
-        age: int
         self.setMetadataMediaFiles(os.listdir(self.getDirectory()))
         audio_media_files_directory = f"{self.getDirectory()}/../../Public/Audio"
         video_media_files_directory = f"{self.getDirectory()}/../../Public/Video"

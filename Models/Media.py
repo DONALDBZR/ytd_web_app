@@ -3,6 +3,8 @@ from Models.YouTubeDownloader import YouTube_Downloader
 from datetime import datetime
 import json
 import os
+import time
+import shutil
 
 
 class Media:
@@ -91,6 +93,13 @@ class Media:
     Type: array
     Visibility: private
     """
+    __media_files: list[str]
+    """
+    The media content that is stored in the document database.
+
+    Type: array
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, str | None]) -> None:
         """
@@ -107,6 +116,7 @@ class Media:
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
         self.getDatabaseHandler()._execute()
+        self.__maintain()
         self.setSearch(str(request["search"]))
         self.setReferer(request["referer"])
         self.setValue(str(request["platform"]))
@@ -172,6 +182,12 @@ class Media:
     def setMetadataMediaFiles(self, metadata_media_files: list[str]) -> None:
         self.__metadata_media_files = metadata_media_files
 
+    def getMediaFiles(self) -> list[str]:
+        return self.__media_files
+
+    def setMediaFiles(self, media_files: list[str]) -> None:
+        self.__media_files = media_files
+
     def __server(self) -> None:
         """
         Setting the directory for the application.
@@ -183,6 +199,41 @@ class Media:
             self.setDirectory("/var/www/html/ytd_web_app")
         else:
             self.setDirectory("/home/darkness4869/Documents/extractio")
+
+    def __maintain(self) -> None:
+        """
+        Maintaining the document database by doing some regular
+        checks on the the metadata and media files.
+
+        Returns: void
+        """
+        date_created: int
+        age: int
+        self.setMetadataMediaFiles(os.listdir(self.getDirectory()))
+        self.setMediaFiles(os.listdir(
+            f"{self.getDirectory()}/../../Public/Audio"))
+        audio_media_files = self.getMediaFiles()
+        video_media_files = self.getMediaFiles()
+        destination_directory = f"{self.getDirectory()}/../../Public/{int(time.time())}"
+        # Iterating throughout the audio media files to restructure all the media files from the
+        for index in range(0, len(audio_media_files), 1):
+            original_file = f"{self.getDirectory()}/../../Public/Audio/{audio_media_files[index]}"
+            age = int(time.time()) - int(os.path.getctime(original_file))
+            # Verifying that the audio file is at most three days old to make a backup of it from the server.
+            if age > 259200:
+                identifier: str = audio_media_files[index].replace(".mp3", "")
+                parameters = tuple([identifier])
+                metadata = self.getDatabaseHandler().get_data(
+                    table_name="YouTube",
+                    filter_condition="identifier = %s",
+                    parameters=parameters
+                )[0]
+                os.mkdir(destination_directory)
+                new_file = f"{destination_directory}/{metadata[4]}.mp3"
+                # Ensuring that the file does not exist to copy it
+                if os.path.exists(new_file) == False:
+                    shutil.copyfile(original_file, new_file)
+                    os.remove(original_file)
 
     def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
         """

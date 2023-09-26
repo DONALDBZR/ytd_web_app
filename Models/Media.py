@@ -219,18 +219,33 @@ class Media:
         for index in range(0, len(audio_media_files), 1):
             original_file = f"{self.getDirectory()}/../../Public/Audio/{audio_media_files[index]}"
             age = int(time.time()) - int(os.path.getctime(original_file))
-            # Verifying that the audio file is at most three days old to make a backup of it from the server.
-            if age > 259200:
-                identifier: str = audio_media_files[index].replace(".mp3", "")
-                parameters = tuple([identifier])
-                metadata = self.getDatabaseHandler().get_data(
-                    table_name="YouTube",
-                    filter_condition="identifier = %s",
-                    parameters=parameters
-                )[0]
-                os.mkdir(destination_directory)
-                new_file = f"{destination_directory}/{metadata[4]}.mp3"
-                self.removeFile(original_file, new_file)
+            self.removeOldFile(
+                original_file, audio_media_files[index], destination_directory, age)
+
+    def removeOldFile(self, original_file: str, media_file: str, destination_directory: str, age: int) -> None:
+        """
+        Removing the file that is three days old.
+
+        Parameters:
+            original_file:          string: The path of the original file.
+            media_file:             string: The media file.
+            destination_directory:  string: The directory where the mediafile will be moved.
+            age:                    int:    Age of the media file.
+
+        Returns: void
+        """
+        # Verifying that the audio file is at most three days old to make a backup of it from the server.
+        if age > 259200:
+            identifier: str = media_file.replace(".mp3", "")
+            parameters = tuple([identifier])
+            metadata = self.getDatabaseHandler().get_data(
+                table_name="YouTube",
+                filter_condition="identifier = %s",
+                parameters=parameters
+            )[0]
+            os.mkdir(destination_directory)
+            new_file = f"{destination_directory}/{metadata[4]}.mp3"
+            self.removeFile(original_file, new_file)
 
     def removeFile(self, original_file: str, new_file: str) -> None:
         """

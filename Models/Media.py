@@ -234,7 +234,7 @@ class Media:
         """
         # Iterating throughout the audio media files to restructure all the media files from the original directory.
         for index in range(0, len(media_files), 1):
-            original_file = f"{self.getDirectory()}/../../Public/Audio/{media_files[index]}"
+            original_file = f"{original_directory}/{media_files[index]}"
             age = int(time.time()) - int(os.path.getctime(original_file))
             self.removeOldFile(
                 original_file, media_files[index], new_directory, age)

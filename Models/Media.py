@@ -207,7 +207,6 @@ class Media:
 
         Returns: void
         """
-        date_created: int
         age: int
         self.setMetadataMediaFiles(os.listdir(self.getDirectory()))
         audio_media_files = os.listdir(
@@ -234,17 +233,28 @@ class Media:
 
         Returns: void
         """
-        # Verifying that the audio file is at most three days old to make a backup of it from the server.
+        # Ensuring that the audio file is at most three days old to make a backup of it from the server.
         if age > 259200:
-            identifier: str = media_file.replace(".mp3", "")
-            parameters = tuple([identifier])
-            metadata = self.getDatabaseHandler().get_data(
-                table_name="YouTube",
-                filter_condition="identifier = %s",
-                parameters=parameters
-            )[0]
             os.mkdir(destination_directory)
-            new_file = f"{destination_directory}/{metadata[4]}.mp3"
+            # Verifying that the file type of the media file.
+            if ".mp3" in media_file:
+                identifier: str = media_file.replace(".mp3", "")
+                parameters = tuple([identifier])
+                metadata = self.getDatabaseHandler().get_data(
+                    table_name="YouTube",
+                    filter_condition="identifier = %s",
+                    parameters=parameters
+                )[0]
+                new_file = f"{destination_directory}/{metadata[4]}.mp3"
+            else:
+                identifier: str = media_file.replace(".mp4", "")
+                parameters = tuple([identifier])
+                metadata = self.getDatabaseHandler().get_data(
+                    table_name="YouTube",
+                    filter_condition="identifier = %s",
+                    parameters=parameters
+                )[0]
+                new_file = f"{destination_directory}/{metadata[4]}.mp4"
             self.removeFile(original_file, new_file)
 
     def removeFile(self, original_file: str, new_file: str) -> None:

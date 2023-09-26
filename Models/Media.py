@@ -209,17 +209,35 @@ class Media:
         """
         age: int
         self.setMetadataMediaFiles(os.listdir(self.getDirectory()))
-        audio_media_files = os.listdir(
-            f"{self.getDirectory()}/../../Public/Audio")
-        video_media_files = os.listdir(
-            f"{self.getDirectory()}/../../Public/Video")
+        audio_media_files_directory = f"{self.getDirectory()}/../../Public/Audio"
+        video_media_files_directory = f"{self.getDirectory()}/../../Public/Video"
+        audio_media_files = os.listdir(audio_media_files_directory)
+        video_media_files = os.listdir(video_media_files_directory)
         destination_directory = f"{self.getDirectory()}/../../Public/{int(time.time())}"
-        # Iterating throughout the audio media files to restructure all the media files from the
-        for index in range(0, len(audio_media_files), 1):
-            original_file = f"{self.getDirectory()}/../../Public/Audio/{audio_media_files[index]}"
+        self.optimizeDirectory(
+            audio_media_files, audio_media_files_directory, destination_directory)
+        self.optimizeDirectory(
+            video_media_files, video_media_files_directory, destination_directory)
+
+    def optimizeDirectory(self, media_files: list[str], original_directory: str, new_directory: str) -> None:
+        """
+        Optimizing the directory by iterating throughout the media
+        files that are in the directory to remove them from the
+        application to be backed up else where.
+
+        Parameters:
+            media_files:        array:  The media files in the original directory.
+            original_directory: string: The directory where the media files are hosted.
+            new_directory:      string: The directory where the media files will be moved.
+
+        Returns: void
+        """
+        # Iterating throughout the audio media files to restructure all the media files from the original directory.
+        for index in range(0, len(media_files), 1):
+            original_file = f"{self.getDirectory()}/../../Public/Audio/{media_files[index]}"
             age = int(time.time()) - int(os.path.getctime(original_file))
             self.removeOldFile(
-                original_file, audio_media_files[index], destination_directory, age)
+                original_file, media_files[index], new_directory, age)
 
     def removeOldFile(self, original_file: str, media_file: str, destination_directory: str, age: int) -> None:
         """

@@ -217,6 +217,15 @@ class Media:
             audio_media_files, audio_media_files_directory, destination_directory)
         self.optimizeDirectory(
             video_media_files, video_media_files_directory, destination_directory)
+        self.removeUsedMetadata()
+
+    def removeUsedMetadata(self) -> None:
+        """
+        Iterating throughout the metadata to delete the the ones
+        that have been processed by the web-scraper.
+
+        Returns: void
+        """
         # Iterating throughout the metadata to check that they have rating to be able to delete them.
         for index in range(0, len(self.getMetadataMediaFiles()), 1):
             file_name = f"{self.getDirectory()}/{self.getMetadataMediaFiles()[index]}"

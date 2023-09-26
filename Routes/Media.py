@@ -88,6 +88,14 @@ def getMedia(identifier: str) -> Response:
     Returns: Response
     """
     directory = getDirectory()
+    system_request: dict[str, str | None] = {
+        "referer": None,
+        "search": "",
+        "platform": "",
+        "ip_address": "127.0.0.1",
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    media = Media(system_request)
     file_name = f"{directory}/Cache/Media/{identifier}.json"
     file = getMetaData(file_name)
     response = file.read()

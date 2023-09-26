@@ -1,8 +1,10 @@
 from Models.DatabaseHandler import Database_Handler
+from Models.YouTubeDownloader import YouTube_Downloader
 from datetime import datetime
 import json
-from Models.YouTubeDownloader import YouTube_Downloader
 import os
+import time
+import shutil
 
 
 class Media:
@@ -83,6 +85,21 @@ class Media:
     Type: int
     Visibility: private
     """
+    __metadata_media_files: list[str]
+    """
+    The metadata of the media content that is stored in the
+    document database.
+
+    Type: array
+    Visibility: private
+    """
+    __media_files: list[str]
+    """
+    The media content that is stored in the document database.
+
+    Type: array
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, str | None]) -> None:
         """
@@ -95,11 +112,11 @@ class Media:
         self.setPort(request["port"])  # type: ignore
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Media")
-        # self.metadataDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
         self.getDatabaseHandler()._execute()
+        self.__maintain()
         self.setSearch(str(request["search"]))
         self.setReferer(request["referer"])
         self.setValue(str(request["platform"]))
@@ -158,6 +175,164 @@ class Media:
 
     def setPort(self, port: str) -> None:
         self.__port = port
+
+    def getMetadataMediaFiles(self) -> list[str]:
+        return self.__metadata_media_files
+
+    def setMetadataMediaFiles(self, metadata_media_files: list[str]) -> None:
+        self.__metadata_media_files = metadata_media_files
+
+    def getMediaFiles(self) -> list[str]:
+        return self.__media_files
+
+    def setMediaFiles(self, media_files: list[str]) -> None:
+        self.__media_files = media_files
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        # Verifying that the port is for either Apache HTTPD or Werkzeug
+        if self.getPort() == '80' or self.getPort() == '443':
+            self.setDirectory("/var/www/html/ytd_web_app")
+        else:
+            self.setDirectory("/home/darkness4869/Documents/extractio")
+
+    def __maintain(self) -> None:
+        """
+        Maintaining the document database by doing some regular
+        checks on the the metadata and media files.
+
+        Returns: void
+        """
+        self.setMetadataMediaFiles(os.listdir(self.getDirectory()))
+        audio_media_files_directory = f"{self.getDirectory()}/../../Public/Audio"
+        video_media_files_directory = f"{self.getDirectory()}/../../Public/Video"
+        audio_media_files = os.listdir(audio_media_files_directory)
+        video_media_files = os.listdir(video_media_files_directory)
+        destination_directory = f"{self.getDirectory()}/../../Public/{int(time.time())}"
+        self.optimizeDirectory(
+            audio_media_files, audio_media_files_directory, destination_directory)
+        self.optimizeDirectory(
+            video_media_files, video_media_files_directory, destination_directory)
+        self.removeUsedMetadata()
+
+    def removeUsedMetadata(self) -> None:
+        """
+        Iterating throughout the metadata to delete the the ones
+        that have been processed by the web-scraper.
+
+        Returns: void
+        """
+        # Iterating throughout the metadata to check that they have rating to be able to delete them.
+        for index in range(0, len(self.getMetadataMediaFiles()), 1):
+            file_name = f"{self.getDirectory()}/{self.getMetadataMediaFiles()[index]}"
+            file = open(file_name, "r")
+            data: dict[str, str | int | None | float] = json.load(file)[
+                "Media"]["YouTube"]
+            key = "likes"
+            keys = list(data.keys())
+            self.deleteMetadata(keys, key, file_name)
+
+    def deleteMetadata(self, keys: list[str], key: str, file_name: str) -> None:
+        """
+        Deleting the metadata from the document database.
+
+        Parameters:
+            keys:   array:  The list of keys.
+            key:    string: The key.
+            file_name:  string: The name of the file.
+
+        Returns: void
+        """
+        # Ensuring that there is a rating to be able to delete the metadata from the document database.
+        if keys.count(key) == 1:
+            os.remove(file_name)
+
+    def optimizeDirectory(self, media_files: list[str], original_directory: str, new_directory: str) -> None:
+        """
+        Optimizing the directory by iterating throughout the media
+        files that are in the directory to remove them from the
+        application to be backed up else where.
+
+        Parameters:
+            media_files:        array:  The media files in the original directory.
+            original_directory: string: The directory where the media files are hosted.
+            new_directory:      string: The directory where the media files will be moved.
+
+        Returns: void
+        """
+        # Iterating throughout the audio media files to restructure all the media files from the original directory.
+        for index in range(0, len(media_files), 1):
+            original_file = f"{original_directory}/{media_files[index]}"
+            age = int(time.time()) - int(os.path.getctime(original_file))
+            self.removeOldFile(
+                original_file, media_files[index], new_directory, age)
+
+    def removeOldFile(self, original_file: str, media_file: str, destination_directory: str, age: int) -> None:
+        """
+        Removing the file that is three days old.
+
+        Parameters:
+            original_file:          string: The path of the original file.
+            media_file:             string: The media file.
+            destination_directory:  string: The directory where the mediafile will be moved.
+            age:                    int:    Age of the media file.
+
+        Returns: void
+        """
+        # Ensuring that the audio file is at most three days old to make a backup of it from the server.
+        if age > 259200:
+            os.mkdir(destination_directory)
+            new_file = f"{destination_directory}/{self.setNewFile(media_file)}"
+            self.removeFile(original_file, new_file)
+
+    def setNewFile(self, media_file: str) -> str:
+        """
+        Setting the new path for the media file.
+
+        Parameters:
+            media_file: string: The media file.
+
+        Returns: string
+        """
+        # Verifying that the file type of the media file.
+        if ".mp3" in media_file:
+            identifier: str = media_file.replace(".mp3", "")
+            parameters = tuple([identifier])
+            metadata = self.getDatabaseHandler().get_data(
+                table_name="YouTube",
+                filter_condition="identifier = %s",
+                parameters=parameters
+            )[0]
+            new_file = f"{metadata[4]}.mp3"
+        else:
+            identifier: str = media_file.replace(".mp4", "")
+            parameters = tuple([identifier])
+            metadata = self.getDatabaseHandler().get_data(
+                table_name="YouTube",
+                filter_condition="identifier = %s",
+                parameters=parameters
+            )[0]
+            new_file = f"{metadata[4]}.mp4"
+        return new_file
+
+    def removeFile(self, original_file: str, new_file: str) -> None:
+        """
+        Removing the file from the hosting directory.
+
+        Parameters:
+            original_file:  string: The path of the original file.
+            new_file:       string: The path of the new file.
+
+        Returns: void
+        """
+        # Ensuring that the file does not exist to copy it
+        if os.path.exists(new_file) == False:
+            shutil.copyfile(original_file, new_file)
+            os.remove(original_file)
 
     def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
         """
@@ -280,15 +455,3 @@ class Media:
         """
         if not os.path.exists(self.getDirectory()):
             os.makedirs(self.getDirectory())
-
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")

@@ -210,10 +210,10 @@ class Media:
         date_created: int
         age: int
         self.setMetadataMediaFiles(os.listdir(self.getDirectory()))
-        self.setMediaFiles(os.listdir(
-            f"{self.getDirectory()}/../../Public/Audio"))
-        audio_media_files = self.getMediaFiles()
-        video_media_files = self.getMediaFiles()
+        audio_media_files = os.listdir(
+            f"{self.getDirectory()}/../../Public/Audio")
+        video_media_files = os.listdir(
+            f"{self.getDirectory()}/../../Public/Video")
         destination_directory = f"{self.getDirectory()}/../../Public/{int(time.time())}"
         # Iterating throughout the audio media files to restructure all the media files from the
         for index in range(0, len(audio_media_files), 1):
@@ -230,10 +230,22 @@ class Media:
                 )[0]
                 os.mkdir(destination_directory)
                 new_file = f"{destination_directory}/{metadata[4]}.mp3"
-                # Ensuring that the file does not exist to copy it
-                if os.path.exists(new_file) == False:
-                    shutil.copyfile(original_file, new_file)
-                    os.remove(original_file)
+                self.removeFile(original_file, new_file)
+
+    def removeFile(self, original_file: str, new_file: str) -> None:
+        """
+        Removing the file from the hosting directory.
+
+        Parameters:
+            original_file:  string: The path of the original file.
+            new_file:       string: The path of the new file.
+
+        Returns: void
+        """
+        # Ensuring that the file does not exist to copy it
+        if os.path.exists(new_file) == False:
+            shutil.copyfile(original_file, new_file)
+            os.remove(original_file)
 
     def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
         """

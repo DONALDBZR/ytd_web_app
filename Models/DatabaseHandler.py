@@ -326,5 +326,7 @@ class Database_Handler:
         self.setQuery(query)
         self.setParameters(parameters)
         self._get_filter(condition)
+        self.getLogger().debug(
+            f"Database_Handler.delete_data() - Query: {self.getQuery()}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()

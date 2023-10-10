@@ -21,7 +21,7 @@ class ExtractioLogger:
         that the application does.
         """
         logging.basicConfig(
-            filename="../Logs/Extractio.log", encoding="utf-8", filemode="w", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            filename="../Logs/Extractio.log", encoding="utf-8", filemode="a", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         self.setLogger(logging.getLogger(__name__))
 
     def getLogger(self) -> Logger:
@@ -29,3 +29,15 @@ class ExtractioLogger:
 
     def setLogger(self, logger: Logger) -> None:
         self.__logger = logger
+
+    def debug(self, message: str) -> None:
+        """
+        Logging the data for debugging
+
+        Parameters:
+            message:    string: The action done.
+
+        Returns: void
+        """
+        self.getLogger().setLevel(logging.DEBUG)
+        self.getLogger().debug(message)

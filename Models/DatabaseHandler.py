@@ -204,6 +204,8 @@ class Database_Handler:
         self._get_filter(filter_condition)
         self._get_sort(sort_condition)
         self._get_limit(limit_condition)
+        self.getLogger().debug(
+            f"Database_Handler.get_data() - Query: {self.getQuery()}")
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 

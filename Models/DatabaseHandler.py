@@ -2,6 +2,7 @@ from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
+from Models.Logger import Extractio_Logger
 import mysql.connector
 
 
@@ -70,6 +71,13 @@ class Database_Handler:
     Type: array|null
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self):
         """
@@ -133,6 +141,12 @@ class Database_Handler:
 
     def setParameters(self, parameters: tuple | None) -> None:
         self.__parameters = parameters
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def _query(self, query: str, parameters: None | tuple):
         """

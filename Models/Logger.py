@@ -2,7 +2,7 @@ import logging
 from logging.__init__ import Logger
 
 
-class ExtractioLogger:
+class Extractio_Logger:
     """
     The logger that will all the action of the application.
     """

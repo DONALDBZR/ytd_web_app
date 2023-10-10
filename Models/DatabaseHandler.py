@@ -1,8 +1,8 @@
-import mysql.connector
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
+import mysql.connector
 
 
 class Database_Handler:

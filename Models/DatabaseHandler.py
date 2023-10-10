@@ -88,11 +88,15 @@ class Database_Handler:
         self.__setDatabase(Environment.DATABASE)
         self.__setUsername(Environment.USERNAME)
         self.__setPassword(Environment.PASSWORD)
+        self.setLogger(Extractio_Logger())
         try:
             self.__setDatabaseHandler(mysql.connector.connect(host=self.__getHost(
             ), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()))
+            self.getLogger().inform(
+                "The application has been successfully connected to the relational database server.")
         except mysql.connector.Error as error:
             print("Connection Failed: " + str(error))
+            self.getLogger().error(f"Connection Failed: {str(error)}")
 
     def __getHost(self) -> str:
         return self.__host

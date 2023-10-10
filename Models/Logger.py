@@ -41,3 +41,15 @@ class ExtractioLogger:
         """
         self.getLogger().setLevel(logging.DEBUG)
         self.getLogger().debug(message)
+
+    def info(self, message: str) -> None:
+        """
+        Logging informational data.
+
+        Parameters:
+            message:    string: The action done.
+
+        Returns: void
+        """
+        self.getLogger().setLevel(logging.INFO)
+        self.getLogger().info(message)

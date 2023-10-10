@@ -285,6 +285,8 @@ class Database_Handler:
         query = f"INSERT INTO {table}({columns}) VALUES ({values})"
         self.setQuery(query)
         self.setParameters(parameters)
+        self.getLogger().debug(
+            f"Database_Handler.post_data() - Query: {self.getQuery()}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 

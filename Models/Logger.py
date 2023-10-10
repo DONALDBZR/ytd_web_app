@@ -42,7 +42,7 @@ class ExtractioLogger:
         self.getLogger().setLevel(logging.DEBUG)
         self.getLogger().debug(message)
 
-    def info(self, message: str) -> None:
+    def inform(self, message: str) -> None:
         """
         Logging informational data.
 
@@ -53,3 +53,15 @@ class ExtractioLogger:
         """
         self.getLogger().setLevel(logging.INFO)
         self.getLogger().info(message)
+
+    def warn(self, message: str) -> None:
+        """
+        Logging the data for a warning.
+
+        Parameters:
+            message:    string: The action done.
+
+        Returns: void
+        """
+        self.getLogger().setLevel(logging.WARNING)
+        self.getLogger().warning(message)

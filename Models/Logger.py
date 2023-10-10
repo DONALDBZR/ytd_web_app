@@ -65,3 +65,15 @@ class ExtractioLogger:
         """
         self.getLogger().setLevel(logging.WARNING)
         self.getLogger().warning(message)
+
+    def error(self, message: str) -> None:
+        """
+        Logging the data for an error.
+
+        Parameters:
+            message:    string: The action done.
+
+        Returns: void
+        """
+        self.getLogger().setLevel(logging.ERROR)
+        self.getLogger().error(message)

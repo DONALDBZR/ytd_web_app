@@ -280,6 +280,7 @@ class Session_Manager:
         session_file = open(file_path, 'w')
         session_file.write(session_data)
         session_file.close()
+        self.getLogger().inform("The session hass been successfully created!")
         return self.getSession()
 
     def verifySession(self) -> None:

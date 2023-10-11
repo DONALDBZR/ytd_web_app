@@ -21,7 +21,7 @@ class Extractio_Logger:
         that the application does.
         """
         logging.basicConfig(
-            filename="../Logs/Extractio.log", encoding="utf-8", filemode="a", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+            filename="/home/darkness4869/Documents/extractio/Logs/Extractio.log", encoding="utf-8", filemode="a", format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         self.setLogger(logging.getLogger(__name__))
 
     def getLogger(self) -> Logger:

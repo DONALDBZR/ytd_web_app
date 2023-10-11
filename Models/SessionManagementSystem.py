@@ -500,6 +500,7 @@ class Session_Manager:
             file = open(file_path, "w")
             file.write(json.dumps(self.getSession()))
             file.close()
+            self.getLogger().inform("The session has been successfully renewed!")
             return self.getSession()
         else:
             self.getSession().clear()

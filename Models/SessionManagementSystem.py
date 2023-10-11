@@ -1,6 +1,7 @@
 # Importing the requirements
 from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
+from Models.Logger import Extractio_Logger
 import os
 import json
 import time
@@ -88,6 +89,13 @@ class Session_Manager:
     Type: Database_Handler
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
         """
@@ -98,6 +106,7 @@ class Session_Manager:
             request:    object:         The request from the application.
             session:    SessionMixin:   The session of the user.
         """
+        self.setLogger(Extractio_Logger())
         self.setPort(request["port"])  # type: ignore
         self.setDatabaseHandler(Database_Handler())
         self.__server()
@@ -166,7 +175,6 @@ class Session_Manager:
 
     def getPort(self) -> str:
         return self.__port
-# self.metadataDirectory()
 
     def setPort(self, port: str) -> None:
         self.__port = port
@@ -176,6 +184,12 @@ class Session_Manager:
 
     def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__database_handler = database_handler
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def __server(self) -> None:
         """

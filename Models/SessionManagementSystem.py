@@ -331,6 +331,7 @@ class Session_Manager:
             self.getSession()["Client"] = new_data
             file.write(self.retrieveSession())
             file.close()
+            self.getLogger().inform("The session has been successfully updated!")
             return self.getSession()
 
     def sessionsLoader(self, sessions: list[str]) -> dict[str, int]:

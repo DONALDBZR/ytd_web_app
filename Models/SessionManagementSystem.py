@@ -117,6 +117,8 @@ class Session_Manager:
             request["http_client_ip_address"])  # type: ignore
         self.setProxyIpAddress(request["proxy_ip_address"])  # type: ignore
         self.setSession(session)
+        self.getLogger().inform(
+            "The Session Management System has been successfully been initialized!")
         self.verifySession()
 
     def getDirectory(self) -> str:

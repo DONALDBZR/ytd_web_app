@@ -204,6 +204,7 @@ class Crawler:
         Returns: void
         """
         self.setService(Service(ChromeDriverManager().install()))
+        self.getLogger().inform("The Chrome Driver has been set!")
 
     def __setOptions(self) -> None:
         """

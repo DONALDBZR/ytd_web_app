@@ -135,5 +135,7 @@ class Security_Management_System:
             self.getDatestamp()).strftime("%Y-%m-%d"))
         self.getDatabaseHandler().post_data(
             "Session", "hash, date_created", "%s, %s", (self.getHash(), self.getDateCreated()))
+        self.getLogger().inform("The key has been created!")
         self.getDatabaseHandler().delete_data(
             "Session", None, "date_created < CURRENT_DATE()")
+        self.getLogger().inform("The older keys are deleted!")

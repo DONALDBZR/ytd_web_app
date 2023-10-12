@@ -1,8 +1,3 @@
-import inspect
-import re
-import os
-import time
-import json
 from Models.Media import Media
 from io import TextIOWrapper
 from selenium import webdriver
@@ -12,6 +7,11 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+import inspect
+import re
+import os
+import time
+import json
 
 
 class Crawler:

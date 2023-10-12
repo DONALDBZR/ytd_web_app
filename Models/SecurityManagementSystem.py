@@ -1,4 +1,5 @@
 from Models.DatabaseHandler import Database_Handler
+from Models.Logger import Extractio_Logger
 from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
@@ -53,6 +54,13 @@ class Security_Management_System:
     Type: string | int
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self) -> None:
         """
@@ -102,6 +110,12 @@ class Security_Management_System:
 
     def setDateCreated(self, date_created: str | int) -> None:
         self.__date_created = date_created
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def hash(self) -> None:
         """

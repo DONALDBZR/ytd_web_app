@@ -1,6 +1,7 @@
 from pytube import YouTube, StreamQuery, Stream
 from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
+from Models.Logger import Extractio_Logger
 import time
 import os
 
@@ -123,6 +124,13 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int, port: str):
         """
@@ -238,6 +246,12 @@ class YouTube_Downloader:
 
     def setMimeType(self, mime_type: str) -> None:
         self.__mime_type = mime_type
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def search(self) -> dict[str, str | int | None]:
         """

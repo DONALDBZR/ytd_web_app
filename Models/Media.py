@@ -235,6 +235,7 @@ class Media:
         self.optimizeDirectory(
             video_media_files, video_media_files_directory, destination_directory)
         self.removeUsedMetadata()
+        self.getLogger().inform("The Media directory has been optimized!")
 
     def removeUsedMetadata(self) -> None:
         """

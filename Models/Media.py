@@ -1,5 +1,6 @@
 from Models.DatabaseHandler import Database_Handler
 from Models.YouTubeDownloader import YouTube_Downloader
+from Models.Logger import Extractio_Logger
 from datetime import datetime
 import json
 import os
@@ -100,6 +101,13 @@ class Media:
     Type: array
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, str | None]) -> None:
         """
@@ -187,6 +195,12 @@ class Media:
 
     def setMediaFiles(self, media_files: list[str]) -> None:
         self.__media_files = media_files
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def __server(self) -> None:
         """

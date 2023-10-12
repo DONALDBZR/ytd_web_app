@@ -117,6 +117,7 @@ class Media:
         Parameters:
             request:    object: The request from the user.
         """
+        self.setLogger(Extractio_Logger())
         self.setPort(request["port"])  # type: ignore
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Media")
@@ -129,6 +130,8 @@ class Media:
         self.setReferer(request["referer"])
         self.setValue(str(request["platform"]))
         self.setIpAddress(str(request["ip_address"]))
+        self.getLogger().inform(
+            "The Media Management System has been successfully been initialized!")
 
     def getSearch(self) -> str:
         return self.__search

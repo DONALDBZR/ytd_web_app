@@ -68,11 +68,14 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
+        self.setLogger(Extractio_Logger())
         self.setDatabaseHandler(Database_Handler())
         self.setApplicationName(Environment.APPLICATION_NAME)
         self.setDatestamp(int(time()))
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
         self.getDatabaseHandler()._execute()
+        self.getLogger().inform(
+            "The Security Management System has been successfully been initialized!")
         self.hash()
 
     def getDatabaseHandler(self) -> "Database_Handler":

@@ -216,6 +216,7 @@ class Crawler:
         self.getOption().add_argument('--headless')
         self.getOption().add_argument('--no-sandbox')
         self.getOption().add_argument('--disable-dev-shm-usage')
+        self.getLogger().inform("The options for the Chrome Driver has been set!")
 
     def __schedule(self) -> None:
         """

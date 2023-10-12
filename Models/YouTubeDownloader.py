@@ -141,6 +141,7 @@ class YouTube_Downloader:
             media_identifier:           int:    The media type for the system.
             port:                       string: The port of the application
         """
+        self.setLogger(Extractio_Logger())
         self.__server(port)
         self.setDirectory(f"{self.getDirectory()}/Public")
         self.mediaDirectory()
@@ -150,6 +151,8 @@ class YouTube_Downloader:
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
+        self.getLogger().inform(
+            "The YouTube Downloader has been successfully been initialized!")
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator

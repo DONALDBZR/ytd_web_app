@@ -114,12 +114,15 @@ class Crawler:
         Parameters:
             request:    object: The request data from the view.
         """
+        self.setLogger(Extractio_Logger())
         self.__setServices()
         self.__setOptions()
         self.setRequest(request)
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
         self.__server(str(self.getRequest()["port"]))
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
+        self.getLogger().inform(
+            "The YouTube Downloader has been successfully been initialized!")
         self.__schedule()
 
     def getDriver(self) -> WebDriver:

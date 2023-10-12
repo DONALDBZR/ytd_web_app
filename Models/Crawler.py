@@ -7,6 +7,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from Models.Logger import Extractio_Logger
 import inspect
 import re
 import os
@@ -98,6 +99,13 @@ class Crawler:
     Type: Options
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, None | str]) -> None:
         """
@@ -179,6 +187,12 @@ class Crawler:
 
     def setOption(self, options: Options) -> None:
         self.__options = options
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def __setServices(self) -> None:
         """

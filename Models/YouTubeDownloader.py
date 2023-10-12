@@ -377,6 +377,7 @@ class YouTube_Downloader:
             self.setStreams(self.getVideo().streams)
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()
+        self.getLogger().inform("The media content has been downloaded!")
         response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),

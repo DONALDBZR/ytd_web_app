@@ -1,8 +1,3 @@
-import inspect
-import re
-import os
-import time
-import json
 from Models.Media import Media
 from io import TextIOWrapper
 from selenium import webdriver
@@ -12,6 +7,12 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from Models.Logger import Extractio_Logger
+import inspect
+import re
+import os
+import time
+import json
 
 
 class Crawler:
@@ -98,6 +99,13 @@ class Crawler:
     Type: Options
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self, request: dict[str, None | str]) -> None:
         """
@@ -106,12 +114,15 @@ class Crawler:
         Parameters:
             request:    object: The request data from the view.
         """
+        self.setLogger(Extractio_Logger())
         self.__setServices()
         self.__setOptions()
         self.setRequest(request)
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
         self.__server(str(self.getRequest()["port"]))
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
+        self.getLogger().inform(
+            "The YouTube Downloader has been successfully been initialized!")
         self.__schedule()
 
     def getDriver(self) -> WebDriver:
@@ -180,6 +191,12 @@ class Crawler:
     def setOption(self, options: Options) -> None:
         self.__options = options
 
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
+
     def __setServices(self) -> None:
         """
         Setting the services for the ChromeDriver.
@@ -187,6 +204,7 @@ class Crawler:
         Returns: void
         """
         self.setService(Service(ChromeDriverManager().install()))
+        self.getLogger().inform("The Chrome Driver has been set!")
 
     def __setOptions(self) -> None:
         """
@@ -198,6 +216,7 @@ class Crawler:
         self.getOption().add_argument('--headless')
         self.getOption().add_argument('--no-sandbox')
         self.getOption().add_argument('--disable-dev-shm-usage')
+        self.getLogger().inform("The options for the Chrome Driver has been set!")
 
     def __schedule(self) -> None:
         """

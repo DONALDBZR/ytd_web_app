@@ -1,4 +1,5 @@
 from Models.DatabaseHandler import Database_Handler
+from Models.Logger import Extractio_Logger
 from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
@@ -53,6 +54,13 @@ class Security_Management_System:
     Type: string | int
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self) -> None:
         """
@@ -60,11 +68,14 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
+        self.setLogger(Extractio_Logger())
         self.setDatabaseHandler(Database_Handler())
         self.setApplicationName(Environment.APPLICATION_NAME)
         self.setDatestamp(int(time()))
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
         self.getDatabaseHandler()._execute()
+        self.getLogger().inform(
+            "The Security Management System has been successfully been initialized!")
         self.hash()
 
     def getDatabaseHandler(self) -> "Database_Handler":
@@ -103,6 +114,12 @@ class Security_Management_System:
     def setDateCreated(self, date_created: str | int) -> None:
         self.__date_created = date_created
 
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
+
     def hash(self) -> None:
         """
         It is a one-way encryption function that will generate a
@@ -118,5 +135,7 @@ class Security_Management_System:
             self.getDatestamp()).strftime("%Y-%m-%d"))
         self.getDatabaseHandler().post_data(
             "Session", "hash, date_created", "%s, %s", (self.getHash(), self.getDateCreated()))
+        self.getLogger().inform("The key has been created!")
         self.getDatabaseHandler().delete_data(
             "Session", None, "date_created < CURRENT_DATE()")
+        self.getLogger().inform("The older keys are deleted!")

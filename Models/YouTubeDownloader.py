@@ -1,6 +1,7 @@
 from pytube import YouTube, StreamQuery, Stream
 from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
+from Models.Logger import Extractio_Logger
 import time
 import os
 
@@ -123,6 +124,13 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+
+    Type: Extractio_Logger
+    Visibility: private
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int, port: str):
         """
@@ -133,6 +141,7 @@ class YouTube_Downloader:
             media_identifier:           int:    The media type for the system.
             port:                       string: The port of the application
         """
+        self.setLogger(Extractio_Logger())
         self.__server(port)
         self.setDirectory(f"{self.getDirectory()}/Public")
         self.mediaDirectory()
@@ -142,6 +151,8 @@ class YouTube_Downloader:
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
+        self.getLogger().inform(
+            "The YouTube Downloader has been successfully been initialized!")
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator
@@ -238,6 +249,12 @@ class YouTube_Downloader:
 
     def setMimeType(self, mime_type: str) -> None:
         self.__mime_type = mime_type
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def search(self) -> dict[str, str | int | None]:
         """
@@ -360,6 +377,7 @@ class YouTube_Downloader:
             self.setStreams(self.getVideo().streams)
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()
+        self.getLogger().inform("The media content has been downloaded!")
         response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),

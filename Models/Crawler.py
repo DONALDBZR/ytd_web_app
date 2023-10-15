@@ -249,7 +249,7 @@ class Crawler:
 
         Returns: void
         """
-        identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube")
+        identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube") # type: ignore
         print(f"Dataset: {self.setUpDataFirstRun(identifiers)}")
         # Verifying the amount of data to be processed
         # if self.setUpDataFirstRun(identifiers) > 0:

@@ -120,7 +120,7 @@ class Header extends React.Component {
         } else {
             color_scheme = "light";
         }
-        fetch("/Session/Post", {
+        fetch("/Session/", {
             method: "POST",
             body: JSON.stringify({
                 Client: {
@@ -163,10 +163,6 @@ class ColorScheme extends Header {
     constructor(props) {
         super(props);
     }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
     componentDidMount() {
         this.getSession();
     }
@@ -192,13 +188,6 @@ class Homepage extends Header {
      */
     constructor(props) {
         super(props);
-    }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
-    componentDidMount() {
-        this.getSession();
     }
     /**
      * Rendering the component
@@ -244,13 +233,6 @@ class Search extends Header {
         super(props);
     }
     /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
-    componentDidMount() {
-        this.getSession();
-    }
-    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */
@@ -292,13 +274,6 @@ class Download extends Header {
      */
     constructor(props) {
         super(props);
-    }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
-    componentDidMount() {
-        this.getSession();
     }
     /**
      * Rendering the component

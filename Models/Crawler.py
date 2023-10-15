@@ -196,7 +196,6 @@ class Crawler:
         trend_dataset: list[str] = os.listdir(f"{self.getDirectory()}../Trend")
         filename: int
         current_time: int = int(time.time())
-        print(f"Trend Dataset: {trend_dataset}\nCurrent Time: {current_time}")
         # Verifying that there is data.
         if len(trend_dataset) > 0:
             filename = int(trend_dataset[-1].replace(".json", ""))
@@ -251,13 +250,11 @@ class Crawler:
         Returns: void
         """
         identifiers = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube")
-        # self.setFiles(os.listdir(self.getDirectory()))
-        # # Verifying the amount of data to be processed
-        # if self.setUpDataFirstRun() > 0:
-        #     self.prepareFirstRun()
+        # Verifying the amount of data to be processed
+        if self.setUpDataFirstRun() > 0:
+            # self.prepareFirstRun()
         # elif self.setUpDataSecondRun() > 0:
         #     self.prepareSecondRun()
-        print(len(identifiers))
 
     def prepareSecondRun(self) -> None:
         """

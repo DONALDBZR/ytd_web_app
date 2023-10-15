@@ -405,11 +405,7 @@ class Crawler:
         # Iterating throughout the result set of the identifiers to retrieve the metadata needed
         for index in range(0, len(identifiers), 1):
             data: tuple[str, int, str, str, str, str] = self.getDatabaseHandler().get_data(parameters=identifiers[index], table_name="YouTube", join_condition="Media ON YouTube.Media = Media.identifier", filter_condition="YouTube.identifier = %s", column_names="YouTube.identifier AS identifier, YouTube.length AS length, YouTube.published_at AS published_at, YouTube.author AS author, YouTube.title AS title, Media.value AS platform")[0] # type: ignore
-            uniform_resource_locator: str = ""
-            # Veryfing the platform of the metadata to be able to generate its correct uniform resource locator.
-            if data[5] == "youtube" or data[5] == "youtu.be":
-                # uniform_resource_locator = f"https://www.youtube.com/watch?v={data[0]}"
-                uniform_resource_locator = self.verifyPlatform(data)
+            uniform_resource_locator: str = self.verifyPlatform(data)
             metadata: dict[str, str | int] = {
                 "identifier": data[0],
                 "length": data[1],
@@ -420,6 +416,19 @@ class Crawler:
             }
             self.getData().append(metadata)
         return len(self.getData())
+    
+    def verifyPlatform(self, data: tuple[str, int, str, str, str, str]) -> str:
+        """
+        Veryfing the platform of the metadata to be able to generate
+        its correct uniform resource locator.
+
+        Parameters:
+            data:   array:  The record of a metadata.
+
+        Returns:    string
+        """
+        if data[5] == "youtube" or data[5] == "youtu.be":
+            return f"https://www.youtube.com/watch?v={data[0]}"
 
     def prepareFirstRun(self) -> None:
         """

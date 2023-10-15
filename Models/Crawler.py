@@ -26,7 +26,7 @@ class Crawler:
 
     Type: WebDriver
     """
-    __data: list[dict[str, str | int | None | float]]
+    __data: list[dict[str, str | int | None]]
     """
     The data from the cache data.
 
@@ -114,10 +114,10 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int]]:
+    def getData(self) -> list[dict[str, str | int | None]]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int]]) -> None:
+    def setData(self, data: list[dict[str, str | int | None]]) -> None:
         self.__data = data
 
     def getUnprocessedData(self) -> list[dict[str, str | int | None | float]]:
@@ -250,10 +250,9 @@ class Crawler:
         Returns: void
         """
         identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube") # type: ignore
-        print(f"Dataset: {self.setUpDataFirstRun(identifiers)}")
         # Verifying the amount of data to be processed
-        # if self.setUpDataFirstRun(identifiers) > 0:
-            # self.prepareFirstRun()
+        if self.setUpDataFirstRun(identifiers) > 0:
+            self.prepareFirstRun()
         # elif self.setUpDataSecondRun() > 0:
         #     self.prepareSecondRun()
 
@@ -404,20 +403,18 @@ class Crawler:
         self.setData([])
         # Iterating throughout the result set of the identifiers to retrieve the metadata needed
         for index in range(0, len(identifiers), 1):
-            data: tuple[str, int, str, str, str, str] = self.getDatabaseHandler().get_data(parameters=identifiers[index], table_name="YouTube", join_condition="Media ON YouTube.Media = Media.identifier", filter_condition="YouTube.identifier = %s", column_names="YouTube.identifier AS identifier, YouTube.length AS length, YouTube.published_at AS published_at, YouTube.author AS author, YouTube.title AS title, Media.value AS platform")[0] # type: ignore
+            data: tuple[str, str, str] = self.getDatabaseHandler().get_data(parameters=identifiers[index], table_name="YouTube", join_condition="Media ON YouTube.Media = Media.identifier", filter_condition="YouTube.identifier = %s", column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform")[0] # type: ignore
             uniform_resource_locator: str = self.verifyPlatform(data)
-            metadata: dict[str, str | int] = {
+            metadata: dict[str, str | int | None] = {
                 "identifier": data[0],
-                "length": data[1],
-                "published_at": data[2],
-                "author": data[3],
-                "title": data[4],
-                "uniform_resource_locator": uniform_resource_locator
+                "author": data[1],
+                "uniform_resource_locator": uniform_resource_locator,
+                "author_channel": None
             }
             self.getData().append(metadata)
         return len(self.getData())
     
-    def verifyPlatform(self, data: tuple[str, int, str, str, str, str]) -> str:
+    def verifyPlatform(self, data: tuple[str, str, str]) -> str: # type: ignore
         """
         Veryfing the platform of the metadata to be able to generate
         its correct uniform resource locator.
@@ -427,7 +424,7 @@ class Crawler:
 
         Returns:    string
         """
-        if data[5] == "youtube" or data[5] == "youtu.be":
+        if data[2] == "youtube" or data[2] == "youtu.be":
             return f"https://www.youtube.com/watch?v={data[0]}"
 
     def prepareFirstRun(self) -> None:
@@ -437,7 +434,9 @@ class Crawler:
 
         Returns: void
         """
-        self.firstRun(inspect.stack()[1][3])
+        # Iterating throughout the targets to run throughout them
+        for index in range(0, len(self.getData()), 1):
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), index)
 
     def enterTarget(self, target: str, index: int = 0) -> None:
         """

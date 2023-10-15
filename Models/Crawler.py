@@ -78,13 +78,6 @@ class Crawler:
     Type: Media
     Visibility: private
     """
-    __request: dict[str, None | str]
-    """
-    The request data from the view.
-
-    Type: object
-    Visibility: private
-    """
     __services: Service
     """
     It is responsible for controlling of chromedriver.
@@ -107,7 +100,7 @@ class Crawler:
     Visibility: private
     """
 
-    def __init__(self, request: dict[str, None | str]) -> None:
+    def __init__(self) -> None:
         """
         Initializing the crawler to scrape the data needed.
 
@@ -117,13 +110,12 @@ class Crawler:
         self.setLogger(Extractio_Logger())
         self.__setServices()
         self.__setOptions()
-        self.setRequest(request)
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
-        self.__server(str(self.getRequest()["port"]))
-        self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
-        self.getLogger().inform(
-            "The YouTube Downloader has been successfully been initialized!")
-        self.__schedule()
+        self.__server()
+        # self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
+        # self.getLogger().inform(
+        #     "The YouTube Downloader has been successfully been initialized!")
+        # self.__schedule()
 
     def getDriver(self) -> WebDriver:
         return self.__driver
@@ -172,12 +164,6 @@ class Crawler:
 
     def setMedia(self, media_management_system: Media) -> None:
         self.__media_management_system = media_management_system
-
-    def getRequest(self) -> dict[str, str | None]:
-        return self.__request
-
-    def setRequest(self, request: dict[str, str | None]) -> None:
-        self.__request = request
 
     def getService(self) -> Service:
         return self.__services

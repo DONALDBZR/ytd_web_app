@@ -1,4 +1,4 @@
-from Models.Media import Media
+# from Models.Media import Media
 from io import TextIOWrapper
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -7,7 +7,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from Models.Logger import Extractio_Logger
+# from Models.Logger import Extractio_Logger
 import inspect
 import re
 import os
@@ -71,13 +71,6 @@ class Crawler:
     Type: array
     Visibility: private
     """
-    __media_management_system: Media
-    """
-    It allows the application to manage the media.
-
-    Type: Media
-    Visibility: private
-    """
     __services: Service
     """
     It is responsible for controlling of chromedriver.
@@ -92,13 +85,6 @@ class Crawler:
     Type: Options
     Visibility: private
     """
-    __logger: Extractio_Logger
-    """
-    The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
-    """
 
     def __init__(self) -> None:
         """
@@ -107,7 +93,7 @@ class Crawler:
         Parameters:
             request:    object: The request data from the view.
         """
-        self.setLogger(Extractio_Logger())
+        # self.setLogger(Extractio_Logger())
         self.__setServices()
         self.__setOptions()
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
@@ -159,12 +145,6 @@ class Crawler:
     def setHtmlTag(self, html_tag: WebElement) -> None:
         self.__html_tag = html_tag
 
-    def getMedia(self) -> Media:
-        return self.__media_management_system
-
-    def setMedia(self, media_management_system: Media) -> None:
-        self.__media_management_system = media_management_system
-
     def getService(self) -> Service:
         return self.__services
 
@@ -177,12 +157,6 @@ class Crawler:
     def setOption(self, options: Options) -> None:
         self.__options = options
 
-    def getLogger(self) -> Extractio_Logger:
-        return self.__logger
-
-    def setLogger(self, logger: Extractio_Logger) -> None:
-        self.__logger = logger
-
     def __setServices(self) -> None:
         """
         Setting the services for the ChromeDriver.
@@ -190,7 +164,6 @@ class Crawler:
         Returns: void
         """
         self.setService(Service(ChromeDriverManager().install()))
-        self.getLogger().inform("The Chrome Driver has been set!")
 
     def __setOptions(self) -> None:
         """
@@ -202,7 +175,6 @@ class Crawler:
         self.getOption().add_argument('--headless')
         self.getOption().add_argument('--no-sandbox')
         self.getOption().add_argument('--disable-dev-shm-usage')
-        self.getLogger().inform("The options for the Chrome Driver has been set!")
 
     def __schedule(self) -> None:
         """
@@ -576,7 +548,7 @@ class Crawler:
             keys = list(data.keys())
             self.addUnprocessedData(key, keys, data)
 
-    def __server(self, port: str) -> None:
+    def __server(self) -> None:
         """
         Setting the directory for the application.
 
@@ -585,8 +557,4 @@ class Crawler:
 
         Returns: void
         """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if port == '80' or port == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")
+        self.setDirectory(os.getcwd())

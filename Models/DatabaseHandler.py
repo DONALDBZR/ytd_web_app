@@ -171,7 +171,7 @@ class Database_Handler:
         self.__getStatement().close()
         return result_set
 
-    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list:
+    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[tuple]:
         """
         Retrieving data from the database.
 

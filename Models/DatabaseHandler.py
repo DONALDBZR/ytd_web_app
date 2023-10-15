@@ -6,7 +6,7 @@ import os
 import sys
 
 
-root_directory = f"{os.getcwd()}../"
+root_directory = f"{os.getcwd()}"
 sys.path.insert(0, root_directory)
 
 from Environment import Environment

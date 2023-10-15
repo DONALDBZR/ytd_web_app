@@ -251,7 +251,7 @@ class Crawler:
         """
         identifiers = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube")
         # Verifying the amount of data to be processed
-        if self.setUpDataFirstRun() > 0:
+        if self.setUpDataFirstRun(identifiers) > 0:
             # self.prepareFirstRun()
         # elif self.setUpDataSecondRun() > 0:
         #     self.prepareSecondRun()

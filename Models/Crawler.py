@@ -1,4 +1,3 @@
-# from Models.Media import Media
 from io import TextIOWrapper
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -7,7 +6,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-# from Models.Logger import Extractio_Logger
+from Models.DatabaseHandler import Database_Handler
 import inspect
 import re
 import os
@@ -85,6 +84,14 @@ class Crawler:
     Type: Options
     Visibility: private
     """
+    __database_handler: Database_Handler
+    """
+    The database handler that will communicate with the database
+    server.
+
+    Type: Database_Handler
+    Visibility: private
+    """
 
     def __init__(self) -> None:
         """
@@ -154,6 +161,12 @@ class Crawler:
     def setOption(self, options: Options) -> None:
         self.__options = options
 
+    def getDatabaseHandler(self) -> Database_Handler:
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
+        self.__database_handler = database_handler
+
     def __setServices(self) -> None:
         """
         Setting the services for the ChromeDriver.
@@ -182,6 +195,7 @@ class Crawler:
         trend_dataset: list[str] = os.listdir(f"{self.getDirectory()}../Trend")
         filename: int
         current_time: int = int(time.time())
+        print(f"Trend Dataset: {trend_dataset}\nCurrent Time: {current_time}")
         # Verifying that there is data.
         if len(trend_dataset) > 0:
             filename = int(trend_dataset[-1].replace(".json", ""))
@@ -224,12 +238,12 @@ class Crawler:
         Returns: void
         """
         self.setData([])
-        self.setFiles(os.listdir(self.getDirectory()))
-        # Verifying the amount of data to be processed
-        if self.setUpDataFirstRun() > 0:
-            self.prepareFirstRun()
-        elif self.setUpDataSecondRun() > 0:
-            self.prepareSecondRun()
+        # self.setFiles(os.listdir(self.getDirectory()))
+        # # Verifying the amount of data to be processed
+        # if self.setUpDataFirstRun() > 0:
+        #     self.prepareFirstRun()
+        # elif self.setUpDataSecondRun() > 0:
+        #     self.prepareSecondRun()
 
     def prepareSecondRun(self) -> None:
         """

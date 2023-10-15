@@ -36,7 +36,7 @@ def getSession() -> Response:
     return Response(response, status, mimetype=mime_type)
 
 
-@Session_Portal.route('/Post', methods=['POST'])
+@Session_Portal.route('/', methods=['POST'])
 def setSession() -> Response:
     """
     Allowing the Session Manager to update the session.

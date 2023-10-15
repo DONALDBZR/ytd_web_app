@@ -46,9 +46,10 @@ class Main extends React.Component {
      * @returns {void}
      */
     getTrend() {
-        console.log(`Route: ${window.location.pathname}`);
-        console.log(`Route: ${this.state.System.view_route}`);
-        if (this.state.System.view_route == "/") {
+        if (
+            this.state.System.view_route == "/" ||
+            this.state.System.view_route == ""
+        ) {
             fetch("/Trend/", {
                 method: "GET",
             })

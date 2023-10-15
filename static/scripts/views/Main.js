@@ -40,28 +40,34 @@ class Main extends React.Component {
             Trend: [],
         };
     }
+
     /**
      * Retrieving the current trend.
      * @returns {void}
      */
     getTrend() {
-        fetch("/Trend/", {
-            method: "GET",
-        })
-            .then((response) => response.json())
-            .then((data) =>
-                this.setState({
-                    Trend: data,
-                })
-            );
+        if (this.state.System.view_route == "/") {
+            fetch("/Trend/", {
+                method: "GET",
+            })
+                .then((response) => response.json())
+                .then((data) =>
+                    this.setState({
+                        Trend: data,
+                    })
+                );
+        }
     }
+
     /**
-     * Running the methods needed as soon as the component has been successfully mounted.
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
         this.getRoute();
     }
+
     /**
      * Setting the view route of the application.
      * @returns {void}
@@ -74,6 +80,7 @@ class Main extends React.Component {
             },
         }));
     }
+
     /**
      * Handling any change that is made in the user interface
      * @param {Event} event
@@ -90,6 +97,7 @@ class Main extends React.Component {
             },
         }));
     }
+
     /**
      * Handling the form submission
      * @param {Event} event
@@ -119,6 +127,7 @@ class Main extends React.Component {
             .then(() => this.setRoute())
             .then(() => this.redirector(delay, this.state.System.url));
     }
+
     /**
      * Generating the uniform resource locator for retrieving the
      * metadata of the content.
@@ -137,6 +146,7 @@ class Main extends React.Component {
             )}`;
         }
     }
+
     /**
      * Setting the metadata into the state of the application.
      * @param {object} data Metadata
@@ -199,6 +209,7 @@ class Main extends React.Component {
             }));
         }
     }
+
     /**
      * Retrieving the data of the media content that is searched by
      * the user.
@@ -215,6 +226,7 @@ class Main extends React.Component {
                     (document.querySelector("#loading").style.display = "none")
             );
     }
+
     /**
      * Retrieving Media from the server by using its uniform
      * resource locator.
@@ -247,6 +259,7 @@ class Main extends React.Component {
                 }, delay);
             });
     }
+
     /**
      * Redirecting the user to an intended url
      * @param {number} delay The amount of time in milliseconds before firing the method
@@ -258,6 +271,7 @@ class Main extends React.Component {
             window.location.href = uniform_resource_locator;
         }, delay);
     }
+
     /**
      * Setting the uniform resource locator for a specific YouTube content.
      * @param {object} data The dataset from the server.
@@ -275,6 +289,7 @@ class Main extends React.Component {
             },
         }));
     }
+
     /**
      * Extracting the identifier of a specific YouTube content.
      * @returns {void}
@@ -313,6 +328,7 @@ class Main extends React.Component {
             }));
         }
     }
+
     /**
      * Setting the route to be redirected.
      * @returns {void}
@@ -335,6 +351,7 @@ class Main extends React.Component {
             }));
         }
     }
+
     /**
      * Downloading the file retrieved from the server.
      * @param {Event} event
@@ -375,6 +392,7 @@ class Main extends React.Component {
                 a.click();
             });
     }
+
     /**
      * Checking that the location of the media file needed is in
      * the state of the application.
@@ -388,6 +406,7 @@ class Main extends React.Component {
             window.location.href = `/Search/${this.state.Media.YouTube.identifier}`;
         }
     }
+
     /**
      * Retrieving the media file for the application to load.
      * @returns {string}
@@ -406,6 +425,7 @@ class Main extends React.Component {
             );
         }
     }
+
     /**
      * Rendering the component
      * @returns {HTMLElement}
@@ -420,6 +440,7 @@ class Main extends React.Component {
         }
     }
 }
+
 /**
  * The component to be rendered for the homepage
  */
@@ -431,9 +452,7 @@ class Homepage extends Main {
     constructor(props) {
         super(props);
     }
-    componentDidMount() {
-        this.getTrend();
-    }
+
     /**
      * Rendering the component
      * @returns {HTMLElement}
@@ -457,6 +476,7 @@ class Homepage extends Main {
         );
     }
 }
+
 /**
  * The component to be rendered for the trends
  */
@@ -468,6 +488,12 @@ class Trend extends Homepage {
     constructor(props) {
         super(props);
     }
+
+    componentDidMount() {
+        this.getRoute();
+        this.getTrend();
+    }
+
     /**
      * Rendering the component
      * @returns {HTMLDivElement}
@@ -522,6 +548,7 @@ class Trend extends Homepage {
         );
     }
 }
+
 /**
  * The component to be rendered for the search page
  */
@@ -533,6 +560,7 @@ class Search extends Main {
     constructor(props) {
         super(props);
     }
+
     /**
      * Rendering the component
      * @returns {HTMLMainElement}
@@ -573,11 +601,7 @@ class Media extends Search {
     constructor(props) {
         super(props);
     }
-    /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
-     * @returns {void}
-     */
+
     componentDidMount() {
         this.getRoute();
         setTimeout(() => {
@@ -587,6 +611,7 @@ class Media extends Search {
             }
         }, 1);
     }
+
     /**
      * Rendering the component
      * @returns {HTMLDivElement}
@@ -604,6 +629,7 @@ class Media extends Search {
         }
     }
 }
+
 /**
  * The component that is the YouTube component given that it will only be rendered only when the data corresponds to it.
  */
@@ -615,6 +641,7 @@ class YouTube extends Media {
     constructor(props) {
         super(props);
     }
+
     /**
      * Rendering the component
      * @returns {HTMLDivElement}
@@ -671,6 +698,7 @@ class YouTube extends Media {
         );
     }
 }
+
 /**
  * The component to be rendered for the Download page
  */
@@ -682,6 +710,7 @@ class Download extends Main {
     constructor(props) {
         super(props);
     }
+
     /**
      * Rendering the component
      * @returns {HTMLMainElement}
@@ -696,6 +725,7 @@ class Download extends Main {
         }
     }
 }
+
 /**
  * The component to be rendered for the Download page but only
  * when it is for media from YouTube
@@ -708,10 +738,7 @@ class YouTubeDownloader extends Main {
     constructor(props) {
         super(props);
     }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted
-     * @returns {void}
-     */
+
     componentDidMount() {
         this.getRoute();
         setTimeout(() => {
@@ -720,6 +747,7 @@ class YouTubeDownloader extends Main {
             }
         }, 1);
     }
+
     /**
      * Rendering the component
      * @returns {HTMLDivElement}

@@ -36,7 +36,7 @@ def getSession() -> Response:
     return Response(response, status, mimetype=mime_type)
 
 
-@Session_Portal.route('/Post', methods=['POST'])
+@Session_Portal.route('/', methods=['UPDATE'])
 def setSession() -> Response:
     """
     Allowing the Session Manager to update the session.
@@ -53,7 +53,7 @@ def setSession() -> Response:
     SessionManager = Session_Manager(user_request, session)
     SessionManager.updateSession(payload)  # type: ignore
     mime_type = "application/json"
-    status = 201
+    status = 202
     session_data = {
         "Client": {
             "timestamp": SessionManager.getSession()["Client"]["timestamp"],

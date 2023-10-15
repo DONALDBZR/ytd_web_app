@@ -8,6 +8,10 @@ class Header extends React.Component {
      */
     constructor(props) {
         super(props);
+        /**
+         * States of the application
+         * @type {{ System: { color_scheme: string, view_route: string } }}
+         */
         this.state = {
             System: {
                 color_scheme: "",
@@ -15,13 +19,16 @@ class Header extends React.Component {
             },
         };
     }
+
     /**
-     * Running the methods needed as soon as the component has been successfully mounted.
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
         this.getRoute();
     }
+
     /**
      * Retrieving the session of the application
      * @returns {void}
@@ -42,6 +49,7 @@ class Header extends React.Component {
             .then(() => this.verifyColorScheme())
             .then(() => this.adjustPage());
     }
+
     /**
      * Verifying that the color scheme does not have a value
      * @returns {void}
@@ -56,6 +64,7 @@ class Header extends React.Component {
             }));
         }
     }
+
     /**
      * Adjusting the color scheme of the application
      * @returns {string}
@@ -93,6 +102,7 @@ class Header extends React.Component {
             root.style.setProperty("--color5", color5);
         }
     }
+
     /**
      * Setting the view route of the application.
      * @returns {void}
@@ -105,6 +115,7 @@ class Header extends React.Component {
             },
         }));
     }
+
     /**
      * Changing the color scheme according to the user's taste
      * @returns {void}
@@ -120,8 +131,8 @@ class Header extends React.Component {
         } else {
             color_scheme = "light";
         }
-        fetch("/Session/Post", {
-            method: "POST",
+        fetch("/Session/", {
+            method: "UPDATE",
             body: JSON.stringify({
                 Client: {
                     color_scheme: color_scheme,
@@ -138,6 +149,7 @@ class Header extends React.Component {
                 }, delay);
             });
     }
+
     /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
@@ -152,6 +164,7 @@ class Header extends React.Component {
         }
     }
 }
+
 /**
  * It allows the component to be change on intearction of the user to change its color scheme
  */
@@ -163,13 +176,11 @@ class ColorScheme extends Header {
     constructor(props) {
         super(props);
     }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
+
     componentDidMount() {
         this.getSession();
     }
+
     /**
      * Rendering the component which allows the user to change the color scheme
      * @returns {HTMLButtonElement}
@@ -193,13 +204,12 @@ class Homepage extends Header {
     constructor(props) {
         super(props);
     }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
+
     componentDidMount() {
+        this.getRoute();
         this.getSession();
     }
+
     /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
@@ -243,13 +253,12 @@ class Search extends Header {
     constructor(props) {
         super(props);
     }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
+
     componentDidMount() {
+        this.getRoute();
         this.getSession();
     }
+
     /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
@@ -293,13 +302,12 @@ class Download extends Header {
     constructor(props) {
         super(props);
     }
-    /**
-     * Running the methods needed as soon as the component has been successfully mounted.
-     * @returns {void}
-     */
+
     componentDidMount() {
+        this.getRoute();
         this.getSession();
     }
+
     /**
      * Rendering the component
      * @returns {HTMLHeaderElement}

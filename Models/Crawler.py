@@ -434,9 +434,15 @@ class Crawler:
 
         Returns: void
         """
+        delay: float = 0.0
+        total: int = 0
+        # Iterating throughout the dataset to calculate delay between each run
+        for index in range(0, len(self.getData()), 1):
+            total += len(str(self.getData()[index]["uniform_resource_locator"]))
+        delay = ((total / len(self.getData())) / 200) * 60
         # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), index)
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), index, delay)
 
     def enterTarget(self, target: str, index: int = 0) -> None:
         """

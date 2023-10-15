@@ -322,8 +322,8 @@ class Session_Manager:
         if self.getIpAddress() == data['Client']['ip_address']:
             new_data = {
                 "ip_address": self.getIpAddress(),
-                "http_client_ip_address": data["Client"]["http_client_ip_address"],
-                "proxy_ip_address": data["Client"]["proxy_ip_address"],
+                "http_client_ip_address": self.getHttpClientIpAddress(),
+                "proxy_ip_address": self.getProxyIpAddress(),
                 "timestamp": self.getTimestamp(),
                 "color_scheme": self.getColorScheme()
             }

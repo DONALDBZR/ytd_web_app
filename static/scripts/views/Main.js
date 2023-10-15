@@ -40,20 +40,23 @@ class Main extends React.Component {
             Trend: [],
         };
     }
+
     /**
      * Retrieving the current trend.
      * @returns {void}
      */
     getTrend() {
-        fetch("/Trend/", {
-            method: "GET",
-        })
-            .then((response) => response.json())
-            .then((data) =>
-                this.setState({
-                    Trend: data,
-                })
-            );
+        if (this.state.System.view_route == "/") {
+            fetch("/Trend/", {
+                method: "GET",
+            })
+                .then((response) => response.json())
+                .then((data) =>
+                    this.setState({
+                        Trend: data,
+                    })
+                );
+        }
     }
 
     /**

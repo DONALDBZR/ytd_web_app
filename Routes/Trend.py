@@ -1,5 +1,4 @@
 from flask import Blueprint, Response, request
-from Models.Crawler import Crawler
 import os
 
 Trend_Portal = Blueprint("Trend", __name__, "../Cache/Trend/")

@@ -444,7 +444,7 @@ class Crawler:
         for index in range(0, len(self.getData()), 1):
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), index, delay)
 
-    def enterTarget(self, target: str, index: int = 0) -> None:
+    def enterTarget(self, target: str, index: int = 0, delay: float) -> None:
         """
         Entering the targeted page.
 
@@ -458,10 +458,10 @@ class Crawler:
         # Verifying the run of the crawler
         if referrer == "firstRun":
             self.getDriver().get(target)
-            time.sleep(2.34375)
-        elif referrer == "secondRun":
-            self.getDriver().get(f"{target}/videos")
-            time.sleep(1.171875)
+            time.sleep(delay)
+        # elif referrer == "secondRun":
+        #     self.getDriver().get(f"{target}/videos")
+        #     time.sleep(1.171875)
         self.retrieveData(referrer, index)
 
     def retrieveData(self, referrer: str, index: int = 0) -> None | list[str]:

@@ -114,10 +114,10 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int | None | float]]:
+    def getData(self) -> list[dict[str, str | int]]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int | None | float]]) -> None:
+    def setData(self, data: list[dict[str, str | int]]) -> None:
         self.__data = data
 
     def getUnprocessedData(self) -> list[dict[str, str | int | None | float]]:
@@ -249,9 +249,10 @@ class Crawler:
 
         Returns: void
         """
-        identifiers = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube")
+        identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube")
+        print(f"Dataset: {self.setUpDataFirstRun(identifiers)}")
         # Verifying the amount of data to be processed
-        if self.setUpDataFirstRun(identifiers) > 0:
+        # if self.setUpDataFirstRun(identifiers) > 0:
             # self.prepareFirstRun()
         # elif self.setUpDataSecondRun() > 0:
         #     self.prepareSecondRun()
@@ -391,20 +392,33 @@ class Crawler:
             self.addUnprocessedData(key, keys, data)
         return len(self.getData())
 
-    def setUpDataFirstRun(self) -> int:
+    def setUpDataFirstRun(self, identifiers: list[tuple[str]]) -> int:
         """
         Setting up the data for the first run.
 
+        Parameters:
+            identifiers:    array:  The result set of the identifiers for the last weeks.
+
         Returns: int
         """
-        # Iterating throughout the files to append their data to the array to be processed.
-        for index in range(0, len(self.getFiles()), 1):
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "r")
-            data: dict[str, str | int | None | float] = json.load(file)[
-                "Media"]["YouTube"]
-            key = "likes"
-            keys = list(data.keys())
-            self.addUnprocessedData(key, keys, data)
+        self.setData([])
+        # Iterating throughout the result set of the identifiers to retrieve the metadata needed
+        for index in range(0, len(identifiers), 1):
+            data: tuple[str, int, str, str, str, str] = self.getDatabaseHandler().get_data(parameters=identifiers[index], table_name="YouTube", join_condition="Media ON YouTube.Media = Media.identifier", filter_condition="YouTube.identifier = %s", column_names="YouTube.identifier AS identifier, YouTube.length AS length, YouTube.published_at AS published_at, YouTube.author AS author, YouTube.title AS title, Media.value AS platform")[0] # type: ignore
+            uniform_resource_locator: str = ""
+            # Veryfing the platform of the metadata to be able to generate its correct uniform resource locator.
+            if data[5] == "youtube" or data[5] == "youtu.be":
+                # uniform_resource_locator = f"https://www.youtube.com/watch?v={data[0]}"
+                uniform_resource_locator = self.verifyPlatform(data)
+            metadata: dict[str, str | int] = {
+                "identifier": data[0],
+                "length": data[1],
+                "published_at": data[2],
+                "author": data[3],
+                "title": data[4],
+                "uniform_resource_locator": uniform_resource_locator
+            }
+            self.getData().append(metadata)
         return len(self.getData())
 
     def prepareFirstRun(self) -> None:

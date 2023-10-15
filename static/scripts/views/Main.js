@@ -57,7 +57,8 @@ class Main extends React.Component {
     }
 
     /**
-     * Running the methods needed as soon as the component has been successfully mounted.
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
@@ -485,6 +486,11 @@ class Trend extends Homepage {
         super(props);
     }
 
+    componentDidMount() {
+        this.getRoute();
+        this.getTrend();
+    }
+
     /**
      * Rendering the component
      * @returns {HTMLDivElement}
@@ -593,15 +599,15 @@ class Media extends Search {
         super(props);
     }
 
-    // componentDidMount() {
-    //     this.getRoute();
-    //     setTimeout(() => {
-    //         if (this.state.System.view_route != "/Search/") {
-    //             document.querySelector("#loading").style.display = "flex";
-    //             this.getMedia();
-    //         }
-    //     }, 1);
-    // }
+    componentDidMount() {
+        this.getRoute();
+        setTimeout(() => {
+            if (this.state.System.view_route != "/Search/") {
+                document.querySelector("#loading").style.display = "flex";
+                this.getMedia();
+            }
+        }, 1);
+    }
 
     /**
      * Rendering the component
@@ -730,14 +736,14 @@ class YouTubeDownloader extends Main {
         super(props);
     }
 
-    // componentDidMount() {
-    //     this.getRoute();
-    //     setTimeout(() => {
-    //         if (window.location.pathname != "/Search/") {
-    //             this.getMedia();
-    //         }
-    //     }, 1);
-    // }
+    componentDidMount() {
+        this.getRoute();
+        setTimeout(() => {
+            if (window.location.pathname != "/Search/") {
+                this.getMedia();
+            }
+        }, 1);
+    }
 
     /**
      * Rendering the component

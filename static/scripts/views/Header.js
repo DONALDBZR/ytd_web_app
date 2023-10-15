@@ -177,6 +177,10 @@ class ColorScheme extends Header {
         super(props);
     }
 
+    componentDidMount() {
+        this.getSession();
+    }
+
     /**
      * Rendering the component which allows the user to change the color scheme
      * @returns {HTMLButtonElement}

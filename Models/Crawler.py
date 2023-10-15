@@ -6,7 +6,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from Models.DatabaseHandler import Database_Handler
+from DatabaseHandler import Database_Handler
 import inspect
 import re
 import os
@@ -105,6 +105,7 @@ class Crawler:
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
+        self.setDatabaseHandler(Database_Handler())
         self.__schedule()
 
     def getDriver(self) -> WebDriver:
@@ -200,11 +201,23 @@ class Crawler:
         if len(trend_dataset) > 0:
             filename = int(trend_dataset[-1].replace(".json", ""))
             age = current_time - filename
-            # Ensuring the file is older than a week.
-            if age > 604800:
-                self.setUpData()
+            self.__verifyTrendAge(age)
         else:
             self.setUpData()
+
+    def __verifyTrendAge(self, age: int) -> None:
+        """
+        Verifying the age of the trend.
+
+        Parameters:
+            age:    int:    The age of the trend
+
+        Returns: void
+        """
+        # Ensuring the file is older than a week.
+        if age > 604800:
+            self.setUpData()
+
 
     def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:
         """
@@ -237,13 +250,14 @@ class Crawler:
 
         Returns: void
         """
-        self.setData([])
+        identifiers = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube")
         # self.setFiles(os.listdir(self.getDirectory()))
         # # Verifying the amount of data to be processed
         # if self.setUpDataFirstRun() > 0:
         #     self.prepareFirstRun()
         # elif self.setUpDataSecondRun() > 0:
         #     self.prepareSecondRun()
+        print(len(identifiers))
 
     def prepareSecondRun(self) -> None:
         """

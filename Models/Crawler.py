@@ -226,7 +226,7 @@ class Crawler:
         if referrer == "__schedule" and self.prepareFirstRun(identifiers) > 0:
             self.firstRun()
         elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
-            print(len(self.getData()))
+            self.secondRun()
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:
         """
@@ -295,23 +295,23 @@ class Crawler:
             "ratings": ratings
         }
 
-    def secondRun(self, referer: str):
+    def secondRun(self):
         """
         The second run for the web-crawler to seek for the data
         needed from the targets.
 
-        Parameters:
-            referer:    string: The function that is calling it.
-
         Returns: void
         """
-        # Verifying that the data has been set up.
-        if referer == "setUpData":
-            # Iterating throughout the targets to run throughout them
-            for index in range(0, len(self.getData()), 1):
-                self.enterTarget(
-                    str(self.getData()[index]["author_channel"]), index)
-        self.__buildData()
+        delay: float = 0.0
+        total: int = 0
+        # Iterating throughout the dataset to calculate delay between each run
+        for index in range(0, len(self.getData()), 1):
+            total += len(str(self.getData()[index]))
+        delay = ((total / len(self.getData())) / (40 * 5)) * 60
+        # Iterating throughout the targets to run throughout them
+        for index in range(0, len(self.getData()), 1):
+            self.enterTarget(str(self.getData()[index]), index)
+        # self.__buildData()
 
     def __buildData(self) -> None:
         """
@@ -399,11 +399,11 @@ class Crawler:
         total: int = 0
         # Iterating throughout the dataset to calculate delay between each run
         for index in range(0, len(self.getData()), 1):
-            total += len(str(self.getData()[index]["uniform_resource_locator"]))
+            total += len(str(self.getData()[index]["uniform_resource_locator"])) # type: ignore
         delay = ((total / len(self.getData())) / (40 * 5)) * 60
         # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index) # type: ignore
         self.setUpData()
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
@@ -438,7 +438,7 @@ class Crawler:
         """
         author_channel: str = ""
         if referrer == "firstRun":
-            self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href")
+            self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href") # type: ignore
         
         # elif referrer == "secondRun":
         #     new_data: list[str] = []

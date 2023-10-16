@@ -26,15 +26,9 @@ class Crawler:
 
     Type: WebDriver
     """
-    __data: list[dict[str, str | int | None]]
+    __data: list[dict[str, str | int | None]] | list[str]
     """
     The data from the cache data.
-
-    Type: array
-    """
-    __unprocessed_data: list[dict[str, str | int | None | float]]
-    """
-    The data from the cache data that have been left behind.
 
     Type: array
     """
@@ -115,10 +109,10 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int | None]]:
+    def getData(self) -> list[dict[str, str | int | None]] | list[str]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int | None]]) -> None:
+    def setData(self, data: list[dict[str, str | int | None]] | list[str]) -> None:
         self.__data = data
 
     def getUnprocessedData(self) -> list[dict[str, str | int | None | float]]:
@@ -218,31 +212,6 @@ class Crawler:
         if age > 604800:
             self.setUpData()
 
-
-    def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:
-        """
-        Verifying that the data is not processed to append them to
-        the array to be processed.
-
-        Parameters:
-            key:    string: The key to be verified.
-            keys:   array:  The list of keys.
-            data:   object: Data to be processed.
-
-        Returns: void
-        """
-        # Verifying that the web-scrawler has processed the data
-        if keys.count(key) == 0:
-            # Verifying that the data has been set up.
-            if inspect.stack()[1][3] == "setUpDataFirstRun":
-                self.getData().append(data)
-            elif inspect.stack()[1][3] == "consolidateData":
-                self.getUnprocessedData().append(data)
-        elif keys.count(key) == 1:
-            # Verifying that the data has been set up.
-            if inspect.stack()[1][3] == "setUpDataSecondRun":
-                self.getData().append(data)
-
     def setUpData(self) -> None:
         """
         Setting up the data to be used to be used by the web
@@ -253,22 +222,26 @@ class Crawler:
         identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube") # type: ignore
         dataset: list[dict[str, str | int | None]] = self.getData()
         referrer = inspect.stack()[1][3]
-        print(f"Referrer: {referrer}")
         # Verifying the referrer to be able to select the action required.
         if referrer == "__schedule" and self.prepareFirstRun(identifiers) > 0:
             self.firstRun()
         elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
-            self.secondRun()
+            print(len(self.getData()))
 
-    def prepareSecondRun(self) -> None:
+    def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:
         """
         Preparing for the second run of crawling based on the data
         in the cache.
 
         Returns: void
         """
-        self.refineData()
-        self.secondRun(inspect.stack()[1][3])
+        new_dataset: list[str] = []
+        self.setData([])
+        # Iterating throughout the dataset to retrieve the author's channel's uniform resource locator.
+        for index in range(0, len(dataset), 1):
+            new_dataset.append(str(dataset[index]["author_channel"]))
+        self.setData(list(set(new_dataset)))
+        return len(self.getData());
 
     def refineData(self) -> None:
         """
@@ -378,22 +351,6 @@ class Crawler:
         file.write(json.dumps(self.getData(), indent=4))
         file.close()
         self.getDriver().quit()
-
-    def setUpDataSecondRun(self) -> int:
-        """
-        Setting up the data for the second run.
-
-        Returns: int
-        """
-        # Iterating throughout the files to append their data to the array to be processed.
-        for index in range(0, len(self.getFiles()), 1):
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "r")
-            data: dict[str, str | int | None | float] = json.load(file)[
-                "Media"]["YouTube"]
-            key = "rating"
-            keys = list(data.keys())
-            self.addUnprocessedData(key, keys, data)
-        return len(self.getData())
 
     def prepareFirstRun(self, identifiers: list[tuple[str]]) -> int:
         """

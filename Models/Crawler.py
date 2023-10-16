@@ -106,6 +106,7 @@ class Crawler:
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
         self.setDatabaseHandler(Database_Handler())
+        self.setData([])
         self.__schedule()
 
     def getDriver(self) -> WebDriver:
@@ -250,9 +251,14 @@ class Crawler:
         Returns: void
         """
         identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube") # type: ignore
-        # Verifying the amount of data to be processed
-        if self.prepareFirstRun(identifiers) > 0:
+        dataset: list[dict[str, str | int | None]] = self.getData()
+        referrer = inspect.stack()[1][3]
+        print(f"Referrer: {referrer}")
+        # Verifying the referrer to be able to select the action required.
+        if referrer == "__schedule" and self.prepareFirstRun(identifiers) > 0:
             self.firstRun()
+        elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
+            self.secondRun()
 
     def prepareSecondRun(self) -> None:
         """
@@ -441,6 +447,7 @@ class Crawler:
         # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
+        self.setUpData()
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """

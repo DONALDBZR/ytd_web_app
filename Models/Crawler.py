@@ -220,7 +220,7 @@ class Crawler:
         Returns: void
         """
         identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube") # type: ignore
-        dataset: list[dict[str, str | int | None]] = self.getData()
+        dataset: list[dict[str, str | int | None]] = self.getData() # type: ignore
         referrer = inspect.stack()[1][3]
         # Verifying the referrer to be able to select the action required.
         if referrer == "__schedule" and self.prepareFirstRun(identifiers) > 0:

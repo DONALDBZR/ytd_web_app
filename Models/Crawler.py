@@ -251,10 +251,8 @@ class Crawler:
         """
         identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube") # type: ignore
         # Verifying the amount of data to be processed
-        if self.setUpDataFirstRun(identifiers) > 0:
-            self.prepareFirstRun()
-        # elif self.setUpDataSecondRun() > 0:
-        #     self.prepareSecondRun()
+        if self.prepareFirstRun(identifiers) > 0:
+            self.firstRun()
 
     def prepareSecondRun(self) -> None:
         """
@@ -391,7 +389,7 @@ class Crawler:
             self.addUnprocessedData(key, keys, data)
         return len(self.getData())
 
-    def setUpDataFirstRun(self, identifiers: list[tuple[str]]) -> int:
+    def prepareFirstRun(self, identifiers: list[tuple[str]]) -> int:
         """
         Setting up the data for the first run.
 
@@ -427,7 +425,7 @@ class Crawler:
         if data[2] == "youtube" or data[2] == "youtu.be":
             return f"https://www.youtube.com/watch?v={data[0]}"
 
-    def prepareFirstRun(self) -> None:
+    def firstRun(self) -> None:
         """
         Preparing for the first run of crawling based on the data in
         the cache.
@@ -442,7 +440,7 @@ class Crawler:
         delay = ((total / len(self.getData())) / (40 * 5)) * 60
         # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), index, delay)
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """
@@ -474,115 +472,16 @@ class Crawler:
 
         Returns: void
         """
+        author_channel: str = ""
         if referrer == "firstRun":
-            likes = str(self.getDriver().find_element(
-                By.XPATH, '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button').get_attribute("aria-label"))
-            likes = re.sub("[a-zA-Z]", "", likes)
-            likes = re.sub("\s", "", likes)  # type: ignore
-            likes = int(re.sub(",", "", likes))
-            target = self.getDriver().current_url
-            self.addRawData(target, likes)
-        elif referrer == "secondRun":
-            new_data: list[str] = []
-            self.setHtmlTags(self.getDriver().find_elements(
-                By.XPATH, '//a[@id="thumbnail"]'))
-            self.getData()[index]["latest_content"] = str(
-                self.getHtmlTags()[1].get_attribute("href"))
-
-    def addRawData(self, target: str, likes: int) -> None:
-        """
-        Adding the raw data in its related data object.
-
-        Parameters:
-            target: string: Target of the web-crawler.
-            likes:  int:    Likes of the content.
-
-        Returns: void
-        """
-        # Iterating throughout the data to retrieve is related object.
-        for index in range(0, len(self.getData()), 1):
-            self.setLikes(target, likes, index)
-
-    def setLikes(self, target: str, likes: int, index: int) -> None:
-        """
-        Adding the data from the content
-
-        Parameters:
-            target: string: Target of the web-crawler.
-            likes:  int:    Likes of the content.
-            index:  int:    Index of the content.
-
-        Returns: void
-        """
-        # Verifying that the the target exists in the data.
-        if self.getData()[index]["uniform_resource_locator"] == target:
-            self.getData()[index]["likes"] = likes
-
-    def firstRun(self, referrer: str):
-        """
-        The first run for the web-crawler to seek for the data
-        needed from the targets.
-
-        Parameters:
-            referrer:   string: The function that is calling it.
-
-        Returns: void
-        """
-        # Verifying the referer take the correct target.
-        if referrer == "setUpData":
-            # Iterating throughout the targets to run throughout them
-            for index in range(0, len(self.getData()), 1):
-                self.enterTarget(
-                    str(self.getData()[index]["uniform_resource_locator"]))
-        elif referrer == "buildUpRating":
-            # Iterating throughout the targets to run throughout them
-            for index in range(0, len(self.getUnprocessedData()), 1):
-                self.enterTarget(str(self.getUnprocessedData()[
-                                 index]["uniform_resource_locator"]))
-        self.buildUpRating()
-
-    def buildUpRating(self) -> None:
-        """
-        Building up the rating based on the data in the cache.
-
-        Returns: void
-        """
-        self.setUnprocessedData([])
-        self.consolidateData()
-        # Verifying that there is no data that have been left behind in the process.
-        if len(self.getUnprocessedData()) > 0:
-            self.prepareFirstRun()
-        else:
-            self.calculateRating()
-
-    def calculateRating(self) -> None:
-        """
-        Calculating the rating of the content.
-
-        Returns: void
-        """
-        # Iterating throughout the data to calculate the rating
-        for index in range(0, len(self.getData()), 1):
-            data = {
-                "Media": {
-                    "YouTube": self.getData()[index]
-                }
-            }
-            data["Media"]["YouTube"]["rating"] = round(int(
-                data["Media"]["YouTube"]["likes"]) / int(data["Media"]["YouTube"]["views"]), 4)  # type: ignore
-            self.getData()[index] = data  # type: ignore
-        self.saveData()
-
-    def saveData(self) -> None:
-        """
-        Saving the data into the cache after processing it.
-
-        Returns: void
-        """
-        # Iterating throughout the files to update them.
-        for index in range(0, len(self.getFiles()), 1):
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "w")
-            file.write(json.dumps(self.getData()[index], indent=4))
+            self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href")
+        
+        # elif referrer == "secondRun":
+        #     new_data: list[str] = []
+        #     self.setHtmlTags(self.getDriver().find_elements(
+        #         By.XPATH, '//a[@id="thumbnail"]'))
+        #     self.getData()[index]["latest_content"] = str(
+        #         self.getHtmlTags()[1].get_attribute("href"))
 
     def consolidateData(self) -> None:
         """

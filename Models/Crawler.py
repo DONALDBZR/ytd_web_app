@@ -648,7 +648,7 @@ class Media:
         """
         response: dict[str, str | int | None]
         identifier: str
-        self._YouTubeDownloader = YouTube_Downloader(self.getSearch())
+        self._YouTubeDownloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         youtube = self._YouTubeDownloader.search()
         media = {
             "Media": {
@@ -665,7 +665,7 @@ class Media:
         file.close()
         response = {
             "status": 200,
-            "data": youtube
+            "data": youtube # type: ignore
         }
         return response
 

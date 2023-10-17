@@ -768,42 +768,6 @@ class YouTube_Downloader:
     Type: string
     Visibility: private
     """
-    __streams: "StreamQuery"
-    """
-    Interface for querying the available media streams.
-
-    Type: StreamQuery
-    Visibility: private
-    """
-    __stream: "Stream"
-    """
-    Container for stream manifest data.
-
-    Type: Stream|null
-    Visibility: private
-    """
-    __itag: int
-    """
-    YouTube format identifier code
-
-    Type: integer
-    Visibility: private
-    """
-    __mime_type: str
-    """
-    Two-part identifier for file formats and format contents
-    composed of a "type" and a "subtype".
-
-    Type: string
-    Visibility: private
-    """
-    __logger: Extractio_Logger
-    """
-    The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
-    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int, port: str):
         """
@@ -898,36 +862,6 @@ class YouTube_Downloader:
 
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
-
-    def getStreams(self) -> "StreamQuery":
-        return self.__streams
-
-    def setStreams(self, streams: "StreamQuery") -> None:
-        self.__streams = streams
-
-    def getStream(self) -> "Stream":
-        return self.__stream
-
-    def setStream(self, stream: "Stream") -> None:
-        self.__stream = stream
-
-    def getITAG(self) -> int:
-        return self.__itag
-
-    def setITAG(self, itag: int) -> None:
-        self.__itag = itag
-
-    def getMimeType(self) -> str:
-        return self.__mime_type
-
-    def setMimeType(self, mime_type: str) -> None:
-        self.__mime_type = mime_type
-
-    def getLogger(self) -> Extractio_Logger:
-        return self.__logger
-
-    def setLogger(self, logger: Extractio_Logger) -> None:
-        self.__logger = logger
 
     def search(self) -> dict[str, str | int | None]:
         """

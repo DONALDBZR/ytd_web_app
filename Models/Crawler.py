@@ -769,27 +769,22 @@ class YouTube_Downloader:
     Visibility: private
     """
 
-    def __init__(self, uniform_resource_locator: str, media_identifier: int, port: str):
+    def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
         Instantiating the class and launching the operations needed.
 
         Parameters:
             uniform_resource_locator:   string: The uniform resource locator to be searched.
             media_identifier:           int:    The media type for the system.
-            port:                       string: The port of the application
         """
-        self.setLogger(Extractio_Logger())
-        self.__server(port)
+        self.__server()
         self.setDirectory(f"{self.getDirectory()}/Public")
         self.mediaDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
-        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
-        self.getLogger().inform(
-            "The YouTube Downloader has been successfully been initialized!")
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator

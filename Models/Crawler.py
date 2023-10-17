@@ -1221,7 +1221,7 @@ class Crawler:
         request: dict[str, str | None]
         # Iterating throughout the data to get metadata.
         for index in range(0, len(self.getData()), 1):
-            self.setMedia(Media(str(self.getData()[index]["latest_content"]), "YouTube"))
+            self.setMedia(Media(str(self.getData()[index]["latest_content"]), "youtube"))
             response = self.getMedia().verifyPlatform()
             data = response["data"]["data"]  # type: ignore
             new_data.append(data)

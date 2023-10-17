@@ -499,23 +499,21 @@ class Media:
         for index in range(0, len(self.getMetadataMediaFiles()), 1):
             file_name = f"{self.getDirectory()}/{self.getMetadataMediaFiles()[index]}"
             age = int(time.time()) - int(os.path.getctime(file_name))
-            # Ensuring that the metadata file is at least three days old to be removed from the database.
-            if age > 259200:
-                os.remove(file_name)
+            self.deleteOldMetadata(age, file_name)
 
-    def deleteMetadata(self, keys: list[str], key: str, file_name: str) -> None:
+    def deleteOldMetadata(self, age: int, file_name: str) -> None:
         """
-        Deleting the metadata from the document database.
+        Deleting the metadata in the condition that the metadata is
+        at least three days old.
 
         Parameters:
-            keys:   array:  The list of keys.
-            key:    string: The key.
+            age:        int:    The age of the metadata.
             file_name:  string: The name of the file.
 
         Returns: void
         """
-        # Ensuring that there is a rating to be able to delete the metadata from the document database.
-        if keys.count(key) == 1:
+        # Ensuring that the metadata file is at least three days old to be removed from the database.
+        if age > 259200:
             os.remove(file_name)
 
     def optimizeDirectory(self, media_files: list[str], original_directory: str, new_directory: str) -> None:

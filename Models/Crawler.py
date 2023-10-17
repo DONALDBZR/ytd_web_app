@@ -1192,58 +1192,6 @@ class Crawler:
             self.getData().append(data) # type: ignore
         return len(self.getData());
 
-    def refineData(self) -> None:
-        """
-        Refining the data when there is duplicate data.
-
-        Returns: void
-        """
-        new_data: list[dict[str, str | int | float | None]] = []
-        data: dict[str, str | int | float | None]
-        crude_data = self.refineAndExtract()
-        # Iterating throughout the artists, ratings and author channels to build the new data.
-        for index in range(0, len(crude_data["authors"]), 1):
-            data = {
-                "author": crude_data["authors"][index],  # type: ignore
-                "rating": crude_data["ratings"][
-                    crude_data["authors"][index]],  # type: ignore
-                "author_channel": crude_data["author_channels"][
-                    crude_data["authors"][index]]  # type: ignore
-            }
-            new_data.append(data)
-        self.setData(new_data)
-
-    def refineAndExtract(self) -> dict[str, list[str] | dict[str, float] | dict[str, str]]:
-        """
-        Refining the rating and extracting the channels of the
-        authors.
-
-        Returns: object
-        """
-        ratings: dict[str, float] = {}
-        author_channels: dict[str, str] = {}
-        authors: list[str] = []
-        # Iterating throughout the data to refine the rating and extract the channels of the authors
-        for index in range(0, len(self.getData()), 1):
-            author = str(self.getData()[index]["author"])  # type: ignore
-            rating = float(self.getData()[index]["rating"])  # type: ignore
-            # Verifying that the ratings and the author's channels are declared
-            if author in ratings and author in author_channels:
-                rating = (ratings[author] +
-                          float(self.getData()[index]["rating"])) / 2  # type: ignore
-            else:
-                rating = float(self.getData()[index]["rating"])  # type: ignore
-                author_channels[author] = str(
-                    self.getData()[index]["author_channel"])
-            ratings[author] = rating
-            authors.append(author)
-        authors = list(set(authors))
-        return {
-            "authors": authors,
-            "author_channels": author_channels,
-            "ratings": ratings
-        }
-
     def secondRun(self):
         """
         The second run for the web-crawler to seek for the data

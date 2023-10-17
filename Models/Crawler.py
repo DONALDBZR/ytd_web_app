@@ -656,51 +656,25 @@ class Media:
         """
         response: dict[str, str | int | None]
         identifier: str
-        self._YouTubeDownloader = YouTube_Downloader(
-            self.getSearch(), self.getIdentifier(), self.getPort())
-        # Verifying the referer to retrieve to required data
-        if self.getReferer() is None:
-            youtube = self._YouTubeDownloader.search()
-            media = {
-                "Media": {
-                    "YouTube": youtube
-                }
+        self._YouTubeDownloader = YouTube_Downloader(self.getSearch())
+        youtube = self._YouTubeDownloader.search()
+        media = {
+            "Media": {
+                "YouTube": youtube
             }
-            if "youtube" in self.getSearch():
-                identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-            else:
-                identifier = self.getSearch().replace(
-                    "https://youtu.be/", "").rsplit("?")[0]
-            filename = f"{self.getDirectory()}/{identifier}.json"
-            file = open(filename, "w")
-            file.write(json.dumps(media, indent=4))
-            file.close()
-            response = {
-                "status": 200,
-                "data": youtube  # type: ignore
-            }  # type: ignore
+        }
+        if "youtube" in self.getSearch():
+            identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
         else:
-            youtube = self._YouTubeDownloader.retrievingStreams()
-            media = {
-                "Media": {
-                    "YouTube": youtube
-                }
-            }
-            if "youtube" in self.getSearch():
-                identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-            else:
-                identifier = self.getSearch().replace(
-                    "https://youtu.be/", "").rsplit("?")[0]
-            filename = f"{self.getDirectory()}/{identifier}.json"
-            file = open(filename, "w")
-            file.write(json.dumps(media, indent=4))
-            file.close()
-            response = {
-                "status": 200,
-                "data": {
-                    "url": f"/Download/YouTube/{youtube['identifier']}"
-                }  # type: ignore
-            }  # type: ignore
+            identifier = self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
+        filename = f"{self.getDirectory()}/{identifier}.json"
+        file = open(filename, "w")
+        file.write(json.dumps(media, indent=4))
+        file.close()
+        response = {
+            "status": 200,
+            "data": youtube
+        }
         return response
 
     def metadataDirectory(self):

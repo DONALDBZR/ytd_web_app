@@ -1,4 +1,4 @@
-from Models.Media import Media
+from datetime import datetime
 from io import TextIOWrapper
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -7,12 +7,937 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from Models.Logger import Extractio_Logger
+from mysql.connector.pooling import PooledMySQLConnection
+from mysql.connector.connection import MySQLConnection
+from mysql.connector.cursor import MySQLCursor
+from pytube import YouTube, StreamQuery, Stream
+import shutil
 import inspect
 import re
 import os
 import time
 import json
+import mysql.connector
+import sys
+
+root_directory = f"{os.getcwd()}"
+sys.path.insert(0, root_directory)
+
+from Environment import Environment
+
+
+class Database_Handler:
+    """
+    The database handler that will communicate with the database
+    server.
+    """
+    __host: str
+    """
+    The host of the application
+
+    Type: string
+    visibility: private
+    """
+    __database: str
+    """
+    The database of the application
+
+    Type: string
+    visibility: private
+    """
+    __username: str
+    """
+    The user that have access to the database
+
+    Type: string
+    visibility: private
+    """
+    __password: str
+    """
+    The password that allows the required user to connect to the
+    database.
+
+    Type: string
+    visibility: private
+    """
+    __database_handler: "PooledMySQLConnection | MySQLConnection"
+    """
+    The database handler needed to execute the queries needed
+
+    Type: PooledMySQLConnection | MySQLConnection
+    visibility: private
+    """
+    __statement: "MySQLCursor"
+    """
+    The statement to be used to execute all of the requests to
+    the database server
+
+    Type: MySQLCursor
+    visibility: private
+    """
+    __query: str
+    """
+    The query to be used to be sent to the database server to
+    either get, post, update or delete data.
+
+    Type: string
+    Visibility: private
+    """
+    __parameters: tuple | None
+    """
+    Parameters that the will be used to sanitize the query which
+    is either  get, post, update or delete.
+
+    Type: array|null
+    Visibility: private
+    """
+
+    def __init__(self):
+        """
+        Instantiating the class which will try to connect to the
+        database.
+        """
+        self.__setHost(Environment.HOST)
+        self.__setDatabase(Environment.DATABASE)
+        self.__setUsername(Environment.USERNAME)
+        self.__setPassword(Environment.PASSWORD)
+        try:
+            self.__setDatabaseHandler(mysql.connector.connect(host=self.__getHost(
+            ), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()))
+        except mysql.connector.Error as error:
+            print("Connection Failed: " + str(error))
+
+    def __getHost(self) -> str:
+        return self.__host
+
+    def __setHost(self, host: str) -> None:
+        self.__host = host
+
+    def __getDatabase(self) -> str:
+        return self.__database
+
+    def __setDatabase(self, database: str) -> None:
+        self.__database = database
+
+    def __getUsername(self) -> str:
+        return self.__username
+
+    def __setUsername(self, username: str) -> None:
+        self.__username = username
+
+    def __getPassword(self) -> str:
+        return self.__password
+
+    def __setPassword(self, password: str) -> None:
+        self.__password = password
+
+    def __getDatabaseHandler(self) -> "PooledMySQLConnection | MySQLConnection":
+        return self.__database_handler
+
+    def __setDatabaseHandler(self, database_handler: "PooledMySQLConnection | MySQLConnection") -> None:
+        self.__database_handler = database_handler
+
+    def __getStatement(self) -> "MySQLCursor":
+        return self.__statement
+
+    def __setStatement(self, statement: "MySQLCursor") -> None:
+        self.__statement = statement
+
+    def getQuery(self) -> str:
+        return self.__query
+
+    def setQuery(self, query: str) -> None:
+        self.__query = query
+
+    def getParameters(self) -> tuple | None:
+        return self.__parameters
+
+    def setParameters(self, parameters: tuple | None) -> None:
+        self.__parameters = parameters
+
+    def _query(self, query: str, parameters: None | tuple):
+        """
+        Preparing the SQL query that is going to be handled by the
+        database handler.
+
+        Returns: Generator[MySQLCursor, None, None] | None
+        """
+        self.__setStatement(self.__getDatabaseHandler().cursor(prepared=True))
+        self.__getStatement().execute(query, parameters)
+
+    def _execute(self) -> None:
+        """
+        Executing the SQL query which will send a command to the
+        database server
+
+        Returns: None
+        """
+        self.__getDatabaseHandler().commit()
+
+    def _resultSet(self) -> list:
+        """
+        Fetching all the data that is requested from the command that
+        was sent to the database server
+
+        Returns: array
+        """
+        result_set = self.__getStatement().fetchall()
+        self.__getStatement().close()
+        return result_set
+
+    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[tuple]:
+        """
+        Retrieving data from the database.
+
+        Parameters:
+            parameters:         array|null: The parameters to be passed into the query.
+            table_name:         string:     The name of the table.
+            column_names:       string:     The name of the columns.
+            join_condition      string:     Joining table condition.
+            filter_condition    string:     Items to be filtered with.
+            sort_condition      string:     The items to be sorted.
+            limit_condition     int:     The amount of items to be returned
+
+        Returns: array
+        """
+        query = f"SELECT {column_names} FROM {table_name}"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._get_join(join_condition)
+        self._get_filter(filter_condition)
+        self._get_sort(sort_condition)
+        self._get_limit(limit_condition)
+        self._query(self.getQuery(), self.getParameters())
+        return self._resultSet()
+
+    def _get_join(self, condition: str) -> None:
+        """
+        Building the query needed for retrieving data that is in at
+        least two tables.
+
+        Parameters:
+            condition:  string: The JOIN statement that is used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} LEFT JOIN {condition}"
+        self.setQuery(query)
+
+    def _get_filter(self, condition: str) -> None:
+        """
+        Building the query needed for retrieving specific data.
+
+        Parameters:
+            condition:  string: The WHERE statement that will be used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} WHERE {condition}"
+        self.setQuery(query)
+
+    def _get_sort(self, condition: str) -> None:
+        """
+        Building the query needed to be used to sort the result set.
+
+        Parameters:
+            condition:  string: The ORDER BY statement that will be used.
+
+        Returns: void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} ORDER BY {condition}"
+        self.setQuery(query)
+
+    def _get_limit(self, limit: int) -> None:
+        """
+        Building the query needed to be used to limit the amount of
+        data from the result set.
+
+        Parameters:
+            limit:  int: The ORDER BY statement that will be used.
+
+        Returns: void
+        """
+        if limit > 0:
+            query = f"{self.getQuery()} LIMIT {limit}"
+        else:
+            query = self.getQuery()
+        self.setQuery(query)
+
+    def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
+        """
+        Creating records to store data into the database server.
+
+        Parameters:
+            table:      string: Table Name
+            columns:    string: Column names
+            values:     string: Data to be inserted
+
+        Returns: void
+        """
+        query = f"INSERT INTO {table}({columns}) VALUES ({values})"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._query(self.getQuery(), self.getParameters())
+        self._execute()
+
+    def update_data(self, table: str, values: str, parameters: tuple | None, condition: str = "") -> None:
+        """
+        Updating a specific table in the database.
+
+        Parameters:
+            table:      string: Table
+            values:     string: Columns to be modified and data to be put within
+            condition:  string: Condition for the data to be modified
+            parameters: array:  Data to be used for data manipulation.
+
+        Returns: void
+        """
+        query = f"UPDATE {table} SET {values}"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._get_filter(condition)
+        self._query(self.getQuery(), self.getParameters())
+        self._execute()
+
+    def delete_data(self, table: str, parameters: tuple | None, condition: str = "") -> None:
+        """
+        Deleting data from the database.
+
+        Parameters:
+            table:      string: Table
+            parameters: array:  Data to be used for data manipulation.
+            condition:  string: Specification
+
+        Returns: void
+        """
+        query = f"DELETE FROM {table}"
+        self.setQuery(query)
+        self.setParameters(parameters)
+        self._get_filter(condition)
+        self._query(self.getQuery(), self.getParameters())
+        self._execute()
+
+class Media:
+    """
+    It allows the application to manage the media.
+    """
+    __search: str
+    """
+    The uniform resource locator to be searched.
+
+    Type: string
+    Visibility: private
+    """
+    _YouTubeDownloader: "YouTube_Downloader"
+    """
+    It will handle every operations related to YouTube.
+
+    Type: YouTube_Downloader
+    Visibility: protected
+    """
+    __database_handler: "Database_Handler"
+    """
+    It is the object relational mapper that will be used to
+    simplify the process to entering queries.
+
+    Type: Database_Handler
+    Visibility: private
+    """
+    __identifier: int
+    """
+    The identifier of the required media
+
+    Type: int
+    Visibility: private
+    """
+    __value: str
+    """
+    The value of the required media which have to correspond to
+    the name of the platform from which the media comes from.
+
+    Type: string | null
+    Visibility: private
+    """
+    __timestamp: str
+    """
+    The timestamp at which the session has been created
+
+    Type: string
+    Visibility: private
+    """
+    __directory: str
+    """
+    The directory of the JSON files
+
+    Type: string
+    Visibility: private
+    """
+    __metadata_media_files: list[str]
+    """
+    The metadata of the media content that is stored in the
+    document database.
+
+    Type: array
+    Visibility: private
+    """
+    __media_files: list[str]
+    """
+    The media content that is stored in the document database.
+
+    Type: array
+    Visibility: private
+    """
+
+    def __init__(self, search: str, value: str) -> None:
+        """
+        Instantiating the media's manager which will interact with
+        the media's dataset and do the required processing.
+
+        Parameters:
+            search: string: The uniform resource locator to be searched.
+            value:  string: The value of the required media which have to correspond to the name of the platform from which the media comes from.
+
+        Returns:    void
+        """
+        self.__server()
+        self.setDirectory(f"{self.getDirectory()}/Cache/Media")
+        self.setDatabaseHandler(Database_Handler())
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
+        self.getDatabaseHandler()._execute()
+        self.__maintain()
+        self.setSearch(search)
+        self.setValue(value)
+
+    def getSearch(self) -> str:
+        return self.__search
+
+    def setSearch(self, search: str) -> None:
+        self.__search = search
+
+    def getDatabaseHandler(self) -> "Database_Handler":
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+        self.__database_handler = database_handler
+
+    def getIdentifier(self) -> int:
+        return self.__identifier
+
+    def setIdentifier(self, identifier: int) -> None:
+        self.__identifier = identifier
+
+    def getValue(self) -> str:
+        return self.__value
+
+    def setValue(self, value: str) -> None:
+        self.__value = value
+
+    def getTimestamp(self) -> str:
+        return self.__timestamp
+
+    def setTimestamp(self, timestamp: str) -> None:
+        self.__timestamp = timestamp
+
+    def getDirectory(self) -> str:
+        return self.__directory
+
+    def setDirectory(self, directory: str) -> None:
+        self.__directory = directory
+
+    def getMetadataMediaFiles(self) -> list[str]:
+        return self.__metadata_media_files
+
+    def setMetadataMediaFiles(self, metadata_media_files: list[str]) -> None:
+        self.__metadata_media_files = metadata_media_files
+
+    def getMediaFiles(self) -> list[str]:
+        return self.__media_files
+
+    def setMediaFiles(self, media_files: list[str]) -> None:
+        self.__media_files = media_files
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        self.setDirectory(os.getcwd())
+
+    def __maintain(self) -> None:
+        """
+        Maintaining the document database by doing some regular
+        checks on the the metadata and media files.
+
+        Returns: void
+        """
+        self.setMetadataMediaFiles(os.listdir(self.getDirectory()))
+        audio_media_files_directory = f"{self.getDirectory()}/../../Public/Audio"
+        video_media_files_directory = f"{self.getDirectory()}/../../Public/Video"
+        audio_media_files = os.listdir(audio_media_files_directory)
+        video_media_files = os.listdir(video_media_files_directory)
+        destination_directory = f"{self.getDirectory()}/../../Public/{int(time.time())}"
+        self.optimizeDirectory(audio_media_files, audio_media_files_directory, destination_directory)
+        self.optimizeDirectory(video_media_files, video_media_files_directory, destination_directory)
+        self.deleteMetadata()
+
+    def deleteMetadata(self) -> None:
+        """
+        Iterate throughout the metadata to delete them from the
+        cache database.
+
+        Returns: void
+        """
+        # Iterating throughout the metadata to check that the metadata is old enough to remove from the cache.
+        for index in range(0, len(self.getMetadataMediaFiles()), 1):
+            file_name = f"{self.getDirectory()}/{self.getMetadataMediaFiles()[index]}"
+            age = int(time.time()) - int(os.path.getctime(file_name))
+            self.deleteOldMetadata(age, file_name)
+
+    def deleteOldMetadata(self, age: int, file_name: str) -> None:
+        """
+        Deleting the metadata in the condition that the metadata is
+        at least three days old.
+
+        Parameters:
+            age:        int:    The age of the metadata.
+            file_name:  string: The name of the file.
+
+        Returns: void
+        """
+        # Ensuring that the metadata file is at least three days old to be removed from the database.
+        if age > 259200:
+            os.remove(file_name)
+
+    def optimizeDirectory(self, media_files: list[str], original_directory: str, new_directory: str) -> None:
+        """
+        Optimizing the directory by iterating throughout the media
+        files that are in the directory to remove them from the
+        application to be backed up else where.
+
+        Parameters:
+            media_files:        array:  The media files in the original directory.
+            original_directory: string: The directory where the media files are hosted.
+            new_directory:      string: The directory where the media files will be moved.
+
+        Returns: void
+        """
+        # Iterating throughout the audio media files to restructure all the media files from the original directory.
+        for index in range(0, len(media_files), 1):
+            original_file = f"{original_directory}/{media_files[index]}"
+            age = int(time.time()) - int(os.path.getctime(original_file))
+            self.removeOldFile(original_file, media_files[index], new_directory, age)
+
+    def removeOldFile(self, original_file: str, media_file: str, destination_directory: str, age: int) -> None:
+        """
+        Removing the file that is three days old.
+
+        Parameters:
+            original_file:          string: The path of the original file.
+            media_file:             string: The media file.
+            destination_directory:  string: The directory where the mediafile will be moved.
+            age:                    int:    Age of the media file.
+
+        Returns: void
+        """
+        # Ensuring that the audio file is at most three days old to make a backup of it from the server.
+        if age > 259200:
+            os.mkdir(destination_directory)
+            new_file = f"{destination_directory}/{self.setNewFile(media_file)}"
+            self.removeFile(original_file, new_file)
+
+    def setNewFile(self, media_file: str) -> str:
+        """
+        Setting the new path for the media file.
+
+        Parameters:
+            media_file: string: The media file.
+
+        Returns: string
+        """
+        # Verifying that the file type of the media file.
+        if ".mp3" in media_file:
+            identifier: str = media_file.replace(".mp3", "")
+            parameters = tuple([identifier])
+            metadata = self.getDatabaseHandler().get_data(table_name="YouTube", filter_condition="identifier = %s", parameters=parameters)[0]
+            new_file = f"{metadata[4]}.mp3"
+        else:
+            identifier: str = media_file.replace(".mp4", "")
+            parameters = tuple([identifier])
+            metadata = self.getDatabaseHandler().get_data(table_name="YouTube", filter_condition="identifier = %s",parameters=parameters)[0]
+            new_file = f"{metadata[4]}.mp4"
+        return new_file
+
+    def removeFile(self, original_file: str, new_file: str) -> None:
+        """
+        Removing the file from the hosting directory.
+
+        Parameters:
+            original_file:  string: The path of the original file.
+            new_file:       string: The path of the new file.
+
+        Returns: void
+        """
+        # Ensuring that the file does not exist to copy it
+        if os.path.exists(new_file) == False:
+            shutil.copyfile(original_file, new_file)
+            os.remove(original_file)
+
+    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
+        """
+        Verifying the uniform resource locator in order to switch to
+        the correct system as well as select and return the correct
+        response.
+
+        Returns: object
+        """
+        response: dict[str, int | dict[str, str | int | None]]
+        media = self.getMedia()
+        # Verifying that the media does not exist to create one.
+        if media["status"] == 200:
+            self.setIdentifier(media["data"][0][0])
+        else:
+            raise Exception("The content does not come from YouTube");
+        # Verifying the platform data to redirect to the correct system.
+        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+            response = {
+                "status": 200,
+                "data": self.handleYouTube()
+            }
+        return response  # type: ignore
+
+    def getMedia(self) -> dict:
+        """
+        Retrieving the Media data from the Media table.
+
+        Returns: object
+        """
+        media = self.getDatabaseHandler().get_data(tuple([self.getValue()]), "Media", filter_condition="value = %s")
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        response = {}
+        if len(media) == 0:
+            response = {
+                'status': 404,
+                'data': media,
+                'timestamp': self.getTimestamp()
+            }
+        else:
+            response = {
+                'status': 200,
+                'data': media,
+                'timestamp': self.getTimestamp()
+            }
+        return response
+
+    def handleYouTube(self) -> dict[str, str | int | None]:
+        """
+        Handling the data throughout the You Tube Downloader which
+        will depend on the referer.
+
+        Returns: object
+        """
+        response: dict[str, str | int | None]
+        identifier: str
+        self._YouTubeDownloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
+        youtube = self._YouTubeDownloader.search()
+        media = {
+            "Media": {
+                "YouTube": youtube
+            }
+        }
+        if "youtube" in self.getSearch():
+            identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+        else:
+            identifier = self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
+        filename = f"{self.getDirectory()}/{identifier}.json"
+        file = open(filename, "w")
+        file.write(json.dumps(media, indent=4))
+        file.close()
+        response = {
+            "status": 200,
+            "data": youtube # type: ignore
+        }
+        return response
+
+    def metadataDirectory(self):
+        """
+        Creating the metadata directory
+
+        Returns: void
+        """
+        if not os.path.exists(self.getDirectory()):
+            os.makedirs(self.getDirectory())
+
+
+class YouTube_Downloader:
+    """
+    It will handle every operations related to YouTube.
+    """
+    __uniform_resource_locator: str
+    """
+    The uniform resource locator to be searched.
+
+    Type: string
+    Visibility: private
+    """
+    __video: "YouTube"
+    """
+    Core developer interface for pytube.
+
+    Type: YouTube
+    Visibility: private
+    """
+    __title: str
+    """
+    The title of the video.
+
+    Type: string
+    Visibility: private
+    """
+    __identifier: str
+    """
+    The identifier of the video.
+
+    Type: string
+    Visibility: private
+    """
+    __length: int
+    """
+    The length of the video in seconds.
+
+    Type: int
+    Visibility: private
+    """
+    __duration: str
+    """
+    The duration of the video in the format of HH:mm:ss.
+
+    Type: string
+    Visibility: private
+    """
+    __published_at: str | datetime | None
+    """
+    The date at which the video has been published.
+
+    Type: string
+    Visibility: private
+    """
+    __database_handler: "Database_Handler"
+    """
+    It is the object relational mapper that will be used to
+    simplify the process to entering queries.
+
+    Type: Database_Handler
+    Visibility: private
+    """
+    __author: str
+    """
+    The author of the video/music.
+
+    Type: string
+    Visibility: private
+    """
+    __media_identifier: int
+    """
+    The media type for the system.
+
+    Type: int
+    Visibility: private
+    """
+    __timestamp: str
+    """
+    The timestamp at which the session has been created.
+
+    Type: string
+    Visibility: private
+    """
+    __directory: str
+    """
+    The directory of the media files.
+
+    Type: string
+    Visibility: private
+    """
+
+    def __init__(self, uniform_resource_locator: str, media_identifier: int):
+        """
+        Instantiating the class and launching the operations needed.
+
+        Parameters:
+            uniform_resource_locator:   string: The uniform resource locator to be searched.
+            media_identifier:           int:    The media type for the system.
+        """
+        self.setDatabaseHandler(Database_Handler())
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
+        self.getDatabaseHandler()._execute()
+        self.setUniformResourceLocator(uniform_resource_locator)
+        self.setMediaIdentifier(media_identifier)
+
+    def getUniformResourceLocator(self) -> str:
+        return self.__uniform_resource_locator
+
+    def setUniformResourceLocator(self, uniform_resource_locator: str) -> None:
+        self.__uniform_resource_locator = uniform_resource_locator
+
+    def getVideo(self) -> "YouTube":
+        return self.__video
+
+    def setVideo(self, video: "YouTube") -> None:
+        self.__video = video
+
+    def getTitle(self) -> str:
+        return self.__title
+
+    def setTitle(self, title: str) -> None:
+        self.__title = title
+
+    def getIdentifier(self) -> str:
+        return self.__identifier
+
+    def setIdentifier(self, identifier: str) -> None:
+        self.__identifier = identifier
+
+    def getLength(self) -> int:
+        return self.__length
+
+    def setLength(self, length: int) -> None:
+        self.__length = length
+
+    def getDuration(self) -> str:
+        return self.__duration
+
+    def setDuration(self, duration: str) -> None:
+        self.__duration = duration
+
+    def getPublishedAt(self) -> str | datetime | None:
+        return self.__published_at
+
+    def setPublishedAt(self, published_at: str | datetime | None) -> None:
+        self.__published_at = str(published_at)
+
+    def getDatabaseHandler(self) -> "Database_Handler":
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+        self.__database_handler = database_handler
+
+    def getAuthor(self) -> str:
+        return self.__author
+
+    def setAuthor(self, author: str) -> None:
+        self.__author = author
+
+    def getMediaIdentifier(self) -> int:
+        return self.__media_identifier
+
+    def setMediaIdentifier(self, media_identifier: int) -> None:
+        self.__media_identifier = media_identifier
+
+    def getTimestamp(self) -> str:
+        return self.__timestamp
+
+    def setTimestamp(self, timestamp: str) -> None:
+        self.__timestamp = timestamp
+
+    def getDirectory(self) -> str:
+        return self.__directory
+
+    def setDirectory(self, directory: str) -> None:
+        self.__directory = directory
+
+    def search(self) -> dict[str, str | int | None]:
+        """
+        Searching for the video in YouTube.
+
+        Returns: object
+        """
+        self.setVideo(YouTube(self.getUniformResourceLocator()))
+        self.setIdentifier(self.getUniformResourceLocator())
+        if "youtube" in self.getUniformResourceLocator():
+            self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))
+        else:
+            self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
+        response: dict[str, str | int | None]
+        meta_data = self.getYouTube()
+        audio_file: str | None
+        video_file: str | None
+        # Verifying the response of the metadata to retrieve the needed response
+        if meta_data["status"] == 200:
+            self.setLength(int(meta_data["data"][0][4]))  # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
+            self.setAuthor(str(meta_data["data"][0][0]))  # type: ignore
+            self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
+            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
+            # Verifying base on the length to set the file location
+            if len(list(meta_data["data"])) == 2:  # type: ignore
+                audio_file = str(meta_data["data"][0][5])  # type: ignore
+                video_file = str(meta_data["data"][1][5])  # type: ignore
+            else:
+                audio_file = None
+                video_file = None
+        else:
+            self.setLength(self.getVideo().length)
+            self.setPublishedAt(self.getVideo().publish_date)
+            self.setAuthor(self.getVideo().author)
+            self.setTitle(self.getVideo().title)
+            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
+            audio_file = None
+            video_file = None
+            self.postYouTube()
+        response = {
+            "uniform_resource_locator": self.getUniformResourceLocator(),
+            "author": self.getAuthor(),
+            "title": self.getTitle(),
+            "identifier": self.getIdentifier(),
+            "author_channel": self.getVideo().channel_url,
+            "views": self.getVideo().views,
+            "published_at": self.getPublishedAt(),  # type: ignore
+            "thumbnail": self.getVideo().thumbnail_url,
+            "duration": self.getDuration(),
+            "audio_file": audio_file,
+            "video_file": video_file
+        }
+        return response
+
+    def getYouTube(self) -> dict[str, int | list[str | int] | str]:
+        """
+        Retrieving the metadata from the YouTube table.
+
+        Returns: object
+        """
+        media = self.getDatabaseHandler().get_data(tuple([self.getIdentifier()]), "YouTube", "MediaFile ON MediaFile.YouTube = YouTube.identifier", "YouTube.identifier = %s", "author, title, YouTube.identifier, published_at, length, location", "MediaFile.identifier ASC", 2)
+        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+        response: dict[str, int | list[str | int] | str]
+        if len(media) == 0:
+            response = {
+                'status': 404,
+                'data': media, # type: ignore
+                'timestamp': self.getTimestamp()
+            }
+        else:
+            response = {
+                'status': 200,
+                'data': media, # type: ignore
+                'timestamp': self.getTimestamp()
+            }
+        return response
+
+    def postYouTube(self) -> None:
+        """
+        Creating a record for the media with its data.
+
+        Returns: void
+        """
+        self.getDatabaseHandler().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s", (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
 
 
 class Crawler:
@@ -27,15 +952,9 @@ class Crawler:
 
     Type: WebDriver
     """
-    __data: list[dict[str, str | int | None | float]]
+    __data: list[dict[str, str | int | None]]
     """
     The data from the cache data.
-
-    Type: array
-    """
-    __unprocessed_data: list[dict[str, str | int | None | float]]
-    """
-    The data from the cache data that have been left behind.
 
     Type: array
     """
@@ -71,20 +990,6 @@ class Crawler:
     Type: array
     Visibility: private
     """
-    __media_management_system: Media
-    """
-    It allows the application to manage the media.
-
-    Type: Media
-    Visibility: private
-    """
-    __request: dict[str, None | str]
-    """
-    The request data from the view.
-
-    Type: object
-    Visibility: private
-    """
     __services: Service
     """
     It is responsible for controlling of chromedriver.
@@ -99,30 +1004,36 @@ class Crawler:
     Type: Options
     Visibility: private
     """
-    __logger: Extractio_Logger
+    __database_handler: Database_Handler
     """
-    The logger that will all the action of the application.
+    The database handler that will communicate with the database
+    server.
 
-    Type: Extractio_Logger
+    Type: Database_Handler
+    Visibility: private
+    """
+    __Media: Media
+    """
+    It allows the application to manage the media.
+
+    Type: Media
     Visibility: private
     """
 
-    def __init__(self, request: dict[str, None | str]) -> None:
+    def __init__(self) -> None:
         """
         Initializing the crawler to scrape the data needed.
 
         Parameters:
             request:    object: The request data from the view.
         """
-        self.setLogger(Extractio_Logger())
         self.__setServices()
         self.__setOptions()
-        self.setRequest(request)
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
-        self.__server(str(self.getRequest()["port"]))
+        self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Media/")
-        self.getLogger().inform(
-            "The YouTube Downloader has been successfully been initialized!")
+        self.setDatabaseHandler(Database_Handler())
+        self.setData([])
         self.__schedule()
 
     def getDriver(self) -> WebDriver:
@@ -131,17 +1042,11 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int | None | float]]:
+    def getData(self) -> list[dict[str, str | int | None]]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int | None | float]]) -> None:
+    def setData(self, data: list[dict[str, str | int | None]]) -> None:
         self.__data = data
-
-    def getUnprocessedData(self) -> list[dict[str, str | int | None | float]]:
-        return self.__unprocessed_data
-
-    def setUnprocessedData(self, unprocessed_data: list[dict[str, str | int | None | float]]) -> None:
-        self.__unprocessed_data = unprocessed_data
 
     def getDirectory(self) -> str:
         return self.__directory
@@ -167,18 +1072,6 @@ class Crawler:
     def setHtmlTag(self, html_tag: WebElement) -> None:
         self.__html_tag = html_tag
 
-    def getMedia(self) -> Media:
-        return self.__media_management_system
-
-    def setMedia(self, media_management_system: Media) -> None:
-        self.__media_management_system = media_management_system
-
-    def getRequest(self) -> dict[str, str | None]:
-        return self.__request
-
-    def setRequest(self, request: dict[str, str | None]) -> None:
-        self.__request = request
-
     def getService(self) -> Service:
         return self.__services
 
@@ -191,11 +1084,25 @@ class Crawler:
     def setOption(self, options: Options) -> None:
         self.__options = options
 
-    def getLogger(self) -> Extractio_Logger:
-        return self.__logger
+    def getDatabaseHandler(self) -> Database_Handler:
+        return self.__database_handler
 
-    def setLogger(self, logger: Extractio_Logger) -> None:
-        self.__logger = logger
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
+        self.__database_handler = database_handler
+
+    def getMedia(self) -> Media:
+        return self.__Media
+
+    def setMedia(self, media: Media) -> None:
+        self.__Media = media
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        self.setDirectory(os.getcwd())
 
     def __setServices(self) -> None:
         """
@@ -204,7 +1111,6 @@ class Crawler:
         Returns: void
         """
         self.setService(Service(ChromeDriverManager().install()))
-        self.getLogger().inform("The Chrome Driver has been set!")
 
     def __setOptions(self) -> None:
         """
@@ -216,7 +1122,6 @@ class Crawler:
         self.getOption().add_argument('--headless')
         self.getOption().add_argument('--no-sandbox')
         self.getOption().add_argument('--disable-dev-shm-usage')
-        self.getLogger().inform("The options for the Chrome Driver has been set!")
 
     def __schedule(self) -> None:
         """
@@ -231,35 +1136,22 @@ class Crawler:
         if len(trend_dataset) > 0:
             filename = int(trend_dataset[-1].replace(".json", ""))
             age = current_time - filename
-            # Ensuring the file is older than a week.
-            if age > 604800:
-                self.setUpData()
+            self.__verifyTrendAge(age)
         else:
             self.setUpData()
 
-    def addUnprocessedData(self, key: str, keys: list[str], data: dict[str, str | int | None | float]) -> None:
+    def __verifyTrendAge(self, age: int) -> None:
         """
-        Verifying that the data is not processed to append them to
-        the array to be processed.
+        Verifying the age of the trend.
 
         Parameters:
-            key:    string: The key to be verified.
-            keys:   array:  The list of keys.
-            data:   object: Data to be processed.
+            age:    int:    The age of the trend
 
         Returns: void
         """
-        # Verifying that the web-scrawler has processed the data
-        if keys.count(key) == 0:
-            # Verifying that the data has been set up.
-            if inspect.stack()[1][3] == "setUpDataFirstRun":
-                self.getData().append(data)
-            elif inspect.stack()[1][3] == "consolidateData":
-                self.getUnprocessedData().append(data)
-        elif keys.count(key) == 1:
-            # Verifying that the data has been set up.
-            if inspect.stack()[1][3] == "setUpDataSecondRun":
-                self.getData().append(data)
+        # Ensuring the file is older than a week.
+        if age > 604800:
+            self.setUpData()
 
     def setUpData(self) -> None:
         """
@@ -268,95 +1160,57 @@ class Crawler:
 
         Returns: void
         """
-        self.setData([])
-        self.setFiles(os.listdir(self.getDirectory()))
-        # Verifying the amount of data to be processed
-        if self.setUpDataFirstRun() > 0:
-            self.prepareFirstRun()
-        elif self.setUpDataSecondRun() > 0:
-            self.prepareSecondRun()
+        identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(parameters=None, table_name="MediaFile", filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK", column_names="DISTINCT YouTube") # type: ignore
+        dataset: list[dict[str, str | int | None]] = self.getData() # type: ignore
+        referrer = inspect.stack()[1][3]
+        # Verifying the referrer to be able to select the action required.
+        if referrer == "__schedule" and self.prepareFirstRun(identifiers) > 0:
+            self.firstRun()
+        elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
+            self.secondRun()
 
-    def prepareSecondRun(self) -> None:
+    def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:
         """
         Preparing for the second run of crawling based on the data
         in the cache.
 
         Returns: void
         """
-        self.refineData()
-        self.secondRun(inspect.stack()[1][3])
-
-    def refineData(self) -> None:
-        """
-        Refining the data when there is duplicate data.
-
-        Returns: void
-        """
-        new_data: list[dict[str, str | int | float | None]] = []
-        data: dict[str, str | int | float | None]
-        crude_data = self.refineAndExtract()
-        # Iterating throughout the artists, ratings and author channels to build the new data.
-        for index in range(0, len(crude_data["authors"]), 1):
+        new_dataset: list[str] = []
+        data: dict[str, str | None] = {}
+        self.setData([])
+        # Iterating throughout the dataset to retrieve the author's channel's uniform resource locator.
+        for index in range(0, len(dataset), 1):
+            new_dataset.append(str(dataset[index]["author_channel"]))
+        new_dataset = list(set(new_dataset))
+        # Iterating throughout the dataset to set the latest content
+        for index in range(0, len(new_dataset), 1):
             data = {
-                "author": crude_data["authors"][index],  # type: ignore
-                "rating": crude_data["ratings"][
-                    crude_data["authors"][index]],  # type: ignore
-                "author_channel": crude_data["author_channels"][
-                    crude_data["authors"][index]]  # type: ignore
+                "author_channel": new_dataset[index],
+                "latest_content": None
             }
-            new_data.append(data)
-        self.setData(new_data)
+            self.getData().append(data) # type: ignore
+        return len(self.getData());
 
-    def refineAndExtract(self) -> dict[str, list[str] | dict[str, float] | dict[str, str]]:
-        """
-        Refining the rating and extracting the channels of the
-        authors.
-
-        Returns: object
-        """
-        ratings: dict[str, float] = {}
-        author_channels: dict[str, str] = {}
-        authors: list[str] = []
-        # Iterating throughout the data to refine the rating and extract the channels of the authors
-        for index in range(0, len(self.getData()), 1):
-            author = str(self.getData()[index]["author"])  # type: ignore
-            rating = float(self.getData()[index]["rating"])  # type: ignore
-            # Verifying that the ratings and the author's channels are declared
-            if author in ratings and author in author_channels:
-                rating = (ratings[author] +
-                          float(self.getData()[index]["rating"])) / 2  # type: ignore
-            else:
-                rating = float(self.getData()[index]["rating"])  # type: ignore
-                author_channels[author] = str(
-                    self.getData()[index]["author_channel"])
-            ratings[author] = rating
-            authors.append(author)
-        authors = list(set(authors))
-        return {
-            "authors": authors,
-            "author_channels": author_channels,
-            "ratings": ratings
-        }
-
-    def secondRun(self, referer: str):
+    def secondRun(self):
         """
         The second run for the web-crawler to seek for the data
         needed from the targets.
 
-        Parameters:
-            referer:    string: The function that is calling it.
-
         Returns: void
         """
-        # Verifying that the data has been set up.
-        if referer == "setUpData":
-            # Iterating throughout the targets to run throughout them
-            for index in range(0, len(self.getData()), 1):
-                self.enterTarget(
-                    str(self.getData()[index]["author_channel"]), index)
-        self.__buildData()
+        delay: float = 0.0
+        total: int = 0
+        # Iterating throughout the dataset to calculate delay between each run
+        for index in range(0, len(self.getData()), 1):
+            total += len(str(self.getData()[index]["author_channel"]))
+        delay = ((total / len(self.getData())) / (40 * 5)) * 60
+        # Iterating throughout the targets to run throughout them
+        for index in range(0, len(self.getData()), 1):
+            self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
+        self.buildData()
 
-    def __buildData(self) -> None:
+    def buildData(self) -> None:
         """
         Building the data to be displayed to the user.
 
@@ -367,15 +1221,7 @@ class Crawler:
         request: dict[str, str | None]
         # Iterating throughout the data to get metadata.
         for index in range(0, len(self.getData()), 1):
-            request = {
-                "referer": None,
-                "search": str(self.getData()[index]["latest_content"]),
-                "platform": "youtube",
-                "ip_address": "127.0.0.1",
-                "port": self.getRequest()["port"]
-            }
-            self.setRequest(request)
-            self.setMedia(Media(self.getRequest()))
+            self.setMedia(Media(str(self.getData()[index]["latest_content"]), "youtube"))
             response = self.getMedia().verifyPlatform()
             data = response["data"]["data"]  # type: ignore
             new_data.append(data)
@@ -395,53 +1241,67 @@ class Crawler:
         file.close()
         self.getDriver().quit()
 
-    def setUpDataSecondRun(self) -> int:
-        """
-        Setting up the data for the second run.
-
-        Returns: int
-        """
-        # Iterating throughout the files to append their data to the array to be processed.
-        for index in range(0, len(self.getFiles()), 1):
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "r")
-            data: dict[str, str | int | None | float] = json.load(file)[
-                "Media"]["YouTube"]
-            key = "rating"
-            keys = list(data.keys())
-            self.addUnprocessedData(key, keys, data)
-        return len(self.getData())
-
-    def setUpDataFirstRun(self) -> int:
+    def prepareFirstRun(self, identifiers: list[tuple[str]]) -> int:
         """
         Setting up the data for the first run.
 
+        Parameters:
+            identifiers:    array:  The result set of the identifiers for the last weeks.
+
         Returns: int
         """
-        # Iterating throughout the files to append their data to the array to be processed.
-        for index in range(0, len(self.getFiles()), 1):
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "r")
-            data: dict[str, str | int | None | float] = json.load(file)[
-                "Media"]["YouTube"]
-            key = "likes"
-            keys = list(data.keys())
-            self.addUnprocessedData(key, keys, data)
+        self.setData([])
+        # Iterating throughout the result set of the identifiers to retrieve the metadata needed
+        for index in range(0, len(identifiers), 1):
+            data: tuple[str, str, str] = self.getDatabaseHandler().get_data(parameters=identifiers[index], table_name="YouTube", join_condition="Media ON YouTube.Media = Media.identifier", filter_condition="YouTube.identifier = %s", column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform")[0] # type: ignore
+            uniform_resource_locator: str = self.verifyPlatform(data)
+            metadata: dict[str, str | int | None] = {
+                "identifier": data[0],
+                "author": data[1],
+                "uniform_resource_locator": uniform_resource_locator,
+                "author_channel": None
+            }
+            self.getData().append(metadata)
         return len(self.getData())
+    
+    def verifyPlatform(self, data: tuple[str, str, str]) -> str: # type: ignore
+        """
+        Veryfing the platform of the metadata to be able to generate
+        its correct uniform resource locator.
 
-    def prepareFirstRun(self) -> None:
+        Parameters:
+            data:   array:  The record of a metadata.
+
+        Returns:    string
+        """
+        if data[2] == "youtube" or data[2] == "youtu.be":
+            return f"https://www.youtube.com/watch?v={data[0]}"
+
+    def firstRun(self) -> None:
         """
         Preparing for the first run of crawling based on the data in
         the cache.
 
         Returns: void
         """
-        self.firstRun(inspect.stack()[1][3])
+        delay: float = 0.0
+        total: int = 0
+        # Iterating throughout the dataset to calculate delay between each run
+        for index in range(0, len(self.getData()), 1):
+            total += len(str(self.getData()[index]["uniform_resource_locator"])) # type: ignore
+        delay = ((total / len(self.getData())) / (40 * 5)) * 60
+        # Iterating throughout the targets to run throughout them
+        for index in range(0, len(self.getData()), 1):
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index) # type: ignore
+        self.setUpData()
 
-    def enterTarget(self, target: str, index: int = 0) -> None:
+    def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """
         Entering the targeted page.
 
         Parameters:
             target: string: The uniform resource locator of the targeted page.
+            delay:  float:  The amount of time that the Crawler will wait which is based on the average typing speed of a [erspm/]
             index:  int:    The identifier of the data.
 
         Returns: void
@@ -450,13 +1310,13 @@ class Crawler:
         # Verifying the run of the crawler
         if referrer == "firstRun":
             self.getDriver().get(target)
-            time.sleep(2.34375)
+            time.sleep(delay)
         elif referrer == "secondRun":
             self.getDriver().get(f"{target}/videos")
-            time.sleep(1.171875)
+            time.sleep(delay)
         self.retrieveData(referrer, index)
 
-    def retrieveData(self, referrer: str, index: int = 0) -> None | list[str]:
+    def retrieveData(self, referrer: str, index: int = 0) -> None:
         """
         Retrieving the data needed from the target page.
 
@@ -464,143 +1324,11 @@ class Crawler:
             referrer:   string: Referrer of the function.
             index:      int:    The identifier of the data.
 
-        Returns: void
+        Returns: void 
         """
+        author_channel: str = ""
         if referrer == "firstRun":
-            likes = str(self.getDriver().find_element(
-                By.XPATH, '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button').get_attribute("aria-label"))
-            likes = re.sub("[a-zA-Z]", "", likes)
-            likes = re.sub("\s", "", likes)  # type: ignore
-            likes = int(re.sub(",", "", likes))
-            target = self.getDriver().current_url
-            self.addRawData(target, likes)
+            self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href") # type: ignore
         elif referrer == "secondRun":
-            new_data: list[str] = []
-            self.setHtmlTags(self.getDriver().find_elements(
-                By.XPATH, '//a[@id="thumbnail"]'))
-            self.getData()[index]["latest_content"] = str(
-                self.getHtmlTags()[1].get_attribute("href"))
-
-    def addRawData(self, target: str, likes: int) -> None:
-        """
-        Adding the raw data in its related data object.
-
-        Parameters:
-            target: string: Target of the web-crawler.
-            likes:  int:    Likes of the content.
-
-        Returns: void
-        """
-        # Iterating throughout the data to retrieve is related object.
-        for index in range(0, len(self.getData()), 1):
-            self.setLikes(target, likes, index)
-
-    def setLikes(self, target: str, likes: int, index: int) -> None:
-        """
-        Adding the data from the content
-
-        Parameters:
-            target: string: Target of the web-crawler.
-            likes:  int:    Likes of the content.
-            index:  int:    Index of the content.
-
-        Returns: void
-        """
-        # Verifying that the the target exists in the data.
-        if self.getData()[index]["uniform_resource_locator"] == target:
-            self.getData()[index]["likes"] = likes
-
-    def firstRun(self, referrer: str):
-        """
-        The first run for the web-crawler to seek for the data
-        needed from the targets.
-
-        Parameters:
-            referrer:   string: The function that is calling it.
-
-        Returns: void
-        """
-        # Verifying the referer take the correct target.
-        if referrer == "setUpData":
-            # Iterating throughout the targets to run throughout them
-            for index in range(0, len(self.getData()), 1):
-                self.enterTarget(
-                    str(self.getData()[index]["uniform_resource_locator"]))
-        elif referrer == "buildUpRating":
-            # Iterating throughout the targets to run throughout them
-            for index in range(0, len(self.getUnprocessedData()), 1):
-                self.enterTarget(str(self.getUnprocessedData()[
-                                 index]["uniform_resource_locator"]))
-        self.buildUpRating()
-
-    def buildUpRating(self) -> None:
-        """
-        Building up the rating based on the data in the cache.
-
-        Returns: void
-        """
-        self.setUnprocessedData([])
-        self.consolidateData()
-        # Verifying that there is no data that have been left behind in the process.
-        if len(self.getUnprocessedData()) > 0:
-            self.prepareFirstRun()
-        else:
-            self.calculateRating()
-
-    def calculateRating(self) -> None:
-        """
-        Calculating the rating of the content.
-
-        Returns: void
-        """
-        # Iterating throughout the data to calculate the rating
-        for index in range(0, len(self.getData()), 1):
-            data = {
-                "Media": {
-                    "YouTube": self.getData()[index]
-                }
-            }
-            data["Media"]["YouTube"]["rating"] = round(int(
-                data["Media"]["YouTube"]["likes"]) / int(data["Media"]["YouTube"]["views"]), 4)  # type: ignore
-            self.getData()[index] = data  # type: ignore
-        self.saveData()
-
-    def saveData(self) -> None:
-        """
-        Saving the data into the cache after processing it.
-
-        Returns: void
-        """
-        # Iterating throughout the files to update them.
-        for index in range(0, len(self.getFiles()), 1):
-            file = open(f"{self.getDirectory()}/{self.getFiles()[index]}", "w")
-            file.write(json.dumps(self.getData()[index], indent=4))
-
-    def consolidateData(self) -> None:
-        """
-        Consolidating the data by not leaving the data that have
-        been retrieved behind.
-
-        Returns: void
-        """
-        # Iterating throughout the data to set up the data that have not been processed.
-        for index in range(0, len(self.getData()), 1):
-            data = self.getData()[index]
-            key = "likes"
-            keys = list(data.keys())
-            self.addUnprocessedData(key, keys, data)
-
-    def __server(self, port: str) -> None:
-        """
-        Setting the directory for the application.
-
-        Parameters:
-            port:   string: The port of the application
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if port == '80' or port == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")
+            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
+            self.getData()[index]["latest_content"] = str(self.getHtmlTags()[1].get_attribute("href"))

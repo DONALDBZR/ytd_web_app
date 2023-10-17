@@ -1,5 +1,4 @@
 from flask import Blueprint, Response, request
-from Models.Crawler import Crawler
 import os
 
 Trend_Portal = Blueprint("Trend", __name__, "../Cache/Trend/")
@@ -31,14 +30,6 @@ def getTrend():
 
     Returns: Response
     """
-    system_request: dict[str, None | str] = {
-        "referer": None,
-        "search": "",
-        "platform": "youtube",
-        "ip_address": "127.0.0.1",
-        "port": str(request.environ.get("SERVER_PORT"))
-    }
-    Web_Scraper = Crawler(system_request)
     files = os.listdir(Trend_Portal.static_folder)
     file_name = f"{getDirectory()}/Cache/Trend/{files[-1]}"
     file = open(file_name, "r")

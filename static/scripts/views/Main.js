@@ -46,7 +46,10 @@ class Main extends React.Component {
      * @returns {void}
      */
     getTrend() {
-        if (this.state.System.view_route == "/") {
+        if (
+            this.state.System.view_route == "/" ||
+            this.state.System.view_route == ""
+        ) {
             fetch("/Trend/", {
                 method: "GET",
             })
@@ -453,6 +456,11 @@ class Homepage extends Main {
         super(props);
     }
 
+    componentDidMount() {
+        this.getRoute();
+        this.getTrend();
+    }
+
     /**
      * Rendering the component
      * @returns {HTMLElement}
@@ -487,11 +495,6 @@ class Trend extends Homepage {
      */
     constructor(props) {
         super(props);
-    }
-
-    componentDidMount() {
-        this.getRoute();
-        this.getTrend();
     }
 
     /**

@@ -1,9 +1,15 @@
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
-from Environment import Environment
-from Models.Logger import Extractio_Logger
 import mysql.connector
+import os
+import sys
+
+
+root_directory = f"{os.getcwd()}"
+sys.path.insert(0, root_directory)
+
+from Environment import Environment
 
 
 class Database_Handler:
@@ -71,13 +77,6 @@ class Database_Handler:
     Type: array|null
     Visibility: private
     """
-    __logger: Extractio_Logger
-    """
-    The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
-    """
 
     def __init__(self):
         """
@@ -88,15 +87,11 @@ class Database_Handler:
         self.__setDatabase(Environment.DATABASE)
         self.__setUsername(Environment.USERNAME)
         self.__setPassword(Environment.PASSWORD)
-        self.setLogger(Extractio_Logger())
         try:
             self.__setDatabaseHandler(mysql.connector.connect(host=self.__getHost(
             ), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()))
-            self.getLogger().inform(
-                "The application has been successfully connected to the relational database server.")
         except mysql.connector.Error as error:
             print("Connection Failed: " + str(error))
-            self.getLogger().error(f"Connection Failed: {str(error)}")
 
     def __getHost(self) -> str:
         return self.__host
@@ -146,12 +141,6 @@ class Database_Handler:
     def setParameters(self, parameters: tuple | None) -> None:
         self.__parameters = parameters
 
-    def getLogger(self) -> Extractio_Logger:
-        return self.__logger
-
-    def setLogger(self, logger: Extractio_Logger) -> None:
-        self.__logger = logger
-
     def _query(self, query: str, parameters: None | tuple):
         """
         Preparing the SQL query that is going to be handled by the
@@ -182,7 +171,7 @@ class Database_Handler:
         self.__getStatement().close()
         return result_set
 
-    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list:
+    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[tuple]:
         """
         Retrieving data from the database.
 
@@ -204,8 +193,6 @@ class Database_Handler:
         self._get_filter(filter_condition)
         self._get_sort(sort_condition)
         self._get_limit(limit_condition)
-        self.getLogger().debug(
-            f"Database_Handler.get_data() - Query: {self.getQuery()}")
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 
@@ -285,8 +272,6 @@ class Database_Handler:
         query = f"INSERT INTO {table}({columns}) VALUES ({values})"
         self.setQuery(query)
         self.setParameters(parameters)
-        self.getLogger().debug(
-            f"Database_Handler.post_data() - Query: {self.getQuery()}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
@@ -306,8 +291,6 @@ class Database_Handler:
         self.setQuery(query)
         self.setParameters(parameters)
         self._get_filter(condition)
-        self.getLogger().debug(
-            f"Database_Handler.update_data() - Query: {self.getQuery()}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
@@ -326,7 +309,5 @@ class Database_Handler:
         self.setQuery(query)
         self.setParameters(parameters)
         self._get_filter(condition)
-        self.getLogger().debug(
-            f"Database_Handler.delete_data() - Query: {self.getQuery()}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()

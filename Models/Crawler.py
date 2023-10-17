@@ -536,8 +536,7 @@ class Media:
         for index in range(0, len(media_files), 1):
             original_file = f"{original_directory}/{media_files[index]}"
             age = int(time.time()) - int(os.path.getctime(original_file))
-            self.removeOldFile(
-                original_file, media_files[index], new_directory, age)
+            self.removeOldFile(original_file, media_files[index], new_directory, age)
 
     def removeOldFile(self, original_file: str, media_file: str, destination_directory: str, age: int) -> None:
         """

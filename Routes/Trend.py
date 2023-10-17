@@ -31,7 +31,7 @@ def getTrend():
     Returns: Response
     """
     files = os.listdir(Trend_Portal.static_folder)
-    file_name = f"{getDirectory()}/Cache/Trend/{files[-1]}"
+    file_name = f"{getDirectory()}/Cache/Trend/{max(files)}"
     file = open(file_name, "r")
     response = file.read()
     mime_type = "application/json"

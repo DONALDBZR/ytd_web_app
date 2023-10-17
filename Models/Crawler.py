@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
+import shutil
 import inspect
 import re
 import os

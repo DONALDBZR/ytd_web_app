@@ -603,11 +603,10 @@ class Media:
         response: dict[str, int | dict[str, str | int | None]]
         media = self.getMedia()
         # Verifying that the media does not exist to create one.
-        if media["status"] != 200:
-            self.postMedia()
-            self.verifyPlatform()
-        else:
+        if media["status"] == 200:
             self.setIdentifier(media["data"][0][0])
+        else:
+            raise Exception("The content does not come from YouTube");
         # Verifying the platform data to redirect to the correct system.
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             response = {

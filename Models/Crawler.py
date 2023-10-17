@@ -394,29 +394,26 @@ class Media:
     Visibility: private
     """
 
-    def __init__(self, request: dict[str, str | None]) -> None:
+    def __init__(self, search: str, value: str) -> None:
         """
         Instantiating the media's manager which will interact with
         the media's dataset and do the required processing.
 
         Parameters:
-            request:    object: The request from the user.
+            search: string: The uniform resource locator to be searched.
+            value:  string: The value of the required media which have to correspond to
+    the name of the platform from which the media comes from.
+
+        Returns:    void
         """
-        self.setLogger(Extractio_Logger())
-        self.setPort(request["port"])  # type: ignore
         self.__server()
         self.setDirectory(f"{self.getDirectory()}/Cache/Media")
         self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler()._query(
-            "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
+        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
         self.getDatabaseHandler()._execute()
         self.__maintain()
-        self.setSearch(str(request["search"]))
-        self.setReferer(request["referer"])
-        self.setValue(str(request["platform"]))
-        self.setIpAddress(str(request["ip_address"]))
-        self.getLogger().inform(
-            "The Media Management System has been successfully been initialized!")
+        self.setSearch(search)
+        self.setValue(value)
 
     def getSearch(self) -> str:
         return self.__search

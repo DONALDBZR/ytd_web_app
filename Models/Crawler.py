@@ -401,8 +401,7 @@ class Media:
 
         Parameters:
             search: string: The uniform resource locator to be searched.
-            value:  string: The value of the required media which have to correspond to
-    the name of the platform from which the media comes from.
+            value:  string: The value of the required media which have to correspond to the name of the platform from which the media comes from.
 
         Returns:    void
         """
@@ -484,12 +483,9 @@ class Media:
         audio_media_files = os.listdir(audio_media_files_directory)
         video_media_files = os.listdir(video_media_files_directory)
         destination_directory = f"{self.getDirectory()}/../../Public/{int(time.time())}"
-        self.optimizeDirectory(
-            audio_media_files, audio_media_files_directory, destination_directory)
-        self.optimizeDirectory(
-            video_media_files, video_media_files_directory, destination_directory)
+        self.optimizeDirectory(audio_media_files, audio_media_files_directory, destination_directory)
+        self.optimizeDirectory(video_media_files, video_media_files_directory, destination_directory)
         self.removeUsedMetadata()
-        self.getLogger().inform("The Media directory has been optimized!")
 
     def removeUsedMetadata(self) -> None:
         """

@@ -469,11 +469,7 @@ class Media:
 
         Returns: void
         """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")
+        self.setDirectory(os.getcwd())
 
     def __maintain(self) -> None:
         """

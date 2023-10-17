@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import TextIOWrapper
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -620,8 +621,7 @@ class Media:
 
         Returns: object
         """
-        media = self.getDatabaseHandler().get_data(
-            tuple([self.getValue()]), "Media", filter_condition="value = %s")
+        media = self.getDatabaseHandler().get_data(tuple([self.getValue()]), "Media", filter_condition="value = %s")
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}
         if len(media) == 0:

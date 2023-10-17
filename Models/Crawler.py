@@ -26,7 +26,7 @@ class Crawler:
 
     Type: WebDriver
     """
-    __data: list[dict[str, str | int | None]] | list[str]
+    __data: list[dict[str, str | int | None]]
     """
     The data from the cache data.
 
@@ -109,17 +109,11 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int | None]] | list[str]:
+    def getData(self) -> list[dict[str, str | int | None]]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int | None]] | list[str]) -> None:
+    def setData(self, data: list[dict[str, str | int | None]]) -> None:
         self.__data = data
-
-    def getUnprocessedData(self) -> list[dict[str, str | int | None | float]]:
-        return self.__unprocessed_data
-
-    def setUnprocessedData(self, unprocessed_data: list[dict[str, str | int | None | float]]) -> None:
-        self.__unprocessed_data = unprocessed_data
 
     def getDirectory(self) -> str:
         return self.__directory
@@ -162,6 +156,14 @@ class Crawler:
 
     def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__database_handler = database_handler
+
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        self.setDirectory(os.getcwd())
 
     def __setServices(self) -> None:
         """
@@ -236,11 +238,19 @@ class Crawler:
         Returns: void
         """
         new_dataset: list[str] = []
+        data: dict[str, str | None] = {}
         self.setData([])
         # Iterating throughout the dataset to retrieve the author's channel's uniform resource locator.
         for index in range(0, len(dataset), 1):
             new_dataset.append(str(dataset[index]["author_channel"]))
-        self.setData(list(set(new_dataset)))
+        new_dataset = list(set(new_dataset))
+        # Iterating throughout the dataset to set the latest content
+        for index in range(0, len(new_dataset), 1):
+            data = {
+                "author_channel": new_dataset[index],
+                "latest_content": None
+            }
+            self.getData().append(data) # type: ignore
         return len(self.getData());
 
     def refineData(self) -> None:
@@ -306,11 +316,12 @@ class Crawler:
         total: int = 0
         # Iterating throughout the dataset to calculate delay between each run
         for index in range(0, len(self.getData()), 1):
-            total += len(str(self.getData()[index]))
+            total += len(str(self.getData()[index]["author_channel"]))
         delay = ((total / len(self.getData())) / (40 * 5)) * 60
         # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(str(self.getData()[index]), index)
+            self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
+        print(self.getData())
         # self.__buildData()
 
     def __buildData(self) -> None:
@@ -412,6 +423,7 @@ class Crawler:
 
         Parameters:
             target: string: The uniform resource locator of the targeted page.
+            delay:  float:  The amount of time that the Crawler will wait which is based on the average typing speed of a [erspm/]
             index:  int:    The identifier of the data.
 
         Returns: void
@@ -421,12 +433,12 @@ class Crawler:
         if referrer == "firstRun":
             self.getDriver().get(target)
             time.sleep(delay)
-        # elif referrer == "secondRun":
-        #     self.getDriver().get(f"{target}/videos")
-        #     time.sleep(1.171875)
+        elif referrer == "secondRun":
+            self.getDriver().get(f"{target}/videos")
+            time.sleep(delay)
         self.retrieveData(referrer, index)
 
-    def retrieveData(self, referrer: str, index: int = 0) -> None | list[str]:
+    def retrieveData(self, referrer: str, index: int = 0) -> None:
         """
         Retrieving the data needed from the target page.
 
@@ -434,40 +446,11 @@ class Crawler:
             referrer:   string: Referrer of the function.
             index:      int:    The identifier of the data.
 
-        Returns: void
+        Returns: void 
         """
         author_channel: str = ""
         if referrer == "firstRun":
             self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href") # type: ignore
-        
-        # elif referrer == "secondRun":
-        #     new_data: list[str] = []
-        #     self.setHtmlTags(self.getDriver().find_elements(
-        #         By.XPATH, '//a[@id="thumbnail"]'))
-        #     self.getData()[index]["latest_content"] = str(
-        #         self.getHtmlTags()[1].get_attribute("href"))
-
-    def consolidateData(self) -> None:
-        """
-        Consolidating the data by not leaving the data that have
-        been retrieved behind.
-
-        Returns: void
-        """
-        # Iterating throughout the data to set up the data that have not been processed.
-        for index in range(0, len(self.getData()), 1):
-            data = self.getData()[index]
-            key = "likes"
-            keys = list(data.keys())
-            self.addUnprocessedData(key, keys, data)
-
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Parameters:
-            port:   string: The port of the application
-
-        Returns: void
-        """
-        self.setDirectory(os.getcwd())
+        elif referrer == "secondRun":
+            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
+            self.getData()[index]["latest_content"] = str(self.getHtmlTags()[1].get_attribute("href"))

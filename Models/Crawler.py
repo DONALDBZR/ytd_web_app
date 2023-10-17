@@ -1098,7 +1098,7 @@ class Crawler:
         # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
-        self.buildData()
+        # self.buildData()
 
     def __buildData(self) -> None:
         """

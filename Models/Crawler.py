@@ -938,8 +938,7 @@ class YouTube_Downloader:
 
         Returns: void
         """
-        self.getDatabaseHandler().post_data(
-            "YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s", (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
+        self.getDatabaseHandler().post_data("YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s", (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
 
     def retrievingStreams(self) -> dict[str, str | int]:
         """

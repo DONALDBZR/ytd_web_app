@@ -569,20 +569,12 @@ class Media:
         if ".mp3" in media_file:
             identifier: str = media_file.replace(".mp3", "")
             parameters = tuple([identifier])
-            metadata = self.getDatabaseHandler().get_data(
-                table_name="YouTube",
-                filter_condition="identifier = %s",
-                parameters=parameters
-            )[0]
+            metadata = self.getDatabaseHandler().get_data(table_name="YouTube", filter_condition="identifier = %s", parameters=parameters)[0]
             new_file = f"{metadata[4]}.mp3"
         else:
             identifier: str = media_file.replace(".mp4", "")
             parameters = tuple([identifier])
-            metadata = self.getDatabaseHandler().get_data(
-                table_name="YouTube",
-                filter_condition="identifier = %s",
-                parameters=parameters
-            )[0]
+            metadata = self.getDatabaseHandler().get_data(table_name="YouTube", filter_condition="identifier = %s",parameters=parameters)[0]
             new_file = f"{metadata[4]}.mp4"
         return new_file
 

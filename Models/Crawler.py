@@ -1273,15 +1273,7 @@ class Crawler:
         request: dict[str, str | None]
         # Iterating throughout the data to get metadata.
         for index in range(0, len(self.getData()), 1):
-            request = {
-                "referer": None,
-                "search": str(self.getData()[index]["latest_content"]),
-                "platform": "youtube",
-                "ip_address": "127.0.0.1",
-                "port": self.getRequest()["port"]
-            }
-            self.setRequest(request)
-            self.setMedia(Media(self.getRequest()))
+            self.setMedia(Media(str(self.getData()[index]["latest_content"]), "YouTube"))
             response = self.getMedia().verifyPlatform()
             data = response["data"]["data"]  # type: ignore
             new_data.append(data)

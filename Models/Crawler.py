@@ -1164,9 +1164,9 @@ class Crawler:
         dataset: list[dict[str, str | int | None]] = self.getData() # type: ignore
         referrer = inspect.stack()[1][3]
         # Verifying the referrer to be able to select the action required.
-        if referrer == "__schedule" and self.prepareFirstRun(identifiers) > 0:
+        if referrer is "__schedule" and self.prepareFirstRun(identifiers) > 0:
             self.firstRun()
-        elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
+        elif referrer is "firstRun" and self.prepareSecondRun(dataset) > 0:
             self.secondRun()
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:

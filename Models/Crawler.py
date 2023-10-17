@@ -858,6 +858,14 @@ class YouTube_Downloader:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
+    def __server(self) -> None:
+        """
+        Setting the directory for the application.
+
+        Returns: void
+        """
+        self.setDirectory(os.getcwd())
+
     def search(self) -> dict[str, str | int | None]:
         """
         Searching for the video in YouTube.
@@ -1040,21 +1048,6 @@ class YouTube_Downloader:
                                             (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Video/{self.getTitle()}.mp4", self.getIdentifier()))
         response = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         return response
-
-    def __server(self, port: str) -> None:
-        """
-        Setting the directory for the application.
-
-        Parameters:
-            port:   string: The port of the application
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if port == '80' or port == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")
 
 
 class Crawler:

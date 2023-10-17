@@ -638,15 +638,6 @@ class Media:
             }
         return response
 
-    def postMedia(self) -> None:
-        """
-        Creating a record for the media with its data.
-
-        Returns: void
-        """
-        self.getDatabaseHandler().post_data(
-            "Media", "value", "%s", tuple([self.getValue()]))
-
     def handleYouTube(self) -> dict[str, str | int | None]:
         """
         Handling the data throughout the You Tube Downloader which

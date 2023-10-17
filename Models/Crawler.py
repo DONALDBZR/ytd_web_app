@@ -864,11 +864,9 @@ class YouTube_Downloader:
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
         if "youtube" in self.getUniformResourceLocator():
-            self.setIdentifier(self.getIdentifier().replace(
-                "https://www.youtube.com/watch?v=", ""))
+            self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))
         else:
-            self.setIdentifier(self.getIdentifier().replace(
-                "https://youtu.be/", "").rsplit("?")[0])
+            self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
         response: dict[str, str | int | None]
         meta_data = self.getYouTube()
         audio_file: str | None
@@ -879,8 +877,7 @@ class YouTube_Downloader:
             self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
             self.setAuthor(str(meta_data["data"][0][0]))  # type: ignore
             self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
-            self.setDuration(time.strftime(
-                "%H:%M:%S", time.gmtime(self.getLength())))
+            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
             # Verifying base on the length to set the file location
             if len(list(meta_data["data"])) == 2:  # type: ignore
                 audio_file = str(meta_data["data"][0][5])  # type: ignore
@@ -893,8 +890,7 @@ class YouTube_Downloader:
             self.setPublishedAt(self.getVideo().publish_date)
             self.setAuthor(self.getVideo().author)
             self.setTitle(self.getVideo().title)
-            self.setDuration(time.strftime(
-                "%H:%M:%S", time.gmtime(self.getLength())))
+            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
             audio_file = None
             video_file = None
             self.postYouTube()

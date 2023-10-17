@@ -486,24 +486,22 @@ class Media:
         destination_directory = f"{self.getDirectory()}/../../Public/{int(time.time())}"
         self.optimizeDirectory(audio_media_files, audio_media_files_directory, destination_directory)
         self.optimizeDirectory(video_media_files, video_media_files_directory, destination_directory)
-        self.removeUsedMetadata()
+        self.deleteMetadata()
 
-    def removeUsedMetadata(self) -> None:
+    def deleteMetadata(self) -> None:
         """
-        Iterating throughout the metadata to delete the the ones
-        that have been processed by the web-scraper.
+        Iterate throughout the metadata to delete them from the
+        cache database.
 
         Returns: void
         """
-        # Iterating throughout the metadata to check that they have rating to be able to delete them.
+        # Iterating throughout the metadata to check that the metadata is old enough to remove from the cache.
         for index in range(0, len(self.getMetadataMediaFiles()), 1):
             file_name = f"{self.getDirectory()}/{self.getMetadataMediaFiles()[index]}"
-            file = open(file_name, "r")
-            data: dict[str, str | int | None | float] = json.load(file)[
-                "Media"]["YouTube"]
-            key = "likes"
-            keys = list(data.keys())
-            self.deleteMetadata(keys, key, file_name)
+            age = int(time.time()) - int(os.path.getctime(file_name))
+            # Ensuring that the metadata file is at least three days old to be removed from the database.
+            if age > 259200:
+                os.remove(file_name)
 
     def deleteMetadata(self, keys: list[str], key: str, file_name: str) -> None:
         """

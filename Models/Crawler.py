@@ -915,20 +915,19 @@ class YouTube_Downloader:
 
         Returns: object
         """
-        media = self.getDatabaseHandler().get_data(
-            tuple([self.getIdentifier()]), "YouTube", "MediaFile ON MediaFile.YouTube = YouTube.identifier", "YouTube.identifier = %s", "author, title, YouTube.identifier, published_at, length, location", "MediaFile.identifier ASC", 2)
+        media = self.getDatabaseHandler().get_data(tuple([self.getIdentifier()]), "YouTube", "MediaFile ON MediaFile.YouTube = YouTube.identifier", "YouTube.identifier = %s", "author, title, YouTube.identifier, published_at, length, location", "MediaFile.identifier ASC", 2)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response: dict[str, int | list[str | int] | str]
         if len(media) == 0:
             response = {
-                'status': 204,
-                'data': media,
+                'status': 404,
+                'data': media, # type: ignore
                 'timestamp': self.getTimestamp()
             }
         else:
             response = {
                 'status': 200,
-                'data': media,
+                'data': media, # type: ignore
                 'timestamp': self.getTimestamp()
             }
         return response

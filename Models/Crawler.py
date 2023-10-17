@@ -341,15 +341,6 @@ class Media:
     Type: YouTube_Downloader
     Visibility: protected
     """
-    __referer: str | None
-    """
-    The http referrer which is the uniform resource locator that
-    is needed to be able to allow the user to download the
-    required media.
-
-    Type: string|null
-    Visibility: private
-    """
     __database_handler: "Database_Handler"
     """
     It is the object relational mapper that will be used to
@@ -387,20 +378,6 @@ class Media:
     Type: string
     Visibility: private
     """
-    __ip_address: str
-    """
-    The IP Address of the user
-
-    Type: string
-    Visibility: private
-    """
-    __port: str
-    """
-    The port of the application
-
-    Type: int
-    Visibility: private
-    """
     __metadata_media_files: list[str]
     """
     The metadata of the media content that is stored in the
@@ -414,13 +391,6 @@ class Media:
     The media content that is stored in the document database.
 
     Type: array
-    Visibility: private
-    """
-    __logger: Extractio_Logger
-    """
-    The logger that will all the action of the application.
-
-    Type: Extractio_Logger
     Visibility: private
     """
 
@@ -454,12 +424,6 @@ class Media:
     def setSearch(self, search: str) -> None:
         self.__search = search
 
-    def getReferer(self) -> str | None:
-        return self.__referer
-
-    def setReferer(self, referer: str | None) -> None:
-        self.__referer = referer
-
     def getDatabaseHandler(self) -> "Database_Handler":
         return self.__database_handler
 
@@ -490,18 +454,6 @@ class Media:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
-    def getIpAddress(self) -> str:
-        return self.__ip_address
-
-    def setIpAddress(self, ip_address: str) -> None:
-        self.__ip_address = ip_address
-
-    def getPort(self) -> str:
-        return self.__port
-
-    def setPort(self, port: str) -> None:
-        self.__port = port
-
     def getMetadataMediaFiles(self) -> list[str]:
         return self.__metadata_media_files
 
@@ -513,12 +465,6 @@ class Media:
 
     def setMediaFiles(self, media_files: list[str]) -> None:
         self.__media_files = media_files
-
-    def getLogger(self) -> Extractio_Logger:
-        return self.__logger
-
-    def setLogger(self, logger: Extractio_Logger) -> None:
-        self.__logger = logger
 
     def __server(self) -> None:
         """

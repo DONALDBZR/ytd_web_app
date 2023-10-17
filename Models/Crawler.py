@@ -1012,6 +1012,13 @@ class Crawler:
     Type: Database_Handler
     Visibility: private
     """
+    __Media: Media
+    """
+    It allows the application to manage the media.
+
+    Type: Media
+    Visibility: private
+    """
 
     def __init__(self) -> None:
         """
@@ -1082,6 +1089,12 @@ class Crawler:
 
     def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__database_handler = database_handler
+
+    def getMedia(self) -> Media:
+        return self.__Media
+
+    def setMedia(self, media: Media) -> None:
+        self.__Media = media
 
     def __server(self) -> None:
         """
@@ -1249,7 +1262,7 @@ class Crawler:
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
 
-    def __buildData(self) -> None:
+    def buildData(self) -> None:
         """
         Building the data to be displayed to the user.
 

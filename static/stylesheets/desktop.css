@@ -233,9 +233,13 @@ body[id*="Download"] main .YouTube div video {
     height: inherit;
     width: auto;
 }
+#Homepage main .Trend::-webkit-scrollbar {
+    display: none;
+}
 #Homepage main .Trend {
     height: calc(var(--component-height) * 0.8);
     display: block;
+    overflow: auto;
 }
 #Homepage main .Trend div {
     width: var(--width);
@@ -261,10 +265,13 @@ body[id*="Download"] main .YouTube div video {
 }
 #Homepage main .Trend .card div:nth-child(1) a {
     height: var(--card-height);
+    width: inherit;
+    display: flex;
+    align-items: center;
 }
 #Homepage main .Trend .card div:nth-child(1) a img {
-    width: auto;
-    height: var(--card-height);
+    width: inherit;
+    height: auto;
 }
 #Homepage main .Trend .card div:nth-child(2) {
     display: flex;

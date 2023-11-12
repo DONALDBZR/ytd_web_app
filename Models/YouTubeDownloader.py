@@ -256,6 +256,21 @@ class YouTube_Downloader:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
+    def retrieveIdentifier(self, identifier: str) -> str:
+        """
+        Retrieving the identifier of the content in the condition
+        that it is in a playlist.
+
+        Parameters:
+            identifier: string: The ID of the content.
+
+        Returns: string
+        """
+        if "&" in identifier:
+            return identifier.rsplit("&", 1)[0]
+        else:
+            return identifier
+
     def search(self) -> dict[str, str | int | None]:
         """
         Searching for the video in YouTube.

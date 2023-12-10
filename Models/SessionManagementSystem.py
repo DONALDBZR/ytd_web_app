@@ -171,13 +171,15 @@ class Session_Manager:
         doing regular checks to keep only the active sessions and
         store inactive sessions in the database.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getDatabaseHandler()._query(
-            "CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))", None)
+            query="CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))",
+            parameters=None
+        )
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
-        # Ensuring that there are sessions in the document database to verify them.
         if self.getLength() > 0:
             self.verifyExistingSessions()
 

@@ -38,9 +38,10 @@ class Extractio_Logger:
         Logging the data for debugging
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.DEBUG)
         self.getLogger().debug(message)
@@ -50,9 +51,10 @@ class Extractio_Logger:
         Logging informational data.
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.INFO)
         self.getLogger().info(message)
@@ -62,9 +64,10 @@ class Extractio_Logger:
         Logging the data for a warning.
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.WARNING)
         self.getLogger().warning(message)
@@ -74,9 +77,10 @@ class Extractio_Logger:
         Logging the data for an error.
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.ERROR)
         self.getLogger().error(message)

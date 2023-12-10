@@ -64,10 +64,10 @@ class Security_Management_System:
         )
         self.hash()
 
-    def getDatabaseHandler(self) -> "Database_Handler":
+    def getDatabaseHandler(self) -> Database_Handler:
         return self.__Database_Handler
 
-    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__Database_Handler = database_handler
 
     def getApplicationName(self) -> str:
@@ -88,10 +88,10 @@ class Security_Management_System:
     def setHash(self, hash: str) -> None:
         self.__hash = hash
 
-    def getPasswordHasher(self) -> "PasswordHasher":
+    def getPasswordHasher(self) -> PasswordHasher:
         return self.__password_hasher
 
-    def setPasswordHasher(self, password_hasher: "PasswordHasher") -> None:
+    def setPasswordHasher(self, password_hasher: PasswordHasher) -> None:
         self.__password_hasher = password_hasher
 
     def getDateCreated(self) -> str | int:
@@ -111,17 +111,31 @@ class Security_Management_System:
         It is a one-way encryption function that will generate a
         hash based on the Argon 2 hashing algorithm.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(
-            self.getApplicationName() + str(self.getDatestamp()))
+            f"{self.getApplicationName()}{str(self.getDatestamp())}"
+        )
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
-        self.setDateCreated(datetime.fromtimestamp(
-            self.getDatestamp()).strftime("%Y-%m-%d"))
+        self.setDateCreated(
+            datetime.fromtimestamp(self.getDatestamp()).strftime("%Y-%m-%d")
+        )
+        data: tuple[str, str] = (
+            self.getHash(),
+            str(self.getDateCreated())
+        )
         self.getDatabaseHandler().post_data(
-            "Session", "hash, date_created", "%s, %s", (self.getHash(), self.getDateCreated()))
+            table="Session",
+            columns="hash, date_created",
+            values="%s, %s",
+            parameters=data
+        )
         self.getLogger().inform("The key has been created!")
         self.getDatabaseHandler().delete_data(
-            "Session", None, "date_created < CURRENT_DATE()")
+            table="Session",
+            parameters=None,
+            condition="date_created < CURDATE()"
+        )
         self.getLogger().inform("The older keys are deleted!")

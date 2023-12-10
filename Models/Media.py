@@ -178,8 +178,12 @@ class Media:
 
         Returns: object
         """
+        filter_data = tuple([self.getValue()])
         media = self.getDatabaseHandler().get_data(
-            tuple([self.getValue()]), "Media", filter_condition="value = %s")
+            parameters=filter_data,
+            table_name="Media",
+            filter_condition="value = %s"
+        )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         response = {}
         if len(media) == 0:

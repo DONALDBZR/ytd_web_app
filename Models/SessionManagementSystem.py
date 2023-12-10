@@ -443,9 +443,10 @@ class Session_Manager:
         renew the session.
 
         Parameters:
-            session_data: dict: Session's data
+            session_data:   (object):   Session's data
 
-        Returns: void
+        Return:
+            (void)
         """
         # Verifying that the data has been received or created in order to verify it to renew access.
         if session_data["status"] == 200 or session_data["status"] == 201:

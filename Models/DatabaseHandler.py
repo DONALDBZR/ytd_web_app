@@ -3,6 +3,7 @@ from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
+from mysql.connector.types import RowType
 import mysql.connector
 import logging
 
@@ -142,8 +143,12 @@ class Database_Handler:
         Preparing the SQL query that is going to be handled by the
         database handler.
 
-        Returns: Generator[MySQLCursor, None, None] | None
+        Return:
+            Generator[MySQLCursor, None, None] | None
         """
+        self.getLogger().debug(
+            f"Query to be executed!\nQuery: {query}\nParameters: {parameters}"
+        )
         self.__setStatement(self.__getDatabaseHandler().cursor(prepared=True))
         self.__getStatement().execute(query, parameters)
 
@@ -152,19 +157,28 @@ class Database_Handler:
         Executing the SQL query which will send a command to the
         database server
 
-        Returns: None
+        Return:
+            (void)
         """
         self.__getDatabaseHandler().commit()
+        self.getLogger().inform("The query has been executed!")
 
-    def _resultSet(self) -> list:
+    def _resultSet(self) -> list[RowType]:
         """
-        Fetching all the data that is requested from the command that
-        was sent to the database server
+        Fetching all the data that is requested from the command
+        that was sent to the database server.
 
-        Returns: array
+        Return:
+            (array)
         """
         result_set = self.__getStatement().fetchall()
+        self.getLogger().debug(
+            "The data has been successfully retrieved!"
+        )
         self.__getStatement().close()
+        self.getLogger().inform(
+            "The connection between the application and the database server will be closed!"
+        )
         return result_set
 
     def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[tuple]:

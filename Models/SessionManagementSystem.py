@@ -310,12 +310,12 @@ class Session_Manager:
         depending on the response from the system.
 
         Parameters:
-            sessions: array: List of session files
+            sessions:   (array):  List of session files
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
-        # Iterating throughout the session files to find any file that contains the IP Address of the client.
         for index in range(0, len(sessions), 1):
             if self.handleFile(sessions[index])["status"] == 200:
                 response = {

@@ -181,20 +181,21 @@ class Database_Handler:
         )
         return result_set
 
-    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[tuple]:
+    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[RowType]:
         """
         Retrieving data from the database.
 
         Parameters:
-            parameters:         array|null: The parameters to be passed into the query.
-            table_name:         string:     The name of the table.
-            column_names:       string:     The name of the columns.
-            join_condition      string:     Joining table condition.
-            filter_condition    string:     Items to be filtered with.
-            sort_condition      string:     The items to be sorted.
-            limit_condition     int:     The amount of items to be returned
+            parameters:         (array|null):   The parameters to be passed into the query.
+            table_name:         (string):       The name of the table.
+            column_names:       (string):       The name of the columns.
+            join_condition      (string):       Joining table condition.
+            filter_condition    (string):       Items to be filtered with.
+            sort_condition      (string):       The items to be sorted.
+            limit_condition     (int):          The amount of items to be returned
 
-        Returns: array
+        Return:
+            (array)
         """
         query = f"SELECT {column_names} FROM {table_name}"
         self.setQuery(query)

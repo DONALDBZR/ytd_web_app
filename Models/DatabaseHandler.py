@@ -1,15 +1,9 @@
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
-import mysql.connector
-import os
-import sys
-
-
-root_directory = f"{os.getcwd()}"
-sys.path.insert(0, root_directory)
-
 from Environment import Environment
+from Models.Logger import Extractio_Logger
+import mysql.connector
 
 
 class Database_Handler:
@@ -83,13 +77,17 @@ class Database_Handler:
         Instantiating the class which will try to connect to the
         database.
         """
-        self.__setHost(Environment.HOST)
-        self.__setDatabase(Environment.DATABASE)
-        self.__setUsername(Environment.USERNAME)
-        self.__setPassword(Environment.PASSWORD)
+        ENV = Environment()
+        self.__setHost(ENV.getDatabaseHost())
+        self.__setDatabase(ENV.getDatabaseSchema())
+        self.__setUsername(ENV.getDatabaseUsername())
+        self.__setPassword(ENV.getDatabasePassword())
         try:
-            self.__setDatabaseHandler(mysql.connector.connect(host=self.__getHost(
-            ), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()))
+            self.__setDatabaseHandler(
+                mysql.connector.connect(
+                    host=self.__getHost(), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()
+                )
+            )
         except mysql.connector.Error as error:
             print("Connection Failed: " + str(error))
 

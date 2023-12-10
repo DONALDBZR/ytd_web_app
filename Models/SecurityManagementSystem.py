@@ -4,6 +4,7 @@ from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
+import logging
 
 
 class Security_Management_System:
@@ -11,55 +12,34 @@ class Security_Management_System:
     It will be a major component that will assure the security
     of the data that will be stored across the application.
     """
-    __Database_Handler: "Database_Handler"
+    __Database_Handler: Database_Handler
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
-
-    Type: Database_Handler
-    Visibility: Private
     """
     __application_name: str
     """
     The name of the application.
-
-    Type: string
-    Visibility: Private
     """
     __datestamp: int
     """
     The date retrieved from UNIX time.
-
-    Type: int
-    Visibility: Private
     """
     __hash: str
     """
     The hash that will be stored in the database.
-
-    Type: string
-    Visibility: Private
     """
-    __password_hasher: "PasswordHasher"
+    __password_hasher: PasswordHasher
     """
     High level class to hash passwords with sensible defaults.
-
-    Type: Password_Hasher
-    Visibility: private
     """
     __date_created: str | int
     """
     The date at which the key has been created.
-
-    Type: string | int
-    Visibility: private
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
     def __init__(self) -> None:
@@ -68,14 +48,20 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
+        ENV = Environment()
         self.setLogger(Extractio_Logger())
+        self.getLogger().setLogger(logging.getLogger(__name__))
         self.setDatabaseHandler(Database_Handler())
-        self.setApplicationName(Environment.APPLICATION_NAME)
+        self.setApplicationName(ENV.getApplicationName())
         self.setDatestamp(int(time()))
-        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
+        self.getDatabaseHandler()._query(
+            "CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))",
+            None
+        )
         self.getDatabaseHandler()._execute()
         self.getLogger().inform(
-            "The Security Management System has been successfully been initialized!")
+            "The Security Management System has been successfully been initialized!"
+        )
         self.hash()
 
     def getDatabaseHandler(self) -> "Database_Handler":

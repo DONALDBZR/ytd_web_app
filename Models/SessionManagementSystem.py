@@ -256,11 +256,11 @@ class Session_Manager:
         """
         Verifying that the session is not hijacked
 
-        Returns: void
+        Return:
+            (void)
         """
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
-        # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
             self.handleSessionData(self.sessionsLoader(self.getSessionFiles()))
         else:

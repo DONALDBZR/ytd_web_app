@@ -165,18 +165,6 @@ class Session_Manager:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")
-
     def __maintain(self) -> None:
         """
         Maintaining the database of the Session Management System by

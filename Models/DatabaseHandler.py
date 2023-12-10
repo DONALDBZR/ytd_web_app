@@ -30,11 +30,11 @@ class Database_Handler:
     The password that allows the required user to connect to the
     database.
     """
-    __database_handler: "PooledMySQLConnection | MySQLConnection"
+    __database_handler: PooledMySQLConnection | MySQLConnection
     """
     The database handler needed to execute the queries needed.
     """
-    __statement: "MySQLCursor"
+    __statement: MySQLCursor
     """
     The statement to be used to execute all of the requests to
     the database server.

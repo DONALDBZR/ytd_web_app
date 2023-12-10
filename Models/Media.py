@@ -102,10 +102,10 @@ class Media:
     def setReferer(self, referer: str | None) -> None:
         self.__referer = referer
 
-    def getDatabaseHandler(self) -> "Database_Handler":
+    def getDatabaseHandler(self) -> Database_Handler:
         return self.__database_handler
 
-    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__database_handler = database_handler
 
     def getIdentifier(self) -> int:
@@ -149,18 +149,6 @@ class Media:
 
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
-
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")
 
     def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
         """

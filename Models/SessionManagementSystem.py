@@ -341,11 +341,12 @@ class Session_Manager:
         it further more.
 
         Parameters:
-            file: Any: file to be loaded
-        Returns: object
+            file_name:  (string):   file to be loaded
+
+        Return:
+            (object)
         """
         response = {}
-        # Ensuring that the session files are of JSON file type.
         if file_name.endswith(".json"):
             file_path = f"{self.getDirectory()}/{file_name}"
             file = open(file_path)

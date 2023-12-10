@@ -11,9 +11,6 @@ class Extractio_Logger:
     """
     It is responsible for logging all of the actions done by the
     application.
-    
-    Type: Logger
-    visibility: private
     """
 
     def __init__(self) -> None:

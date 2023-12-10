@@ -141,10 +141,10 @@ class Session_Manager:
     def setLength(self, length: int) -> None:
         self.__length = length
 
-    def getSession(self) -> "SessionMixin":
+    def getSession(self) -> SessionMixin:
         return self.__session
 
-    def setSession(self, session: "SessionMixin") -> None:
+    def setSession(self, session: SessionMixin) -> None:
         self.__session = session
 
     def getPort(self) -> str:

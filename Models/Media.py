@@ -3,6 +3,7 @@ from Models.YouTubeDownloader import YouTube_Downloader
 from Models.Logger import Extractio_Logger
 from datetime import datetime
 from Environment import Environment
+from mysql.connector.types import RowType
 import json
 import os
 import logging
@@ -156,7 +157,8 @@ class Media:
         the correct system as well as select and return the correct
         response.
 
-        Returns: object
+        Return:
+            (object)
         """
         response: dict[str, int | dict[str, str | int | None]]
         media = self.getMedia()
@@ -172,11 +174,12 @@ class Media:
             }
         return response  # type: ignore
 
-    def getMedia(self) -> dict:
+    def getMedia(self) -> dict[str, int | list[RowType] | str]:
         """
         Retrieving the Media data from the Media table.
 
-        Returns: object
+        Return:
+            (object)
         """
         filter_data = tuple([self.getValue()])
         media = self.getDatabaseHandler().get_data(

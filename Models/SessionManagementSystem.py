@@ -280,17 +280,17 @@ class Session_Manager:
         Modifying the session.
 
         Parameters:
-            data:   object: Data from the view
+            data:   (object):   Data from the view
 
-        Returns: SessionMixin | void
+        Return:
+            (SessionMixin | void)
         """
         self.setTimestamp(int(time.time()))
         self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         data = json.load(open(file_name))
-        # Ensuring that the IP Addresses corresponds in order to update the session.
         if self.getIpAddress() == data['Client']['ip_address']:
-            new_data = {
+            new_data: dict[str, str | int] = {
                 "ip_address": self.getIpAddress(),
                 "http_client_ip_address": self.getHttpClientIpAddress(),
                 "proxy_ip_address": self.getProxyIpAddress(),

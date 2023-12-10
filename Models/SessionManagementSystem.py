@@ -366,12 +366,12 @@ class Session_Manager:
         cache file.
 
         Parameters:
-            data: object: The data in the file
+            data:   (object):   The data in the file
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
-        # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
         if self.getIpAddress() == str(data['Client']['ip_address']):
             age = int(time.time()) - int(data['Client']['timestamp'])
             response = {
@@ -385,15 +385,15 @@ class Session_Manager:
 
     def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
         """
-        Handling the expiry time of the session
+        Handling the expiry time of the session.
 
         Parameters:
-            expiry_time: datetime: The expiry time of the session
+            expiry_time:    (int):  The expiry time of the session
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
-        # Verifying that the session has not expired
         if expiry_time < 3600:
             response = {
                 "status": 200

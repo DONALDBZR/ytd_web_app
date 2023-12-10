@@ -207,10 +207,16 @@ class Media:
         """
         Creating a record for the media with its data.
 
-        Returns: void
+        Return:
+            (void)
         """
+        data = tuple([self.getValue()])
         self.getDatabaseHandler().post_data(
-            "Media", "value", "%s", tuple([self.getValue()]))
+            table="Media",
+            columns="value",
+            values="%s",
+            parameters=data
+        )
 
     def handleYouTube(self) -> dict[str, str | int | None]:
         """

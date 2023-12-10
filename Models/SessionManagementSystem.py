@@ -187,11 +187,11 @@ class Session_Manager:
         """
         Verifying existing sessions to remove expired ones.
 
-        Returns: void
+        Return:
+            (void)
         """
         age: int
         data: dict[str, dict[str, str | int]]
-        # Iterating throughout the sessions to verify that they are inactive.
         for index in range(0, self.getLength(), 1):
             file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
             file = open(file_name, "r")

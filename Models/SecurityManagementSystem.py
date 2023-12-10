@@ -55,8 +55,8 @@ class Security_Management_System:
         self.setApplicationName(ENV.getApplicationName())
         self.setDatestamp(int(time()))
         self.getDatabaseHandler()._query(
-            "CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))",
-            None
+            query="CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))",
+            parameters=None
         )
         self.getDatabaseHandler()._execute()
         self.getLogger().inform(

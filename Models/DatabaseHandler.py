@@ -13,63 +13,39 @@ class Database_Handler:
     """
     __host: str
     """
-    The host of the application
-
-    Type: string
-    visibility: private
+    The host of the application.
     """
     __database: str
     """
-    The database of the application
-
-    Type: string
-    visibility: private
+    The database of the application.
     """
     __username: str
     """
-    The user that have access to the database
-
-    Type: string
-    visibility: private
+    The user that have access to the database.
     """
     __password: str
     """
     The password that allows the required user to connect to the
     database.
-
-    Type: string
-    visibility: private
     """
     __database_handler: "PooledMySQLConnection | MySQLConnection"
     """
-    The database handler needed to execute the queries needed
-
-    Type: PooledMySQLConnection | MySQLConnection
-    visibility: private
+    The database handler needed to execute the queries needed.
     """
     __statement: "MySQLCursor"
     """
     The statement to be used to execute all of the requests to
-    the database server
-
-    Type: MySQLCursor
-    visibility: private
+    the database server.
     """
     __query: str
     """
     The query to be used to be sent to the database server to
     either get, post, update or delete data.
-
-    Type: string
-    Visibility: private
     """
     __parameters: tuple | None
     """
     Parameters that the will be used to sanitize the query which
     is either  get, post, update or delete.
-
-    Type: array|null
-    Visibility: private
     """
 
     def __init__(self):

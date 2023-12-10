@@ -410,10 +410,11 @@ class Session_Manager:
         system.
 
         Parameters:
-            status: int: HTTP Status Code
-            name: string: File Name
+            status: (int):      HTTP Status Code
+            name:   (string):   File Name
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
         file_path = f"{self.getDirectory()}/{name}"

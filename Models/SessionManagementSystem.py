@@ -5,6 +5,7 @@ from Environment import Environment
 import os
 import json
 import time
+import logging
 
 
 class Session_Manager:
@@ -61,28 +62,35 @@ class Session_Manager:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
+    def __init__(self, request: dict[str, str], session: SessionMixin) -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users.
 
         Parameters:
-            request:    object:         The request from the application.
-            session:    SessionMixin:   The session of the user.
+            request:    (object):       The request from the application.
+            session:    (SessionMixin): The session of the user.
         """
+        ENV = Environment()
+        self.setDirectory(
+            f"{ENV.getDirectory()}/Cache/Session/Users"
+        )
         self.setLogger(Extractio_Logger())
-        self.setPort(request["port"])  # type: ignore
+        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setPort(str(request["port"]))
         self.setDatabaseHandler(Database_Handler())
-        self.__server()
-        self.setDirectory(f"{self.getDirectory()}/Cache/Session/Users/")
-        self.__maintain()
-        self.setIpAddress(request["ip_address"])  # type: ignore
+        self.setIpAddress(str(request["ip_address"]))
         self.setHttpClientIpAddress(
-            request["http_client_ip_address"])  # type: ignore
-        self.setProxyIpAddress(request["proxy_ip_address"])  # type: ignore
+            str(request["http_client_ip_address"])
+        )
+        self.setProxyIpAddress(
+            str(request["proxy_ip_address"])
+        )
+        self.__maintain()
         self.setSession(session)
         self.getLogger().inform(
-            "The Session Management System has been successfully been initialized!")
+            "The Session Management System has been successfully been initialized!"
+        )
         self.verifySession()
 
     def getDirectory(self) -> str:

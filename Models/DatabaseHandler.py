@@ -4,6 +4,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 import mysql.connector
+import logging
 
 
 class Database_Handler:
@@ -47,6 +48,10 @@ class Database_Handler:
     Parameters that the will be used to sanitize the query which
     is either  get, post, update or delete.
     """
+    __Logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+    """
 
     def __init__(self):
         """
@@ -54,6 +59,8 @@ class Database_Handler:
         database.
         """
         ENV = Environment()
+        self.setLogger(Extractio_Logger())
+        self.getLogger().setLogger(logging.getLogger(__name__))
         self.__setHost(ENV.getDatabaseHost())
         self.__setDatabase(ENV.getDatabaseSchema())
         self.__setUsername(ENV.getDatabaseUsername())
@@ -61,11 +68,20 @@ class Database_Handler:
         try:
             self.__setDatabaseHandler(
                 mysql.connector.connect(
-                    host=self.__getHost(), database=self.__getDatabase(), username=self.__getUsername(), password=self.__getPassword()
+                    host=self.__getHost(),
+                    database=self.__getDatabase(),
+                    username=self.__getUsername(),
+                    password=self.__getPassword()
                 )
             )
+            self.getLogger().inform(
+                "The application has been successfully connected to the database server!"
+            )
         except mysql.connector.Error as error:
-            print("Connection Failed: " + str(error))
+            print(f"Connection Failed!\nError: {str(error)}")
+            self.getLogger().error(
+                f"Connection Failed!\nError: {str(error)}"
+            )
 
     def __getHost(self) -> str:
         return self.__host
@@ -114,6 +130,12 @@ class Database_Handler:
 
     def setParameters(self, parameters: tuple | None) -> None:
         self.__parameters = parameters
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__Logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__Logger = logger
 
     def _query(self, query: str, parameters: None | tuple):
         """

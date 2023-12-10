@@ -14,83 +14,50 @@ class Media:
     __search: str
     """
     The uniform resource locator to be searched.
-
-    Type: string
-    Visibility: private
     """
-    _YouTubeDownloader: "YouTube_Downloader"
+    _YouTubeDownloader: YouTube_Downloader
     """
     It will handle every operations related to YouTube.
-
-    Type: YouTube_Downloader
-    Visibility: protected
     """
     __referer: str | None
     """
     The http referrer which is the uniform resource locator that
     is needed to be able to allow the user to download the
     required media.
-
-    Type: string|null
-    Visibility: private
     """
-    __database_handler: "Database_Handler"
+    __database_handler: Database_Handler
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
-
-    Type: Database_Handler
-    Visibility: private
     """
     __identifier: int
     """
     The identifier of the required media
-
-    Type: int
-    Visibility: private
     """
     __value: str
     """
     The value of the required media which have to correspond to
     the name of the platform from which the media comes from.
-
-    Type: string | null
-    Visibility: private
     """
     __timestamp: str
     """
     The timestamp at which the session has been created
-
-    Type: string
-    Visibility: private
     """
     __directory: str
     """
     The directory of the JSON files
-
-    Type: string
-    Visibility: private
     """
     __ip_address: str
     """
     The IP Address of the user
-
-    Type: string
-    Visibility: private
     """
     __port: str
     """
     The port of the application
-
-    Type: int
-    Visibility: private
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
     def __init__(self, request: dict[str, str | None]) -> None:

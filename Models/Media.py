@@ -5,6 +5,7 @@ from datetime import datetime
 from Environment import Environment
 import json
 import os
+import logging
 
 
 class Media:
@@ -66,22 +67,28 @@ class Media:
         the media's dataset and do the required processing.
 
         Parameters:
-            request:    object: The request from the user.
+            request:    (object): The request from the user.
         """
+        ENV = Environment()
+        self.setDirectory(
+            f"{ENV.getDirectory()}/Cache/Media"
+        )
         self.setLogger(Extractio_Logger())
-        self.setPort(request["port"])  # type: ignore
-        self.__server()
-        self.setDirectory(f"{self.getDirectory()}/Cache/Media")
+        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setPort(str(request["port"]))
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
-            "CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))", None)
+            query="CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))",
+            parameters=None
+        )
         self.getDatabaseHandler()._execute()
         self.setSearch(str(request["search"]))
         self.setReferer(request["referer"])
         self.setValue(str(request["platform"]))
         self.setIpAddress(str(request["ip_address"]))
         self.getLogger().inform(
-            "The Media Management System has been successfully been initialized!")
+            "The Media Management System has been successfully been initialized!"
+        )
 
     def getSearch(self) -> str:
         return self.__search

@@ -1,7 +1,7 @@
-# Importing the requirements
 from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
+from Environment import Environment
 import os
 import json
 import time
@@ -13,88 +13,52 @@ class Session_Manager:
     """
     __directory: str
     """
-    The directory of the session files
-
-    Type: string
-    Visibility: private
+    The directory of the session files.
     """
     __ip_address: str
     """
-    The IP Address of the user
-
-    Type: string
-    Visibility: private
+    The IP Address of the user.
     """
     __http_client_ip_address: str
     """
     The client's IP Address of the user
-
-    Type: string
-    Visibility: private
     """
     __proxy_ip_address: str
     """
-    The Proxy's IP Address of the user
-
-    Type: string
-    Visibility: private
+    The Proxy's IP Address of the user.
     """
     __timestamp: int
     """
-    The timestamp at which the session has been created
-
-    Type: int
-    Visibility: private
+    The timestamp at which the session has been created.
     """
     __session_files: list[str]
     """
-    The files containing the session of the users
-
-    Type: array
-    Visibility: private
+    The files containing the session of the users.
     """
     __color_scheme: str
     """
-    The color scheme of the application
-
-    Type: string
-    Visibility: private
+    The color scheme of the application.
     """
     __length: int
     """
-    The amount of session files
-
-    Type: int
-    Visibility: private
+    The amount of session files.
     """
     __session: SessionMixin
     """
     The session of the user.
-
-    Type: SessionMixin
-    Visibility: private
     """
     __port: str
     """
-    The port of the application
-
-    Type: int
-    Visibility: private
+    The port of the application.
     """
     __database_handler: Database_Handler
     """
     The database handler that will communicate with the database
     server.
-
-    Type: Database_Handler
-    Visibility: private
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
     def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:

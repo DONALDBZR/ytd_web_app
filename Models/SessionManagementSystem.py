@@ -226,11 +226,12 @@ class Session_Manager:
             )
             os.remove(file_name)
 
-    def createSession(self) -> "SessionMixin":
+    def createSession(self) -> SessionMixin:
         """
-        Creating the session
+        Creating the session.
 
-        Returns: SessionMixin
+        Return:
+            (SessionMixin)
         """
         self.getSession().clear()
         self.setTimestamp(int(time.time()))
@@ -248,7 +249,7 @@ class Session_Manager:
         session_file = open(file_path, 'w')
         session_file.write(session_data)
         session_file.close()
-        self.getLogger().inform("The session hass been successfully created!")
+        self.getLogger().inform("The session has been successfully created!")
         return self.getSession()
 
     def verifySession(self) -> None:

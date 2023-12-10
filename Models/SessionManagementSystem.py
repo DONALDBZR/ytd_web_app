@@ -460,9 +460,10 @@ class Session_Manager:
         the access to their current data
 
         Parameters:
-            session_data: SessionMixin: Session Data
+            session_data:   (SessionMixin): Session Data
 
-        Returns: SessionMixin | void
+        Return:
+            (SessionMixin | void)
         """
         file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         # Comparing the IP Addresses to either renew the timestamp or to clear the session.

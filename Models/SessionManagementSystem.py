@@ -270,7 +270,8 @@ class Session_Manager:
         """
         Returning a stringified form of the session
 
-        Returns: string
+        Return:
+            (string)
         """
         return json.dumps(self.getSession(), indent=4)
 

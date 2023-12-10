@@ -213,9 +213,10 @@ class Database_Handler:
         least two tables.
 
         Parameters:
-            condition:  string: The JOIN statement that is used.
+            condition:  (string):   The JOIN statement that is used.
 
-        Returns: void
+        Return:
+            (void)
         """
         if condition == "":
             query = self.getQuery()
@@ -228,9 +229,10 @@ class Database_Handler:
         Building the query needed for retrieving specific data.
 
         Parameters:
-            condition:  string: The WHERE statement that will be used.
+            condition:  (string):   The WHERE statement that will be used.
 
-        Returns: void
+        Return:
+            (void)
         """
         if condition == "":
             query = self.getQuery()
@@ -243,9 +245,10 @@ class Database_Handler:
         Building the query needed to be used to sort the result set.
 
         Parameters:
-            condition:  string: The ORDER BY statement that will be used.
+            condition:  (string):   The ORDER BY statement that will be used.
 
-        Returns: void
+        Return:
+            (void)
         """
         if condition == "":
             query = self.getQuery()
@@ -259,9 +262,10 @@ class Database_Handler:
         data from the result set.
 
         Parameters:
-            limit:  int: The ORDER BY statement that will be used.
+            limit:  (int):  The ORDER BY statement that will be used.
 
-        Returns: void
+        Return:
+            (void)
         """
         if limit > 0:
             query = f"{self.getQuery()} LIMIT {limit}"
@@ -274,11 +278,12 @@ class Database_Handler:
         Creating records to store data into the database server.
 
         Parameters:
-            table:      string: Table Name
-            columns:    string: Column names
-            values:     string: Data to be inserted
+            table:      (string):   Table Name
+            columns:    (string):   Column names
+            values:     (string):   Data to be inserted
 
-        Returns: void
+        Return:
+            (void)
         """
         query = f"INSERT INTO {table}({columns}) VALUES ({values})"
         self.setQuery(query)
@@ -291,12 +296,13 @@ class Database_Handler:
         Updating a specific table in the database.
 
         Parameters:
-            table:      string: Table
-            values:     string: Columns to be modified and data to be put within
-            condition:  string: Condition for the data to be modified
-            parameters: array:  Data to be used for data manipulation.
+            table:      (string):   Table name
+            values:     (string):   Columns to be modified and data to be put within
+            condition:  (string):   Condition for the data to be modified
+            parameters: (array):    Data to be used for data manipulation.
 
-        Returns: void
+        Return:
+            (void)
         """
         query = f"UPDATE {table} SET {values}"
         self.setQuery(query)
@@ -310,11 +316,12 @@ class Database_Handler:
         Deleting data from the database.
 
         Parameters:
-            table:      string: Table
-            parameters: array:  Data to be used for data manipulation.
-            condition:  string: Specification
+            table:      (string):   Table name
+            parameters: (array):    Data to be used for data manipulation.
+            condition:  (string):   Specification
 
-        Returns: void
+        Return:
+            (void)
         """
         query = f"DELETE FROM {table}"
         self.setQuery(query)

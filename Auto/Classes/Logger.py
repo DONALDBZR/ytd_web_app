@@ -64,9 +64,10 @@ class Extractio_Logger:
         Logging the data for a warning.
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.WARNING)
         self.getLogger().warning(message)

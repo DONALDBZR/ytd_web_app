@@ -1,9 +1,10 @@
 from logging.__init__ import Logger
 import logging
 import sys
+import os
 
 
-sys.path.append("../../")
+sys.path.append(os.getcwd())
 from Environment import Environment
 
 

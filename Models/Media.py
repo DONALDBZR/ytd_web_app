@@ -233,8 +233,7 @@ class Media:
         identifier: str
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(),
-            self.getIdentifier(),
-            self.getPort()
+            self.getIdentifier()
         )
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()

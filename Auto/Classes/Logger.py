@@ -11,9 +11,6 @@ class Extractio_Logger:
     """
     It is responsible for logging all of the actions done by the
     application.
-    
-    Type: Logger
-    visibility: private
     """
 
     def __init__(self) -> None:
@@ -41,9 +38,10 @@ class Extractio_Logger:
         Logging the data for debugging
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.DEBUG)
         self.getLogger().debug(message)

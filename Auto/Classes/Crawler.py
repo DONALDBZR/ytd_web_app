@@ -378,9 +378,9 @@ class Crawler:
         Entering the targeted page.
 
         Parameters:
-            target: (string): The uniform resource locator of the targeted page.
-            delay:  (float):  The amount of time that the Crawler will wait which is based on the average typing speed of a person
-            index:  (int):    The identifier of the data.
+            target: (string):   The uniform resource locator of the targeted page.
+            delay:  (float):    The amount of time that the Crawler will wait which is based on the average typing speed of a person
+            index:  (int):      The identifier of the data.
 
         Return:
             (void)
@@ -405,10 +405,11 @@ class Crawler:
         Retrieving the data needed from the target page.
 
         Parameters:
-            referrer:   string: Referrer of the function.
-            index:      int:    The identifier of the data.
+            referrer:   (string):   Referrer of the function.
+            index:      (int):      The identifier of the data.
 
-        Returns: void 
+        Return:
+            (void )
         """
         if referrer == "firstRun":
             self.getData()[index]["author_channel"] = self.getDriver().find_element(
@@ -417,7 +418,9 @@ class Crawler:
         elif referrer == "secondRun":
             self.setHtmlTags(
                 self.getDriver().find_elements(
-                    By.XPATH, '//a[@id="thumbnail"]')
+                    By.XPATH,
+                    '//a[@id="thumbnail"]'
+                )
             )
             self.getData()[index]["latest_content"] = str(
                 self.getHtmlTags()[1].get_attribute("href")

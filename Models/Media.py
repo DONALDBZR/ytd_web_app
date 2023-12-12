@@ -53,10 +53,6 @@ class Media:
     """
     The IP Address of the user
     """
-    __port: str
-    """
-    The port of the application
-    """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
@@ -138,12 +134,6 @@ class Media:
 
     def setIpAddress(self, ip_address: str) -> None:
         self.__ip_address = ip_address
-
-    def getPort(self) -> str:
-        return self.__port
-
-    def setPort(self, port: str) -> None:
-        self.__port = port
 
     def getLogger(self) -> Extractio_Logger:
         return self.__logger

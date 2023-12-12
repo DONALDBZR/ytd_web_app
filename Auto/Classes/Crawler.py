@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from Classes.Media import Media
+from mysql.connector.types import RowType
 import inspect
 import time
 import json
@@ -301,29 +302,29 @@ class Crawler:
         )
         self.getDriver().quit()
 
-    def prepareFirstRun(self, identifiers: list[tuple[str]]) -> int:
+    def prepareFirstRun(self, identifiers: list[RowType]) -> int:
         """
         Setting up the data for the first run.
 
         Parameters:
-            identifiers:    array:  The result set of the identifiers for the last weeks.
+            identifiers:    (array):    The result set of the identifiers for the last weeks.
 
-        Returns: int
+        Return:
+            (int)
         """
         self.setData([])
-        # Iterating throughout the result set of the identifiers to retrieve the metadata needed
         for index in range(0, len(identifiers), 1):
-            data: tuple[str, str, str] = self.getDatabaseHandler().get_data(
+            data = self.getDatabaseHandler().get_data(
                 parameters=identifiers[index],
                 table_name="YouTube",
                 join_condition="Media ON YouTube.Media = Media.identifier",
                 filter_condition="YouTube.identifier = %s",
                 column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform"
-            )[0]  # type: ignore
-            uniform_resource_locator: str = self.verifyPlatform(data)
+            )[0]
+            uniform_resource_locator = self.verifyPlatform(data)
             metadata: dict[str, str | int | None] = {
-                "identifier": data[0],
-                "author": data[1],
+                "identifier": str(data[0]),
+                "author": str(data[1]),
                 "uniform_resource_locator": uniform_resource_locator,
                 "author_channel": None
             }

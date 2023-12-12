@@ -114,31 +114,42 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
+    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]] | dict[str, int | str]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
         response.
 
-        Returns: object
+        Return:
+            (object)
         """
-        response: dict[str, int | dict[str, str | int | None]]
+        response: dict[str, int | dict[str, str | int | None]] | dict[str, int | str]
         media = self.getMedia()
-        # Verifying that the media does not exist to create one.
+        error_message: str
         if media["status"] == 200:
             self.setIdentifier(int(media["data"][0][0]))  # type: ignore
         else:
-            self.getLogger().error(
-                f"Message: The content does not come from YouTube!\nCurrent Time: {datetime.now()}"
-            )
-            raise Exception("The content does not come from YouTube")
-        # Verifying the platform data to redirect to the correct system.
+            error_message = "The content does not come from YouTube!"
+            self.getLogger().error(error_message)
+            raise Exception(error_message)
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             response = {
                 "status": 200,
                 "data": self.handleYouTube()
             }
-        return response  # type: ignore
+            self.getLogger().inform(
+                f"The data from YouTube has been handled successfully!\nStatus: {response['status']}"
+            )
+        else:
+            error_message = "This application cannot retrieve content from that application!"
+            response = {
+                "status": 403,
+                "error": error_message
+            }
+            self.getLogger().error(
+                f"{error_message}\nStatus: {response['status']}"
+            )
+        return response
 
     def getMedia(self) -> dict[str, int | str | list[RowType]]:
         """

@@ -151,7 +151,7 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]]:
+    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | dict[str, str | int | None] | None]]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -160,13 +160,16 @@ class Media:
         Return:
             (object)
         """
-        response: dict[str, int | dict[str, str | int | None]]
+        response: dict[
+            str,
+            int | dict[str, str | int | dict[str, str | int | None] | None]
+        ]
         media = self.getMedia()
         if media["status"] != 200:
             self.postMedia()
             self.verifyPlatform()
         else:
-            self.setIdentifier(media["data"][0][0])
+            self.setIdentifier(int(media["data"][0][0]))  # type: ignore
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             response = {
                 "status": 200,

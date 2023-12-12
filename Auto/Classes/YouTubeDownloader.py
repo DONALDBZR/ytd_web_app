@@ -92,10 +92,10 @@ class YouTube_Downloader:
     def setUniformResourceLocator(self, uniform_resource_locator: str) -> None:
         self.__uniform_resource_locator = uniform_resource_locator
 
-    def getVideo(self) -> "YouTube":
+    def getVideo(self) -> YouTube:
         return self.__video
 
-    def setVideo(self, video: "YouTube") -> None:
+    def setVideo(self, video: YouTube) -> None:
         self.__video = video
 
     def getTitle(self) -> str:
@@ -128,10 +128,10 @@ class YouTube_Downloader:
     def setPublishedAt(self, published_at: str | datetime | None) -> None:
         self.__published_at = str(published_at)
 
-    def getDatabaseHandler(self) -> "Database_Handler":
+    def getDatabaseHandler(self) -> Database_Handler:
         return self.__database_handler
 
-    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__database_handler = database_handler
 
     def getAuthor(self) -> str:

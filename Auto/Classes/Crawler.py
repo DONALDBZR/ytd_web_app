@@ -165,12 +165,11 @@ class Crawler:
         """
         Setting the services for the ChromeDriver.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.setService(Service(ChromeDriverManager().install()))
-        self.getLogger().inform(
-            f"Message: The Crawler's Service has been installed!\nTime: {datetime.datetime.now()}"
-        )
+        self.getLogger().inform("The Crawler's Service has been installed!")
 
     def __setOptions(self) -> None:
         """

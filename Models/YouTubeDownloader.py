@@ -265,7 +265,6 @@ class YouTube_Downloader:
         meta_data = self.getYouTube()
         audio_file: str | None
         video_file: str | None
-        # Verifying the response of the metadata to retrieve the needed response
         if meta_data["status"] == 200:
             self.setLength(int(meta_data["data"][0][4]))  # type: ignore
             self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
@@ -273,13 +272,14 @@ class YouTube_Downloader:
             self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
             self.setDuration(time.strftime(
                 "%H:%M:%S", time.gmtime(self.getLength())))
-            # Verifying base on the length to set the file location
-            if len(list(meta_data["data"])) == 2:  # type: ignore
-                audio_file = str(meta_data["data"][0][5])  # type: ignore
-                video_file = str(meta_data["data"][1][5])  # type: ignore
-            else:
-                audio_file = None
-                video_file = None
+            self._getFileLocations()
+            # # Verifying base on the length to set the file location
+            # if len(list(meta_data["data"])) == 2:  # type: ignore
+            #     audio_file = str(meta_data["data"][0][5])  # type: ignore
+            #     video_file = str(meta_data["data"][1][5])  # type: ignore
+            # else:
+            #     audio_file = None
+            #     video_file = None
         else:
             self.setLength(self.getVideo().length)
             self.setPublishedAt(self.getVideo().publish_date)

@@ -155,7 +155,8 @@ class Media:
         """
         Retrieving the Media data from the Media table.
 
-        Returns: object
+        Return:
+            (object)
         """
         response: dict[str, int | str | list[RowType]]
         filter_parameters = tuple([self.getValue()])

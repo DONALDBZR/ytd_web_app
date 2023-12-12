@@ -18,6 +18,7 @@ import os
 sys.path.append(os.getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
+from Environment import Environment
 
 
 class Crawler:
@@ -79,12 +80,9 @@ class Crawler:
     def __init__(self) -> None:
         """
         Initializing the crawler to scrape the data needed.
-
-        Parameters:
-            request: object: The request data from the view.
         """
         self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger("selenium"))
+        self.getLogger().setLogger(logging.getLogger(__name__))
         self.getLogger().getLogger().setLevel(logging.DEBUG)
         self.__setServices()
         self.__setOptions()

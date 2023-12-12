@@ -365,10 +365,17 @@ class YouTube_Downloader:
         """
         Creating a record for the media with its data.
 
-        Returns: void
+        Return:
+            (void)
         """
+        data = (self.getIdentifier(), self.getLength(), self.getPublishedAt(
+        ), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
         self.getDatabaseHandler().post_data(
-            "YouTube", "identifier, length, published_at, author, title, Media", "%s, %s, %s, %s, %s, %s", (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier()))
+            table="YouTube",
+            columns="identifier, length, published_at, author, title, Media",
+            values="%s, %s, %s, %s, %s, %s",
+            parameters=data
+        )
 
     def mediaDirectory(self):
         """

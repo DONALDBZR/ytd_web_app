@@ -218,7 +218,7 @@ class Media:
             parameters=data
         )
 
-    def handleYouTube(self) -> dict[str, str | int | None]:
+    def handleYouTube(self) -> dict[str, str | int | None | dict[str, str | int | None]]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
@@ -226,7 +226,7 @@ class Media:
         Return:
             (object)
         """
-        response: dict[str, str | int | None]
+        response: dict[str, str | int | None | dict[str, str | int | None]]
         identifier: str
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(),
@@ -247,8 +247,8 @@ class Media:
             file.close()
             response = {
                 "status": 200,
-                "data": youtube  # type: ignore
-            }  # type: ignore
+                "data": youtube
+            }
         else:
             youtube = self._YouTubeDownloader.retrievingStreams()
             media = {

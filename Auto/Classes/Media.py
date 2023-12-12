@@ -77,10 +77,10 @@ class Media:
     def setSearch(self, search: str) -> None:
         self.__search = search
 
-    def getDatabaseHandler(self) -> "Database_Handler":
+    def getDatabaseHandler(self) -> Database_Handler:
         return self.__database_handler
 
-    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__database_handler = database_handler
 
     def getIdentifier(self) -> int:

@@ -267,7 +267,6 @@ class Crawler:
         """
         new_data: list[dict[str, str | int | None]] = []
         data: dict[str, str | int | None]
-        request: dict[str, str | None]
         for index in range(0, len(self.getData()), 1):
             self.getLogger().inform(
                 f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}"
@@ -288,15 +287,16 @@ class Crawler:
         """
         Saving the data.
 
-        Returns: void
+        Return:
+            void
         """
         timestamp = int(time.time())
-        filename = f"{self.getDirectory()}{timestamp}.json"
-        file = open(filename, "w")
+        file_name = f"{self.getDirectory()}{timestamp}.json"
+        file = open(file_name, "w")
         file.write(json.dumps(self.getData(), indent=4))
         file.close()
         self.getLogger().inform(
-            f"Message: The latest content has been saved!\nFile Name: {self.getDirectory()}{timestamp}.json\nCurrent Time: {datetime.datetime.now()}"
+            f"The latest content has been saved!\nFile Name: {file_name}"
         )
         self.getDriver().quit()
 

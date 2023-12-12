@@ -223,13 +223,16 @@ class Media:
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
 
-        Returns: object
+        Return:
+            (object)
         """
         response: dict[str, str | int | None]
         identifier: str
         self._YouTubeDownloader = YouTube_Downloader(
-            self.getSearch(), self.getIdentifier(), self.getPort())
-        # Verifying the referer to retrieve to required data
+            self.getSearch(),
+            self.getIdentifier(),
+            self.getPort()
+        )
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()
             media = {
@@ -237,11 +240,12 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            if "youtube" in self.getSearch():
-                identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-            else:
-                identifier = self.getSearch().replace(
-                    "https://youtu.be/", "").rsplit("?")[0]
+            identifier = self._getIdentifier()
+            # if "youtube" in self.getSearch():
+            #     identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+            # else:
+            #     identifier = self.getSearch().replace(
+            #         "https://youtu.be/", "").rsplit("?")[0]
             filename = f"{self.getDirectory()}/{identifier}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
@@ -257,11 +261,12 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            if "youtube" in self.getSearch():
-                identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-            else:
-                identifier = self.getSearch().replace(
-                    "https://youtu.be/", "").rsplit("?")[0]
+            identifier = self._getIdentifier()
+            # if "youtube" in self.getSearch():
+            #     identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+            # else:
+            #     identifier = self.getSearch().replace(
+            #         "https://youtu.be/", "").rsplit("?")[0]
             filename = f"{self.getDirectory()}/{identifier}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
@@ -270,8 +275,8 @@ class Media:
                 "status": 200,
                 "data": {
                     "url": f"/Download/YouTube/{youtube['identifier']}"
-                }  # type: ignore
-            }  # type: ignore
+                }
+            }
         return response
 
     def metadataDirectory(self):

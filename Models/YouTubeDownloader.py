@@ -513,18 +513,3 @@ class YouTube_Downloader:
         else:
             response = ""
         return response
-
-    def __server(self, port: str) -> None:
-        """
-        Setting the directory for the application.
-
-        Parameters:
-            port:   string: The port of the application
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if port == '80' or port == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")

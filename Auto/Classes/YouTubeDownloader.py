@@ -185,8 +185,12 @@ class YouTube_Downloader:
         """
         Searching for the video in YouTube.
 
-        Returns: object
+        Return:
+            (object)
         """
+        response: dict[str, str | int | None]
+        audio_file: str | None
+        video_file: str | None
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
         if "youtube" in self.getUniformResourceLocator():
@@ -205,11 +209,7 @@ class YouTube_Downloader:
                     ""
                 ).rsplit("?")[0]
             )
-        response: dict[str, str | int | None]
         meta_data = self.getYouTube()
-        audio_file: str | None
-        video_file: str | None
-        # Verifying the response of the metadata to retrieve the needed response
         if meta_data["status"] == 200:
             self.setLength(int(meta_data["data"][0][4]))  # type: ignore
             self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
@@ -218,13 +218,16 @@ class YouTube_Downloader:
             self.setDuration(
                 time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
             )
-            # Verifying base on the length to set the file location
-            if len(list(meta_data["data"])) == 2:  # type: ignore
-                audio_file = str(meta_data["data"][0][5])  # type: ignore
-                video_file = str(meta_data["data"][1][5])  # type: ignore
-            else:
-                audio_file = None
-                video_file = None
+            File_Location = self._getFileLocations()
+            audio_file = File_Location["audio_file"]
+            video_file = File_Location["video_file"]
+            # # Verifying base on the length to set the file location
+            # if len(list(meta_data["data"])) == 2:  # type: ignore
+            #     audio_file = str(meta_data["data"][0][5])  # type: ignore
+            #     video_file = str(meta_data["data"][1][5])  # type: ignore
+            # else:
+            #     audio_file = None
+            #     video_file = None
         else:
             self.setLength(self.getVideo().length)
             self.setPublishedAt(self.getVideo().publish_date)
@@ -243,7 +246,7 @@ class YouTube_Downloader:
             "identifier": self.getIdentifier(),
             "author_channel": self.getVideo().channel_url,
             "views": self.getVideo().views,
-            "published_at": self.getPublishedAt(),  # type: ignore
+            "published_at": str(self.getPublishedAt()),
             "thumbnail": self.getVideo().thumbnail_url,
             "duration": self.getDuration(),
             "audio_file": audio_file,

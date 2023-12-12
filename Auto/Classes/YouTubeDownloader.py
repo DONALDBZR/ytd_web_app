@@ -10,7 +10,6 @@ import os
 sys.path.append(os.getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
-from Environment import Environment
 
 
 

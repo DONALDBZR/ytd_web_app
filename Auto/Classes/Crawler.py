@@ -217,16 +217,15 @@ class Crawler:
         Preparing for the second run of crawling based on the data
         in the cache.
 
-        Returns: void
+        Return:
+            (void)
         """
         new_dataset: list[str] = []
         data: dict[str, str | None] = {}
         self.setData([])
-        # Iterating throughout the dataset to retrieve the author's channel's uniform resource locator.
         for index in range(0, len(dataset), 1):
             new_dataset.append(str(dataset[index]["author_channel"]))
         new_dataset = list(set(new_dataset))
-        # Iterating throughout the dataset to set the latest content
         for index in range(0, len(new_dataset), 1):
             data = {
                 "author_channel": new_dataset[index],

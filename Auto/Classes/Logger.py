@@ -51,9 +51,10 @@ class Extractio_Logger:
         Logging informational data.
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.INFO)
         self.getLogger().info(message)

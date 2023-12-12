@@ -241,11 +241,6 @@ class Media:
                 }
             }
             identifier = self._getIdentifier()
-            # if "youtube" in self.getSearch():
-            #     identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-            # else:
-            #     identifier = self.getSearch().replace(
-            #         "https://youtu.be/", "").rsplit("?")[0]
             filename = f"{self.getDirectory()}/{identifier}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
@@ -262,11 +257,6 @@ class Media:
                 }
             }
             identifier = self._getIdentifier()
-            # if "youtube" in self.getSearch():
-            #     identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-            # else:
-            #     identifier = self.getSearch().replace(
-            #         "https://youtu.be/", "").rsplit("?")[0]
             filename = f"{self.getDirectory()}/{identifier}.json"
             file = open(filename, "w")
             file.write(json.dumps(media, indent=4))
@@ -278,6 +268,23 @@ class Media:
                 }
             }
         return response
+
+    def _getIdentifier(self) -> str:
+        """
+        Extracting the identifier from the uniform resource locator.
+
+        Return:
+            (string)
+        """
+        identifier: str
+        if "youtube" in self.getSearch():
+            identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+        else:
+            identifier = self.getSearch().replace(
+                "https://youtu.be/",
+                ""
+            ).rsplit("?")[0]
+        return identifier
 
     def metadataDirectory(self):
         """

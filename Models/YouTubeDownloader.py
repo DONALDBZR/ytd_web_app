@@ -394,14 +394,14 @@ class YouTube_Downloader:
         Downloading the contents of the media from the platform to
         save on the server.
 
-        Returns: object
+        Return:
+            (object)
         """
         response: dict[str, str | int]
         metadata = self.search()
         self.setIdentifier(str(metadata["identifier"]))
         audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
         video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        # Ensuring that the files do not exist in the server to download them
         if os.path.isfile(audio_file_location) == False and os.path.isfile(video_file_location) == False:
             self.setVideo(YouTube(self.getUniformResourceLocator()))
             self.getDatabaseHandler()._execute()

@@ -352,20 +352,19 @@ class Crawler:
         Preparing for the first run of crawling based on the data in
         the cache.
 
-        Returns: void
+        Return:
+            (void)
         """
         delay: float = 0.0
         total: int = 0
-        # Iterating throughout the dataset to calculate delay between each run
         for index in range(0, len(self.getData()), 1):
             total += len(
                 str(self.getData()[index]["uniform_resource_locator"])
             )
         delay = ((total / len(self.getData())) / (40 * 5)) * 60
         self.getLogger().inform(
-            f"Delay: {delay} s\nCurrent Time: {datetime.datetime.now()}"
+            f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s"
         )
-        # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
             self.enterTarget(
                 str(self.getData()[index]["uniform_resource_locator"]),

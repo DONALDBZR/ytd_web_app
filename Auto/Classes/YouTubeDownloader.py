@@ -218,16 +218,9 @@ class YouTube_Downloader:
             self.setDuration(
                 time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
             )
-            File_Location = self._getFileLocations()
+            File_Location = self._getFileLocations(meta_data["data"]) # type: ignore
             audio_file = File_Location["audio_file"]
             video_file = File_Location["video_file"]
-            # # Verifying base on the length to set the file location
-            # if len(list(meta_data["data"])) == 2:  # type: ignore
-            #     audio_file = str(meta_data["data"][0][5])  # type: ignore
-            #     video_file = str(meta_data["data"][1][5])  # type: ignore
-            # else:
-            #     audio_file = None
-            #     video_file = None
         else:
             self.setLength(self.getVideo().length)
             self.setPublishedAt(self.getVideo().publish_date)
@@ -252,6 +245,29 @@ class YouTube_Downloader:
             "audio_file": audio_file,
             "video_file": video_file
         }
+        return response
+
+    def _getFileLocations(self, result_set: list[RowType]) -> dict[str, str | None]:
+        """
+        Extracting the file locations on the application's directory.
+
+        Parameters:
+            result_set: (array):    The data from the database server.
+
+        Return:
+            (string)
+        """
+        response: dict[str, str | None]
+        if len(list(result_set)) == 2:
+            response = {
+                "audio_file": str(result_set[0][5]),
+                "video_file": str(result_set[1][5])
+            }
+        else:
+            response = {
+                "audio_file": None,
+                "video_file": None
+            }
         return response
 
     def getYouTube(self) -> dict[str, int | list[RowType] | str]:

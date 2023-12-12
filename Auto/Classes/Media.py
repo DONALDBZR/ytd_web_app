@@ -186,9 +186,10 @@ class Media:
         that it is in a playlist.
 
         Parameters:
-            identifier: string: The ID of the content.
+            identifier: (string):   The ID of the content.
 
-        Returns: string
+        Return:
+            (string)
         """
         if "&" in identifier:
             return identifier.rsplit("&", 1)[0]

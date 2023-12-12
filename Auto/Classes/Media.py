@@ -114,7 +114,7 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | None]] | dict[str, int | str]:
+    def verifyPlatform(self) -> dict[str, int | dict[str, int | dict[str, str | int | None]]] | dict[str, int | str]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -123,7 +123,7 @@ class Media:
         Return:
             (object)
         """
-        response: dict[str, int | dict[str, str | int | None]] | dict[str, int | str]
+        response: dict[str, int | dict[str, int | dict[str, str | int | None]]] | dict[str, int | str]
         media = self.getMedia()
         error_message: str
         if media["status"] == 200:

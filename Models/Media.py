@@ -288,12 +288,3 @@ class Media:
                 ""
             ).rsplit("?")[0]
         return identifier
-
-    def metadataDirectory(self):
-        """
-        Creating the metadata directory
-
-        Returns: void
-        """
-        if not os.path.exists(self.getDirectory()):
-            os.makedirs(self.getDirectory())

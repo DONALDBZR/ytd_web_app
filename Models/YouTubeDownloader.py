@@ -2,8 +2,10 @@ from pytube import YouTube, StreamQuery, Stream
 from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
 from Models.Logger import Extractio_Logger
+from Environment import Environment
 import time
 import os
+import logging
 
 
 class YouTube_Downloader:
@@ -81,27 +83,37 @@ class YouTube_Downloader:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, uniform_resource_locator: str, media_identifier: int, port: str):
+    def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
         Instantiating the class and launching the operations needed.
 
         Parameters:
-            uniform_resource_locator:   string: The uniform resource locator to be searched.
-            media_identifier:           int:    The media type for the system.
-            port:                       string: The port of the application
+            uniform_resource_locator:   (string): The uniform resource locator to be searched.
+            media_identifier:           (int):    The media type for the system.
         """
+        ENV = Environment()
+        self.setDirectory(
+            f"{ENV.getDirectory()}/Public"
+        )
         self.setLogger(Extractio_Logger())
-        self.__server(port)
-        self.setDirectory(f"{self.getDirectory()}/Public")
+        self.getLogger().setLogger(logging.getLogger(__name__))
         self.mediaDirectory()
         self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))", None)
-        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))", None)
+        self.getDatabaseHandler()._query(
+            query="CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))",
+            parameters=None
+        )
+        self.getDatabaseHandler()._execute()
+        self.getDatabaseHandler()._query(
+            query="CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))",
+            parameters=None
+        )
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
         self.getLogger().inform(
-            "The YouTube Downloader has been successfully been initialized!")
+            "The YouTube Downloader has been successfully been initialized!"
+        )
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator

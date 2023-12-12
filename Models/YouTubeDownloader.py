@@ -3,6 +3,7 @@ from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
 from Models.Logger import Extractio_Logger
 from Environment import Environment
+from mysql.connector.types import RowType
 import time
 import os
 import logging
@@ -304,16 +305,25 @@ class YouTube_Downloader:
         }
         return response
 
-    def getYouTube(self) -> dict[str, int | list[str | int] | str]:
+    def getYouTube(self) -> dict[str, int | list[RowType] | str]:
         """
         Retrieving the metadata from the YouTube table.
 
-        Returns: object
+        Return:
+            (object)
         """
+        filter_parameters = tuple([self.getIdentifier()])
         media = self.getDatabaseHandler().get_data(
-            tuple([self.getIdentifier()]), "YouTube", "MediaFile ON MediaFile.YouTube = YouTube.identifier", "YouTube.identifier = %s", "author, title, YouTube.identifier, published_at, length, location", "MediaFile.identifier ASC", 2)
+            parameters=filter_parameters,
+            table_name="YouTube",
+            join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
+            filter_condition="YouTube.identifier = %s",
+            column_names="author, title, YouTube.identifier, published_at, length, location",
+            sort_condition="MediaFile.identifier ASC",
+            limit_condition=2
+        )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response: dict[str, int | list[str | int] | str]
+        response: dict[str, int | list[RowType] | str]
         if len(media) == 0:
             response = {
                 'status': 204,

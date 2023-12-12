@@ -5,7 +5,6 @@ from datetime import datetime
 from Environment import Environment
 from mysql.connector.types import RowType
 import json
-import os
 import logging
 
 

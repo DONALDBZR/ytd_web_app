@@ -237,7 +237,8 @@ class YouTube_Downloader:
         """
         Searching for the video in YouTube.
 
-        Returns: object
+        Return:
+            (object)
         """
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())

@@ -77,9 +77,10 @@ class Extractio_Logger:
         Logging the data for an error.
 
         Parameters:
-            message:    string: The action done.
+            message:    (string):   The action done.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getLogger().setLevel(logging.ERROR)
         self.getLogger().error(message)

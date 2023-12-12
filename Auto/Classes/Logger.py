@@ -1,10 +1,11 @@
-import logging
 from logging.__init__ import Logger
+import logging
+from Environment import Environment
 
 
 class Extractio_Logger:
     """
-    The logger that will all the action of the application.
+    The logger that will all the action of the application's CRON.
     """
     __logger: Logger
     """
@@ -20,10 +21,12 @@ class Extractio_Logger:
         Instantiating the Logger which will keep track of everything
         that the application does.
         """
+        ENV = Environment()
         logging.basicConfig(
-            filename="/media/darkness4869/Archive/.PY files/Logs/Extractio.log", encoding="utf-8",
+            filename=f"{ENV.getDirectory()}/Logs/Extractio.log",
+            encoding="utf-8",
             filemode="a",
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            format="----------\nCurrent Time: %(asctime)s\nModule: %(name)s\nLogging Level: %(levelname)s\nMessage: %(message)s"
         )
         self.setLogger(logging.getLogger(__name__))
 

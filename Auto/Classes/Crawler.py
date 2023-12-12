@@ -29,82 +29,51 @@ class Crawler:
     """
     Controls the ChromeDriver and allows you to drive the
     browser.
-
-    Type: WebDriver
     """
     __data: list[dict[str, str | int | None]]
     """
     The data from the cache data.
-
-    Type: array
     """
     __directory: str
     """
     The directory of the metadata files.
-
-    Type: string
-    Visibility: private
     """
     __files: list[str]
     """
     The files that are inside of the directory.
-
-    Type: array
-    Visibility: private
     """
     __html_tags: list[WebElement]
     """
     A list of HTML tags which are pieces of markup language
     used to indicate the beginning and end of an HTML element in
     an HTML document.
-
-    Type: array
-    Visibility: private
     """
     __html_tag: WebElement
     """
     An HTML tag which is pieces of markup language used to
     indicate the beginning and end of an HTML element in an HTML
     document.
-
-    Type: array
-    Visibility: private
     """
     __services: Service
     """
     It is responsible for controlling of chromedriver.
-
-    Type: Service
-    Visibility: private
     """
     __options: Options
     """
     It is responsible for setting the options for the webdriver.
-
-    Type: Options
-    Visibility: private
     """
     __database_handler: Database_Handler
     """
     The database handler that will communicate with the database
     server.
-
-    Type: Database_Handler
-    Visibility: private
     """
     __Media: Media
     """
     It allows the application to manage the media.
-
-    Type: Media
-    Visibility: private
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
     def __init__(self) -> None:

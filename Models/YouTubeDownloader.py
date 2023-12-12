@@ -451,20 +451,20 @@ class YouTube_Downloader:
                 filename=f"{self.getIdentifier()}.mp3"
             )
             file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             data: tuple[str, str, str, str] = (
                 self.getMimeType(),
                 self.getTimestamp(),
                 file_path,
                 self.getIdentifier()
             )
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             self.getDatabaseHandler().post_data(
                 table="MediaFile",
                 columns="type, date_downloaded, location, YouTube",
                 values="%s, %s, %s, %s",
                 parameters=data
             )
-            response = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+            response = file_path
         else:
             response = ""
         return response
@@ -474,22 +474,44 @@ class YouTube_Downloader:
         Retrieving the video file and saving it on the server as
         well as adding its meta data in the database.
 
-        Returns: string
+        Return:
+            (string)
         """
-        response = ""
-        # Iterating throughout the streams to set the ITAG needed
+        response: str
         for index in range(0, len(self.getStreams().filter(mime_type="video/mp4", audio_codec="mp4a.40.2", resolution="720p")), 1):
-            self.setITAG(self.getStreams().filter(
-                mime_type="video/mp4", audio_codec="mp4a.40.2", resolution="720p")[index].itag)
-        self.setStream(self.getStreams().get_by_itag(
-            self.getITAG()))  # type: ignore
-        self.setMimeType(self.getStream().mime_type)
-        self.getStream().download(
-            output_path=f"{self.getDirectory()}/Video", filename=f"{self.getIdentifier()}.mp4")
-        self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        self.getDatabaseHandler().post_data("MediaFile", "type, date_downloaded, location, YouTube", "%s, %s, %s, %s",
-                                            (self.getMimeType(), self.getTimestamp(), f"{self.getDirectory()}/Video/{self.getTitle()}.mp4", self.getIdentifier()))
-        response = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+            self.setITAG(
+                self.getStreams().filter(
+                    mime_type="video/mp4",
+                    audio_codec="mp4a.40.2",
+                    resolution="720p"
+                )[index].itag
+            )
+        self.setStream(
+            self.getStreams().get_by_itag(self.getITAG())
+        )
+        self.setMimeType("video/mp4")
+        if type(self.getStream()) is Stream:
+            self.getStream().download(  # type: ignore
+                output_path=f"{self.getDirectory()}/Video",
+                filename=f"{self.getIdentifier()}.mp4"
+            )
+            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+            file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+            data = (
+                self.getMimeType(),
+                self.getTimestamp(),
+                file_path,
+                self.getIdentifier()
+            )
+            self.getDatabaseHandler().post_data(
+                table="MediaFile",
+                columns="type, date_downloaded, location, YouTube",
+                values="%s, %s, %s, %s",
+                parameters=data
+            )
+            response = file_path
+        else:
+            response = ""
         return response
 
     def __server(self, port: str) -> None:

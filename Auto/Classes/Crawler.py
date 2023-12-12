@@ -378,23 +378,23 @@ class Crawler:
         Entering the targeted page.
 
         Parameters:
-            target: string: The uniform resource locator of the targeted page.
-            delay:  float:  The amount of time that the Crawler will wait which is based on the average typing speed of a [erspm/]
-            index:  int:    The identifier of the data.
+            target: (string): The uniform resource locator of the targeted page.
+            delay:  (float):  The amount of time that the Crawler will wait which is based on the average typing speed of a person
+            index:  (int):    The identifier of the data.
 
-        Returns: void
+        Return:
+            (void)
         """
         referrer = inspect.stack()[1][3]
-        # Verifying the run of the crawler
         if referrer == "firstRun":
             self.getLogger().inform(
-                f"Target: {target}\nCurrent Time: {datetime.datetime.now()}"
+                f"Entering the target!\nTarget: {target}"
             )
             self.getDriver().get(target)
             time.sleep(delay)
         elif referrer == "secondRun":
             self.getLogger().inform(
-                f"Target: {target}/videos\nCurrent Time: {datetime.datetime.now()}"
+                f"Entering the target!\nTarget: {target}/videos"
             )
             self.getDriver().get(f"{target}/videos")
             time.sleep(delay)

@@ -1,5 +1,6 @@
 from pytube import YouTube
 from datetime import datetime
+from mysql.connector.types import RowType
 import time
 import logging
 import sys
@@ -250,38 +251,38 @@ class YouTube_Downloader:
         }
         return response
 
-    def getYouTube(self) -> dict[str, int | list[tuple[str, str, str, str, int, str | None]] | str]:
+    def getYouTube(self) -> dict[str, int | list[RowType] | str]:
         """
         Retrieving the metadata from the YouTube table.
 
-        Returns: object
+        Return:
+            (object)
         """
+        response: dict[str, int | list[RowType] | str]
+        filter_parameters = tuple([self.getIdentifier()])
         media = self.getDatabaseHandler().get_data(
-            tuple([self.getIdentifier()]),
-            "YouTube",
-            "MediaFile ON MediaFile.YouTube = YouTube.identifier",
-            "YouTube.identifier = %s",
-            "author, title, YouTube.identifier, published_at, length, location",
-            "MediaFile.identifier ASC",
-            2
+            parameters=filter_parameters,
+            table_name="YouTube",
+            join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
+            filter_condition="YouTube.identifier = %s",
+            column_names="author, title, YouTube.identifier, published_at, length, location",
+            sort_condition="MediaFile.identifier ASC",
+            limit_condition=2
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response: dict[
-            str, int | list[tuple[str, str, str, str, int, str | None]] | str
-        ]
         self.getLogger().inform(
-            f"Content Amount: {len(media)}\nCurrent Media: {datetime.now()}"
+            f"The media content has been retrieved from the database server!\nContent Amount: {len(media)}\nCurrent Media: {media}"
         )
         if len(media) == 0:
             response = {
                 'status': 404,
-                'data': media,  # type: ignore
+                'data': media,
                 'timestamp': self.getTimestamp()
             }
         else:
             response = {
                 'status': 200,
-                'data': media,  # type: ignore
+                'data': media,
                 'timestamp': self.getTimestamp()
             }
         return response

@@ -5,14 +5,19 @@ from selenium.webdriver.remote.webelement import WebElement
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from Classes.DatabaseHandler import Database_Handler
 from Classes.Media import Media
-from Classes.Logger import Extractio_Logger
 import inspect
 import time
 import json
 import logging
 import datetime
+import sys
+import os
+
+
+sys.path.append(os.getcwd())
+from Models.DatabaseHandler import Database_Handler
+from Models.Logger import Extractio_Logger
 
 
 class Crawler:

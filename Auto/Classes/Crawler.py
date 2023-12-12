@@ -81,13 +81,16 @@ class Crawler:
         """
         Initializing the crawler to scrape the data needed.
         """
+        ENV = Environment()
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(logging.getLogger(__name__))
         self.getLogger().getLogger().setLevel(logging.DEBUG)
         self.__setServices()
         self.__setOptions()
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
-        self.setDirectory("/var/www/html/ytd_web_app/Cache/Trend/")
+        self.setDirectory(
+            f"{ENV.getDirectory()}/Cache/Trend/"
+        )
         self.setDatabaseHandler(Database_Handler())
         self.setData([])
         self.setUpData()

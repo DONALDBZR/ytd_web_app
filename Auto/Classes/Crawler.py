@@ -262,15 +262,15 @@ class Crawler:
         """
         Building the data to be displayed to the user.
 
-        Returns: void
+        Return:
+            (void)
         """
         new_data: list[dict[str, str | int | None]] = []
         data: dict[str, str | int | None]
         request: dict[str, str | None]
-        # Iterating throughout the data to get metadata.
         for index in range(0, len(self.getData()), 1):
             self.getLogger().inform(
-                f"Latest Content: {self.getData()[index]['latest_content']}\nCurrent Time: {datetime.datetime.now()}"
+                f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}"
             )
             self.setMedia(
                 Media(
@@ -281,7 +281,7 @@ class Crawler:
             response = self.getMedia().verifyPlatform()
             data = response["data"]["data"]  # type: ignore
             new_data.append(data)
-        self.setData(new_data)  # type: ignore
+        self.setData(new_data)
         self.save()
 
     def save(self) -> None:

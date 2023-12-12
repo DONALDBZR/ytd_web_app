@@ -3,11 +3,13 @@ from datetime import datetime
 import json
 import sys
 import os
+import logging
 
 
 sys.path.append(os.getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
+from Environment import Environment
 
 
 class Media:
@@ -55,19 +57,19 @@ class Media:
         the media's dataset and do the required processing.
 
         Parameters:
-            search: string: The uniform resource locator to be searched.
-            value:  string: The value of the required media which have to correspond to the name of the platform from which the media comes from.
-
-        Returns:    void
+            search: (string):   The uniform resource locator to be searched.
+            value:  (string):   The value of the required media which have to correspond to the name of the platform from which the media comes from.
         """
+        ENV = Environment()
+        self.setDirectory(
+            f"{ENV.getDirectory()}/Cache/Media"
+        )
         self.setLogger(Extractio_Logger())
-        self.setDirectory("/var/www/html/ytd_web_app/Cache/Media")
+        self.getLogger().setLogger(logging.getLogger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setSearch(search)
         self.setValue(value)
-        self.getLogger().inform(
-            f"Message: The Media Management System has been initialized!\nCurrent Time: {datetime.now()}"
-        )
+        self.getLogger().inform("The Media Management System has been initialized!")
 
     def getSearch(self) -> str:
         return self.__search

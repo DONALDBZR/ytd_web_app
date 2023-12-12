@@ -1,5 +1,6 @@
 from Classes.YouTubeDownloader import YouTube_Downloader
 from datetime import datetime
+from mysql.connector.types import RowType
 import json
 import sys
 import os
@@ -139,19 +140,20 @@ class Media:
             }
         return response  # type: ignore
 
-    def getMedia(self) -> dict[str, int | str | list[tuple[int, str]]]:
+    def getMedia(self) -> dict[str, int | str | list[RowType]]:
         """
         Retrieving the Media data from the Media table.
 
         Returns: object
         """
+        response: dict[str, int | str | list[RowType]]
+        filter_parameters = tuple([self.getValue()])
         media = self.getDatabaseHandler().get_data(
-            tuple([self.getValue()]),
-            "Media",
+            parameters=filter_parameters,
+            table_name="Media",
             filter_condition="value = %s"
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response = {}
         if len(media) == 0:
             response = {
                 'status': 404,

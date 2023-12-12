@@ -196,14 +196,15 @@ class Media:
         else:
             return identifier
 
-    def handleYouTube(self) -> dict[str, str | int | None]:
+    def handleYouTube(self) -> dict[str, int | dict[str, str | int | None]]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
 
-        Returns: object
+        Return:
+            (object)
         """
-        response: dict[str, str | int | None]
+        response: dict[str, int | dict[str, str | int | None]]
         identifier: str
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(),
@@ -217,11 +218,15 @@ class Media:
         }
         if "youtube" in self.getSearch():
             identifier = self.retrieveYouTubeIdentifier(
-                self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+                self.getSearch().replace(
+                    "https://www.youtube.com/watch?v=",
+                    ""
+                )
             )
         else:
             identifier = self.getSearch().replace(
-                "https://youtu.be/", ""
+                "https://youtu.be/",
+                ""
             ).rsplit("?")[0]
         filename = f"{self.getDirectory()}/{identifier}.json"
         file = open(filename, "w")
@@ -229,6 +234,6 @@ class Media:
         file.close()
         response = {
             "status": 200,
-            "data": youtube  # type: ignore
+            "data": youtube
         }
         return response

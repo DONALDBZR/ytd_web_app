@@ -381,7 +381,8 @@ class YouTube_Downloader:
         """
         Creating the directories for storing the media files.
 
-        Returns: void
+        Return:
+            (void)
         """
         if not os.path.exists(f"{self.getDirectory()}/Video"):
             os.makedirs(f"{self.getDirectory()}/Video")

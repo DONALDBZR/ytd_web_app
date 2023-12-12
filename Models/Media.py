@@ -72,7 +72,6 @@ class Media:
         )
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(logging.getLogger(__name__))
-        self.setPort(str(request["port"]))
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             query="CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))",

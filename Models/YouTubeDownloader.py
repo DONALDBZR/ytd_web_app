@@ -13,123 +13,72 @@ class YouTube_Downloader:
     __uniform_resource_locator: str
     """
     The uniform resource locator to be searched.
-
-    Type: string
-    Visibility: private
     """
-    __video: "YouTube"
+    __video: YouTube
     """
     Core developer interface for pytube.
-
-    Type: YouTube
-    Visibility: private
     """
     __title: str
     """
     The title of the video.
-
-    Type: string
-    Visibility: private
     """
     __identifier: str
     """
     The identifier of the video.
-
-    Type: string
-    Visibility: private
     """
     __length: int
     """
     The length of the video in seconds.
-
-    Type: int
-    Visibility: private
     """
     __duration: str
     """
     The duration of the video in the format of HH:mm:ss.
-
-    Type: string
-    Visibility: private
     """
     __published_at: str | datetime | None
     """
     The date at which the video has been published.
-
-    Type: string
-    Visibility: private
     """
-    __database_handler: "Database_Handler"
+    __database_handler: Database_Handler
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
-
-    Type: Database_Handler
-    Visibility: private
     """
     __author: str
     """
     The author of the video/music.
-
-    Type: string
-    Visibility: private
     """
     __media_identifier: int
     """
     The media type for the system.
-
-    Type: int
-    Visibility: private
     """
     __timestamp: str
     """
     The timestamp at which the session has been created.
-
-    Type: string
-    Visibility: private
     """
     __directory: str
     """
     The directory of the media files.
-
-    Type: string
-    Visibility: private
     """
-    __streams: "StreamQuery"
+    __streams: StreamQuery
     """
     Interface for querying the available media streams.
-
-    Type: StreamQuery
-    Visibility: private
     """
-    __stream: "Stream"
+    __stream: Stream
     """
     Container for stream manifest data.
-
-    Type: Stream|null
-    Visibility: private
     """
     __itag: int
     """
     YouTube format identifier code
-
-    Type: integer
-    Visibility: private
     """
     __mime_type: str
     """
     Two-part identifier for file formats and format contents
     composed of a "type" and a "subtype".
-
-    Type: string
-    Visibility: private
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int, port: str):

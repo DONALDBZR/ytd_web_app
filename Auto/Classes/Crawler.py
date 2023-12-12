@@ -175,15 +175,14 @@ class Crawler:
         """
         Setting the options for the ChromeDriver.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.setOption(Options())
         self.getOption().add_argument('--headless')
         self.getOption().add_argument('--no-sandbox')
         self.getOption().add_argument('--disable-dev-shm-usage')
-        self.getLogger().inform(
-            f"Message: The Crawler has been configured!\nTime: {datetime.datetime.now()}"
-        )
+        self.getLogger().inform("The Crawler has been configured!")
 
     def setUpData(self) -> None:
         """

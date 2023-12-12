@@ -331,18 +331,23 @@ class Crawler:
             self.getData().append(metadata)
         return len(self.getData())
 
-    def verifyPlatform(self, data: tuple[str, str, str]) -> str:  # type: ignore
+    def verifyPlatform(self, data: RowType) -> str:
         """
         Veryfing the platform of the metadata to be able to generate
         its correct uniform resource locator.
 
         Parameters:
-            data:   array:  The record of a metadata.
+            data:   (array):    The record of a metadata.
 
-        Returns:    string
+        Return:
+            (string)
         """
+        response: str
         if data[2] == "youtube" or data[2] == "youtu.be":
-            return f"https://www.youtube.com/watch?v={data[0]}"
+            response = f"https://www.youtube.com/watch?v={data[0]}"
+        else:
+            response = ""
+        return response
 
     def firstRun(self) -> None:
         """

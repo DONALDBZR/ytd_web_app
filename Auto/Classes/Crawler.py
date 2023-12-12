@@ -239,18 +239,17 @@ class Crawler:
         The second run for the web-crawler to seek for the data
         needed from the targets.
 
-        Returns: void
+        Return:
+            (void)
         """
         delay: float = 0.0
         total: int = 0
-        # Iterating throughout the dataset to calculate delay between each run
         for index in range(0, len(self.getData()), 1):
             total += len(str(self.getData()[index]["author_channel"]))
         delay = ((total / len(self.getData())) / (40 * 5)) * 60
-        self.getLogger().inform(
-            f"Delay: {delay} s\nCurrent Time: {datetime.datetime.now()}"
+        self.getLogger().debug(
+            f"The delay has been calculated!\nDelay: {delay} s"
         )
-        # Iterating throughout the targets to run throughout them
         for index in range(0, len(self.getData()), 1):
             self.enterTarget(
                 str(self.getData()[index]["author_channel"]),

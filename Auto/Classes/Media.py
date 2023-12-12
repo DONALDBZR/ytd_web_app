@@ -1,71 +1,52 @@
-from DatabaseHandler import Database_Handler
 from Classes.YouTubeDownloader import YouTube_Downloader
 from datetime import datetime
-from Logger import Extractio_Logger
 import json
+import sys
+import os
+
+
+sys.path.append(os.getcwd())
+from Models.DatabaseHandler import Database_Handler
+from Models.Logger import Extractio_Logger
 
 
 class Media:
     """
-    It allows the application to manage the media.
+    It allows the CRON to manage the media.
     """
     __search: str
     """
     The uniform resource locator to be searched.
-
-    Type: string
-    Visibility: private
     """
-    _YouTubeDownloader: "YouTube_Downloader"
+    _YouTubeDownloader: YouTube_Downloader
     """
     It will handle every operations related to YouTube.
-
-    Type: YouTube_Downloader
-    Visibility: protected
     """
-    __database_handler: "Database_Handler"
+    __database_handler: Database_Handler
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
-
-    Type: Database_Handler
-    Visibility: private
     """
     __identifier: int
     """
-    The identifier of the required media
-
-    Type: int
-    Visibility: private
+    The identifier of the required media.
     """
     __value: str
     """
     The value of the required media which have to correspond to
     the name of the platform from which the media comes from.
-
-    Type: string | null
-    Visibility: private
     """
     __timestamp: str
     """
-    The timestamp at which the session has been created
-
-    Type: string
-    Visibility: private
+    The timestamp at which the session has been created.
     """
     __directory: str
     """
-    The directory of the JSON files
-
-    Type: string
-    Visibility: private
+    The directory of the JSON files.
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
     def __init__(self, search: str, value: str) -> None:

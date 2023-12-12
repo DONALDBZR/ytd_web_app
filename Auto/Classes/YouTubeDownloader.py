@@ -1,9 +1,16 @@
 from pytube import YouTube
 from datetime import datetime
-from Classes.DatabaseHandler import Database_Handler
-from Classes.Logger import Extractio_Logger
 import time
 import logging
+import sys
+import os
+
+
+sys.path.append(os.getcwd())
+from Models.DatabaseHandler import Database_Handler
+from Models.Logger import Extractio_Logger
+from Environment import Environment
+
 
 
 class YouTube_Downloader:

@@ -76,17 +76,15 @@ class YouTube_Downloader:
         Instantiating the class and launching the operations needed.
 
         Parameters:
-            uniform_resource_locator:   string: The uniform resource locator to be searched.
-            media_identifier:           int:    The media type for the system.
+            uniform_resource_locator:   (string):   The uniform resource locator to be searched.
+            media_identifier:           (int):      The media type for the system.
         """
         self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger("pytube"))
+        self.getLogger().setLogger(logging.getLogger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
-        self.getLogger().inform(
-            f"Message: The Downloader has been initialized\nCurrent Time: {datetime.now()}"
-        )
+        self.getLogger().inform("The Downloader has been initialized")
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator

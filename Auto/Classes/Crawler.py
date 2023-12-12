@@ -189,25 +189,25 @@ class Crawler:
         Setting up the data to be used to be used by the web
         crawler.
 
-        Returns: void
+        Return:
+            (void)
         """
-        identifiers: list[tuple[str]] = self.getDatabaseHandler().get_data(
+        identifiers = self.getDatabaseHandler().get_data(
             parameters=None,
             table_name="MediaFile",
             filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK",
             column_names="DISTINCT YouTube"
-        )  # type: ignore
+        )
         dataset = self.getData()
         referrer = inspect.stack()[1][3]
-        # Verifying the referrer to be able to select the action required.
         if referrer == "__init__" and self.prepareFirstRun(identifiers) > 0:
             self.getLogger().inform(
-                f"Weekly Content Downloaded Amount: {self.prepareFirstRun(identifiers)}\nMessage: Data has been successfully retrieved from the database server.\nCurrent Time: {datetime.datetime.now()}"
+                f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {self.prepareFirstRun(identifiers)}\n"
             )
             self.firstRun()
         elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
             self.getLogger().inform(
-                f"New Content Amount: {self.prepareSecondRun(dataset)}\nMessage: Latest Content to be displayed on the application.\nCurrent Time: {datetime.datetime.now()}"
+                f"Latest Content to be displayed on the application.\nNew Content Amount: {self.prepareSecondRun(dataset)}"
             )
             self.secondRun()
 

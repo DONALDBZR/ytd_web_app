@@ -73,7 +73,7 @@ class Session_Manager:
         """
         ENV = Environment()
         self.setDirectory(
-            f"{ENV.getDirectory()}/Cache/Session/Users"
+            f"{ENV.getDirectory()}/Cache/Session/Users/"
         )
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(logging.getLogger(__name__))

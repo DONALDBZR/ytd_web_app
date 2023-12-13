@@ -1,16 +1,21 @@
-from Models.DatabaseHandler import Database_Handler
-from Models.YouTubeDownloader import YouTube_Downloader
-from Models.Logger import Extractio_Logger
+from Classes.YouTubeDownloader import YouTube_Downloader
 from datetime import datetime
-from Environment import Environment
 from mysql.connector.types import RowType
 import json
+import sys
+import os
 import logging
+
+
+sys.path.append(os.getcwd())
+from Models.DatabaseHandler import Database_Handler
+from Models.Logger import Extractio_Logger
+from Environment import Environment
 
 
 class Media:
     """
-    It allows the application to manage the media.
+    It allows the CRON to manage the media.
     """
     __search: str
     """
@@ -20,12 +25,6 @@ class Media:
     """
     It will handle every operations related to YouTube.
     """
-    __referer: str | None
-    """
-    The http referrer which is the uniform resource locator that
-    is needed to be able to allow the user to download the
-    required media.
-    """
     __database_handler: Database_Handler
     """
     It is the object relational mapper that will be used to
@@ -33,7 +32,7 @@ class Media:
     """
     __identifier: int
     """
-    The identifier of the required media
+    The identifier of the required media.
     """
     __value: str
     """
@@ -42,28 +41,25 @@ class Media:
     """
     __timestamp: str
     """
-    The timestamp at which the session has been created
+    The timestamp at which the session has been created.
     """
     __directory: str
     """
-    The directory of the JSON files
-    """
-    __ip_address: str
-    """
-    The IP Address of the user
+    The directory of the JSON files.
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
     """
 
-    def __init__(self, request: dict[str, str | None]) -> None:
+    def __init__(self, search: str, value: str) -> None:
         """
         Instantiating the media's manager which will interact with
         the media's dataset and do the required processing.
 
         Parameters:
-            request:    (object): The request from the user.
+            search: (string):   The uniform resource locator to be searched.
+            value:  (string):   The value of the required media which have to correspond to the name of the platform from which the media comes from.
         """
         ENV = Environment()
         self.setDirectory(
@@ -72,30 +68,15 @@ class Media:
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(logging.getLogger(__name__))
         self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler()._query(
-            query="CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))",
-            parameters=None
-        )
-        self.getDatabaseHandler()._execute()
-        self.setSearch(str(request["search"]))
-        self.setReferer(request["referer"])
-        self.setValue(str(request["platform"]))
-        self.setIpAddress(str(request["ip_address"]))
-        self.getLogger().inform(
-            "The Media Management System has been successfully been initialized!"
-        )
+        self.setSearch(search)
+        self.setValue(value)
+        self.getLogger().inform("The Media Management System has been initialized!")
 
     def getSearch(self) -> str:
         return self.__search
 
     def setSearch(self, search: str) -> None:
         self.__search = search
-
-    def getReferer(self) -> str | None:
-        return self.__referer
-
-    def setReferer(self, referer: str | None) -> None:
-        self.__referer = referer
 
     def getDatabaseHandler(self) -> Database_Handler:
         return self.__database_handler
@@ -127,19 +108,13 @@ class Media:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
-    def getIpAddress(self) -> str:
-        return self.__ip_address
-
-    def setIpAddress(self, ip_address: str) -> None:
-        self.__ip_address = ip_address
-
     def getLogger(self) -> Extractio_Logger:
         return self.__logger
 
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | dict[str, str | int | None] | None]]:
+    def verifyPlatform(self) -> dict[str, int | dict[str, int | dict[str, str | int | None]]] | dict[str, int | str]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -148,38 +123,49 @@ class Media:
         Return:
             (object)
         """
-        response: dict[
-            str,
-            int | dict[str, str | int | dict[str, str | int | None] | None]
-        ]
+        response: dict[str, int | dict[str, int | dict[str, str | int | None]]] | dict[str, int | str]
         media = self.getMedia()
-        if media["status"] != 200:
-            self.postMedia()
-            self.verifyPlatform()
-        else:
+        error_message: str
+        if media["status"] == 200:
             self.setIdentifier(int(media["data"][0][0]))  # type: ignore
+        else:
+            error_message = "The content does not come from YouTube!"
+            self.getLogger().error(error_message)
+            raise Exception(error_message)
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             response = {
                 "status": 200,
                 "data": self.handleYouTube()
             }
-        return response  # type: ignore
+            self.getLogger().inform(
+                f"The data from YouTube has been handled successfully!\nStatus: {response['status']}"
+            )
+        else:
+            error_message = "This application cannot retrieve content from that application!"
+            response = {
+                "status": 403,
+                "error": error_message
+            }
+            self.getLogger().error(
+                f"{error_message}\nStatus: {response['status']}"
+            )
+        return response
 
-    def getMedia(self) -> dict[str, int | list[RowType] | str]:
+    def getMedia(self) -> dict[str, int | str | list[RowType]]:
         """
         Retrieving the Media data from the Media table.
 
         Return:
             (object)
         """
-        filter_data = tuple([self.getValue()])
+        response: dict[str, int | str | list[RowType]]
+        filter_parameters = tuple([self.getValue()])
         media = self.getDatabaseHandler().get_data(
-            parameters=filter_data,
+            parameters=filter_parameters,
             table_name="Media",
             filter_condition="value = %s"
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response = {}
         if len(media) == 0:
             response = {
                 'status': 404,
@@ -194,22 +180,23 @@ class Media:
             }
         return response
 
-    def postMedia(self) -> None:
+    def retrieveYouTubeIdentifier(self, identifier: str) -> str:
         """
-        Creating a record for the media with its data.
+        Retrieving the identifier of the content in the condition
+        that it is in a playlist.
+
+        Parameters:
+            identifier: (string):   The ID of the content.
 
         Return:
-            (void)
+            (string)
         """
-        data = tuple([self.getValue()])
-        self.getDatabaseHandler().post_data(
-            table="Media",
-            columns="value",
-            values="%s",
-            parameters=data
-        )
+        if "&" in identifier:
+            return identifier.rsplit("&", 1)[0]
+        else:
+            return identifier
 
-    def handleYouTube(self) -> dict[str, str | int | None | dict[str, str | int | None]]:
+    def handleYouTube(self) -> dict[str, int | dict[str, str | int | None]]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
@@ -217,61 +204,36 @@ class Media:
         Return:
             (object)
         """
-        response: dict[str, str | int | None | dict[str, str | int | None]]
+        response: dict[str, int | dict[str, str | int | None]]
         identifier: str
         self._YouTubeDownloader = YouTube_Downloader(
             self.getSearch(),
             self.getIdentifier()
         )
-        if self.getReferer() is None:
-            youtube = self._YouTubeDownloader.search()
-            media = {
-                "Media": {
-                    "YouTube": youtube
-                }
+        youtube = self._YouTubeDownloader.search()
+        media = {
+            "Media": {
+                "YouTube": youtube
             }
-            identifier = self._getIdentifier()
-            filename = f"{self.getDirectory()}/{identifier}.json"
-            file = open(filename, "w")
-            file.write(json.dumps(media, indent=4))
-            file.close()
-            response = {
-                "status": 200,
-                "data": youtube
-            }
-        else:
-            youtube = self._YouTubeDownloader.retrievingStreams()
-            media = {
-                "Media": {
-                    "YouTube": youtube
-                }
-            }
-            identifier = self._getIdentifier()
-            filename = f"{self.getDirectory()}/{identifier}.json"
-            file = open(filename, "w")
-            file.write(json.dumps(media, indent=4))
-            file.close()
-            response = {
-                "status": 200,
-                "data": {
-                    "url": f"/Download/YouTube/{youtube['identifier']}"
-                }
-            }
-        return response
-
-    def _getIdentifier(self) -> str:
-        """
-        Extracting the identifier from the uniform resource locator.
-
-        Return:
-            (string)
-        """
-        identifier: str
+        }
         if "youtube" in self.getSearch():
-            identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
+            identifier = self.retrieveYouTubeIdentifier(
+                self.getSearch().replace(
+                    "https://www.youtube.com/watch?v=",
+                    ""
+                )
+            )
         else:
             identifier = self.getSearch().replace(
                 "https://youtu.be/",
                 ""
             ).rsplit("?")[0]
-        return identifier
+        filename = f"{self.getDirectory()}/{identifier}.json"
+        file = open(filename, "w")
+        file.write(json.dumps(media, indent=4))
+        file.close()
+        response = {
+            "status": 200,
+            "data": youtube
+        }
+        return response

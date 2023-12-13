@@ -4,6 +4,7 @@ from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
+import logging
 
 
 class Security_Management_System:
@@ -11,55 +12,34 @@ class Security_Management_System:
     It will be a major component that will assure the security
     of the data that will be stored across the application.
     """
-    __Database_Handler: "Database_Handler"
+    __Database_Handler: Database_Handler
     """
     It is the object relational mapper that will be used to
     simplify the process to entering queries.
-
-    Type: Database_Handler
-    Visibility: Private
     """
     __application_name: str
     """
     The name of the application.
-
-    Type: string
-    Visibility: Private
     """
     __datestamp: int
     """
     The date retrieved from UNIX time.
-
-    Type: int
-    Visibility: Private
     """
     __hash: str
     """
     The hash that will be stored in the database.
-
-    Type: string
-    Visibility: Private
     """
-    __password_hasher: "PasswordHasher"
+    __password_hasher: PasswordHasher
     """
     High level class to hash passwords with sensible defaults.
-
-    Type: Password_Hasher
-    Visibility: private
     """
     __date_created: str | int
     """
     The date at which the key has been created.
-
-    Type: string | int
-    Visibility: private
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
     def __init__(self) -> None:
@@ -68,20 +48,26 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
+        ENV = Environment()
         self.setLogger(Extractio_Logger())
+        self.getLogger().setLogger(logging.getLogger(__name__))
         self.setDatabaseHandler(Database_Handler())
-        self.setApplicationName(Environment.APPLICATION_NAME)
+        self.setApplicationName(ENV.getApplicationName())
         self.setDatestamp(int(time()))
-        self.getDatabaseHandler()._query("CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))", None)
+        self.getDatabaseHandler()._query(
+            query="CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))",
+            parameters=None
+        )
         self.getDatabaseHandler()._execute()
         self.getLogger().inform(
-            "The Security Management System has been successfully been initialized!")
+            "The Security Management System has been successfully been initialized!"
+        )
         self.hash()
 
-    def getDatabaseHandler(self) -> "Database_Handler":
+    def getDatabaseHandler(self) -> Database_Handler:
         return self.__Database_Handler
 
-    def setDatabaseHandler(self, database_handler: "Database_Handler") -> None:
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__Database_Handler = database_handler
 
     def getApplicationName(self) -> str:
@@ -102,10 +88,10 @@ class Security_Management_System:
     def setHash(self, hash: str) -> None:
         self.__hash = hash
 
-    def getPasswordHasher(self) -> "PasswordHasher":
+    def getPasswordHasher(self) -> PasswordHasher:
         return self.__password_hasher
 
-    def setPasswordHasher(self, password_hasher: "PasswordHasher") -> None:
+    def setPasswordHasher(self, password_hasher: PasswordHasher) -> None:
         self.__password_hasher = password_hasher
 
     def getDateCreated(self) -> str | int:
@@ -125,17 +111,31 @@ class Security_Management_System:
         It is a one-way encryption function that will generate a
         hash based on the Argon 2 hashing algorithm.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(
-            self.getApplicationName() + str(self.getDatestamp()))
+            f"{self.getApplicationName()}{str(self.getDatestamp())}"
+        )
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
-        self.setDateCreated(datetime.fromtimestamp(
-            self.getDatestamp()).strftime("%Y-%m-%d"))
+        self.setDateCreated(
+            datetime.fromtimestamp(self.getDatestamp()).strftime("%Y-%m-%d")
+        )
+        data: tuple[str, str] = (
+            self.getHash(),
+            str(self.getDateCreated())
+        )
         self.getDatabaseHandler().post_data(
-            "Session", "hash, date_created", "%s, %s", (self.getHash(), self.getDateCreated()))
+            table="Session",
+            columns="hash, date_created",
+            values="%s, %s",
+            parameters=data
+        )
         self.getLogger().inform("The key has been created!")
         self.getDatabaseHandler().delete_data(
-            "Session", None, "date_created < CURRENT_DATE()")
+            table="Session",
+            parameters=None,
+            condition="date_created < CURDATE()"
+        )
         self.getLogger().inform("The older keys are deleted!")

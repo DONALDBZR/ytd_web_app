@@ -16,27 +16,21 @@ the central object.  It is passed the name of the module or
 package of the application.  Once it is created it will act
 as a central registry for the view functions, the URL rules,
 template configuration and much more.
-
-Type: Flask
 """
 DatabaseHandler = Database_Handler()
 """
 The database handler that will communicate with the database
 server.
-
-Type: Database_Handler
 """
 SecurityManagementSystem = Security_Management_System()
 """
 It will be a major component that will assure the security
 of the data that will be stored across the application.
-
-Type: Security_Management_System
 """
 data = DatabaseHandler.get_data(
-    None,
-    "Session",
-    filter_condition="date_created = CURRENT_DATE()",
+    parameters=None,
+    table_name="Session",
+    filter_condition="date_created = CURDATE()",
     column_names="hash",
     sort_condition="identifier ASC",
     limit_condition=1
@@ -44,8 +38,6 @@ data = DatabaseHandler.get_data(
 key = str(data[0][0])
 """
 Encryption key of the application
-
-Type: string
 """
 Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'

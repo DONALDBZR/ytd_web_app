@@ -1,10 +1,11 @@
-# Importing the requirements
 from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
+from Environment import Environment
 import os
 import json
 import time
+import logging
 
 
 class Session_Manager:
@@ -13,112 +14,83 @@ class Session_Manager:
     """
     __directory: str
     """
-    The directory of the session files
-
-    Type: string
-    Visibility: private
+    The directory of the session files.
     """
     __ip_address: str
     """
-    The IP Address of the user
-
-    Type: string
-    Visibility: private
+    The IP Address of the user.
     """
     __http_client_ip_address: str
     """
     The client's IP Address of the user
-
-    Type: string
-    Visibility: private
     """
     __proxy_ip_address: str
     """
-    The Proxy's IP Address of the user
-
-    Type: string
-    Visibility: private
+    The Proxy's IP Address of the user.
     """
     __timestamp: int
     """
-    The timestamp at which the session has been created
-
-    Type: int
-    Visibility: private
+    The timestamp at which the session has been created.
     """
     __session_files: list[str]
     """
-    The files containing the session of the users
-
-    Type: array
-    Visibility: private
+    The files containing the session of the users.
     """
     __color_scheme: str
     """
-    The color scheme of the application
-
-    Type: string
-    Visibility: private
+    The color scheme of the application.
     """
     __length: int
     """
-    The amount of session files
-
-    Type: int
-    Visibility: private
+    The amount of session files.
     """
     __session: SessionMixin
     """
     The session of the user.
-
-    Type: SessionMixin
-    Visibility: private
     """
     __port: str
     """
-    The port of the application
-
-    Type: int
-    Visibility: private
+    The port of the application.
     """
     __database_handler: Database_Handler
     """
     The database handler that will communicate with the database
     server.
-
-    Type: Database_Handler
-    Visibility: private
     """
     __logger: Extractio_Logger
     """
     The logger that will all the action of the application.
-
-    Type: Extractio_Logger
-    Visibility: private
     """
 
-    def __init__(self, request: dict[str, str], session: "SessionMixin") -> None:
+    def __init__(self, request: dict[str, str], session: SessionMixin) -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users.
 
         Parameters:
-            request:    object:         The request from the application.
-            session:    SessionMixin:   The session of the user.
+            request:    (object):       The request from the application.
+            session:    (SessionMixin): The session of the user.
         """
+        ENV = Environment()
+        self.setDirectory(
+            f"{ENV.getDirectory()}/Cache/Session/Users/"
+        )
         self.setLogger(Extractio_Logger())
-        self.setPort(request["port"])  # type: ignore
+        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setPort(str(request["port"]))
         self.setDatabaseHandler(Database_Handler())
-        self.__server()
-        self.setDirectory(f"{self.getDirectory()}/Cache/Session/Users/")
-        self.__maintain()
-        self.setIpAddress(request["ip_address"])  # type: ignore
+        self.setIpAddress(str(request["ip_address"]))
         self.setHttpClientIpAddress(
-            request["http_client_ip_address"])  # type: ignore
-        self.setProxyIpAddress(request["proxy_ip_address"])  # type: ignore
+            str(request["http_client_ip_address"])
+        )
+        self.setProxyIpAddress(
+            str(request["proxy_ip_address"])
+        )
+        self.__maintain()
         self.setSession(session)
         self.getLogger().inform(
-            "The Session Management System has been successfully been initialized!")
+            "The Session Management System has been successfully been initialized!"
+        )
         self.verifySession()
 
     def getDirectory(self) -> str:
@@ -169,10 +141,10 @@ class Session_Manager:
     def setLength(self, length: int) -> None:
         self.__length = length
 
-    def getSession(self) -> "SessionMixin":
+    def getSession(self) -> SessionMixin:
         return self.__session
 
-    def setSession(self, session: "SessionMixin") -> None:
+    def setSession(self, session: SessionMixin) -> None:
         self.__session = session
 
     def getPort(self) -> str:
@@ -193,31 +165,21 @@ class Session_Manager:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def __server(self) -> None:
-        """
-        Setting the directory for the application.
-
-        Returns: void
-        """
-        # Verifying that the port is for either Apache HTTPD or Werkzeug
-        if self.getPort() == '80' or self.getPort() == '443':
-            self.setDirectory("/var/www/html/ytd_web_app")
-        else:
-            self.setDirectory("/home/darkness4869/Documents/extractio")
-
     def __maintain(self) -> None:
         """
         Maintaining the database of the Session Management System by
         doing regular checks to keep only the active sessions and
         store inactive sessions in the database.
 
-        Returns: void
+        Return:
+            (void)
         """
         self.getDatabaseHandler()._query(
-            "CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))", None)
+            query="CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))",
+            parameters=None
+        )
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
-        # Ensuring that there are sessions in the document database to verify them.
         if self.getLength() > 0:
             self.verifyExistingSessions()
 
@@ -225,11 +187,11 @@ class Session_Manager:
         """
         Verifying existing sessions to remove expired ones.
 
-        Returns: void
+        Return:
+            (void)
         """
         age: int
         data: dict[str, dict[str, str | int]]
-        # Iterating throughout the sessions to verify that they are inactive.
         for index in range(0, self.getLength(), 1):
             file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
             file = open(file_name, "r")
@@ -238,31 +200,38 @@ class Session_Manager:
             file.close()
             self.verifyInactiveSession(age, data, file_name)
 
-    def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name) -> None:
+    def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name: str) -> None:
         """
         Verifying that the session is inactive to remove it from the
         document database and to store it in the relational database.
 
         Parameters:
-            age:        int:    Age of the session.
-            session:    object: The data of the session.
-            file_name:  string: The name of the file.
+            age:        (int):      Age of the session.
+            session:    (object):   The data of the session.
+            file_name:  (string):   The name of the file.
 
-        Returns: void
+        Return:
+            (void)
         """
-        # Verifying that the session is inactive to remove it from the document database to store it in the relational database.
         if age > 3600:
             expired_sessions = (
-                session["Client"]["timestamp"], session["Client"]["ip_address"])
+                int(session["Client"]["timestamp"]),
+                str(session["Client"]["ip_address"])
+            )
             self.getDatabaseHandler().post_data(
-                "Visitors", "timestamp, client", "%s, %s", expired_sessions)
+                table="Visitors",
+                columns="timestamp, client",
+                values="%s, %s",
+                parameters=expired_sessions
+            )
             os.remove(file_name)
 
-    def createSession(self) -> "SessionMixin":
+    def createSession(self) -> SessionMixin:
         """
-        Creating the session
+        Creating the session.
 
-        Returns: SessionMixin
+        Return:
+            (SessionMixin)
         """
         self.getSession().clear()
         self.setTimestamp(int(time.time()))
@@ -280,18 +249,18 @@ class Session_Manager:
         session_file = open(file_path, 'w')
         session_file.write(session_data)
         session_file.close()
-        self.getLogger().inform("The session hass been successfully created!")
+        self.getLogger().inform("The session has been successfully created!")
         return self.getSession()
 
     def verifySession(self) -> None:
         """
         Verifying that the session is not hijacked
 
-        Returns: void
+        Return:
+            (void)
         """
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
-        # Ensuring that there are session files.
         if len(self.getSessionFiles()) > 0:
             self.handleSessionData(self.sessionsLoader(self.getSessionFiles()))
         else:
@@ -301,7 +270,8 @@ class Session_Manager:
         """
         Returning a stringified form of the session
 
-        Returns: string
+        Return:
+            (string)
         """
         return json.dumps(self.getSession(), indent=4)
 
@@ -310,17 +280,17 @@ class Session_Manager:
         Modifying the session.
 
         Parameters:
-            data:   object: Data from the view
+            data:   (object):   Data from the view
 
-        Returns: SessionMixin | void
+        Return:
+            (SessionMixin | void)
         """
         self.setTimestamp(int(time.time()))
         self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         data = json.load(open(file_name))
-        # Ensuring that the IP Addresses corresponds in order to update the session.
         if self.getIpAddress() == data['Client']['ip_address']:
-            new_data = {
+            new_data: dict[str, str | int] = {
                 "ip_address": self.getIpAddress(),
                 "http_client_ip_address": self.getHttpClientIpAddress(),
                 "proxy_ip_address": self.getProxyIpAddress(),
@@ -340,12 +310,12 @@ class Session_Manager:
         depending on the response from the system.
 
         Parameters:
-            sessions: array: List of session files
+            sessions:   (array):  List of session files
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
-        # Iterating throughout the session files to find any file that contains the IP Address of the client.
         for index in range(0, len(sessions), 1):
             if self.handleFile(sessions[index])["status"] == 200:
                 response = {
@@ -371,11 +341,12 @@ class Session_Manager:
         it further more.
 
         Parameters:
-            file: Any: file to be loaded
-        Returns: object
+            file_name:  (string):   file to be loaded
+
+        Return:
+            (object)
         """
         response = {}
-        # Ensuring that the session files are of JSON file type.
         if file_name.endswith(".json"):
             file_path = f"{self.getDirectory()}/{file_name}"
             file = open(file_path)
@@ -395,12 +366,12 @@ class Session_Manager:
         cache file.
 
         Parameters:
-            data: object: The data in the file
+            data:   (object):   The data in the file
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
-        # Verifying the IP Address of the client against the IP Address stored in the cache database as well as ensuring that the session is not expired.
         if self.getIpAddress() == str(data['Client']['ip_address']):
             age = int(time.time()) - int(data['Client']['timestamp'])
             response = {
@@ -414,15 +385,15 @@ class Session_Manager:
 
     def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
         """
-        Handling the expiry time of the session
+        Handling the expiry time of the session.
 
         Parameters:
-            expiry_time: datetime: The expiry time of the session
+            expiry_time:    (int):  The expiry time of the session
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
-        # Verifying that the session has not expired
         if expiry_time < 3600:
             response = {
                 "status": 200
@@ -439,10 +410,11 @@ class Session_Manager:
         system.
 
         Parameters:
-            status: int: HTTP Status Code
-            name: string: File Name
+            status: (int):      HTTP Status Code
+            name:   (string):   File Name
 
-        Returns: object
+        Return:
+            (object)
         """
         response = {}
         file_path = f"{self.getDirectory()}/{name}"
@@ -471,9 +443,10 @@ class Session_Manager:
         renew the session.
 
         Parameters:
-            session_data: dict: Session's data
+            session_data:   (object):   Session's data
 
-        Returns: void
+        Return:
+            (void)
         """
         # Verifying that the data has been received or created in order to verify it to renew access.
         if session_data["status"] == 200 or session_data["status"] == 201:
@@ -487,12 +460,12 @@ class Session_Manager:
         the access to their current data
 
         Parameters:
-            session_data: SessionMixin: Session Data
+            session_data:   (SessionMixin): Session Data
 
-        Returns: SessionMixin | void
+        Return:
+            (SessionMixin | void)
         """
         file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
-        # Comparing the IP Addresses to either renew the timestamp or to clear the session.
         if session_data['Client']['ip_address'] == self.getIpAddress():
             self.setTimestamp(int(time.time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
@@ -506,12 +479,3 @@ class Session_Manager:
             self.getSession().clear()
             os.remove(file_path)
             self.createSession()
-
-    def sessionDirectory(self) -> None:
-        """
-        Creating the Session Directory.
-
-        Returns: void
-        """
-        if not os.path.exists(self.getDirectory()):
-            os.makedirs(self.getDirectory(), 777)

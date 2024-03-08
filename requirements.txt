@@ -1,0 +1,6 @@
+Flask>=2.3.3
+mysql-connector-python>=8.1.0
+argon2-cffi>=23.1.0
+pytube>=15.0.0
+selenium>=4.12.0
+webdriver-manager>=4.0.0

@@ -4,6 +4,7 @@ from datetime import datetime
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
+from urllib.error import HTTPError
 import time
 import os
 import logging
@@ -491,7 +492,21 @@ class YouTube_Downloader:
         )
         self.setMimeType("video/mp4")
         if type(self.getStream()) is Stream:
-            self.getStream().download(  # type: ignore
+            response = self.__downloadVideo()
+        else:
+            response = ""
+        return response
+
+    def __downloadVideo(self) -> str:
+        """
+        Recursively downloading the video data from YouTube's main
+        data center.
+
+        Returns:
+            string
+        """
+        try:
+            self.getStream().download( # type: ignore
                 output_path=f"{self.getDirectory()}/Video",
                 filename=f"{self.getIdentifier()}.mp4"
             )
@@ -509,7 +524,4 @@ class YouTube_Downloader:
                 values="%s, %s, %s, %s",
                 parameters=data
             )
-            response = file_path
-        else:
-            response = ""
-        return response
+            return file_path

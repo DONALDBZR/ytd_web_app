@@ -566,4 +566,4 @@ class YouTube_Downloader:
             self.getLogger().error(
                 f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
             )
-            return file_path
+            return self.handleHttpError(error, file_path)

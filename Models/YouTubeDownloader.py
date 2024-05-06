@@ -4,6 +4,7 @@ from datetime import datetime
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
+from urllib.error import HTTPError
 import time
 import os
 import logging
@@ -446,25 +447,7 @@ class YouTube_Downloader:
         )
         self.setMimeType("audio/mp3")
         if type(self.getStream()) is Stream:
-            self.getStream().download(  # type: ignore
-                output_path=f"{self.getDirectory()}/Audio",
-                filename=f"{self.getIdentifier()}.mp3"
-            )
-            file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            data: tuple[str, str, str, str] = (
-                self.getMimeType(),
-                self.getTimestamp(),
-                file_path,
-                self.getIdentifier()
-            )
-            self.getDatabaseHandler().post_data(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data
-            )
-            response = file_path
+            response = self.__downloadAudio()
         else:
             response = ""
         return response
@@ -491,12 +474,26 @@ class YouTube_Downloader:
         )
         self.setMimeType("video/mp4")
         if type(self.getStream()) is Stream:
-            self.getStream().download(  # type: ignore
+            response = self.__downloadVideo()
+        else:
+            response = ""
+        return response
+
+    def __downloadVideo(self) -> str:
+        """
+        Recursively downloading the video data from YouTube's main
+        data center.
+
+        Returns:
+            string
+        """
+        file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+        try:
+            self.getStream().download( # type: ignore
                 output_path=f"{self.getDirectory()}/Video",
                 filename=f"{self.getIdentifier()}.mp4"
             )
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
             data = (
                 self.getMimeType(),
                 self.getTimestamp(),
@@ -509,7 +506,64 @@ class YouTube_Downloader:
                 values="%s, %s, %s, %s",
                 parameters=data
             )
-            response = file_path
+            return file_path
+        except HTTPError as error:
+            self.getLogger().error(
+                f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
+            )
+            return self.handleHttpError(error, file_path)
+
+    def handleHttpError(self, error: HTTPError, file_path: str) -> str:
+        """
+        Handling the HTTP Errors accordingly as it must be noted
+        that HTTP/403 is being caused as the application could not
+        keep track of the file path which gets lost where the back
+        end which acts the front-end of YouTube's datacenter,
+        generates the HTTP/403 which in turn generate the HTTP/500
+        into the application's front-end.
+
+        Parameters:
+            error: HTTPError: Raised when HTTP error occurs, but also acts like non-error return
+            file_path: string: The path of the file.
+
+        Returns:
+            string
+        """
+        if "403" in str(error):
+            return file_path
         else:
-            response = ""
-        return response
+            return ""
+
+    def __downloadAudio(self) -> str:
+        """
+        Recursively downloading the audio data from YouTube's main
+        data center.
+
+        Returns:
+            string
+        """
+        file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+        try:
+            self.getStream().download(  # type: ignore
+                output_path=f"{self.getDirectory()}/Audio",
+                filename=f"{self.getIdentifier()}.mp3"
+            )
+            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+            data: tuple[str, str, str, str] = (
+                self.getMimeType(),
+                self.getTimestamp(),
+                file_path,
+                self.getIdentifier()
+            )
+            self.getDatabaseHandler().post_data(
+                table="MediaFile",
+                columns="type, date_downloaded, location, YouTube",
+                values="%s, %s, %s, %s",
+                parameters=data
+            )
+            return file_path
+        except HTTPError as error:
+            self.getLogger().error(
+                f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
+            )
+            return self.handleHttpError(error, file_path)

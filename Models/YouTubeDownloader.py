@@ -513,6 +513,27 @@ class YouTube_Downloader:
             )
             return self.handleHttpError(error, file_path)
 
+    def handleHttpError(self, error: HTTPError, file_path: str) -> str:
+        """
+        Handling the HTTP Errors accordingly as it must be noted
+        that HTTP/403 is being caused as the application could not
+        keep track of the file path which gets lost where the back
+        end which acts the front-end of YouTube's datacenter,
+        generates the HTTP/403 which in turn generate the HTTP/500
+        into the application's front-end.
+
+        Parameters:
+            error: HTTPError: Raised when HTTP error occurs, but also acts like non-error return
+            file_path: string: The path of the file.
+
+        Returns:
+            string
+        """
+        if "403" in str(error):
+            return file_path
+        else:
+            return ""
+
     def __downloadAudio(self) -> str:
         """
         Recursively downloading the audio data from YouTube's main

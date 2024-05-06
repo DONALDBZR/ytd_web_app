@@ -4,7 +4,7 @@ from datetime import datetime
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
-from urllib.error import HTTPError
+from pytube.exceptions import PytubeError
 import time
 import os
 import logging
@@ -507,7 +507,7 @@ class YouTube_Downloader:
                 parameters=data
             )
             return file_path
-        except HTTPError as error:
+        except PytubeError as error:
             self.getLogger().error(
                 f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
             )
@@ -541,7 +541,7 @@ class YouTube_Downloader:
                 parameters=data
             )
             return file_path
-        except HTTPError as error:
+        except PytubeError as error:
             self.getLogger().error(
                 f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
             )

@@ -447,25 +447,26 @@ class YouTube_Downloader:
         )
         self.setMimeType("audio/mp3")
         if type(self.getStream()) is Stream:
-            self.getStream().download(  # type: ignore
-                output_path=f"{self.getDirectory()}/Audio",
-                filename=f"{self.getIdentifier()}.mp3"
-            )
-            file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            data: tuple[str, str, str, str] = (
-                self.getMimeType(),
-                self.getTimestamp(),
-                file_path,
-                self.getIdentifier()
-            )
-            self.getDatabaseHandler().post_data(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data
-            )
-            response = file_path
+            response = self.__downloadAudio()
+            # self.getStream().download(  # type: ignore
+            #     output_path=f"{self.getDirectory()}/Audio",
+            #     filename=f"{self.getIdentifier()}.mp3"
+            # )
+            # file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+            # self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+            # data: tuple[str, str, str, str] = (
+            #     self.getMimeType(),
+            #     self.getTimestamp(),
+            #     file_path,
+            #     self.getIdentifier()
+            # )
+            # self.getDatabaseHandler().post_data(
+            #     table="MediaFile",
+            #     columns="type, date_downloaded, location, YouTube",
+            #     values="%s, %s, %s, %s",
+            #     parameters=data
+            # )
+            # response = file_path
         else:
             response = ""
         return response

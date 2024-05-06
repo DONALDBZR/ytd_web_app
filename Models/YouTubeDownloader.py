@@ -448,25 +448,6 @@ class YouTube_Downloader:
         self.setMimeType("audio/mp3")
         if type(self.getStream()) is Stream:
             response = self.__downloadAudio()
-            # self.getStream().download(  # type: ignore
-            #     output_path=f"{self.getDirectory()}/Audio",
-            #     filename=f"{self.getIdentifier()}.mp3"
-            # )
-            # file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-            # self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            # data: tuple[str, str, str, str] = (
-            #     self.getMimeType(),
-            #     self.getTimestamp(),
-            #     file_path,
-            #     self.getIdentifier()
-            # )
-            # self.getDatabaseHandler().post_data(
-            #     table="MediaFile",
-            #     columns="type, date_downloaded, location, YouTube",
-            #     values="%s, %s, %s, %s",
-            #     parameters=data
-            # )
-            # response = file_path
         else:
             response = ""
         return response
@@ -531,3 +512,37 @@ class YouTube_Downloader:
                 f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
             )
             return self.getVideoFile()
+
+    def __downloadAudio(self) -> str:
+        """
+        Recursively downloading the audio data from YouTube's main
+        data center.
+
+        Returns:
+            string
+        """
+        try:
+            self.getStream().download(  # type: ignore
+                output_path=f"{self.getDirectory()}/Audio",
+                filename=f"{self.getIdentifier()}.mp3"
+            )
+            file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
+            data: tuple[str, str, str, str] = (
+                self.getMimeType(),
+                self.getTimestamp(),
+                file_path,
+                self.getIdentifier()
+            )
+            self.getDatabaseHandler().post_data(
+                table="MediaFile",
+                columns="type, date_downloaded, location, YouTube",
+                values="%s, %s, %s, %s",
+                parameters=data
+            )
+            return file_path
+        except HTTPError as error:
+            self.getLogger().error(
+                f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
+            )
+            return self.getAudioFile()

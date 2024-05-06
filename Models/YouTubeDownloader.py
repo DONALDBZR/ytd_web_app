@@ -4,7 +4,7 @@ from datetime import datetime
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
-from pytube.exceptions import PytubeError
+from urllib.error import HTTPError
 import time
 import os
 import logging
@@ -487,13 +487,13 @@ class YouTube_Downloader:
         Returns:
             string
         """
+        file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         try:
             self.getStream().download( # type: ignore
                 output_path=f"{self.getDirectory()}/Video",
                 filename=f"{self.getIdentifier()}.mp4"
             )
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
             data = (
                 self.getMimeType(),
                 self.getTimestamp(),
@@ -507,11 +507,11 @@ class YouTube_Downloader:
                 parameters=data
             )
             return file_path
-        except PytubeError as error:
+        except HTTPError as error:
             self.getLogger().error(
                 f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
             )
-            return self.getVideoFile()
+            return file_path
 
     def __downloadAudio(self) -> str:
         """
@@ -541,7 +541,7 @@ class YouTube_Downloader:
                 parameters=data
             )
             return file_path
-        except PytubeError as error:
+        except HTTPError as error:
             self.getLogger().error(
                 f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
             )

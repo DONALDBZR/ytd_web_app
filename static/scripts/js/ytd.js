@@ -4,7 +4,8 @@
  */
 class YTD {
     /**
-     * Setting the data needed as well as initalizing the application
+     * Setting the data needed as well as initalizing the
+     * application
      * @returns {YTD}
      */
     constructor() {
@@ -234,12 +235,20 @@ class YTD {
     }
 
     /**
+     * Retrieving the metadata of the media content.
+     * @returns {Promise<{Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}>}
+     */
+    async getMedia() {
+        const response = await this.getMediaResponse();
+        return response.json();
+    }
+
+    /**
      * Defining the title of the page for the application.
      * @returns {void}
      */
     addTitle() {
         this.setTitle(document.createElement("title"));
-        // Verifying the request uniform resource indicator to set up the title of the page
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
             this.getTitle().text = "Extractio";
         } else if (this.getRequestURI() == "/Search/") {

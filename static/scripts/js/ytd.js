@@ -307,7 +307,7 @@ class YTD {
             });
         }
         this.getHead().appendChild(this.getMeta());
-        setTimeout(() => this.configureRobot(), 200);
+        setTimeout(() => this.configureRobot(), 2000);
     }
 
     /**

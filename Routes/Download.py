@@ -19,7 +19,7 @@ def downloadPage(identifier: str) -> Response:
 
     Returns: Response
     """
-    template = render_template('page.html')
+    template = render_template('page.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
     mime_type = "text/html"
     status = 200
     return Response(template, status, mimetype=mime_type)

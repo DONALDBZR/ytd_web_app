@@ -71,6 +71,13 @@ class YTD {
          * @type {HTMLMetaElement|null}
          */
         this.__meta;
+        /**
+         * Contains the descriptive information, or metadata, for a
+         * document. This object inherits all of the properties and
+         * methods described in the HTMLElement interface.
+         * @type {HTMLHeadElement}
+         */
+        this.__head;
         this.init();
     }
 
@@ -192,6 +199,21 @@ class YTD {
      */
     setMeta(meta) {
         this.__meta = meta;
+    }
+
+    /**
+     * @returns {HTMLHeadElement}
+     */
+    getMeta() {
+        return this.__head;
+    }
+
+    /**
+     * @param {HTMLHeadElement} head
+     * @returns {void}
+     */
+    setMeta(head) {
+        this.__head = head;
     }
 
     /**

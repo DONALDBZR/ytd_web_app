@@ -348,6 +348,21 @@ class YTD {
     }
 
     /**
+     * Retrieving the media query needed for the stylesheets.
+     * @param {string} href The hyperlink of the stylesheet.
+     * @returns {string}
+     */
+    getMediaQuery(href) {
+        if (href.includes("desktop")) {
+            return this._mediaQueries[0];
+        } else if (href.includes("mobile")) {
+            return this._mediaQueries[2];
+        } else if (href.includes("tablet")) {
+            return this._mediaQueries[1];
+        }
+    }
+
+    /**
      * Styling the application
      * @returns {void}
      */
@@ -358,13 +373,6 @@ class YTD {
             const link = document.createElement("link");
             link.href = this._stylesheets[index];
             link.media = this.getMediaQuery(link.href);
-            if (link.href.includes("desktop")) {
-                link.media = this._mediaQueries[0];
-            } else if (link.href.includes("mobile")) {
-                link.media = this._mediaQueries[2];
-            } else if (link.href.includes("tablet")) {
-                link.media = this._mediaQueries[1];
-            }
             link.rel = this.getRelationship();
             link.type = this.getMimeType();
             this.getHead().appendChild(link);

@@ -329,6 +329,7 @@ class YTD {
      * @returns {void}
      */
     initializeGoogleAnalytics() {
+        const google_analytics_key = String(this.getHead().attributes.key.values);
         window.dataLayer = window.dataLayer || [];
         const gtag = () => {
             dataLayer.push(arguments);

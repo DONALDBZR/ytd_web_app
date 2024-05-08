@@ -244,6 +244,17 @@ class YTD {
     }
 
     /**
+     * Sending the request to the server to retrieve the data
+     * needed to the Media API.
+     * @returns {Promise<Response>}
+     */
+    async getMediaResponse() {
+        return fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
+            method: "GET",
+        });
+    }
+
+    /**
      * Defining the title of the page for the application.
      * @returns {void}
      */

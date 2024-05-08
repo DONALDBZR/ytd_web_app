@@ -1,14 +1,19 @@
-import json
-import os
 from flask import Blueprint, Response, request
 from Models.Media import Media
 from io import TextIOWrapper
+from Environment import Environment
+import json
+import os
 
 Media_Portal = Blueprint("Media", __name__)
 """
 The Routing for all the Media.
 
 Type: Blueprint
+"""
+ENV = Environment()
+"""
+ENV File of the application
 """
 
 
@@ -126,7 +131,7 @@ def retrieveMedia() -> Response:
     # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
         media = Media(user_request)  # type: ignore
-        response = media.verifyPlatform()
+        response = media.verifyPlatform() # type: ignore
     mime_type = "application/json"
     status = int(response["data"]["status"])  # type: ignore
     response = json.dumps(response, indent=4)  # type: ignore

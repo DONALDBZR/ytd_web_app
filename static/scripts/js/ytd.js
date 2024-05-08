@@ -236,20 +236,22 @@ class YTD {
 
     /**
      * Retrieving the metadata of the media content.
+     * @param {string} needle The needle to be excluded.
      * @returns {Promise<{Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}>}
      */
-    async getMedia() {
-        const response = await this.getMediaResponse();
+    async getMedia(needle) {
+        const response = await this.getMediaResponse(needle);
         return response.json();
     }
 
     /**
      * Sending the request to the server to retrieve the data
      * needed to the Media API.
+     * @param {string} needle The needle to be excluded.
      * @returns {Promise<Response>}
      */
-    async getMediaResponse() {
-        return fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
+    async getMediaResponse(needle) {
+        return fetch(`/Media/${this.getRequestURI().replace(needle, "")}`, {
             method: "GET",
         });
     }
@@ -264,33 +266,18 @@ class YTD {
             this.getTitle().text = "Extractio";
         } else if (this.getRequestURI() == "/Search/") {
             this.getTitle().text = "Extractio: Search";
-        } else if (
-            this.getRequestURI().includes("/Search/") &&
-            this.getRequestURI() != "/Search/"
-        ) {
-            fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
-                method: "GET",
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    this.getTitle().text = `Extractio Data: ${data.Media.YouTube.title}`;
-                });
+        } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
+            this.getMedia("/Search/")
+            .then((response) => {
+                this.getTitle().text = `Extractio Data: ${response.Media.YouTube.title}`;
+            });
         } else if (this.getRequestURI().includes("/Download/")) {
-            fetch(
-                `/Media/${this.getRequestURI().replace(
-                    "/Download/YouTube/",
-                    ""
-                )}`,
-                {
-                    method: "GET",
-                }
-            )
-                .then((response) => response.json())
-                .then((data) => {
-                    this.getTitle().text = `Extractio: ${data.Media.YouTube.title}`;
-                });
+            this.getMedia("/Search/")
+            .then((response) => {
+                this.getTitle().text = `Extractio: ${response.Media.YouTube.title}`;
+            });
         }
-        document.head.appendChild(this.getTitle());
+        this.getHead().appendChild(this.getTitle());
     }
 
     /**

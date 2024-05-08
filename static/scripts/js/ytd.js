@@ -348,7 +348,6 @@ class YTD {
     }
 
     /**
-     * 
      * Styling the application
      * @returns {void}
      */
@@ -358,6 +357,7 @@ class YTD {
         for (let index = 0; index < this._stylesheets.length; index++) {
             const link = document.createElement("link");
             link.href = this._stylesheets[index];
+            link.media = this.getMediaQuery(link.href);
             if (link.href.includes("desktop")) {
                 link.media = this._mediaQueries[0];
             } else if (link.href.includes("mobile")) {
@@ -367,7 +367,7 @@ class YTD {
             }
             link.rel = this.getRelationship();
             link.type = this.getMimeType();
-            document.head.appendChild(link);
+            this.getHead().appendChild(link);
         }
         this.resizeApplication();
     }

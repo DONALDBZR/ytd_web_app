@@ -319,7 +319,7 @@ class YTD {
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "robots";
         this.getMeta().content = "index, follow";
-        document.head.appendChild(this.getMeta());
+        this.getHead().appendChild(this.getMeta());
         this.initializeGoogleAnalytics();
     }
 

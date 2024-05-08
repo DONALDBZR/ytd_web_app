@@ -8,6 +8,7 @@ from Routes.Media import Media_Portal
 from Routes.Download import Download_Portal
 from Routes.Video import Video_Portal
 from Routes.Trend import Trend_Portal
+from Environment import Environment
 
 Application = Flask(__name__)
 """
@@ -38,6 +39,10 @@ data = DatabaseHandler.get_data(
 key = str(data[0][0])
 """
 Encryption key of the application
+"""
+ENV = Environment()
+"""
+ENV File of the application
 """
 Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
@@ -90,7 +95,7 @@ def homepage() -> Response:
 
     Returns: Response
     """
-    template = render_template('page.html')
+    template = render_template('page.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
     mime_type = "text/html"
     status = 200
     return Response(template, status, mimetype=mime_type)

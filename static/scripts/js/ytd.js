@@ -292,18 +292,7 @@ class YTD {
     configureRobot() {
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "robots";
-        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
-            this.getMeta().content = "index, follow";
-        } else if (this.getRequestURI() == "/Search/") {
-            this.getMeta().content = "index, follow";
-        } else if (
-            this.getRequestURI().includes("/Search/") &&
-            this.getRequestURI() != "/Search/"
-        ) {
-            this.getMeta().content = "index, nofollow";
-        } else if (this.getRequestURI().includes("/Download/")) {
-            this.getMeta().content = "index, nofollow";
-        }
+        this.getMeta().content = "index, follow";
         document.head.appendChild(this.getMeta());
     }
     /**

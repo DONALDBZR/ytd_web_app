@@ -1,5 +1,6 @@
 /**
- * The main script that will initialize the application as needed
+ * The main script that will initialize the application as
+ * needed
  */
 class YTD {
     /**
@@ -72,12 +73,14 @@ class YTD {
         this.__meta;
         this.init();
     }
+
     /**
      * @returns {string}
      */
     getRequestURI() {
         return this.__requestUniformRequestInformation;
     }
+
     /**
      * @param {string} request_uri
      * @returns {void}
@@ -85,12 +88,14 @@ class YTD {
     setRequestURI(request_uri) {
         this.__requestUniformRequestInformation = request_uri;
     }
+
     /**
      * @returns {string}
      */
     getBodyId() {
         return this.__bodyId;
     }
+
     /**
      * @param {string} body_id
      * @returns {void}
@@ -98,12 +103,14 @@ class YTD {
     setBodyId(body_id) {
         this.__bodyId = body_id;
     }
+
     /**
      * @returns {string}
      */
     getRelationship() {
         return this.__relationship;
     }
+
     /**
      * @param {string} relationship
      * @returns {void}
@@ -111,12 +118,14 @@ class YTD {
     setRelationship(relationship) {
         this.__relationship = relationship;
     }
+
     /**
      * @returns {string}
      */
     getMimeType() {
         return this.__mimeType;
     }
+
     /**
      * @param {string} mime_type
      * @returns {void}
@@ -124,12 +133,14 @@ class YTD {
     setMimeType(mime_type) {
         this.__mimeType = mime_type;
     }
+    
     /**
      * @returns {HTMLBodyElement}
      */
     getBody() {
         return this.__body;
     }
+
     /**
      * @param {HTMLBodyElement} body
      * @returns {void}
@@ -137,12 +148,14 @@ class YTD {
     setBody(body) {
         this.__body = body;
     }
+
     /**
      * @returns {string}
      */
     getBodyClassName() {
         return this.__bodyClassName;
     }
+
     /**
      * @param {string} body_class_name
      * @returns {void}
@@ -150,12 +163,14 @@ class YTD {
     setBodyClassName(body_class_name) {
         this.__bodyClassName = body_class_name;
     }
+
     /**
      * @returns {HTMLTitleElement}
      */
     getTitle() {
         return this.__title;
     }
+
     /**
      * @param {HTMLTitleElement} title
      * @returns {void}
@@ -163,12 +178,14 @@ class YTD {
     setTitle(title) {
         this.__title = title;
     }
+
     /**
      * @returns {HTMLMetaElement|null}
      */
     getMeta() {
         return this.__meta;
     }
+
     /**
      * @param {HTMLMetaElement|null} meta
      * @returns {void}
@@ -176,6 +193,7 @@ class YTD {
     setMeta(meta) {
         this.__meta = meta;
     }
+
     /**
      * Initializing the application
      * @returns {void}
@@ -191,6 +209,7 @@ class YTD {
         this.getBody().id = this.getBodyId();
         this.optimize();
     }
+
     /**
      * Defining the title of the page for the application.
      * @returns {void}
@@ -230,6 +249,7 @@ class YTD {
         }
         document.head.appendChild(this.getTitle());
     }
+
     /**
      * Defining the description of the page.
      * @returns {void}
@@ -284,6 +304,7 @@ class YTD {
         document.head.appendChild(this.getMeta());
         setTimeout(() => this.configureRobot(), 200);
     }
+
     /**
      * Configuring the pages for which the web crawlers can index
      * on the application.
@@ -294,7 +315,23 @@ class YTD {
         this.getMeta().name = "robots";
         this.getMeta().content = "index, follow";
         document.head.appendChild(this.getMeta());
+        this.initializeGoogleAnalytics();
     }
+
+    /**
+     * Initializing the Google Analytics API to assess the
+     * application.
+     * @returns {void}
+     */
+    initializeGoogleAnalytics() {
+        window.dataLayer = window.dataLayer || [];
+        const gtag = () => {
+            dataLayer.push(arguments);
+        };
+        gtag("js", new Date());
+        gtag("config", google_analytics_key);
+    }
+
     /**
      * Optimizing the web application for search engines
      * @returns {void}
@@ -304,7 +341,9 @@ class YTD {
         this.addDescription();
         this.style();
     }
+
     /**
+     * 
      * Styling the application
      * @returns {void}
      */
@@ -327,6 +366,7 @@ class YTD {
         }
         this.resizeApplication();
     }
+
     /**
      * Resizing the application which depends on the client's size
      * @returns {void}

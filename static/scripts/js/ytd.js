@@ -204,7 +204,7 @@ class YTD {
     /**
      * @returns {HTMLHeadElement}
      */
-    getMeta() {
+    getHead() {
         return this.__head;
     }
 
@@ -212,7 +212,7 @@ class YTD {
      * @param {HTMLHeadElement} head
      * @returns {void}
      */
-    setMeta(head) {
+    setHead(head) {
         this.__head = head;
     }
 
@@ -223,6 +223,7 @@ class YTD {
     init() {
         this.setRequestURI(window.location.pathname);
         this.setBody(document.body);
+        this.setHead(document.head);
         if (this.getRequestURI() == "/") {
             this.setBodyId("Homepage");
         } else {

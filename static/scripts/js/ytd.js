@@ -393,3 +393,4 @@ class YTD {
     }
 }
 const application = new YTD();
+window.addEventListener("resize", () => application.resizeApplication(), true);

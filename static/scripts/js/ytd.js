@@ -320,22 +320,6 @@ class YTD {
         this.getMeta().name = "robots";
         this.getMeta().content = "index, follow";
         this.getHead().appendChild(this.getMeta());
-        this.initializeGoogleAnalytics();
-    }
-
-    /**
-     * Initializing the Google Analytics API to assess the
-     * application.
-     * @returns {void}
-     */
-    initializeGoogleAnalytics() {
-        const google_analytics_key = String(this.getHead().attributes.key.values);
-        window.dataLayer = window.dataLayer || [];
-        const gtag = () => {
-            dataLayer.push(arguments);
-        };
-        gtag("js", new Date());
-        gtag("config", google_analytics_key);
     }
 
     /**

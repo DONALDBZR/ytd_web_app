@@ -272,7 +272,7 @@ class YTD {
                 this.getTitle().text = `Extractio Data: ${response.Media.YouTube.title}`;
             });
         } else if (this.getRequestURI().includes("/Download/")) {
-            this.getMedia("/Search/")
+            this.getMedia("/Download/YouTube/")
             .then((response) => {
                 this.getTitle().text = `Extractio: ${response.Media.YouTube.title}`;
             });
@@ -288,50 +288,25 @@ class YTD {
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
-            this.getMeta().content =
-                "Extractio extracts content from various platforms for various needs.";
+            this.getMeta().content = "Extractio extracts content from various platforms for various needs.";
         } else if (this.getRequestURI() == "/Search/") {
-            this.getMeta().content =
-                "The content needed can be searched, here.";
-        } else if (
-            this.getRequestURI().includes("/Search/") &&
-            this.getRequestURI() != "/Search/"
-        ) {
-            fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
-                method: "GET",
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    const uniform_resource_locator = new URL(
-                        data.Media.YouTube.uniform_resource_locator
-                    );
-                    const platform = uniform_resource_locator.hostname
-                        .replace("www.", "")
-                        .replace(".com", "");
-                    this.getMeta().content = `Metadata for the content from ${data.Media.YouTube.author} on ${platform} entitled ${data.Media.YouTube.title}`;
-                });
+            this.getMeta().content = "The content needed can be searched, here.";
+        } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
+            this.getMedia("/Search/")
+            .then((response) => {
+                const uniform_resource_locator = new URL(response.Media.YouTube.uniform_resource_locator);
+                const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
+                this.getMeta().content = `Metadata for the content from ${response.Media.YouTube.author} on ${platform} entitled ${response.Media.YouTube.title}`;
+            });
         } else if (this.getRequestURI().includes("/Download/")) {
-            fetch(
-                `/Media/${this.getRequestURI().replace(
-                    "/Download/YouTube/",
-                    ""
-                )}`,
-                {
-                    method: "GET",
-                }
-            )
-                .then((response) => response.json())
-                .then((data) => {
-                    const uniform_resource_locator = new URL(
-                        data.Media.YouTube.uniform_resource_locator
-                    );
-                    const platform = uniform_resource_locator.hostname
-                        .replace("www.", "")
-                        .replace(".com", "");
-                    this.getMeta().content = `Content from ${data.Media.YouTube.author} on ${platform} entitled ${data.Media.YouTube.title}`;
-                });
+            this.getMedia("/Download/YouTube/")
+            .then((response) => {
+                const uniform_resource_locator = new URL(response.Media.YouTube.uniform_resource_locator);
+                const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
+                this.getMeta().content = `Content from ${response.Media.YouTube.author} on ${platform} entitled ${response.Media.YouTube.title}`;
+            });
         }
-        document.head.appendChild(this.getMeta());
+        this.getHead().appendChild(this.getMeta());
         setTimeout(() => this.configureRobot(), 200);
     }
 

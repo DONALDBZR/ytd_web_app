@@ -360,6 +360,8 @@ class YTD {
             return this._mediaQueries[2];
         } else if (href.includes("tablet")) {
             return this._mediaQueries[1];
+        } else {
+            return "";
         }
     }
 

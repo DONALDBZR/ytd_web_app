@@ -1,7 +1,6 @@
 from flask import Blueprint, Response, request
 from Models.Media import Media
 from io import TextIOWrapper
-from Environment import Environment
 import json
 import os
 
@@ -10,10 +9,6 @@ Media_Portal = Blueprint("Media", __name__)
 The Routing for all the Media.
 
 Type: Blueprint
-"""
-ENV = Environment()
-"""
-ENV File of the application
 """
 
 

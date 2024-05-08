@@ -1,4 +1,5 @@
 from flask import Blueprint, Response, render_template, request, send_file
+from Environment import Environment
 
 Download_Portal = Blueprint("Download", __name__)
 """
@@ -6,7 +7,10 @@ The Routing for all the Downloads.
 
 Type: Blueprint
 """
-
+ENV = Environment()
+"""
+ENV File of the application
+"""
 
 @Download_Portal.route('/YouTube/<string:identifier>', methods=['GET'])
 def downloadPage(identifier: str) -> Response:

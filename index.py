@@ -86,7 +86,6 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
                 f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nResponse: {response}\n")  # type: ignore
     file.close()
 
-
 @Application.route('/', methods=['GET'])
 def homepage() -> Response:
     """
@@ -99,3 +98,12 @@ def homepage() -> Response:
     mime_type = "text/html"
     status = 200
     return Response(template, status, mimetype=mime_type)
+
+@Application.route('/SiteMap', methods=['GET'])
+def getSiteMap() -> Response:
+    """
+    Sending the sitemap needed for Google Search Console.
+
+    Returns: Response
+    """
+    return Application.send_static_file("Sitemap.xml")

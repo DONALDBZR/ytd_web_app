@@ -1,9 +1,11 @@
 /**
- * The main script that will initialize the application as needed
+ * The main script that will initialize the application as
+ * needed
  */
 class YTD {
     /**
-     * Setting the data needed as well as initalizing the application
+     * Setting the data needed as well as initalizing the
+     * application
      * @returns {YTD}
      */
     constructor() {
@@ -70,14 +72,23 @@ class YTD {
          * @type {HTMLMetaElement|null}
          */
         this.__meta;
+        /**
+         * Contains the descriptive information, or metadata, for a
+         * document. This object inherits all of the properties and
+         * methods described in the HTMLElement interface.
+         * @type {HTMLHeadElement}
+         */
+        this.__head;
         this.init();
     }
+
     /**
      * @returns {string}
      */
     getRequestURI() {
         return this.__requestUniformRequestInformation;
     }
+
     /**
      * @param {string} request_uri
      * @returns {void}
@@ -85,12 +96,14 @@ class YTD {
     setRequestURI(request_uri) {
         this.__requestUniformRequestInformation = request_uri;
     }
+
     /**
      * @returns {string}
      */
     getBodyId() {
         return this.__bodyId;
     }
+
     /**
      * @param {string} body_id
      * @returns {void}
@@ -98,12 +111,14 @@ class YTD {
     setBodyId(body_id) {
         this.__bodyId = body_id;
     }
+
     /**
      * @returns {string}
      */
     getRelationship() {
         return this.__relationship;
     }
+
     /**
      * @param {string} relationship
      * @returns {void}
@@ -111,12 +126,14 @@ class YTD {
     setRelationship(relationship) {
         this.__relationship = relationship;
     }
+
     /**
      * @returns {string}
      */
     getMimeType() {
         return this.__mimeType;
     }
+
     /**
      * @param {string} mime_type
      * @returns {void}
@@ -124,12 +141,14 @@ class YTD {
     setMimeType(mime_type) {
         this.__mimeType = mime_type;
     }
+    
     /**
      * @returns {HTMLBodyElement}
      */
     getBody() {
         return this.__body;
     }
+
     /**
      * @param {HTMLBodyElement} body
      * @returns {void}
@@ -137,12 +156,14 @@ class YTD {
     setBody(body) {
         this.__body = body;
     }
+
     /**
      * @returns {string}
      */
     getBodyClassName() {
         return this.__bodyClassName;
     }
+
     /**
      * @param {string} body_class_name
      * @returns {void}
@@ -150,12 +171,14 @@ class YTD {
     setBodyClassName(body_class_name) {
         this.__bodyClassName = body_class_name;
     }
+
     /**
      * @returns {HTMLTitleElement}
      */
     getTitle() {
         return this.__title;
     }
+
     /**
      * @param {HTMLTitleElement} title
      * @returns {void}
@@ -163,12 +186,14 @@ class YTD {
     setTitle(title) {
         this.__title = title;
     }
+
     /**
      * @returns {HTMLMetaElement|null}
      */
     getMeta() {
         return this.__meta;
     }
+
     /**
      * @param {HTMLMetaElement|null} meta
      * @returns {void}
@@ -176,6 +201,22 @@ class YTD {
     setMeta(meta) {
         this.__meta = meta;
     }
+
+    /**
+     * @returns {HTMLHeadElement}
+     */
+    getHead() {
+        return this.__head;
+    }
+
+    /**
+     * @param {HTMLHeadElement} head
+     * @returns {void}
+     */
+    setHead(head) {
+        this.__head = head;
+    }
+
     /**
      * Initializing the application
      * @returns {void}
@@ -183,6 +224,7 @@ class YTD {
     init() {
         this.setRequestURI(window.location.pathname);
         this.setBody(document.body);
+        this.setHead(document.head);
         if (this.getRequestURI() == "/") {
             this.setBodyId("Homepage");
         } else {
@@ -191,45 +233,53 @@ class YTD {
         this.getBody().id = this.getBodyId();
         this.optimize();
     }
+
+    /**
+     * Retrieving the metadata of the media content.
+     * @param {string} needle The needle to be excluded.
+     * @returns {Promise<{Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}>}
+     */
+    async getMedia(needle) {
+        const response = await this.getMediaResponse(needle);
+        return response.json();
+    }
+
+    /**
+     * Sending the request to the server to retrieve the data
+     * needed to the Media API.
+     * @param {string} needle The needle to be excluded.
+     * @returns {Promise<Response>}
+     */
+    async getMediaResponse(needle) {
+        return fetch(`/Media/${this.getRequestURI().replace(needle, "")}`, {
+            method: "GET",
+        });
+    }
+
     /**
      * Defining the title of the page for the application.
      * @returns {void}
      */
     addTitle() {
         this.setTitle(document.createElement("title"));
-        // Verifying the request uniform resource indicator to set up the title of the page
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
             this.getTitle().text = "Extractio";
         } else if (this.getRequestURI() == "/Search/") {
             this.getTitle().text = "Extractio: Search";
-        } else if (
-            this.getRequestURI().includes("/Search/") &&
-            this.getRequestURI() != "/Search/"
-        ) {
-            fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
-                method: "GET",
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    this.getTitle().text = `Extractio Data: ${data.Media.YouTube.title}`;
-                });
+        } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
+            this.getMedia("/Search/")
+            .then((response) => {
+                this.getTitle().text = `Extractio Data: ${response.Media.YouTube.title}`;
+            });
         } else if (this.getRequestURI().includes("/Download/")) {
-            fetch(
-                `/Media/${this.getRequestURI().replace(
-                    "/Download/YouTube/",
-                    ""
-                )}`,
-                {
-                    method: "GET",
-                }
-            )
-                .then((response) => response.json())
-                .then((data) => {
-                    this.getTitle().text = `Extractio: ${data.Media.YouTube.title}`;
-                });
+            this.getMedia("/Download/YouTube/")
+            .then((response) => {
+                this.getTitle().text = `Extractio: ${response.Media.YouTube.title}`;
+            });
         }
-        document.head.appendChild(this.getTitle());
+        this.getHead().appendChild(this.getTitle());
     }
+
     /**
      * Defining the description of the page.
      * @returns {void}
@@ -238,52 +288,28 @@ class YTD {
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
-            this.getMeta().content =
-                "Extractio extracts content from various platforms for various needs.";
+            this.getMeta().content = "Extractio extracts content from various platforms for various needs.";
         } else if (this.getRequestURI() == "/Search/") {
-            this.getMeta().content =
-                "The content needed can be searched, here.";
-        } else if (
-            this.getRequestURI().includes("/Search/") &&
-            this.getRequestURI() != "/Search/"
-        ) {
-            fetch(`/Media/${this.getRequestURI().replace("/Search/", "")}`, {
-                method: "GET",
-            })
-                .then((response) => response.json())
-                .then((data) => {
-                    const uniform_resource_locator = new URL(
-                        data.Media.YouTube.uniform_resource_locator
-                    );
-                    const platform = uniform_resource_locator.hostname
-                        .replace("www.", "")
-                        .replace(".com", "");
-                    this.getMeta().content = `Metadata for the content from ${data.Media.YouTube.author} on ${platform} entitled ${data.Media.YouTube.title}`;
-                });
+            this.getMeta().content = "The content needed can be searched, here.";
+        } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
+            this.getMedia("/Search/")
+            .then((response) => {
+                const uniform_resource_locator = new URL(response.Media.YouTube.uniform_resource_locator);
+                const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
+                this.getMeta().content = `Metadata for the content from ${response.Media.YouTube.author} on ${platform} entitled ${response.Media.YouTube.title}`;
+            });
         } else if (this.getRequestURI().includes("/Download/")) {
-            fetch(
-                `/Media/${this.getRequestURI().replace(
-                    "/Download/YouTube/",
-                    ""
-                )}`,
-                {
-                    method: "GET",
-                }
-            )
-                .then((response) => response.json())
-                .then((data) => {
-                    const uniform_resource_locator = new URL(
-                        data.Media.YouTube.uniform_resource_locator
-                    );
-                    const platform = uniform_resource_locator.hostname
-                        .replace("www.", "")
-                        .replace(".com", "");
-                    this.getMeta().content = `Content from ${data.Media.YouTube.author} on ${platform} entitled ${data.Media.YouTube.title}`;
-                });
+            this.getMedia("/Download/YouTube/")
+            .then((response) => {
+                const uniform_resource_locator = new URL(response.Media.YouTube.uniform_resource_locator);
+                const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
+                this.getMeta().content = `Content from ${response.Media.YouTube.author} on ${platform} entitled ${response.Media.YouTube.title}`;
+            });
         }
-        document.head.appendChild(this.getMeta());
-        setTimeout(() => this.configureRobot(), 200);
+        this.getHead().appendChild(this.getMeta());
+        setTimeout(() => this.configureRobot(), 2000);
     }
+
     /**
      * Configuring the pages for which the web crawlers can index
      * on the application.
@@ -292,20 +318,10 @@ class YTD {
     configureRobot() {
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "robots";
-        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
-            this.getMeta().content = "index, follow";
-        } else if (this.getRequestURI() == "/Search/") {
-            this.getMeta().content = "index, follow";
-        } else if (
-            this.getRequestURI().includes("/Search/") &&
-            this.getRequestURI() != "/Search/"
-        ) {
-            this.getMeta().content = "index, nofollow";
-        } else if (this.getRequestURI().includes("/Download/")) {
-            this.getMeta().content = "index, nofollow";
-        }
-        document.head.appendChild(this.getMeta());
+        this.getMeta().content = "index, follow";
+        this.getHead().appendChild(this.getMeta());
     }
+
     /**
      * Optimizing the web application for search engines
      * @returns {void}
@@ -315,6 +331,24 @@ class YTD {
         this.addDescription();
         this.style();
     }
+
+    /**
+     * Retrieving the media query needed for the stylesheets.
+     * @param {string} href The hyperlink of the stylesheet.
+     * @returns {string}
+     */
+    getMediaQuery(href) {
+        if (href.includes("desktop")) {
+            return this._mediaQueries[0];
+        } else if (href.includes("mobile")) {
+            return this._mediaQueries[2];
+        } else if (href.includes("tablet")) {
+            return this._mediaQueries[1];
+        } else {
+            return "";
+        }
+    }
+
     /**
      * Styling the application
      * @returns {void}
@@ -325,19 +359,14 @@ class YTD {
         for (let index = 0; index < this._stylesheets.length; index++) {
             const link = document.createElement("link");
             link.href = this._stylesheets[index];
-            if (link.href.includes("desktop")) {
-                link.media = this._mediaQueries[0];
-            } else if (link.href.includes("mobile")) {
-                link.media = this._mediaQueries[2];
-            } else if (link.href.includes("tablet")) {
-                link.media = this._mediaQueries[1];
-            }
+            link.media = this.getMediaQuery(link.href);
             link.rel = this.getRelationship();
             link.type = this.getMimeType();
-            document.head.appendChild(link);
+            this.getHead().appendChild(link);
         }
         this.resizeApplication();
     }
+
     /**
      * Resizing the application which depends on the client's size
      * @returns {void}
@@ -351,3 +380,4 @@ class YTD {
     }
 }
 const application = new YTD();
+window.addEventListener("resize", () => application.resizeApplication(), true);

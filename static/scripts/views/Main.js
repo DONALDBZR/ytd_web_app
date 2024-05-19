@@ -10,7 +10,7 @@ class Main extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, } }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] }}
+         * @type {{ System: { view_route: string, status: number, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, } }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] }}
          */
         this.state = {
             System: {
@@ -498,13 +498,78 @@ class Trend extends Homepage {
     }
 
     /**
+     * Retrieving the width of the trend list's carousel.
+     * @param {[{uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: {audio: string | null, video: string | null}}]} trend_list The list of media content
+     * @returns {string}
+     */
+    getTrendListWidth(trend_list) {
+        const application_width = window.innerWidth;
+        let trend_list_width_pixelate = "";
+        if (application_width < 640) {
+            const trend_list_width = application_width * trend_list.length;
+            trend_list_width_pixelate = `${trend_list_width}px`;
+        } else {
+            trend_list_width_pixelate = `${application_width}px`;
+        }
+        return trend_list_width_pixelate;
+    }
+
+    /**
+     * Retrieving the animation of the trend list's carousel.
+     * @param {[{uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: {audio: string | null, video: string | null}}]} trend_list The list of media content
+     * @returns {string}
+     */
+    getTrendListAnimation(trend_list) {
+        const delay = 8;
+        const application_width = window.innerWidth;
+        let trend_list_animation = "";
+        if (application_width < 640) {
+            const trend_list_delay = delay * trend_list.length;
+            trend_list_animation = `trend-scroll ${trend_list_delay}s linear infinite`;
+        } else {
+            trend_list_animation = `none`;
+        }
+        return trend_list_animation;
+    }
+
+    /**
+     * Adding the mouse enter event handler for the trend list.
+     * @returns {void}
+     */
+    handleTrendListMouseEnter() {
+        const trend_list = document.querySelector("#Homepage main .Trend div");
+        let animation_play_state = "";
+        if (window.innerWidth < 640) {
+            animation_play_state = "paused";
+        } else {
+            animation_play_state = "unset";
+        }
+        trend_list.style.animationPlayState = animation_play_state;
+    }
+
+    /**
+     * Adding the mouse leave event handler for the trend list.
+     * @returns {void}
+     */
+    handleTrendListMouseLeave() {
+        const trend_list = document.querySelector("#Homepage main .Trend div");
+        let animation_play_state = "";
+        if (window.innerWidth < 640) {
+            animation_play_state = "running";
+        } else {
+            animation_play_state = "unset";
+        }
+        trend_list.style.animationPlayState = animation_play_state;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */
     render() {
         return (
             <div className="Trend">
-                <div>
+                <div style={{width: this.getTrendListWidth(this.state.Trend), animation: this.getTrendListAnimation(this.state.Trend)}} onMouseEnter={this.handleTrendListMouseEnter} onMouseLeave={this.handleTrendListMouseLeave}>
                     {this.state.Trend.map((content) => {
                         return (
                             <div class="card">

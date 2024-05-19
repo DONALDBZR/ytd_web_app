@@ -515,13 +515,31 @@ class Trend extends Homepage {
     }
 
     /**
+     * Retrieving the animation of the trend list's carousel.
+     * @param {[{uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: {audio: string | null, video: string | null}}]} trend_list The list of media content
+     * @returns {string}
+     */
+    getTrendListAnimation(trend_list) {
+        const delay = 8;
+        const application_width = window.innerWidth;
+        let trend_list_animation = "";
+        if (application_width < 640) {
+            const trend_list_delay = delay * trend_list.length;
+            trend_list_animation = `trend-scroll ${trend_list_delay}s linear infinite`;
+        } else {
+            trend_list_animation = `none`;
+        }
+        return trend_list_animation;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */
     render() {
         return (
             <div className="Trend">
-                <div style={{width: this.getTrendListWidth(this.state.Trend)}}>
+                <div style={{width: this.getTrendListWidth(this.state.Trend), animation: this.getTrendListAnimation(this.state.Trend)}}>
                     {this.state.Trend.map((content) => {
                         return (
                             <div class="card">

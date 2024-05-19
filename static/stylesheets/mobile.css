@@ -212,13 +212,14 @@ body[id*="Download"] main .YouTube div video {
 #Homepage main .Trend .card {
     height: var(--card-height);
     width: var(--card-width);
-
     --card-height: calc(var(--component-height) * (17 / 30));
     --card-width: calc(var(--width) * 0.9);
     justify-content: normal;
     flex: 0 0 auto;
     flex-direction: column;
     margin: calc(var(--card-height) * 0) calc(var(--card-width) / 20);
+    scroll-snap-type: unset;
+    scroll-snap-align: center;
 }
 #Homepage main .Trend .card div {
     width: var(--card-width);
@@ -288,6 +289,7 @@ body[id*="Download"] main .YouTube div video {
     align-items: normal;
     flex-wrap: nowrap;
     overflow-x: auto;
+    scroll-snap-type: x mandatory;
 }
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {

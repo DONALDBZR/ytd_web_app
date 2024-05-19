@@ -533,13 +533,28 @@ class Trend extends Homepage {
     }
 
     /**
+     * Adding the mouse enter event handler for the trend list.
+     * @returns {void}
+     */
+    handleTrendListMouseEnter() {
+        const trend_list = document.querySelector("#Homepage main .Trend div");
+        let animation_play_state = "";
+        if (window.innerWidth < 640) {
+            animation_play_state = "paused";
+        } else {
+            animation_play_state = "unset";
+        }
+        trend_list.style.animationPlayState = animation_play_state;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */
     render() {
         return (
             <div className="Trend">
-                <div style={{width: this.getTrendListWidth(this.state.Trend), animation: this.getTrendListAnimation(this.state.Trend)}}>
+                <div style={{width: this.getTrendListWidth(this.state.Trend), animation: this.getTrendListAnimation(this.state.Trend)}} onMouseEnter={this.handleTrendListMouseEnter}>
                     {this.state.Trend.map((content) => {
                         return (
                             <div class="card">

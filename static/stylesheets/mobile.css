@@ -310,6 +310,3 @@ body[id*="Download"] main .YouTube div video {
         transform: translateX(-100%);
     }
 }
-#Homepage main .Trend div:hover {
-    animation-play-state: paused;
-}

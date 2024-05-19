@@ -10,7 +10,7 @@ class Main extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{ System: { view_route: string, status: int, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, } }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] }}
+         * @type {{ System: { view_route: string, status: number, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, } }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] }}
          */
         this.state = {
             System: {
@@ -498,13 +498,30 @@ class Trend extends Homepage {
     }
 
     /**
+     * Retrieving the width of the trend list's carousel.
+     * @param {[{uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: {audio: string | null, video: string | null}}]} trend_list The list of media content
+     * @returns {string}
+     */
+    getTrendListWidth(trend_list) {
+        const application_width = window.innerWidth;
+        let trend_list_width_pixelate = "";
+        if (application_width < 640) {
+            const trend_list_width = application_width * trend_list.length;
+            trend_list_width_pixelate = `${trend_list_width}px`;
+        } else {
+            trend_list_width_pixelate = `${application_width}px`;
+        }
+        return trend_list_width_pixelate;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */
     render() {
         return (
             <div className="Trend">
-                <div>
+                <div style={{width: this.getTrendListWidth(this.state.Trend)}}>
                     {this.state.Trend.map((content) => {
                         return (
                             <div class="card">

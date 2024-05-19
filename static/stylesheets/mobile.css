@@ -208,6 +208,7 @@ body[id*="Download"] main .YouTube div video {
     justify-content: normal;
     align-items: normal;
     width: var(--width);
+    overflow: hidden;
 }
 #Homepage main .Trend .card {
     height: var(--card-height);
@@ -218,13 +219,13 @@ body[id*="Download"] main .YouTube div video {
     flex: 0 0 auto;
     flex-direction: column;
     margin: calc(var(--card-height) * 0) calc(var(--card-width) / 20);
-    scroll-snap-type: unset;
-    scroll-snap-align: center;
+    animation: none;
 }
 #Homepage main .Trend .card div {
     width: var(--card-width);
     height: calc(var(--card-height) / 2);
     overflow: unset;
+    animation: none;
 }
 #Homepage main .Trend .card div:nth-child(1) {
     display: flex;
@@ -259,6 +260,7 @@ body[id*="Download"] main .YouTube div video {
     word-wrap: break-word;
     font-size: calc(var(--textSize) / 10);
     width: var(--card-width);
+    animation: none;
 }
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(2) {
     justify-content: normal;
@@ -284,12 +286,9 @@ body[id*="Download"] main .YouTube div video {
 }
 #Homepage main .Trend div {
     height: calc(var(--component-height) * (17 / 30));
-    width: var(--width);
     justify-content: normal;
     align-items: normal;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
 }
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
@@ -302,4 +301,15 @@ body[id*="Download"] main .YouTube div video {
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(5) {
     justify-content: center;
     align-items: center;
+}
+@keyframes trend-scroll {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+#Homepage main .Trend div:hover {
+    animation-play-state: paused;
 }

@@ -161,23 +161,7 @@ class Header extends React.Component {
         } else {
             color_scheme = "light";
         }
-        fetch("/Session/", {
-            method: "UPDATE",
-            body: JSON.stringify({
-                Client: {
-                    color_scheme: color_scheme,
-                },
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => response.json())
-            .then(() => {
-                setTimeout(() => {
-                    window.location.href = window.location.href;
-                }, delay);
-            });
+        this.refreshPage(color_scheme, delay);
     }
 
     /**

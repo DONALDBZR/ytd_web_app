@@ -161,7 +161,7 @@ class Header extends React.Component {
         } else {
             color_scheme = "light";
         }
-        this.refreshPage(color_scheme, delay);
+        this.updateColorScheme(color_scheme, delay);
     }
 
     /**

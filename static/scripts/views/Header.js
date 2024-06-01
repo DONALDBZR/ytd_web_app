@@ -135,6 +135,20 @@ class Header extends React.Component {
     }
 
     /**
+     * Refreshing the page
+     * @param {string} color_scheme
+     * @param {number} delay
+     * @returns {Promise<void>}
+     */
+    async refreshPage(color_scheme, delay) {
+        const status = await this.updateSession(color_scheme);
+        console.log(`Update Color Scheme: ${status}`);
+        setTimeout(() => {
+            window.location.href = window.location.href;
+        }, delay);
+    }
+
+    /**
      * Changing the color scheme according to the user's taste
      * @returns {void}
      */

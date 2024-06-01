@@ -106,15 +106,32 @@ class Header extends React.Component {
     }
 
     /**
+     * Sending the request to update the session data.
+     * @param {string} color_scheme
+     * @returns {Promise<Response>}
+     */
+    async sendUpdateRequest(color_scheme) {
+        return fetch("/Session/", {
+            method: "UPDATE",
+            body: JSON.stringify({
+                Client: {
+                    color_scheme: color_scheme,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+    }
+
+    /**
      * Changing the color scheme according to the user's taste
      * @returns {void}
      */
     setColorScheme() {
         const delay = 200;
         event.preventDefault();
-        let color_scheme = document.querySelector(
-            "button[name='colorSchemeChanger']"
-        ).value;
+        let color_scheme = String(document.querySelector("button[name='colorSchemeChanger']").value);
         if (color_scheme == "light") {
             color_scheme = "dark";
         } else {

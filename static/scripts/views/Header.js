@@ -138,11 +138,11 @@ class Header extends React.Component {
      * Refreshing the page
      * @param {string} color_scheme
      * @param {number} delay
-     * @returns {Promise<void>}
+     * @returns {void}
      */
-    async refreshPage(color_scheme, delay) {
-        const status = await this.updateSession(color_scheme);
-        console.log(`Update Color Scheme: ${status}`);
+    updateColorScheme(color_scheme, delay) {
+        this.updateSession(color_scheme)
+        .then((status) => console.log(`Update Color Scheme: ${status}`));
         setTimeout(() => {
             window.location.href = window.location.href;
         }, delay);

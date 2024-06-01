@@ -125,6 +125,16 @@ class Header extends React.Component {
     }
 
     /**
+     * Checking the response of the server to handle it correctly.
+     * @param {string} color_scheme
+     * @returns {Promise<number>}
+     */
+    async updateSession(color_scheme) {
+        const response = await this.sendUpdateRequest(color_scheme);
+        return response.status;
+    }
+
+    /**
      * Changing the color scheme according to the user's taste
      * @returns {void}
      */

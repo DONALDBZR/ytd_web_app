@@ -247,7 +247,7 @@ class ColorScheme extends Header {
 
     /**
      * Updating the component as soon as the states are different.
-     * @param {{data: {System: {color_scheme: string, timestamp: number}}}} previous_props The properties of the component.
+     * @param {{data: {System: {color_scheme: string, timestamp: number, dom_element: HTMLElement}}}} previous_props The properties of the component.
      * @returns {void}
      */
     componentDidUpdate(previous_props) {

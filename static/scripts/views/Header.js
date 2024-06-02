@@ -249,14 +249,15 @@ class Homepage extends Header {
      */
     constructor(props) {
         super(props);
+        this.props = props;
         /**
          * The states of the component.
          * @type {{System: {color_scheme: string, view_route: string}}}
          */
         this.state = {
             System: {
-                color_scheme: "",
-                view_route: "",
+                color_scheme: this.props.data.System.color_scheme,
+                view_route: this.props.data.System.view_route,
             },
         };
     }
@@ -267,18 +268,28 @@ class Homepage extends Header {
      * @returns {void}
      */
     componentDidMount() {
-        this.setData();
+        this.setData(this.props);
+    }
+
+    /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {System: {color_scheme: string, view_route: string}}}} previous_props The properties of the component.
+     * @returns {void}
+     */
+    componentDidUpdate(previous_props) {
+
     }
 
     /**
      * Setting the data for the component.
+     * @param {{data: {System: {color_scheme: string, view_route: string}}}} properties The properties of the component.
      * @returns {void}
      */
-    setData() {
+    setData(properties) {
         this.setState((previous) => ({
             ...previous.System,
-            color_scheme: this.props.data.System.color_scheme,
-            view_route: this.props.data.System.view_route,
+            color_scheme: properties.data.System.color_scheme,
+            view_route: properties.data.System.view_route,
         }));
     }
 

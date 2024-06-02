@@ -241,6 +241,16 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {System: {color_scheme: string, timestamp: number}}}} previous_props The properties of the component.
+     * @returns {void}
+     */
+    componentDidUpdate(previous_props) {
+        this.setData(previous_props);
+        console.log("Main Component: Header\nComponent: Homepage\nStatus: Updated");
+    }
+
+    /**
      * Rendering the component which allows the user to change the color scheme
      * @returns {HTMLButtonElement}
      */

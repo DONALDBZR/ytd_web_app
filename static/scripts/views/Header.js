@@ -135,13 +135,12 @@ class Header extends React.Component {
     }
 
     /**
-     * Refreshing the page
+     * Refreshing the page while updating the color scheme
      * @param {string} color_scheme
      * @param {number} delay
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay) {
-        console.log(`Color Scheme: ${color_scheme}\nDelay: ${delay} ms`);
         this.updateSession(color_scheme)
         .then((status) => console.log(`Update Color Scheme: ${status}`));
         setTimeout(() => {

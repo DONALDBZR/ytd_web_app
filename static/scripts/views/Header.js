@@ -14,8 +14,8 @@ class Header extends React.Component {
          */
         this.state = {
             System: {
-                color_scheme: "",
-                view_route: "",
+                color_scheme: null,
+                view_route: null,
             },
         };
     }
@@ -103,6 +103,7 @@ class Header extends React.Component {
                 view_route: window.location.pathname,
             },
         }));
+        console.log(`Route: ${this.state.System.view_route}`);
     }
 
     /**

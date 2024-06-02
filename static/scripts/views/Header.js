@@ -198,6 +198,7 @@ class Header extends React.Component {
         const application_data = {
             System: {
                 view_route: this.state.System.view_route,
+                dom_element: this.state.System.dom_element,
             },
         };
         if (this.state.System.view_route.includes("Search")) {

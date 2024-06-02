@@ -275,18 +275,27 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Setting the data for the HTML Element.
+     * @param {HTMLElement} element The HTML Element.
+     * @returns {void}
+     */
+    setHtmlElementData(element) {
+        if (this.state.System.color_scheme == "dark") {
+            element.setAttribute("class", "fa-solid fa-toggle-on");
+        } else {
+            element.setAttribute("class", "fa-solid fa-toggle-off");
+        }
+    }
+
+    /**
      * Setting the data for the DOM Element.
      * @param {SVGSVGElement | HTMLElement} element The HTML Element.
      * @returns {void}
      */
     setDomElementData(element) {
-        console.log(String(element));
+        console.log(element);
         if (String(element).includes("HTMLElement")) {
-            if (this.state.System.color_scheme == "dark") {
-                element.setAttribute("class", "fa-solid fa-toggle-on");
-            } else {
-                element.setAttribute("class", "fa-solid fa-toggle-off");
-            }
+            this.setHtmlElementData(element);
         } else {
             if (this.state.System.color_scheme == "dark") {
                 element.setAttribute("class", "svg-inline--fa fa-toggle-on");

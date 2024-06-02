@@ -14,8 +14,8 @@ class Header extends React.Component {
          */
         this.state = {
             System: {
-                color_scheme: null,
-                view_route: null,
+                color_scheme: "",
+                view_route: "",
             },
         };
     }

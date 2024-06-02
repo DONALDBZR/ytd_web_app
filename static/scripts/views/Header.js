@@ -129,7 +129,7 @@ class Header extends React.Component {
 
     /**
      * Sending the request to update the session data.
-     * @param {string} color_scheme
+     * @param {string} color_scheme The color scheme of the application.
      * @returns {Promise<Response>}
      */
     async sendUpdateSessionRequest(color_scheme) {

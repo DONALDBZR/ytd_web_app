@@ -212,11 +212,22 @@ class Header extends React.Component {
  */
 class ColorScheme extends Header {
     /**
-     * Constructing the color scheme's component and also inheriting the properties and states from the header
-     * @param {*} props
+     * Constructing the color scheme's component from the header.
+     * @param {{data: {System: {color_scheme: string, timestamp: number}}}} props The properties of the component
      */
     constructor(props) {
         super(props);
+        this.props = props;
+        /**
+         * The states of the component.
+         * @type {{System: {color_scheme: string, timestamp: number}}}
+         */
+        this.state = {
+            System: {
+                color_scheme: this.props.data.System.color_scheme,
+                timestamp: this.props.data.System.timestamp,
+            },
+        };
     }
 
     componentDidMount() {

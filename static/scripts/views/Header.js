@@ -322,7 +322,7 @@ class Homepage extends Header {
 
     /**
      * Updating the component as soon as the states are different.
-     * @param {{data: {System: {view_route: string}}}} previous_props The properties of the component.
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} previous_props The properties of the component.
      * @returns {void}
      */
     componentDidUpdate(previous_props) {

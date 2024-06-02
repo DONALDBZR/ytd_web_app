@@ -308,7 +308,6 @@ class ColorScheme extends Header {
      * @returns {void}
      */
     setDomElementData(element) {
-        console.log(element);
         if (String(element).includes("HTMLElement")) {
             this.setHtmlElementData(element);
         } else {

@@ -355,6 +355,7 @@ class Homepage extends Header {
             System: {
                 color_scheme: this.state.System.color_scheme,
                 timestamp: this.state.System.timestamp,
+                dom_element: this.state.System.dom_element,
             },
         };
         return (

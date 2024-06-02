@@ -28,6 +28,7 @@ class Header extends React.Component {
      */
     componentDidMount() {
         this.getRoute();
+        // this.getSession();
     }
 
     /**
@@ -268,6 +269,7 @@ class Homepage extends Header {
      * @returns {void}
      */
     componentDidMount() {
+        this.getSession();
         console.log("Main Component: Header\nComponent: Homepage\nStatus: Mount");
     }
 
@@ -288,10 +290,8 @@ class Homepage extends Header {
      */
     setData(properties) {
         if (this.props != properties) {
-            this.setState((previous) => ({
-                ...previous,
+            this.setState(() => ({
                 System: {
-                    ...previous.System,
                     color_scheme: this.props.data.System.color_scheme,
                     view_route: this.props.data.System.view_route,
                 },

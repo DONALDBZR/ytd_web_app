@@ -266,6 +266,7 @@ class ColorScheme extends Header {
                 System: {
                     color_scheme: this.props.data.System.color_scheme,
                     timestamp: this.props.data.System.timestamp,
+                    dom_element: this.props.data.System.dom_element,
                 },
             }));
         }

@@ -276,14 +276,29 @@ class ColorScheme extends Header {
 
     /**
      * Setting the data for the HTML Element.
-     * @param {HTMLElement} html_element The HTML Element.
+     * @param {HTMLElement} i The HTML Element.
      * @returns {void}
      */
-    setHtmlElementData(html_element) {
+    setHtmlElementData(i) {
         if (this.state.System.color_scheme == "dark") {
-            html_element.setAttribute("class", "fa-solid fa-toggle-on");
+            i.setAttribute("class", "fa-solid fa-toggle-on");
         } else {
-            html_element.setAttribute("class", "fa-solid fa-toggle-off");
+            i.setAttribute("class", "fa-solid fa-toggle-off");
+        }
+    }
+
+    /**
+     * Setting the data for the SVG SVG Element.
+     * @param {SVGSVGElement} svg
+     * @returns {void}
+     */
+    setSvgSvgElement(svg) {
+        if (this.state.System.color_scheme == "dark") {
+            svg.setAttribute("class", "svg-inline--fa fa-toggle-on");
+            svg.setAttribute("data-icon", "toggle-on");
+        } else {
+            svg.setAttribute("class", "svg-inline--fa fa-toggle-off");
+            svg.setAttribute("data-icon", "toggle-off");
         }
     }
 
@@ -297,13 +312,7 @@ class ColorScheme extends Header {
         if (String(element).includes("HTMLElement")) {
             this.setHtmlElementData(element);
         } else {
-            if (this.state.System.color_scheme == "dark") {
-                element.setAttribute("class", "svg-inline--fa fa-toggle-on");
-                element.setAttribute("data-icon", "toggle-on");
-            } else {
-                element.setAttribute("class", "svg-inline--fa fa-toggle-off");
-                element.setAttribute("data-icon", "toggle-off");
-            }
+            this.setSvgSvgElement(element);
         }
     }
 

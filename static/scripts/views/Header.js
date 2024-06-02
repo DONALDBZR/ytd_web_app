@@ -301,6 +301,12 @@ class Homepage extends Header {
      * @returns {HTMLHeaderElement}
      */
     render() {
+        const application_data = {
+            System: {
+                color_scheme: this.state.System.color_scheme,
+                timestamp: this.state.System.timestamp,
+            },
+        };
         return (
             <>
                 <nav>
@@ -319,7 +325,7 @@ class Homepage extends Header {
                                 value={this.state.System.color_scheme}
                                 onClick={this.setColorScheme.bind(this)}
                             >
-                                <ColorScheme />
+                                <ColorScheme data={application_data} />
                             </button>
                         </div>
                     </div>

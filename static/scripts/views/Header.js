@@ -279,12 +279,13 @@ class ColorScheme extends Header {
      * @returns {void}
      */
     setSvgData() {
+        const dom_element = document.querySelector("header nav div:nth-child(2) div:nth-child(2) button svg");
         if (this.state.System.color_scheme == "dark") {
-            this.state.System.dom_element.className = "svg-inline--fa fa-toggle-on";
-            this.state.System.dom_element.setAttribute("data-icon", "toggle-on");
+            dom_element.setAttribute("class", "svg-inline--fa fa-toggle-on");
+            dom_element.setAttribute("data-icon", "toggle-on");
         } else {
-            this.state.System.dom_element.className = "svg-inline--fa fa-toggle-off";
-            this.state.System.dom_element.setAttribute("data-icon", "toggle-off");
+            dom_element.setAttribute("class", "svg-inline--fa fa-toggle-off");
+            dom_element.setAttribute("data-icon", "toggle-off");
         }
     }
 

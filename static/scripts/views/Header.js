@@ -332,7 +332,7 @@ class Homepage extends Header {
 
     /**
      * Setting the data for the component.
-     * @param {{data: {System: {view_route: string}}}} properties The properties of the component.
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} properties The properties of the component.
      * @returns {void}
      */
     setData(properties) {

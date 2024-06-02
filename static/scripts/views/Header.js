@@ -243,16 +243,37 @@ class ColorScheme extends Header {
  */
 class Homepage extends Header {
     /**
-     * Constructing the application from React's Component
+     * Constructing the header of the homepage from React's
+     * Component
      * @param {{data: {System: {color_scheme: string, view_route: string}}}} props The properties of the component
      */
     constructor(props) {
         super(props);
+        /**
+         * The states of the component.
+         * @type {{System: {color_scheme: string, view_route: string}}}
+         */
+        this.state = {
+            System: {
+                color_scheme: "",
+                view_route: "",
+            },
+        };
     }
 
     componentDidMount() {
         this.getRoute();
         this.getSession();
+    }
+
+    /**
+     * Setting the data for the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => {
+
+        });
     }
 
     /**

@@ -267,7 +267,8 @@ class ColorScheme extends Header {
     }
 
     /**
-     * Rendering the component which allows the user to change the color scheme
+     * Rendering the component which allows the user to change the
+     * color scheme.
      * @returns {HTMLButtonElement}
      */
     render() {

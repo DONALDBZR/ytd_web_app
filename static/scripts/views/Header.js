@@ -339,8 +339,8 @@ class Homepage extends Header {
         if (this.props != properties) {
             this.setState(() => ({
                 System: {
-                    color_scheme: this.props.data.System.color_scheme,
                     view_route: this.props.data.System.view_route,
+                    dom_element: this.props.data.System.dom_element,
                 },
             }));
         }

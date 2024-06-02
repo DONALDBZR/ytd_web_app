@@ -261,12 +261,13 @@ class ColorScheme extends Header {
      * @returns {void}
      */
     setData(properties) {
+        const dom_element = document.querySelector("header nav div:nth-child(2) div:nth-child(2) button svg");
         if (this.props != properties) {
             this.setState(() => ({
                 System: {
                     color_scheme: this.props.data.System.color_scheme,
                     timestamp: this.props.data.System.timestamp,
-                    dom_element: this.props.data.System.dom_element,
+                    dom_element: dom_element,
                 },
             }));
         }

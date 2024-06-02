@@ -113,7 +113,7 @@ class Header extends React.Component {
      */
     async sendUpdateSessionRequest(color_scheme) {
         return fetch("/Session/", {
-            method: "UPDATE",
+            method: "PUT",
             body: JSON.stringify({
                 Client: {
                     color_scheme: color_scheme,

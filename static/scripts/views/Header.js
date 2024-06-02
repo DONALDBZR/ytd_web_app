@@ -277,7 +277,7 @@ class Homepage extends Header {
      * @returns {void}
      */
     componentDidUpdate(previous_props) {
-
+        this.setData(previous_props);
     }
 
     /**

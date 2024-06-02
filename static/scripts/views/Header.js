@@ -268,7 +268,6 @@ class Homepage extends Header {
      * @returns {void}
      */
     componentDidMount() {
-        this.setData(this.props);
         console.log("Main Component: Header\nComponent: Homepage\nStatus: Mount");
     }
 
@@ -289,15 +288,6 @@ class Homepage extends Header {
      */
     setData(properties) {
         if (this.props != properties) {
-            this.setState((previous) => ({
-                ...previous,
-                System: {
-                    ...previous.System,
-                    color_scheme: properties.data.System.color_scheme,
-                    view_route: properties.data.System.view_route,
-                },
-            }));
-        } else {
             this.setState((previous) => ({
                 ...previous,
                 System: {

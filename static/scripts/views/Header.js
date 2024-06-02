@@ -279,6 +279,7 @@ class ColorScheme extends Header {
         }
     }
 }
+
 /**
  * The component to be rendered for the header of the homepage.
  */

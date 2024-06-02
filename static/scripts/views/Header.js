@@ -111,7 +111,7 @@ class Header extends React.Component {
      * @param {string} color_scheme
      * @returns {Promise<Response>}
      */
-    async sendUpdateRequest(color_scheme) {
+    async sendUpdateSessionRequest(color_scheme) {
         return fetch("/Session/", {
             method: "UPDATE",
             body: JSON.stringify({

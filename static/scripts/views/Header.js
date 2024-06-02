@@ -261,7 +261,7 @@ class ColorScheme extends Header {
      * @returns {void}
      */
     setData(properties) {
-        const dom_element = document.querySelector("header nav div:nth-child(2) div:nth-child(2) button svg");
+        const dom_element = document.querySelector("header nav div:nth-child(2) div:nth-child(2) button").children[0];
         if (this.props != properties) {
             this.setState(() => ({
                 System: {

@@ -26,7 +26,7 @@ class Header extends React.Component {
      * @returns {void}
      */
     componentDidMount() {
-        this.getRoute();
+        this.getData();
     }
 
     /**
@@ -115,10 +115,10 @@ class Header extends React.Component {
     }
 
     /**
-     * Setting the view route of the application.
+     * Getting the data needed for the component of the header.
      * @returns {void}
      */
-    getRoute() {
+    getData() {
         this.setState((previous) => ({
             System: {
                 ...previous.System,

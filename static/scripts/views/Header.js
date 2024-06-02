@@ -10,13 +10,11 @@ class Header extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{System: {color_scheme: string, view_route: string. timestamp: number}}}
+         * @type {{System: {view_route: string}}}
          */
         this.state = {
             System: {
-                color_scheme: "",
                 view_route: "",
-                timestamp: "",
             },
         };
     }

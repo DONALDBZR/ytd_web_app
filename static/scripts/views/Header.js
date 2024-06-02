@@ -257,7 +257,7 @@ class ColorScheme extends Header {
 
     /**
      * Setting the data for the component.
-     * @param {{data: {System: {color_scheme: string, timestamp: number}}}} properties The properties of the component.
+     * @param {{data: {System: {color_scheme: string, timestamp: number, dom_element: HTMLElement}}}} properties The properties of the component.
      * @returns {void}
      */
     setData(properties) {

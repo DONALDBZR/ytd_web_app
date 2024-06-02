@@ -247,7 +247,7 @@ class ColorScheme extends Header {
     }
 }
 /**
- * The component to be rendered for the homepage
+ * The component to be rendered for the header of the homepage.
  */
 class Homepage extends Header {
     /**

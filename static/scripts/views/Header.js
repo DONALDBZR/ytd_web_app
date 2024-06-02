@@ -275,17 +275,26 @@ class ColorScheme extends Header {
     }
 
     /**
-     * Setting the data for the SVG Element.
-     * @param {SVGSVGElement} svg The SVG Element.
+     * Setting the data for the DOM Element.
+     * @param {SVGSVGElement | HTMLElement} element The HTML Element.
      * @returns {void}
      */
-    setSvgData(svg) {
-        if (this.state.System.color_scheme == "dark") {
-            svg.setAttribute("class", "svg-inline--fa fa-toggle-on");
-            svg.setAttribute("data-icon", "toggle-on");
+    setDomElementData(element) {
+        console.log(String(element));
+        if (String(element).includes("HTMLElement")) {
+            if (this.state.System.color_scheme == "dark") {
+                element.setAttribute("class", "fa-solid fa-toggle-on");
+            } else {
+                element.setAttribute("class", "fa-solid fa-toggle-off");
+            }
         } else {
-            svg.setAttribute("class", "svg-inline--fa fa-toggle-off");
-            svg.setAttribute("data-icon", "toggle-off");
+            if (this.state.System.color_scheme == "dark") {
+                element.setAttribute("class", "svg-inline--fa fa-toggle-on");
+                element.setAttribute("data-icon", "toggle-on");
+            } else {
+                element.setAttribute("class", "svg-inline--fa fa-toggle-off");
+                element.setAttribute("data-icon", "toggle-off");
+            }
         }
     }
 
@@ -295,9 +304,8 @@ class ColorScheme extends Header {
      */
     setSvg() {
         const dom_element = document.querySelector("header nav div div button").children[0];
-        let a = document.querySelector("svg")
         if (typeof dom_element != null) {
-            this.setSvgData(dom_element);
+            this.setDomElementData(dom_element);
         }
     }
 

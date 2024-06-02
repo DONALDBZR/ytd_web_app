@@ -194,7 +194,6 @@ class Header extends React.Component {
     render() {
         const application_data = {
             System: {
-                color_scheme: this.state.System.color_scheme,
                 view_route: this.state.System.view_route,
             },
         };

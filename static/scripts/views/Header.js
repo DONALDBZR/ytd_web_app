@@ -218,7 +218,7 @@ class Header extends React.Component {
 class ColorScheme extends Header {
     /**
      * Constructing the color scheme's component from the header.
-     * @param {{data: {System: {color_scheme: string, timestamp: number}}}} props The properties of the component
+     * @param {{data: {System: {color_scheme: string, timestamp: number, dom_element: HTMLElement}}}} props The properties of the component
      */
     constructor(props) {
         super(props);
@@ -231,6 +231,7 @@ class ColorScheme extends Header {
             System: {
                 color_scheme: this.props.data.System.color_scheme,
                 timestamp: this.props.data.System.timestamp,
+                dom_element: this.props.data.System.dom_element,
             },
         };
     }

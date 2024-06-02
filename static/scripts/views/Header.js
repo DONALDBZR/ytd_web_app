@@ -194,12 +194,18 @@ class Header extends React.Component {
      * @returns {HTMLHeaderElement}
      */
     render() {
+        const application_data = {
+            System: {
+                color_scheme: this.state.System.color_scheme,
+                view_route: this.state.System.view_route,
+            },
+        };
         if (this.state.System.view_route.includes("Search")) {
             return <Search />;
         } else if (this.state.System.view_route.includes("Download")) {
             return <Download />;
         } else {
-            return <Homepage />;
+            return <Homepage data={application_data} />;
         }
     }
 }

@@ -269,6 +269,7 @@ class Homepage extends Header {
      */
     componentDidMount() {
         this.setData(this.props);
+        console.log("Main Component: Header\nComponent: Homepage\nStatus: Mount");
     }
 
     /**

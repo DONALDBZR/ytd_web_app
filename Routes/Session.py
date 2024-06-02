@@ -36,12 +36,13 @@ def getSession() -> Response:
     return Response(response, status, mimetype=mime_type)
 
 
-@Session_Portal.route('/', methods=['UPDATE'])
+@Session_Portal.route('/', methods=['PUT'])
 def setSession() -> Response:
     """
     Allowing the Session Manager to update the session.
 
-    Returns: Response
+    Returns:
+        Response
     """
     payload = request.json
     user_request = {

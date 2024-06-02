@@ -270,8 +270,8 @@ class ColorScheme extends Header {
                     dom_element: dom_element,
                 },
             }));
-            this.setSvg();
         }
+        this.setSvg();
     }
 
     /**

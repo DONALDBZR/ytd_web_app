@@ -244,7 +244,7 @@ class ColorScheme extends Header {
 class Homepage extends Header {
     /**
      * Constructing the application from React's Component
-     * @param {*} props The properties of the component
+     * @param {{data: {System: {color_scheme: string, view_route: string}}}} props The properties of the component
      */
     constructor(props) {
         super(props);

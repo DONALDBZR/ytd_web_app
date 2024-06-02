@@ -141,6 +141,7 @@ class Header extends React.Component {
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay) {
+        console.log(`Color Scheme: ${color_scheme}\nDelay: ${delay} ms`);
         this.updateSession(color_scheme)
         .then((status) => console.log(`Update Color Scheme: ${status}`));
         setTimeout(() => {
@@ -150,12 +151,13 @@ class Header extends React.Component {
 
     /**
      * Changing the color scheme according to the user's taste
+     * @param {Event} event 
      * @returns {void}
      */
-    setColorScheme() {
+    setColorScheme(event) {
         const delay = 200;
+        let color_scheme = String(event.target.parentElement.parentElement.value);
         event.preventDefault();
-        let color_scheme = String(document.querySelector("button[name='colorSchemeChanger']").value);
         if (color_scheme == "light") {
             color_scheme = "dark";
         } else {
@@ -245,7 +247,7 @@ class Homepage extends Header {
                             <button
                                 name="colorSchemeChanger"
                                 value={this.state.System.color_scheme}
-                                onClick={this.setColorScheme}
+                                onClick={this.setColorScheme.bind(this)}
                             >
                                 <ColorScheme />
                             </button>

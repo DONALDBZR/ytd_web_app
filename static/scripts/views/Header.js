@@ -272,7 +272,6 @@ class ColorScheme extends Header {
      * @returns {HTMLElement}
      */
     render() {
-        console.log(`Color Scheme: ${this.state.System.color_scheme}`);
         if (this.state.System.color_scheme == "dark") {
             return <i class="fa-solid fa-toggle-on"></i>;
         } else {
@@ -343,22 +342,16 @@ class Homepage extends Header {
     }
 
     /**
-     * Changing the class name of the HTMLIElement.
-     * @returns {string}
-     */
-    setToggleButton() {
-        if (this.state.System.color_scheme == "dark") {
-            return "fa-solid fa-toggle-on";
-        } else {
-            return "fa-solid fa-toggle-off";
-        }
-    }
-
-    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */
     render() {
+        const application_data = {
+            System: {
+                color_scheme: this.state.System.color_scheme,
+                timestamp: this.state.System.timestamp,
+            },
+        };
         return (
             <>
                 <nav>
@@ -373,7 +366,7 @@ class Homepage extends Header {
                         </div>
                         <div>
                             <button name="colorSchemeChanger" value={this.state.System.color_scheme} onClick={this.setColorScheme.bind(this)}>
-                                <i class={}></i>
+                                <ColorScheme data={application_data} />
                             </button>
                         </div>
                     </div>

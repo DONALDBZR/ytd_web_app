@@ -297,6 +297,15 @@ class Homepage extends Header {
                     view_route: properties.data.System.view_route,
                 },
             }));
+        } else {
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    color_scheme: this.props.data.System.color_scheme,
+                    view_route: this.props.data.System.view_route,
+                },
+            }));
         }
     }
 

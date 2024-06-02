@@ -271,9 +271,11 @@ class Homepage extends Header {
      * @returns {void}
      */
     setData() {
-        this.setState((previous) => {
-
-        });
+        this.setState((previous) => ({
+            ...previous.System,
+            color_scheme: this.props.data.System.color_scheme,
+            view_route: this.props.data.System.view_route,
+        }));
     }
 
     /**

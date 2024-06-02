@@ -30,6 +30,17 @@ class Header extends React.Component {
     }
 
     /**
+     * Sending the request to the server to retrieve the session
+     * data.
+     * @returns {Promise<Response>}
+     */
+    async sendGetSessionRequest() {
+        return fetch("/Session", {
+            method: "GET",
+        });
+    }
+
+    /**
      * Retrieving the session of the application
      * @returns {void}
      */

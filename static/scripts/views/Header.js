@@ -208,7 +208,8 @@ class Header extends React.Component {
 }
 
 /**
- * It allows the component to be change on intearction of the user to change its color scheme
+ * It allows the component to be change on intearction of the
+ * user to change its color scheme
  */
 class ColorScheme extends Header {
     /**

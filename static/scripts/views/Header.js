@@ -274,7 +274,7 @@ class ColorScheme extends Header {
     render() {
         if (this.state.System.color_scheme == "dark") {
             return <i class="fa-solid fa-toggle-on"></i>;
-        } else if (this.state.System.color_scheme == "light") {
+        } else {
             return <i class="fa-solid fa-toggle-off"></i>;
         }
     }

@@ -290,9 +290,12 @@ class Homepage extends Header {
     setData(properties) {
         if (this.props != properties) {
             this.setState((previous) => ({
-                ...previous.System,
-                color_scheme: properties.data.System.color_scheme,
-                view_route: properties.data.System.view_route,
+                ...previous,
+                System: {
+                    ...previous.System,
+                    color_scheme: properties.data.System.color_scheme,
+                    view_route: properties.data.System.view_route,
+                },
             }));
         }
     }

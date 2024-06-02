@@ -103,7 +103,7 @@ class Header extends React.Component {
                 view_route: window.location.pathname,
             },
         }));
-        console.log(`Route: ${this.state.System.view_route}`);
+        console.log(`Route: ${window.location.pathname}`);
     }
 
     /**

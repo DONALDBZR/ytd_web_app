@@ -119,10 +119,12 @@ class Header extends React.Component {
      * @returns {void}
      */
     getData() {
+        const header = document.body.querySelector("header");
         this.setState((previous) => ({
             System: {
                 ...previous.System,
                 view_route: window.location.pathname,
+                dom_element: header,
             },
         }));
         console.log(`Route: ${window.location.pathname}`);

@@ -270,22 +270,24 @@ class ColorScheme extends Header {
                     dom_element: dom_element,
                 },
             }));
-            this.setSvgData();
+            this.setSvg();
         }
     }
 
     /**
-     * Setting the data needed for the SVG.
+     * Setting the SVG Element.
      * @returns {void}
      */
-    setSvgData() {
-        const dom_element = document.querySelector("header nav div:nth-child(2) div:nth-child(2) button svg");
-        if (this.state.System.color_scheme == "dark") {
-            dom_element.setAttribute("class", "svg-inline--fa fa-toggle-on");
-            dom_element.setAttribute("data-icon", "toggle-on");
-        } else {
-            dom_element.setAttribute("class", "svg-inline--fa fa-toggle-off");
-            dom_element.setAttribute("data-icon", "toggle-off");
+    setSvg() {
+        const dom_element = document.querySelector("header nav div div button").children[0];
+        if (typeof dom_element != null) {
+            if (this.state.System.color_scheme == "dark") {
+                dom_element.setAttribute("class", "svg-inline--fa fa-toggle-on");
+                dom_element.setAttribute("data-icon", "toggle-on");
+            } else {
+                dom_element.setAttribute("class", "svg-inline--fa fa-toggle-off");
+                dom_element.setAttribute("data-icon", "toggle-off");
+            }
         }
     }
 

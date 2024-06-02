@@ -157,9 +157,9 @@ class Header extends React.Component {
     }
 
     /**
-     * Refreshing the page while updating the color scheme
-     * @param {string} color_scheme
-     * @param {number} delay
+     * Refreshing the page while updating the color scheme.
+     * @param {string} color_scheme The color scheme of the application.
+     * @param {number} delay The delay in terms of milliseconds
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay) {

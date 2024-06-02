@@ -278,6 +278,7 @@ class Homepage extends Header {
      */
     componentDidUpdate(previous_props) {
         this.setData(previous_props);
+        console.log("Main Component: Header\nComponent: Homepage\nStatus: Updated");
     }
 
     /**

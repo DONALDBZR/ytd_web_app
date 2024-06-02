@@ -188,8 +188,8 @@ class Header extends React.Component {
     }
 
     /**
-     * Rendering the component
-     * @returns {HTMLHeaderElement}
+     * Rendering the component for the header.
+     * @returns {HTMLElement}
      */
     render() {
         const application_data = {

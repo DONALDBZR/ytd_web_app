@@ -231,8 +231,13 @@ class ColorScheme extends Header {
         };
     }
 
+    /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
     componentDidMount() {
-        this.getSession();
+        console.log("Main Component: Header\nComponent: ColorScheme\nStatus: Mount");
     }
 
     /**

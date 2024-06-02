@@ -10,12 +10,13 @@ class Header extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{System: {color_scheme: string, view_route: string}}}
+         * @type {{System: {color_scheme: string, view_route: string. timestamp: number}}}
          */
         this.state = {
             System: {
                 color_scheme: "",
                 view_route: "",
+                timestamp: "",
             },
         };
     }
@@ -38,6 +39,15 @@ class Header extends React.Component {
         return fetch("/Session", {
             method: "GET",
         });
+    }
+
+    /**
+     * Extracting the session data from the response.
+     * @returns {Promise<{Client: {timestamp: number, color_scheme: string}}>}
+     */
+    async getSessionResponse() {
+        const response = await this.sendGetSessionRequest();
+        return response.json();
     }
 
     /**

@@ -171,8 +171,8 @@ class Header extends React.Component {
     }
 
     /**
-     * Changing the color scheme according to the user's taste
-     * @param {Event} event 
+     * Changing the color scheme according to the user's taste.
+     * @param {Event} event An event which takes place in the DOM.
      * @returns {void}
      */
     setColorScheme(event) {

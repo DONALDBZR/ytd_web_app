@@ -36,7 +36,7 @@ class Header extends React.Component {
      * @returns {Promise<Response>}
      */
     async sendGetSessionRequest() {
-        return fetch("/Session", {
+        return fetch("/Session/", {
             method: "GET",
         });
     }

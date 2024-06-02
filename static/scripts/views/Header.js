@@ -291,20 +291,21 @@ class Homepage extends Header {
     /**
      * Constructing the header of the homepage from React's
      * Component
-     * @param {{data: {System: {view_route: string}}}} props The properties of the component
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} props The properties of the component
      */
     constructor(props) {
         super(props);
         this.props = props;
         /**
          * The states of the component.
-         * @type {{System: {color_scheme: string, view_route: string, timestamp: number}}}
+         * @type {{System: {color_scheme: string, view_route: string, timestamp: number, dom_element: HTMLElement}}}
          */
         this.state = {
             System: {
                 color_scheme: "",
                 view_route: this.props.data.System.view_route,
                 timestamp: "",
+                dom_element: this.props.data.System.dom_element,
             },
         };
     }

@@ -131,7 +131,7 @@ class Header extends React.Component {
      * @returns {Promise<number>}
      */
     async updateSession(color_scheme) {
-        const response = await this.sendUpdateRequest(color_scheme);
+        const response = await this.sendUpdateSessionRequest(color_scheme);
         return response.status;
     }
 

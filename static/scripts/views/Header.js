@@ -225,7 +225,7 @@ class ColorScheme extends Header {
         this.props = props;
         /**
          * The states of the component.
-         * @type {{System: {color_scheme: string, timestamp: number, dom_element: SVGSVGElement}}}
+         * @type {{System: {color_scheme: string, timestamp: number, dom_element: HTMLElement}}}
          */
         this.state = {
             System: {
@@ -275,19 +275,29 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Setting the data for the SVG Element.
+     * @param {SVGSVGElement} svg The SVG Element.
+     * @returns {void}
+     */
+    setSvgData(svg) {
+        if (this.state.System.color_scheme == "dark") {
+            svg.setAttribute("class", "svg-inline--fa fa-toggle-on");
+            svg.setAttribute("data-icon", "toggle-on");
+        } else {
+            svg.setAttribute("class", "svg-inline--fa fa-toggle-off");
+            svg.setAttribute("data-icon", "toggle-off");
+        }
+    }
+
+    /**
      * Setting the SVG Element.
      * @returns {void}
      */
     setSvg() {
         const dom_element = document.querySelector("header nav div div button").children[0];
+        let a = document.querySelector("svg")
         if (typeof dom_element != null) {
-            if (this.state.System.color_scheme == "dark") {
-                dom_element.setAttribute("class", "svg-inline--fa fa-toggle-on");
-                dom_element.setAttribute("data-icon", "toggle-on");
-            } else {
-                dom_element.setAttribute("class", "svg-inline--fa fa-toggle-off");
-                dom_element.setAttribute("data-icon", "toggle-off");
-            }
+            this.setSvgData(dom_element);
         }
     }
 

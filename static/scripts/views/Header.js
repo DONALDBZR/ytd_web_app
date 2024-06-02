@@ -166,7 +166,7 @@ class Header extends React.Component {
      */
     updateColorScheme(color_scheme, delay) {
         this.updateSession(color_scheme)
-        .then((status) => console.log(`Update Color Scheme: ${status}`));
+        .then((status) => console.log(`Request Method: PUT\nRoute: /Session\nStatus: ${status}`));
         setTimeout(() => {
             window.location.href = window.location.href;
         }, delay);

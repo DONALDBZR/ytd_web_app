@@ -43,11 +43,38 @@ class Header extends React.Component {
 
     /**
      * Extracting the session data from the response.
-     * @returns {Promise<{Client: {timestamp: number, color_scheme: string}}>}
+     * @returns {Promise<{status: number, data: {Client: {timestamp: number, color_scheme: string}}}>}
      */
     async getSessionResponse() {
         const response = await this.sendGetSessionRequest();
-        return response.json();
+        return {
+            status: response.status,
+            data: await response.json(),
+        };
+    }
+
+    /**
+     * Verifying that the color scheme does not have a value
+     * @returns {Promise<number>}
+     */
+    async verifyColorScheme() {
+        const response = await this.getSessionResponse();
+        this.setState((previous) => ({
+            System: {
+                ...previous.System,
+                color_scheme: response.data.Client.color_scheme,
+                timestamp: response.data.Client.timestamp,
+            },
+        }));
+        if (this.state.System.color_scheme == "") {
+            this.setState((previous) => ({
+                System: {
+                    ...previous.System,
+                    color_scheme: "light",
+                },
+            }));
+        }
+        return response.status;
     }
 
     /**
@@ -69,21 +96,6 @@ class Header extends React.Component {
             )
             .then(() => this.verifyColorScheme())
             .then(() => this.adjustPage());
-    }
-
-    /**
-     * Verifying that the color scheme does not have a value
-     * @returns {void}
-     */
-    verifyColorScheme() {
-        if (this.state.System.color_scheme == "") {
-            this.setState((previous) => ({
-                System: {
-                    ...previous.System,
-                    color_scheme: "light",
-                },
-            }));
-        }
     }
 
     /**

@@ -225,7 +225,7 @@ class ColorScheme extends Header {
         this.props = props;
         /**
          * The states of the component.
-         * @type {{System: {color_scheme: string, timestamp: number}}}
+         * @type {{System: {color_scheme: string, timestamp: number, dom_element: SVGSVGElement}}}
          */
         this.state = {
             System: {
@@ -270,6 +270,21 @@ class ColorScheme extends Header {
                     dom_element: dom_element,
                 },
             }));
+            this.setSvgData();
+        }
+    }
+
+    /**
+     * Setting the data needed for the SVG.
+     * @returns {void}
+     */
+    setSvgData() {
+        if (this.state.System.color_scheme == "dark") {
+            this.state.System.dom_element.className = "svg-inline--fa fa-toggle-on";
+            this.state.System.dom_element.setAttribute("data-icon", "toggle-on");
+        } else {
+            this.state.System.dom_element.className = "svg-inline--fa fa-toggle-off";
+            this.state.System.dom_element.setAttribute("data-icon", "toggle-off");
         }
     }
 

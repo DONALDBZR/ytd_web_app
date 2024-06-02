@@ -78,32 +78,12 @@ class Header extends React.Component {
     }
 
     /**
-     * Retrieving the session of the application
-     * @returns {void}
-     */
-    getSession() {
-        fetch("/Session", {
-            method: "GET",
-        })
-            .then((response) => response.json())
-            .then((data) =>
-                this.setState((previous) => ({
-                    System: {
-                        ...previous.System,
-                        color_scheme: data.Client.color_scheme,
-                    },
-                }))
-            )
-            .then(() => this.verifyColorScheme())
-            .then(() => this.adjustPage());
-    }
-
-    /**
      * Adjusting the color scheme of the application
-     * @returns {string}
+     * @returns {Promise<number>}
      */
-    adjustPage() {
+    async adjustPage() {
         const root = document.querySelector(":root");
+        const status = await this.verifyColorScheme();
         let color1;
         let color2;
         let color3;
@@ -123,6 +103,16 @@ class Header extends React.Component {
         root.style.setProperty("--color2", color2);
         root.style.setProperty("--color3", color3);
         root.style.setProperty("--color5", color5);
+        return status;
+    }
+
+    /**
+     * Retrieving the session of the application
+     * @returns {void}
+     */
+    getSession() {
+        this.adjustPage()
+        .then((status) => console.log(`Request Method: GET\nRoute: /Session\nStatus: ${status}`));
     }
 
     /**

@@ -10,12 +10,15 @@ class Header extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+         * @type {{System: {view_route: string, dom_element: HTMLElement}, Media: {search: string}}}
          */
         this.state = {
             System: {
                 view_route: "",
                 dom_element: "",
+            },
+            Media: {
+                search: "",
             },
         };
     }
@@ -196,6 +199,25 @@ class Header extends React.Component {
      * @param {Event} event An event which takes place in the DOM.
      * @returns {void}
      */
+    handleSearchSubmit(event) {
+        /**
+         * @type {HTMLDivElement}
+         */
+        const loading_icon = document.querySelector("main #loading");
+        const delay = 200;
+        const uniform_resource_locator = new URL(this.state.Media.search);
+        const platform = uniform_resource_locator.host.replaceAll("www.", "").replaceAll(".com", "");
+        loading_icon.style.display = "flex";
+        event.preventDefault();
+        fetch(`/Media/Search?platform=${platform}&search=${this.state.Media.search}`, {
+            method: "GET",
+        })
+            .then((response) => response.json())
+            .then((data) => this.setMediaYouTubeUniformResourceLocator(data))
+            .then(() => this.setMediaYouTubeIdentifier())
+            .then(() => this.setRoute())
+            .then(() => this.redirector(delay, this.state.System.url));
+    }
 
     /**
      * Rendering the component for the header.

@@ -210,14 +210,7 @@ class Header extends React.Component {
         const platform = uniform_resource_locator.host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
         event.preventDefault();
-        fetch(`/Media/Search?platform=${platform}&search=${this.state.Media.search}`, {
-            method: "GET",
-        })
-            .then((response) => response.json())
-            .then((data) => this.setMediaYouTubeUniformResourceLocator(data))
-            .then(() => this.setMediaYouTubeIdentifier())
-            .then(() => this.setRoute())
-            .then(() => this.redirector(delay, this.state.System.url));
+        this.searchMediaMetadata(platform, this.state.Media.search, delay);
     }
 
     /**

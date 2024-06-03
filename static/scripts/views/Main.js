@@ -468,6 +468,9 @@ class Homepage extends Main {
     render() {
         return (
             <>
+                <div id="loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
                 <p>
                     The aim of the application is that software and contents
                     must be free and it allows anyone to get content from

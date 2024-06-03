@@ -72,8 +72,9 @@ def search(platform: str, search: str) -> Response:
         "search": search,
         "platform": platform,
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
-        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))
     }
+    mime_type: str = "application/json"
     media: Media = Media(user_request)
     response: Dict[
         str,
@@ -85,7 +86,6 @@ def search(platform: str, search: str) -> Response:
         ]
     ] = media.verifyPlatform()
     status: int = int(response["data"]["status"])  # type: ignore
-    mime_type: str = "application/json"
     return Response(json.dumps(response, indent=4), status, mimetype=mime_type)
 
 

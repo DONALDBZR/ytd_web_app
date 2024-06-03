@@ -221,6 +221,22 @@ class Header extends React.Component {
     }
 
     /**
+     * Searching for the Media content and redirecting the user to
+     * the searched content.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @param {number} delay The amount of delay in milliseconds.
+     * @returns {void}
+     */
+    searchMediaMetadata(platform, search, delay) {
+        this.setRoute(platform, search)
+        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}`));
+        setTimeout(() => {
+            window.location.href = this.state.System.view_route;
+        }, delay);
+    }
+
+    /**
      * Setting the route to be redirected.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.

@@ -421,11 +421,12 @@ class Homepage extends Header {
                         <a href="/">Extractio</a>
                     </div>
                     <div>
-                        <div>
-                            <a href="/Search">
+                        <form method="GET" onSubmit={this.handleSearchSubmit.bind(this)}>
+                            <button>
                                 <i class="fa fa-search"></i>
-                            </a>
-                        </div>
+                            </button>
+                            <input type="search" placeholder="Search..." name="search" value={this.state.Media.search} onChange={this.handleSearchChange.bind(this)} required />
+                        </form>
                         <div>
                             <button name="colorSchemeChanger" value={this.state.System.color_scheme} onClick={this.setColorScheme.bind(this)}>
                                 <ColorScheme data={application_data} />

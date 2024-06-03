@@ -214,6 +214,25 @@ class Header extends React.Component {
     }
 
     /**
+     * Handling the change of the data form the search form of the
+     * User-Interface of Extractio.
+     * @param {Event} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+    handleSearchChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState((previous) => ({
+            ...previous,
+            Media: {
+                ...previous.Media,
+                [name]: value,
+            },
+        }));
+    }
+
+    /**
      * Searching for the Media content and redirecting the user to
      * the searched content.
      * @param {string} platform The platform to be searched on.

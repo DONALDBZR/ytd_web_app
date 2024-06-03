@@ -1,6 +1,7 @@
 from flask import Blueprint, Response, request
 from Models.Media import Media
 from io import TextIOWrapper
+from typing import Dict, Union
 import json
 import os
 
@@ -53,26 +54,38 @@ def getMetaData(file_name: str) -> TextIOWrapper:
         return open(file_name)
 
 
-@Media_Portal.route("/Search", methods=["POST"])
-def search() -> Response:
+@Media_Portal.route("/Search?platform=<string:platform>&search=<string:search>", methods=["GET"])
+def search(platform: str, search: str) -> Response:
     """
-    Searching for the media by the uniform resouce locator that
+    Searching for the media by the uniform resource locator that
     has been retrieved from the client.
 
-    Returns: Response
+    Parameters:
+        platform: string: The platform
+        search: string: The search data
+
+    Returns:
+        Response
     """
-    payload = request.json
-    user_request = {
+    user_request: Dict[str, Union[None, str]] = {
         "referer": None,
-        "search": str(payload["Media"]["search"]),  # type: ignore
-        "platform": str(payload["Media"]["platform"]),  # type: ignore
+        "search": search,
+        "platform": platform,
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
         "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
     }
-    media = Media(user_request)
-    response = media.verifyPlatform()
-    status = int(response["data"]["status"])  # type: ignore
-    mime_type = "application/json"
+    media: Media = Media(user_request)
+    response: Dict[
+        str,
+        Union[
+            int,
+            Dict[
+                str, Union[str, int, Dict[str, Union[str, int, None]], None]
+            ]
+        ]
+    ] = media.verifyPlatform()
+    status: int = int(response["data"]["status"])  # type: ignore
+    mime_type: str = "application/json"
     return Response(json.dumps(response, indent=4), status, mimetype=mime_type)
 
 
@@ -126,7 +139,7 @@ def retrieveMedia() -> Response:
     # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
         media = Media(user_request)  # type: ignore
-        response = media.verifyPlatform() # type: ignore
+        response = media.verifyPlatform()  # type: ignore
     mime_type = "application/json"
     status = int(response["data"]["status"])  # type: ignore
     response = json.dumps(response, indent=4)  # type: ignore

@@ -4,6 +4,7 @@ from Models.Logger import Extractio_Logger
 from datetime import datetime
 from Environment import Environment
 from mysql.connector.types import RowType
+from typing import Dict, Union
 import json
 import logging
 
@@ -209,13 +210,13 @@ class Media:
             parameters=data
         )
 
-    def handleYouTube(self) -> dict[str, str | int | None | dict[str, str | int | None]]:
+    def handleYouTube(self) -> Dict[str, Union[str, int, None, Dict[str, Union[str, int, None]]]]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
 
-        Return:
-            (object)
+        Returns:
+            {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}
         """
         response: dict[str, str | int | None | dict[str, str | int | None]]
         identifier: str

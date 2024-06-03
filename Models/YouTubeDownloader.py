@@ -236,23 +236,14 @@ class YouTube_Downloader:
         else:
             return identifier
 
-    def search(self) -> Dict[str, Union[str, int, None]]:
+    def sanitizeYouTubeIdentifier(self) -> None:
         """
-        Searching for the video in YouTube.
+        Sanitizing the identifier of the content from the platform
+        YouTube.
 
         Returns:
-            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}
+            void
         """
-        response: Dict[str, Union[str, int, None]]
-        audio_file: Union[str, None]
-        video_file: Union[str, None]
-        self.setVideo(
-            YouTube(self.getUniformResourceLocator())
-        )
-        self.setIdentifier(
-            self.getUniformResourceLocator()
-        )
-        self.sanitizeYouTubeIdentifier()
         if "youtube" in self.getUniformResourceLocator():
             self.setIdentifier(
                 self.retrieveIdentifier(
@@ -271,6 +262,24 @@ class YouTube_Downloader:
                     ).rsplit("?")[0]
                 )
             )
+
+    def search(self) -> Dict[str, Union[str, int, None]]:
+        """
+        Searching for the video in YouTube.
+
+        Returns:
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}
+        """
+        response: Dict[str, Union[str, int, None]]
+        audio_file: Union[str, None]
+        video_file: Union[str, None]
+        self.setVideo(
+            YouTube(self.getUniformResourceLocator())
+        )
+        self.setIdentifier(
+            self.getUniformResourceLocator()
+        )
+        self.sanitizeYouTubeIdentifier()
         meta_data: Dict[
             str, Union[int, List[RowType], str]
         ] = self.getYouTube()

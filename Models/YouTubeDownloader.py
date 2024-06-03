@@ -252,6 +252,7 @@ class YouTube_Downloader:
         self.setIdentifier(
             self.getUniformResourceLocator()
         )
+        self.sanitizeYouTubeIdentifier()
         if "youtube" in self.getUniformResourceLocator():
             self.setIdentifier(
                 self.retrieveIdentifier(

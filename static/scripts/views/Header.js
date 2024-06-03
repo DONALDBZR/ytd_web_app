@@ -200,9 +200,6 @@ class Header extends React.Component {
      * @returns {void}
      */
     handleSearchSubmit(event) {
-        /**
-         * @type {HTMLDivElement}
-         */
         const loading_icon = document.querySelector("main #loading");
         const delay = 200;
         const uniform_resource_locator = new URL(this.state.Media.search);

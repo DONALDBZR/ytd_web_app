@@ -5,6 +5,7 @@ from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
+from typing import Dict, Union, List
 import time
 import os
 import logging
@@ -235,15 +236,22 @@ class YouTube_Downloader:
         else:
             return identifier
 
-    def search(self) -> dict[str, str | int | None]:
+    def search(self) -> Dict[str, Union[str, int, None]]:
         """
         Searching for the video in YouTube.
 
-        Return:
-            (object)
+        Returns:
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}
         """
-        self.setVideo(YouTube(self.getUniformResourceLocator()))
-        self.setIdentifier(self.getUniformResourceLocator())
+        response: Dict[str, Union[str, int, None]]
+        audio_file: Union[str, None]
+        video_file: Union[str, None]
+        self.setVideo(
+            YouTube(self.getUniformResourceLocator())
+        )
+        self.setIdentifier(
+            self.getUniformResourceLocator()
+        )
         if "youtube" in self.getUniformResourceLocator():
             self.setIdentifier(
                 self.retrieveIdentifier(
@@ -262,10 +270,9 @@ class YouTube_Downloader:
                     ).rsplit("?")[0]
                 )
             )
-        response: dict[str, str | int | None]
-        meta_data = self.getYouTube()
-        audio_file: str | None
-        video_file: str | None
+        meta_data: Dict[
+            str, Union[int, List[RowType], str]
+        ] = self.getYouTube()
         if meta_data["status"] == 200:
             self.setLength(int(meta_data["data"][0][4]))  # type: ignore
             self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
@@ -489,7 +496,7 @@ class YouTube_Downloader:
         """
         file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         try:
-            self.getStream().download( # type: ignore
+            self.getStream().download(  # type: ignore
                 output_path=f"{self.getDirectory()}/Video",
                 filename=f"{self.getIdentifier()}.mp4"
             )

@@ -10,7 +10,7 @@ class Header extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{System: {view_route: string, dom_element: HTMLElement}, Media: {search: string}}}
+         * @type {{System: {view_route: string, dom_element: HTMLElement}, Media: {search: string, YouTube: {uniform_resource_locator: string}}}}
          */
         this.state = {
             System: {
@@ -19,6 +19,9 @@ class Header extends React.Component {
             },
             Media: {
                 search: "",
+                YouTube: {
+                    uniform_resource_locator: "",
+                },
             },
         };
     }
@@ -214,6 +217,27 @@ class Header extends React.Component {
             .then(() => this.setMediaYouTubeIdentifier())
             .then(() => this.setRoute())
             .then(() => this.redirector(delay, this.state.System.url));
+    }
+
+    /**
+     * Setting the uniform resource locator for a specific YouTube
+     * content.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @returns {Promise<number>}
+     */
+    async setMediaYouTubeUniformResourceLocator(platform, search) {
+        const response = await this.getSearchMedia(platform, search);
+        this.setState((previous) => ({
+            Media: {
+                ...previous.Media,
+                YouTube: {
+                    ...previous.Media.YouTube,
+                    uniform_resource_locator: response.data.uniform_resource_locator,
+                },
+            },
+        }));
+        return response.status;
     }
 
     /**

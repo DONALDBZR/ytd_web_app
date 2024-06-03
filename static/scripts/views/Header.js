@@ -10,19 +10,12 @@ class Header extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{System: {view_route: string, dom_element: HTMLElement}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}}}
+         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
          */
         this.state = {
             System: {
                 view_route: "",
                 dom_element: "",
-            },
-            Media: {
-                search: "",
-                YouTube: {
-                    uniform_resource_locator: "",
-                    identifier: "",
-                },
             },
         };
     }
@@ -520,7 +513,7 @@ class Homepage extends Header {
         this.props = props;
         /**
          * The states of the component.
-         * @type {{System: {color_scheme: string, view_route: string, timestamp: number, dom_element: HTMLElement}}}
+         * @type {{System: {color_scheme: string, view_route: string, timestamp: number, dom_element: HTMLElement}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}}}
          */
         this.state = {
             System: {
@@ -528,6 +521,13 @@ class Homepage extends Header {
                 view_route: this.props.data.System.view_route,
                 timestamp: "",
                 dom_element: this.props.data.System.dom_element,
+            },
+            Media: {
+                search: "",
+                YouTube: {
+                    uniform_resource_locator: "",
+                    identifier: "",
+                },
             },
         };
     }

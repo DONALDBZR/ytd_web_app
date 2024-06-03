@@ -4,7 +4,7 @@ from Models.Logger import Extractio_Logger
 from datetime import datetime
 from Environment import Environment
 from mysql.connector.types import RowType
-from typing import Dict, Union
+from typing import Dict, Union, List
 import json
 import logging
 
@@ -140,20 +140,20 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> dict[str, int | dict[str, str | int | dict[str, str | int | None] | None]]:
+    def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
         response.
 
-        Return:
-            (object)
+        Returns:
+            {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
         """
-        response: dict[
+        response: Dict[
             str,
-            int | dict[str, str | int | dict[str, str | int | None] | None]
+            Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]
         ]
-        media = self.getMedia()
+        media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
         if media["status"] != 200:
             self.postMedia()
             self.verifyPlatform()
@@ -164,7 +164,7 @@ class Media:
                 "status": 200,
                 "data": self.handleYouTube()
             }
-        return response  # type: ignore
+        return response
 
     def getMedia(self) -> dict[str, int | list[RowType] | str]:
         """

@@ -191,6 +191,13 @@ class Header extends React.Component {
     }
 
     /**
+     * Handling the form submission which target the Search API of
+     * Extractio.
+     * @param {Event} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+
+    /**
      * Rendering the component for the header.
      * @returns {HTMLElement}
      */

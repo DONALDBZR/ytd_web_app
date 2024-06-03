@@ -217,18 +217,6 @@ body[id*="Download"] main .YouTube div button {
 body[id*="Download"] main .YouTube div button {
     border: none;
 }
-body[id*="Search"] main #loading {
-    position: fixed;
-    z-index: 1;
-    left: calc(var(--width) * 0);
-    top: calc(var(--height) * 0);
-    width: var(--width);
-    height: var(--height);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    font-size: calc(var(--textSize) * 6.727499949);
-}
 body[id*="Download"] main .YouTube div video {
     height: inherit;
     width: auto;
@@ -309,4 +297,16 @@ body[id*="Download"] main .YouTube div video {
 }
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a {
     font-size: calc(var(--textSize) * 1.9487171);
+}
+#Homepage main #loading {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--width) * 0);
+    top: calc(var(--height) * 0);
+    width: var(--width);
+    height: var(--height);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 6.727499949);
 }

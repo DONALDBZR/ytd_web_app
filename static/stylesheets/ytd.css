@@ -377,7 +377,7 @@ body[id*="Download"] main .YouTube div a:hover,
 #Homepage main .Trend .card div:nth-child(1) a:hover img {
     opacity: calc(var(--percentage) / 2);
 }
-body[id*="Search"] main #loading {
+#Homepage main #loading {
     color: var(--color3);
     background-color: var(--color5);
 }

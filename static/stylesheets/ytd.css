@@ -251,68 +251,40 @@ body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
     background-color: var(--color1);
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(1),
-body[id*="Search"] header nav div:nth-child(1),
 body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
-body[id*="Download"] header nav div:nth-child(1),
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
     font-family: var(--sourceCodePro);
 }
-#Homepage header nav div:nth-child(1) a,
 #Homepage footer div,
-body[id*="Search"] header nav div:nth-child(1) a,
 body[id*="Search"] footer div,
-body[id*="Download"] header nav div:nth-child(1) a,
 body[id*="Download"] footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
-#Homepage header nav div a:hover,
-#Homepage header nav .active a,
-#Homepage header nav div:nth-child(2) div:nth-child(1) a:hover,
-#Homepage header nav div:nth-child(2) div:nth-child(2) button:hover,
-body[id*="Search"] header nav div:nth-child(1) a:hover,
-body[id*="Search"] header nav .active a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button:hover,
 body[id*="Search"] main form button:hover,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button:hover,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
-body[id*="Download"] header nav div:nth-child(1) a:hover,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button:hover,
 body[id*="Download"] main .YouTube div button:hover,
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a:hover,
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a:hover {
     color: var(--color3);
 }
-#Homepage header nav div:nth-child(1) a:hover,
-body[id*="Search"] header nav div:nth-child(1) a:hover,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
-body[id*="Download"] header nav div:nth-child(1) a:hover,
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a:hover {
     text-decoration: underline;
 }
-#Homepage header nav div:nth-child(2) div:nth-child(1) a,
-#Homepage header nav div:nth-child(2) div:nth-child(2) button,
 #Homepage footer div,
-body[id*="Search"] header nav div:nth-child(1) a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
 body[id*="Search"] footer div,
 body[id*="Search"] main form input::placeholder,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
-body[id*="Download"] header nav div:nth-child(1) a,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
 body[id*="Download"] main .YouTube div button,
 #Homepage main .Trend .card div:nth-child(2) div,
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a,
 #Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a {
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
 body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
 body[id*="Download"] main .YouTube div button {
     background: none;
     cursor: pointer;
@@ -380,4 +352,35 @@ body[id*="Download"] main .YouTube div a:hover,
 #Homepage main #loading {
     color: var(--color3);
     background-color: var(--color5);
+}
+header nav div a {
+    font-family: var(--pacifico);
+    color: var(--color2);
+    text-decoration: none;
+}
+header nav div a:hover {
+    text-decoration: underline;
+    color: var(--color3);
+}
+header nav .active a,
+header nav div div button:hover svg,
+header nav div form button:hover svg {
+    color: var(--color3);
+}
+header nav div div button,
+header nav div form button {
+    background: transparent;
+    cursor: pointer;
+}
+header nav div div button svg,
+header nav div form button svg,
+header nav div form input {
+    color: var(--color2);
+}
+header nav div form input {
+    background: transparent;
+}
+header nav div form input::placeholder {
+    opacity: calc(var(--percentage) / 2);
+    color: var(--color2);
 }

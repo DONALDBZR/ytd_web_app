@@ -54,19 +54,17 @@ def getMetaData(file_name: str) -> TextIOWrapper:
         return open(file_name)
 
 
-@Media_Portal.route("/Search?platform=<string:platform>&search=<string:search>", methods=["GET"])
-def search(platform: str, search: str) -> Response:
+@Media_Portal.route("/Search", methods=["GET"])
+def search() -> Response:
     """
     Searching for the media by the uniform resource locator that
     has been retrieved from the client.
 
-    Parameters:
-        platform: string: The platform
-        search: string: The search data
-
     Returns:
         Response
     """
+    platform: str = str(request.args.get("platform"))
+    search: str = str(request.args.get("search"))
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,
         "search": search,

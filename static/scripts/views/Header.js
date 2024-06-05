@@ -685,6 +685,13 @@ class Search extends Header {
      * @returns {HTMLHeaderElement}
      */
     render() {
+        const application_data = {
+            System: {
+                color_scheme: this.state.System.color_scheme,
+                timestamp: this.state.System.timestamp,
+                dom_element: this.state.System.dom_element,
+            },
+        };
         return (
             <>
                 <nav>
@@ -703,7 +710,7 @@ class Search extends Header {
                                 value={this.state.System.color_scheme}
                                 onClick={this.setColorScheme}
                             >
-                                <ColorScheme />
+                                <ColorScheme data={application_data} />
                             </button>
                         </div>
                     </div>

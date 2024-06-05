@@ -655,6 +655,16 @@ class Search extends Header {
     }
 
     /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} previous_props The properties of the component.
+     * @returns {void}
+     */
+    componentDidUpdate(previous_props) {
+        this.setData(previous_props);
+        console.log("Component: Header.Search\nStatus: Updated");
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

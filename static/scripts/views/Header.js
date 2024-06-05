@@ -10,12 +10,19 @@ class Header extends React.Component {
         super(props);
         /**
          * States of the application
-         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+         * @type {{System: {view_route: string, dom_element: HTMLElement}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}}}
          */
         this.state = {
             System: {
                 view_route: "",
                 dom_element: "",
+            },
+            Media: {
+                search: "",
+                YouTube: {
+                    uniform_resource_locator: "",
+                    identifier: "",
+                },
             },
         };
     }
@@ -235,10 +242,12 @@ class Header extends React.Component {
      */
     searchMediaMetadata(platform, search, delay) {
         this.setRoute(platform, search)
-        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}`));
-        setTimeout(() => {
-            window.location.href = this.state.System.view_route;
-        }, delay);
+        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: /\nComponent: Header.Homepage\nDelay: ${delay} ms`))
+        .then(() => {
+            setTimeout(() => {
+                window.location.href = this.state.System.view_route;
+            }, delay);
+        });
     }
 
     /**

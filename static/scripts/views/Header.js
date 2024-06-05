@@ -370,7 +370,7 @@ class Header extends React.Component {
             },
         };
         if (this.state.System.view_route.includes("Search")) {
-            return <Search />;
+            return <Search data={application_data}  />;
         } else if (this.state.System.view_route.includes("Download")) {
             return <Download />;
         } else {
@@ -513,8 +513,7 @@ class ColorScheme extends Header {
  */
 class Homepage extends Header {
     /**
-     * Constructing the header of the homepage from React's
-     * Component
+     * Constructing the header of the homepage from the Header Component.
      * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} props The properties of the component
      */
     constructor(props) {
@@ -548,7 +547,7 @@ class Homepage extends Header {
      */
     componentDidMount() {
         this.getSession();
-        console.log("Main Component: Header\nComponent: Homepage\nStatus: Mount");
+        console.log("Component: Header.Homepage\nStatus: Mount");
     }
 
     /**
@@ -618,15 +617,34 @@ class Homepage extends Header {
  */
 class Search extends Header {
     /**
-     * Constructing the application from React's Component
-     * @param {*} props The properties of the component
+     * Constructing the header of the search page from the Header Component.
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} props The properties of the component
      */
     constructor(props) {
         super(props);
+        this.props = props;
+        /**
+         * The states of the component.
+         * @type {{System: {color_scheme: string, view_route: string, timestamp: number, dom_element: HTMLElement}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}}}
+         */
+        this.state = {
+            System: {
+                color_scheme: "",
+                view_route: this.props.data.System.view_route,
+                timestamp: "",
+                dom_element: this.props.data.System.dom_element,
+            },
+            Media: {
+                search: "",
+                YouTube: {
+                    uniform_resource_locator: "",
+                    identifier: "",
+                },
+            },
+        };
     }
 
     componentDidMount() {
-        this.getRoute();
         this.getSession();
     }
 

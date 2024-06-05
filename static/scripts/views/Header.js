@@ -699,7 +699,7 @@ class Search extends Header {
                         <a href="/">Extractio</a>
                     </div>
                     <div>
-                        <div class="active">
+                        <div>
                             <a href="/Search">
                                 <i class="fa fa-search"></i>
                             </a>

@@ -665,6 +665,22 @@ class Search extends Header {
     }
 
     /**
+     * Setting the data for the component.
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} properties The properties of the component.
+     * @returns {void}
+     */
+    setData(properties) {
+        if (this.props != properties) {
+            this.setState(() => ({
+                System: {
+                    view_route: this.props.data.System.view_route,
+                    dom_element: this.props.data.System.dom_element,
+                },
+            }));
+        }
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

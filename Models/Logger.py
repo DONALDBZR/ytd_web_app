@@ -59,7 +59,6 @@ class Extractio_Logger:
         """
         self.getLogger().setLevel(logging.INFO)
         self.getLogger().info(message)
-        print(message)
 
     def warn(self, message: str) -> None:
         """

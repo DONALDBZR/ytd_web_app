@@ -87,4 +87,3 @@ class Extractio_Logger:
         """
         self.getLogger().setLevel(logging.ERROR)
         self.getLogger().error(message)
-        print(message)

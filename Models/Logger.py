@@ -45,7 +45,6 @@ class Extractio_Logger:
         """
         self.getLogger().setLevel(logging.DEBUG)
         self.getLogger().debug(message)
-        print(message)
 
     def inform(self, message: str) -> None:
         """

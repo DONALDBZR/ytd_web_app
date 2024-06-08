@@ -73,6 +73,7 @@ class Extractio_Logger:
         """
         self.getLogger().setLevel(logging.WARNING)
         self.getLogger().warning(message)
+        print(message)
 
     def error(self, message: str) -> None:
         """

@@ -428,5 +428,5 @@ class Crawler:
                 )
             )
             self.getData()[index]["latest_content"] = str(
-                self.getHtmlTags()[1].get_attribute("href")
+                self.getHtmlTags()[2].get_attribute("href")
             )

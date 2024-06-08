@@ -211,6 +211,11 @@ class Crawler:
                 f"Latest Content to be displayed on the application.\nNew Content Amount: {self.prepareSecondRun(dataset)}"
             )
             self.secondRun()
+        else:
+            self.getLogger().inform(
+                f"No new data has been found for the last seven days.\nWeekly Content Downloaded Amount: {len(identifiers)}"
+            )
+            exit()
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:
         """

@@ -63,6 +63,20 @@ class Main extends React.Component {
     }
 
     /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => ({
+            System: {
+                ...previous.System,
+                view_route: window.location.pathname,
+                dom_element: document.body.querySelector("main"),
+            },
+        }));
+    }
+
+    /**
      * Retrieving the current trend.
      * @returns {void}
      */
@@ -81,19 +95,6 @@ class Main extends React.Component {
                     })
                 );
         }
-    }
-
-    /**
-     * Setting the view route of the application.
-     * @returns {void}
-     */
-    getRoute() {
-        this.setState((previous) => ({
-            System: {
-                ...previous.System,
-                view_route: window.location.pathname,
-            },
-        }));
     }
 
     /**

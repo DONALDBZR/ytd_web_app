@@ -289,7 +289,7 @@ header nav div {
     justify-content: center;
 }
 header nav div a {
-    font-size: calc(var(--textSize) * (20 / 16));
+    font-size: calc(var(--textSize) * 2);
     letter-spacing: calc(var(--width) / 1000);
 }
 header nav div:nth-child(2) {

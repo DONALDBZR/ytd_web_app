@@ -98,27 +98,6 @@ class Main extends React.Component {
     }
 
     // /**
-    //  * Retrieving the current trend.
-    //  * @returns {void}
-    //  */
-    // getTrend() {
-    //     if (
-    //         this.state.System.view_route == "/" ||
-    //         this.state.System.view_route == ""
-    //     ) {
-    //         fetch("/Trend/", {
-    //             method: "GET",
-    //         })
-    //             .then((response) => response.json())
-    //             .then((data) =>
-    //                 this.setState({
-    //                     Trend: data,
-    //                 })
-    //             );
-    //     }
-    // }
-
-    // /**
     //  * Handling any change that is made in the user interface
     //  * @param {Event} event
     //  * @returns {void}
@@ -552,9 +531,16 @@ class Homepage extends Main {
      * @returns {HTMLElement}
      */
     render() {
+        /**
+         * The data to be used for the Trend component.
+         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}
+         */
+        const trend = {
+            Trend: this.state.Trend,
+        };
         return (
             <>
-                {/*<div id="loading">
+                <div id="loading">
                     <i class="fa-solid fa-spinner fa-spin"></i>
                 </div>
                 <p>
@@ -568,7 +554,7 @@ class Homepage extends Main {
                         <i class="fa-brands fa-youtube"></i>
                     </div>
                 </div>
-                <Trend />*/}
+                <Trend />
             </>
         );
     }

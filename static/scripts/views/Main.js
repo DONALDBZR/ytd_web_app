@@ -554,7 +554,7 @@ class Homepage extends Main {
                         <i class="fa-brands fa-youtube"></i>
                     </div>
                 </div>
-                <Trend />
+                <Trend data={trend} />
             </>
         );
     }

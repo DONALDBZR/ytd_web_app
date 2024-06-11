@@ -53,6 +53,16 @@ class Main extends React.Component {
     }
 
     /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+        console.info(`Route: ${this.state.System.view_route}\nComponent: Main\nComponent Status: Mount`);
+    }
+
+    /**
      * Retrieving the current trend.
      * @returns {void}
      */
@@ -71,15 +81,6 @@ class Main extends React.Component {
                     })
                 );
         }
-    }
-
-    /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
-     * @returns {void}
-     */
-    componentDidMount() {
-        this.getRoute();
     }
 
     /**

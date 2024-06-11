@@ -496,6 +496,17 @@ class Homepage extends Main {
     }
 
     /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            System: this.props.data.System,
+        }));
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLElement}
      */

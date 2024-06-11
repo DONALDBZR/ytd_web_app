@@ -565,11 +565,20 @@ class Homepage extends Main {
  */
 class Trend extends Homepage {
     /**
-     * Constructing the application from React's Component
-     * @param {*} props The properties of the component
+     * Constructing the Trend component which is based on the
+     * Homepage component.
+     * @param {{data: {Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}} props The properties of the component
      */
     constructor(props) {
         super(props);
+        this.props = props;
+        /**
+         * The state of the component.
+         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}
+         */
+        this.state = {
+            Trend: this.props.data.Trend,
+        };
     }
 
     /**

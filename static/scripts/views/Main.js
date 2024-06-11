@@ -478,10 +478,11 @@ class Homepage extends Main {
         this.props = props;
         /**
          * The state of the component
-         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+         * @type {{System: {view_route: string, dom_element: HTMLElement}, Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}
          */
         this.state = {
             System: this.props.data.System,
+            Trend: [],
         };
     }
 

@@ -583,7 +583,7 @@ class Trend extends Homepage {
 
     /**
      * Retrieving the width of the trend list's carousel.
-     * @param {[{uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: {audio: string | null, video: string | null}}]} trend_list The list of media content
+     * @param {[{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]} trend_list The list of media content
      * @returns {string}
      */
     getTrendListWidth(trend_list) {

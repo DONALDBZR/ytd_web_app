@@ -472,9 +472,9 @@ class Homepage extends Main {
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${this.state.System.view_route}\nComponent: Main.Homepage\nComponent Status: Mount`);
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Homepage\nComponent Status: Mount`);
         this.setTrend()
-        .then((status) => console.info(`Route: ${this.state.System.view_route}\nComponent: Main.Homepage\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
+        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.Homepage\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
     }
 
     /**

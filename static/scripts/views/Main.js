@@ -76,6 +76,27 @@ class Main extends React.Component {
         }));
     }
 
+    /**
+     * Rendering the component
+     * @returns {HTMLElement}
+     */
+    render() {
+        if (this.state.System.view_route.includes("Search")) {
+            return <Search />;
+        } else if (this.state.System.view_route.includes("Download")) {
+            return <Download />;
+        } else {
+            /**
+             * The data for the Homepage component.
+             * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+             */
+            const homepage = {
+                System: this.state.System,
+            };
+            return <Homepage data={homepage} />;
+        }
+    }
+
     // /**
     //  * Retrieving the current trend.
     //  * @returns {void}
@@ -441,27 +462,6 @@ class Main extends React.Component {
     //         );
     //     }
     // }
-
-    /**
-     * Rendering the component
-     * @returns {HTMLElement}
-     */
-    render() {
-        if (this.state.System.view_route.includes("Search")) {
-            return <Search />;
-        } else if (this.state.System.view_route.includes("Download")) {
-            return <Download />;
-        } else {
-            /**
-             * The data for the Homepage component.
-             * @type {{System: {view_route: string, dom_element: HTMLElement}}}
-             */
-            const homepage = {
-                System: this.state.System,
-            };
-            return <Homepage data={homepage} />;
-        }
-    }
 }
 
 /**
@@ -485,10 +485,15 @@ class Homepage extends Main {
         };
     }
 
-    // componentDidMount() {
-    //     this.getRoute();
-    //     this.getTrend();
-    // }
+    /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+        console.info(`Route: ${this.state.System.view_route}\nComponent: Main.Homepage\nComponent Status: Mount`);
+    }
 
     /**
      * Rendering the component

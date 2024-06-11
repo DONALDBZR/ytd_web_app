@@ -507,6 +507,16 @@ class Homepage extends Main {
     }
 
     /**
+     * Retrieving the current trend.
+     * @returns {Promise<Response>}
+     */
+    async sendGetTrendRequest() {
+        return fetch("/Trend/", {
+            method: "GET",
+        });
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLElement}
      */

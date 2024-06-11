@@ -469,11 +469,20 @@ class Main extends React.Component {
  */
 class Homepage extends Main {
     /**
-     * Constructing the application from React's Component
-     * @param {*} props The properties of the component
+     * Constructing the Homepage component which is based on the
+     * Main component.
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} props The properties of the component
      */
     constructor(props) {
         super(props);
+        this.props = props;
+        /**
+         * The state of the component
+         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+         */
+        this.state = {
+            System: this.props.data.System,
+        };
     }
 
     // componentDidMount() {

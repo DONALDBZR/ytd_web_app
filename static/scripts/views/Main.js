@@ -508,6 +508,21 @@ class Homepage extends Main {
     }
 
     /**
+     * Setting the data of the weekly trend in the state of the
+     * component.
+     * @returns {Promise<number>}
+     */
+    async setTrend() {
+        const response = await this.getTrend();
+        const response_data = response.data;
+        this.setState((previous) => ({
+            ...previous,
+            Trend: response_data,
+        }));
+        return response.status;
+    }
+
+    /**
      * Retrieving the response's data.
      * @returns {Promise<{status: number, data: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}>}
      */

@@ -290,12 +290,12 @@ class Database_Handler:
         Creating records to store data into the database server.
 
         Parameters:
-            table:      (string):   Table Name
-            columns:    (string):   Column names
-            values:     (string):   Data to be inserted
+            table: string: Table Name
+            columns: string: Column names
+            values: string: Data to be inserted
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         query = f"INSERT INTO {table}({columns}) VALUES ({values})"
         self.setQuery(query)

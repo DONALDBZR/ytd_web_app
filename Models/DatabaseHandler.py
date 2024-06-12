@@ -241,10 +241,10 @@ class Database_Handler:
         Building the query needed for retrieving specific data.
 
         Parameters:
-            condition:  (string):   The WHERE statement that will be used.
+            condition: string: The WHERE statement that will be used.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         if condition == "":
             query = self.getQuery()

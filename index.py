@@ -72,17 +72,16 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
         status:     int:            The status of the response
         response:   string|null:    The response data
 
-    Returns: void
+    Returns:
+        void
     """
     directory = ""
-    # Verifying that the port is for either Apache HTTPD or Werkzeug
     if request.environ.get("SERVER_PORT") == '80':
         directory = "/var/www/html/ytd_web_app"
     else:
         directory = "/home/darkness4869/Documents/extractio"
     log = f"{directory}/Access.log"
     file = open(log, "a")
-    # Verifying the MIME type of the file for the correct logging
     if mime_type.find("html") != -1:
         file.write(
             f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\n")  # type: ignore

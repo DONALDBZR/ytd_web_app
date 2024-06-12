@@ -285,7 +285,7 @@ class Database_Handler:
             query = self.getQuery()
         self.setQuery(query)
 
-    def post_data(self, table: str, columns: str, values: str, parameters: Tuple) -> None:
+    def postData(self, table: str, columns: str, values: str, parameters: Tuple) -> None:
         """
         Creating records to store data into the database server.
 

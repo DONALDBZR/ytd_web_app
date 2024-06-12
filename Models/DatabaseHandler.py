@@ -1,3 +1,9 @@
+"""
+The module of the database handler which will act as the
+object-relational mapper.
+"""
+
+
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor

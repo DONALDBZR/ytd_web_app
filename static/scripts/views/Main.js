@@ -592,6 +592,18 @@ class Trend extends Homepage {
     }
 
     /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}} previous_props The properties of the component
+     * @returns {void}
+     */
+    componentDidUpdate(previous_props) {
+        if (this.props != previous_props) {
+            this.setData();
+        }
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Homepage.Trend\nComponent Status: Update`);
+    }
+
+    /**
      * Setting the main state of the component.
      * @returns {void}
      */

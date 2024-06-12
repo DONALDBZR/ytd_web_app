@@ -10,7 +10,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
-from typing import Union, Generator
+from typing import Union, Generator, List
 import mysql.connector
 import logging
 
@@ -175,13 +175,13 @@ class Database_Handler:
         self.__getDatabaseHandler().commit()
         self.getLogger().inform("The query has been executed!")
 
-    def _resultSet(self) -> list[RowType]:
+    def _resultSet(self) -> List[RowType]:
         """
         Fetching all the data that is requested from the command
         that was sent to the database server.
 
-        Return:
-            (array)
+        Returns:
+            array
         """
         result_set = self.__getStatement().fetchall()
         self.getLogger().debug(

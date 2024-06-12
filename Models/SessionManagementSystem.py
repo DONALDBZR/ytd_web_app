@@ -1,7 +1,14 @@
+"""
+The module which has the Session Management System of the
+application.
+"""
+
+
 from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
+from typing import List
 import os
 import json
 import time
@@ -32,7 +39,7 @@ class Session_Manager:
     """
     The timestamp at which the session has been created.
     """
-    __session_files: list[str]
+    __session_files: List[str]
     """
     The files containing the session of the users.
     """
@@ -123,10 +130,10 @@ class Session_Manager:
     def setTimestamp(self, timestamp: int) -> None:
         self.__timestamp = timestamp
 
-    def getSessionFiles(self) -> list[str]:
+    def getSessionFiles(self) -> List[str]:
         return self.__session_files
 
-    def setSessionFiles(self, session_files: list[str]) -> None:
+    def setSessionFiles(self, session_files: List[str]) -> None:
         self.__session_files = session_files
 
     def getColorScheme(self) -> str:

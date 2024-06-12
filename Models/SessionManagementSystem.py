@@ -453,16 +453,16 @@ class Session_Manager:
         else:
             self.createSession()
 
-    def renew(self, session_data: SessionMixin) -> (SessionMixin | None):
+    def renew(self, session_data: SessionMixin) -> Union[SessionMixin, None]:
         """
         Verifying that the IP Addresses are the same for renewing
         the access to their current data
 
         Parameters:
-            session_data:   (SessionMixin): Session Data
+            session_data: SessionMixin: Session Data
 
-        Return:
-            (SessionMixin | void)
+        Returns:
+            SessionMixin|void
         """
         file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         if session_data['Client']['ip_address'] == self.getIpAddress():

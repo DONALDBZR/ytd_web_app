@@ -116,6 +116,7 @@ def getSiteMap() -> Response:
     """
     Sending the sitemap needed for Google Search Console.
 
-    Returns: Response
+    Returns:
+        Response
     """
     return Application.send_static_file("Sitemap.xml")

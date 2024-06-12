@@ -303,16 +303,16 @@ class Session_Manager:
             self.getLogger().inform("The session has been successfully updated!")
             return self.getSession()
 
-    def sessionsLoader(self, sessions: list[str]) -> dict[str, int]:
+    def sessionsLoader(self, sessions: List[str]) -> Dict[str, int]:
         """
         Iterating throughout the session files to process them
         depending on the response from the system.
 
         Parameters:
-            sessions:   (array):  List of session files
+            sessions: [string]: List of session files
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
         response = {}
         for index in range(0, len(sessions), 1):

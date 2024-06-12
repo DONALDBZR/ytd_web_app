@@ -37,7 +37,7 @@ SecurityManagementSystem: Security_Management_System = Security_Management_Syste
 It will be a major component that will assure the security
 of the data that will be stored across the application.
 """
-data = DatabaseHandler.get_data(
+data = DatabaseHandler.getData(
     parameters=None,
     table_name="Session",
     filter_condition="date_created = CURDATE()",
@@ -45,7 +45,7 @@ data = DatabaseHandler.get_data(
     sort_condition="identifier ASC",
     limit_condition=1
 )
-key = str(data[0][0])
+key = str(data[0]["hash"]) # type: ignore
 """
 Encryption key of the application
 """

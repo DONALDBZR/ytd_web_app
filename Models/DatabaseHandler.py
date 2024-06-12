@@ -257,10 +257,10 @@ class Database_Handler:
         Building the query needed to be used to sort the result set.
 
         Parameters:
-            condition:  (string):   The ORDER BY statement that will be used.
+            condition: string: The ORDER BY statement that will be used.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         if condition == "":
             query = self.getQuery()

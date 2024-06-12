@@ -274,10 +274,10 @@ class Database_Handler:
         data from the result set.
 
         Parameters:
-            limit:  (int):  The ORDER BY statement that will be used.
+            limit: int: The LIMIT statement that will be used.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         if limit > 0:
             query = f"{self.getQuery()} LIMIT {limit}"

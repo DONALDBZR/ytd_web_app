@@ -334,16 +334,16 @@ class Session_Manager:
                 continue
         return response
 
-    def handleFile(self, file_name: str) -> dict[str, int]:
+    def handleFile(self, file_name: str) -> Dict[str, int]:
         """
         Ensuring that the file is of type JSON in order to process
         it further more.
 
         Parameters:
-            file_name:  (string):   file to be loaded
+            file_name: string: File to be loaded
 
         Return:
-            (object)
+            {status: int}
         """
         response = {}
         if file_name.endswith(".json"):

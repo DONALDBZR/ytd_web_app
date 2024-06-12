@@ -252,7 +252,7 @@ class Database_Handler:
             query = f"{self.getQuery()} WHERE {condition}"
         self.setQuery(query)
 
-    def _get_sort(self, condition: str) -> None:
+    def _getSort(self, condition: str) -> None:
         """
         Building the query needed to be used to sort the result set.
 

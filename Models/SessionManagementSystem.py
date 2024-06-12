@@ -436,15 +436,15 @@ class Session_Manager:
             }
         return response
 
-    def handleSessionData(self, session_data: dict[str, int]) -> None:
+    def handleSessionData(self, session_data: Dict[str, int]) -> None:
         """
         Verifying that the data has not been tampered in order to
         renew the session.
 
         Parameters:
-            session_data:   (object):   Session's data
+            session_data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: Session's data
 
-        Return:
+        Returns:
             (void)
         """
         # Verifying that the data has been received or created in order to verify it to renew access.

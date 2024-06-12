@@ -111,8 +111,8 @@ class Security_Management_System:
         It is a one-way encryption function that will generate a
         hash based on the Argon 2 hashing algorithm.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(
@@ -126,14 +126,14 @@ class Security_Management_System:
             self.getHash(),
             str(self.getDateCreated())
         )
-        self.getDatabaseHandler().post_data(
+        self.getDatabaseHandler().postData(
             table="Session",
             columns="hash, date_created",
             values="%s, %s",
             parameters=data
         )
         self.getLogger().inform("The key has been created!")
-        self.getDatabaseHandler().delete_data(
+        self.getDatabaseHandler().deleteData(
             table="Session",
             parameters=None,
             condition="date_created < CURDATE()"

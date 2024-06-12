@@ -582,6 +582,16 @@ class Trend extends Homepage {
     }
 
     /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Homepage.Trend\nComponent Status: Mount`);
+    }
+
+    /**
      * Retrieving the width of the trend list's carousel.
      * @param {[{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]} trend_list The list of media content
      * @returns {string}

@@ -236,7 +236,7 @@ class Database_Handler:
             query = f"{self.getQuery()} LEFT JOIN {condition}"
         self.setQuery(query)
 
-    def _get_filter(self, condition: str) -> None:
+    def _getFilter(self, condition: str) -> None:
         """
         Building the query needed for retrieving specific data.
 

@@ -170,8 +170,8 @@ class Session_Manager:
         doing regular checks to keep only the active sessions and
         store inactive sessions in the database.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.getDatabaseHandler()._query(
             query="CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))",

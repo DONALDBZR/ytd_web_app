@@ -133,10 +133,10 @@ class Database_Handler:
     def setQuery(self, query: str) -> None:
         self.__query = query
 
-    def getParameters(self) -> tuple | None:
+    def getParameters(self) -> Union[tuple, None]:
         return self.__parameters
 
-    def setParameters(self, parameters: tuple | None) -> None:
+    def setParameters(self, parameters: Union[tuple, None]) -> None:
         self.__parameters = parameters
 
     def getLogger(self) -> Extractio_Logger:

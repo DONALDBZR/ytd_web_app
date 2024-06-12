@@ -10,6 +10,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
+from typing import Union
 import mysql.connector
 import logging
 
@@ -36,7 +37,7 @@ class Database_Handler:
     The password that allows the required user to connect to the
     database.
     """
-    __database_handler: PooledMySQLConnection | MySQLConnection
+    __database_handler: Union[PooledMySQLConnection, MySQLConnection]
     """
     The database handler needed to execute the queries needed.
     """

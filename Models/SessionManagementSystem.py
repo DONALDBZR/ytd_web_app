@@ -359,13 +359,13 @@ class Session_Manager:
             }
         return response
 
-    def validateIpAddress(self, data) -> Dict[str, int]:
+    def validateIpAddress(self, data: Dict[str, Dict[str, Union[str, int]]]) -> Dict[str, int]:
         """
         Validating the IP Address against the one stored in the
         cache file.
 
         Parameters:
-            data:   (object):   The data in the file
+            data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: The data in the file
 
         Return:
             {status: int}

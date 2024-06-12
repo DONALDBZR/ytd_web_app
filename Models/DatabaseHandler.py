@@ -10,7 +10,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
-from typing import Union
+from typing import Union, Generator
 import mysql.connector
 import logging
 
@@ -145,18 +145,23 @@ class Database_Handler:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__Logger = logger
 
-    def _query(self, query: str, parameters: None | tuple):
+    def _query(self, query: str, parameters: Union[tuple, None]) -> Union[Generator[MySQLCursor, None, None], None]:
         """
         Preparing the SQL query that is going to be handled by the
         database handler.
 
-        Return:
+        Returns:
             Generator[MySQLCursor, None, None] | None
         """
         self.getLogger().debug(
             f"Query to be executed!\nQuery: {query}\nParameters: {parameters}"
         )
-        self.__setStatement(self.__getDatabaseHandler().cursor(prepared=True))
+        self.__setStatement(
+            self.__getDatabaseHandler().cursor(
+                prepared=True,
+                dictionary=True
+            )
+        )
         self.__getStatement().execute(query, parameters)
 
     def _execute(self) -> None:

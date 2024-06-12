@@ -338,6 +338,6 @@ class Database_Handler:
         query = f"DELETE FROM {table}"
         self.setQuery(query)
         self.setParameters(parameters)
-        self._get_filter(condition)
+        self._getFilter(condition)
         self._query(self.getQuery(), self.getParameters())
         self._execute()

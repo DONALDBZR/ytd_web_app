@@ -115,10 +115,10 @@ class Database_Handler:
     def __setPassword(self, password: str) -> None:
         self.__password = password
 
-    def __getDatabaseHandler(self) -> "PooledMySQLConnection | MySQLConnection":
+    def __getDatabaseHandler(self) -> Union[PooledMySQLConnection, MySQLConnection]:
         return self.__database_handler
 
-    def __setDatabaseHandler(self, database_handler: "PooledMySQLConnection | MySQLConnection") -> None:
+    def __setDatabaseHandler(self, database_handler: Union[PooledMySQLConnection, MySQLConnection]) -> None:
         self.__database_handler = database_handler
 
     def __getStatement(self) -> "MySQLCursor":

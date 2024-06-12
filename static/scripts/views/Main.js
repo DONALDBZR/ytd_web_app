@@ -592,6 +592,17 @@ class Trend extends Homepage {
     }
 
     /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            Trend: this.props.data.Trend,
+        }));
+    }
+
+    /**
      * Retrieving the width of the trend list's carousel.
      * @param {[{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]} trend_list The list of media content
      * @returns {string}

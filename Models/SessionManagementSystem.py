@@ -403,17 +403,17 @@ class Session_Manager:
             }
         return response
 
-    def handleSession(self, status: int, name: str) -> dict[str, int]:
+    def handleSession(self, status: int, name: str) -> Dict[str, int]:
         """
         Handling the session based on the status retrieved from the
         system.
 
         Parameters:
-            status: (int):      HTTP Status Code
-            name:   (string):   File Name
+            status: int: HTTP Status Code
+            name: string: File Name
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
         response = {}
         file_path = f"{self.getDirectory()}/{name}"

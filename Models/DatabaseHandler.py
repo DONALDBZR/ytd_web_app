@@ -121,10 +121,10 @@ class Database_Handler:
     def __setDatabaseHandler(self, database_handler: Union[PooledMySQLConnection, MySQLConnection]) -> None:
         self.__database_handler = database_handler
 
-    def __getStatement(self) -> "MySQLCursor":
+    def __getStatement(self) -> MySQLCursor:
         return self.__statement
 
-    def __setStatement(self, statement: "MySQLCursor") -> None:
+    def __setStatement(self, statement: MySQLCursor) -> None:
         self.__statement = statement
 
     def getQuery(self) -> str:

@@ -268,7 +268,7 @@ class Database_Handler:
             query = f"{self.getQuery()} ORDER BY {condition}"
         self.setQuery(query)
 
-    def _get_limit(self, limit: int) -> None:
+    def _getLimit(self, limit: int) -> None:
         """
         Building the query needed to be used to limit the amount of
         data from the result set.

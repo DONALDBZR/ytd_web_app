@@ -8,7 +8,7 @@ from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
-from typing import List
+from typing import List, Dict
 import os
 import json
 import time
@@ -69,35 +69,27 @@ class Session_Manager:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, request: dict[str, str], session: SessionMixin) -> None:
+    def __init__(self, request: Dict[str, str], session: SessionMixin) -> None:
         """
         Instantiating the session's manager which will verify the
         session of the users.
 
         Parameters:
-            request:    (object):       The request from the application.
-            session:    (SessionMixin): The session of the user.
+            request: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, port: string}: The request from the application.
+            session: SessionMixin: The session of the user.
         """
         ENV = Environment()
-        self.setDirectory(
-            f"{ENV.getDirectory()}/Cache/Session/Users/"
-        )
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users/")
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(logging.getLogger(__name__))
         self.setPort(str(request["port"]))
         self.setDatabaseHandler(Database_Handler())
         self.setIpAddress(str(request["ip_address"]))
-        self.setHttpClientIpAddress(
-            str(request["http_client_ip_address"])
-        )
-        self.setProxyIpAddress(
-            str(request["proxy_ip_address"])
-        )
+        self.setHttpClientIpAddress(str(request["http_client_ip_address"]))
+        self.setProxyIpAddress(str(request["proxy_ip_address"]))
         self.__maintain()
         self.setSession(session)
-        self.getLogger().inform(
-            "The Session Management System has been successfully been initialized!"
-        )
+        self.getLogger().inform("The Session Management System has been successfully been initialized!")
         self.verifySession()
 
     def getDirectory(self) -> str:

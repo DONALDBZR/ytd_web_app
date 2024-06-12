@@ -51,10 +51,10 @@ class Database_Handler:
     The query to be used to be sent to the database server to
     either get, post, update or delete data.
     """
-    __parameters: tuple | None
+    __parameters: Union[tuple, None]
     """
     Parameters that the will be used to sanitize the query which
-    is either  get, post, update or delete.
+    is either get, post, update or delete.
     """
     __Logger: Extractio_Logger
     """

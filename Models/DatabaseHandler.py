@@ -10,7 +10,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
-from typing import Union, Generator, List
+from typing import Union, Generator, List, Tuple
 import mysql.connector
 import logging
 
@@ -51,7 +51,7 @@ class Database_Handler:
     The query to be used to be sent to the database server to
     either get, post, update or delete data.
     """
-    __parameters: Union[tuple, None]
+    __parameters: Union[Tuple, None]
     """
     Parameters that the will be used to sanitize the query which
     is either get, post, update or delete.
@@ -133,10 +133,10 @@ class Database_Handler:
     def setQuery(self, query: str) -> None:
         self.__query = query
 
-    def getParameters(self) -> Union[tuple, None]:
+    def getParameters(self) -> Union[Tuple, None]:
         return self.__parameters
 
-    def setParameters(self, parameters: Union[tuple, None]) -> None:
+    def setParameters(self, parameters: Union[Tuple, None]) -> None:
         self.__parameters = parameters
 
     def getLogger(self) -> Extractio_Logger:
@@ -145,7 +145,7 @@ class Database_Handler:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__Logger = logger
 
-    def _query(self, query: str, parameters: Union[tuple, None]) -> Union[Generator[MySQLCursor, None, None], None]:
+    def _query(self, query: str, parameters: Union[Tuple, None]) -> Union[Generator[MySQLCursor, None, None], None]:
         """
         Preparing the SQL query that is going to be handled by the
         database handler.
@@ -193,21 +193,21 @@ class Database_Handler:
         )
         return result_set
 
-    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[RowType]:
+    def get_data(self, parameters: Union[Tuple, None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> List[RowType]:
         """
         Retrieving data from the database.
 
         Parameters:
-            parameters:         (array|null):   The parameters to be passed into the query.
-            table_name:         (string):       The name of the table.
-            column_names:       (string):       The name of the columns.
-            join_condition      (string):       Joining table condition.
-            filter_condition    (string):       Items to be filtered with.
-            sort_condition      (string):       The items to be sorted.
-            limit_condition     (int):          The amount of items to be returned
+            parameters: array|null: The parameters to be passed into the query.
+            table_name: string: The name of the table.
+            column_names: string: The name of the columns.
+            join_condition: string: Joining table condition.
+            filter_condition: string: Items to be filtered with.
+            sort_condition: string: The items to be sorted.
+            limit_condition: int: The amount of items to be returned
 
-        Return:
-            (array)
+        Returns:
+            array
         """
         query = f"SELECT {column_names} FROM {table_name}"
         self.setQuery(query)
@@ -285,7 +285,7 @@ class Database_Handler:
             query = self.getQuery()
         self.setQuery(query)
 
-    def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
+    def post_data(self, table: str, columns: str, values: str, parameters: Tuple) -> None:
         """
         Creating records to store data into the database server.
 
@@ -303,7 +303,7 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def update_data(self, table: str, values: str, parameters: tuple | None, condition: str = "") -> None:
+    def update_data(self, table: str, values: str, parameters: Tuple | None, condition: str = "") -> None:
         """
         Updating a specific table in the database.
 
@@ -323,7 +323,7 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def delete_data(self, table: str, parameters: tuple | None, condition: str = "") -> None:
+    def delete_data(self, table: str, parameters: Tuple | None, condition: str = "") -> None:
         """
         Deleting data from the database.
 

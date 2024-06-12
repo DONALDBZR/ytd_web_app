@@ -308,13 +308,13 @@ class Database_Handler:
         Updating a specific table in the database.
 
         Parameters:
-            table:      (string):   Table name
-            values:     (string):   Columns to be modified and data to be put within
-            condition:  (string):   Condition for the data to be modified
-            parameters: (array):    Data to be used for data manipulation.
+            table: string: Table name
+            values: string: Columns to be modified and data to be put within
+            condition: string: Condition for the data to be modified
+            parameters: array: Data to be used for data manipulation.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         query = f"UPDATE {table} SET {values}"
         self.setQuery(query)

@@ -274,12 +274,12 @@ class Session_Manager:
         """
         return json.dumps(self.getSession(), indent=4)
 
-    def updateSession(self, data: dict[str, dict[str, str | int]]) -> SessionMixin | None:
+    def updateSession(self, data: Dict[str, Dict[str, str]]) -> Union[SessionMixin, None]:
         """
         Modifying the session.
 
         Parameters:
-            data:   (object):   Data from the view
+            data: {Client: {color_scheme: string}}: Data from the view
 
         Return:
             (SessionMixin | void)
@@ -289,7 +289,7 @@ class Session_Manager:
         file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         data = json.load(open(file_name))
         if self.getIpAddress() == data['Client']['ip_address']:
-            new_data: dict[str, str | int] = {
+            new_data: Dict[str, Union[str, int]] = {
                 "ip_address": self.getIpAddress(),
                 "http_client_ip_address": self.getHttpClientIpAddress(),
                 "proxy_ip_address": self.getProxyIpAddress(),

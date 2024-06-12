@@ -319,21 +319,21 @@ class Database_Handler:
         query = f"UPDATE {table} SET {values}"
         self.setQuery(query)
         self.setParameters(parameters)
-        self._get_filter(condition)
+        self._getFilter(condition)
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def delete_data(self, table: str, parameters: Tuple | None, condition: str = "") -> None:
+    def deleteData(self, table: str, parameters: Union[Tuple, None], condition: str = "") -> None:
         """
         Deleting data from the database.
 
         Parameters:
-            table:      (string):   Table name
-            parameters: (array):    Data to be used for data manipulation.
-            condition:  (string):   Specification
+            table: string: Table name
+            parameters: array: Data to be used for data manipulation.
+            condition: string: Specification
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         query = f"DELETE FROM {table}"
         self.setQuery(query)

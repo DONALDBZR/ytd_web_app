@@ -225,10 +225,10 @@ class Database_Handler:
         least two tables.
 
         Parameters:
-            condition:  (string):   The JOIN statement that is used.
+            condition: string: The JOIN statement that is used.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         if condition == "":
             query = self.getQuery()

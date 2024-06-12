@@ -169,8 +169,8 @@ class Database_Handler:
         Executing the SQL query which will send a command to the
         database server
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.__getDatabaseHandler().commit()
         self.getLogger().inform("The query has been executed!")

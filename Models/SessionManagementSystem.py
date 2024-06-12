@@ -229,8 +229,8 @@ class Session_Manager:
         """
         Creating the session.
 
-        Return:
-            (SessionMixin)
+        Returns:
+            SessionMixin
         """
         self.getSession().clear()
         self.setTimestamp(int(time.time()))

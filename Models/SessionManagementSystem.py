@@ -367,7 +367,7 @@ class Session_Manager:
         Parameters:
             data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: The data in the file
 
-        Return:
+        Returns:
             {status: int}
         """
         response = {}
@@ -382,7 +382,7 @@ class Session_Manager:
             }
         return response
 
-    def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
+    def handleExpiryTime(self, expiry_time: int) -> Dict[str, int]:
         """
         Handling the expiry time of the session.
 

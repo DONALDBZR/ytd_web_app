@@ -199,25 +199,25 @@ class Session_Manager:
             file.close()
             self.verifyInactiveSession(age, data, file_name)
 
-    def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name: str) -> None:
+    def verifyInactiveSession(self, age: int, session: Dict[str, Dict[str, Union[str, int]]], file_name: str) -> None:
         """
         Verifying that the session is inactive to remove it from the
         document database and to store it in the relational database.
 
         Parameters:
-            age:        (int):      Age of the session.
-            session:    (object):   The data of the session.
-            file_name:  (string):   The name of the file.
+            age: int: Age of the session.
+            session: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: The data of the session.
+            file_name: string: The name of the file.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         if age > 3600:
             expired_sessions = (
                 int(session["Client"]["timestamp"]),
                 str(session["Client"]["ip_address"])
             )
-            self.getDatabaseHandler().post_data(
+            self.getDatabaseHandler().postData(
                 table="Visitors",
                 columns="timestamp, client",
                 values="%s, %s",

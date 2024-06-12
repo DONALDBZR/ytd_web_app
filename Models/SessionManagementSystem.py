@@ -8,7 +8,7 @@ from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
-from typing import List, Dict
+from typing import List, Dict, Union
 import os
 import json
 import time
@@ -186,11 +186,11 @@ class Session_Manager:
         """
         Verifying existing sessions to remove expired ones.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         age: int
-        data: dict[str, dict[str, str | int]]
+        data: Dict[str, Dict[str, Union[str, int]]]
         for index in range(0, self.getLength(), 1):
             file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
             file = open(file_name, "r")

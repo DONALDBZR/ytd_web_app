@@ -387,10 +387,10 @@ class Session_Manager:
         Handling the expiry time of the session.
 
         Parameters:
-            expiry_time:    (int):  The expiry time of the session
+            expiry_time: int: The expiry time of the session
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
         response = {}
         if expiry_time < 3600:

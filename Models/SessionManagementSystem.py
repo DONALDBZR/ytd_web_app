@@ -235,7 +235,7 @@ class Session_Manager:
         self.getSession().clear()
         self.setTimestamp(int(time.time()))
         self.setColorScheme("light")
-        data: dict[str, str | int] = {
+        data: Dict[str, Union[str, int]] = {
             "ip_address": self.getIpAddress(),
             "http_client_ip_address": self.getHttpClientIpAddress(),
             "proxy_ip_address": self.getProxyIpAddress(),

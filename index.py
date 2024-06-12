@@ -1,4 +1,12 @@
-# Importing the requirements for the application
+"""
+The main entrypoint of the application.
+
+Link:
+    https://omnitechbros.ddns.net:591/
+    http://omnitechbros.ddns.net:5000/
+"""
+
+
 from flask import Flask, render_template, request, Response
 from Models.DatabaseHandler import Database_Handler
 from Models.SecurityManagementSystem import Security_Management_System
@@ -10,7 +18,8 @@ from Routes.Video import Video_Portal
 from Routes.Trend import Trend_Portal
 from Environment import Environment
 
-Application = Flask(__name__)
+
+Application: Flask = Flask(__name__)
 """
 The flask object implements a WSGI application and acts as
 the central object.  It is passed the name of the module or
@@ -18,12 +27,12 @@ package of the application.  Once it is created it will act
 as a central registry for the view functions, the URL rules,
 template configuration and much more.
 """
-DatabaseHandler = Database_Handler()
+DatabaseHandler: Database_Handler = Database_Handler()
 """
 The database handler that will communicate with the database
 server.
 """
-SecurityManagementSystem = Security_Management_System()
+SecurityManagementSystem: Security_Management_System = Security_Management_System()
 """
 It will be a major component that will assure the security
 of the data that will be stored across the application.

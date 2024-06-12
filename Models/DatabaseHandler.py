@@ -212,10 +212,10 @@ class Database_Handler:
         query = f"SELECT {column_names} FROM {table_name}"
         self.setQuery(query)
         self.setParameters(parameters)
-        self._get_join(join_condition)
-        self._get_filter(filter_condition)
-        self._get_sort(sort_condition)
-        self._get_limit(limit_condition)
+        self._getJoin(join_condition)
+        self._getFilter(filter_condition)
+        self._getSort(sort_condition)
+        self._getLimit(limit_condition)
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 

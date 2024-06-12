@@ -359,7 +359,7 @@ class Session_Manager:
             }
         return response
 
-    def validateIpAddress(self, data) -> dict[str, int]:
+    def validateIpAddress(self, data) -> Dict[str, int]:
         """
         Validating the IP Address against the one stored in the
         cache file.
@@ -368,7 +368,7 @@ class Session_Manager:
             data:   (object):   The data in the file
 
         Return:
-            (object)
+            {status: int}
         """
         response = {}
         if self.getIpAddress() == str(data['Client']['ip_address']):

@@ -11,51 +11,11 @@ body {
     padding: calc(var(--height) * 0) calc(var(--width) * 0);
     font-size: var(--textSize);
 }
-#Homepage header,
 #Homepage footer,
-body[id*="Search"] header,
 body[id*="Search"] footer,
-body[id*="Download"] header,
 body[id*="Download"] footer {
     height: calc(var(--height) / 10);
 }
-#Homepage header nav,
-body[id*="Search"] header nav,
-body[id*="Download"] header nav {
-    height: inherit;
-    display: flex;
-}
-#Homepage header nav div,
-body[id*="Search"] header nav div,
-body[id*="Download"] header nav div {
-    width: calc(var(--width) / 2);
-    display: flex;
-}
-#Homepage header nav div:nth-child(1),
-body[id*="Search"] header nav div:nth-child(1),
-body[id*="Download"] header nav div:nth-child(1) {
-    justify-content: center;
-    align-items: center;
-}
-#Homepage header nav div:nth-child(2) div,
-body[id*="Search"] header nav div:nth-child(2) div,
-body[id*="Download"] header nav div:nth-child(2) div {
-    width: calc(var(--width) / 4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#Homepage header nav div:nth-child(2) div:nth-child(1) a,
-#Homepage header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(1) a,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button {
-    font-size: calc(var(--textSize) * 0.6561);
-}
-#Homepage header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
 body[id*="Download"] main .YouTube div button {
     border: none;
 }
@@ -187,6 +147,7 @@ body[id*="Download"] main .YouTube div a,
 body[id*="Download"] main .YouTube div button {
     font-size: calc(var(--textSize) * 2.59374246);
 }
+#Homepage main #loading,
 body[id*="Search"] main #loading {
     position: fixed;
     z-index: 1;
@@ -309,4 +270,72 @@ body[id*="Download"] main .YouTube div video {
     100% {
         transform: translateX(-100%);
     }
+}
+header {
+    width: inherit;
+    height: calc(var(--height) / 10);
+}
+header nav {
+    height: inherit;
+    width: inherit;
+    display: flex;
+}
+header nav div {
+    height: inherit;
+}
+header nav div:nth-child(1) {
+    width: calc(var(--width) / 3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+header nav div:nth-child(1) a {
+    font-size: calc(var(--textSize) * 0.81);
+    letter-spacing: calc(var(--width) / 1000);
+}
+header nav div:nth-child(2) {
+    width: calc(var(--width) * (2 / 3));
+    display: flex;
+    flex-wrap: wrap;
+}
+header nav div:nth-child(2) form {
+    --search-form-height: calc(var(--height) / 20);
+    --search-form-width: calc(var(--width) * (2 / 3));
+    height: var(--search-form-height);
+    width: var(--search-form-width);
+    display: flex;
+    align-items: center;
+}
+header nav div:nth-child(2) form button {
+    border: none;
+    height: calc(var(--search-form-height) * 0.75);
+    width: calc(var(--search-form-width) / 7.5);
+    padding: unset;
+}
+header nav div:nth-child(2) form button svg {
+    height: auto;
+    width: calc(var(--search-form-width) / 10);
+}
+header nav div:nth-child(2) form input {
+    height: calc(var(--search-form-height) * 0.75);
+    width: calc(var(--search-form-width) * (6.5 / 7.5));
+    border: unset;
+    border-bottom: solid 1px;
+}
+header nav div:nth-child(2) div {
+    height: calc(var(--height) / 20);
+    width: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+header nav div:nth-child(2) div button {
+    border: none;
+    height: inherit;
+    padding: unset;
+    width: auto;
+}
+header nav div:nth-child(2) div button svg {
+    width: auto;
+    height: calc(var(--height) / (80 / 3));
 }

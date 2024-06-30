@@ -321,6 +321,8 @@ header nav div:nth-child(2) form input {
     width: calc(var(--search-form-width) * (6.5 / 7.5));
     border: unset;
     border-bottom: solid 1px;
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: calc(var(--textSize) * 0.43);
 }
 header nav div:nth-child(2) div {
     height: calc(var(--height) / 20);

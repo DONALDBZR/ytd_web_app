@@ -30,6 +30,7 @@ body[id*="Download"] main {
     margin-top: calc(var(--height) * 0);
     letter-spacing: calc(var(--width) / 1000);
     height: calc(var(--component-height) / 4);
+    font-size: calc(var(--textSize) * 0.59);
 }
 #Homepage main div {
     height: calc(var(--component-height) / 10);
@@ -54,7 +55,7 @@ body[id*="Search"] footer div,
 body[id*="Download"] footer div {
     height: inherit;
     width: calc(var(--width) / 5);
-    font-size: calc(var(--textSize) * 1.1);
+    font-size: calc(var(--textSize) * 0.81);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -153,6 +154,7 @@ body[id*="Download"] main .YouTube div a,
 body[id*="Download"] main .YouTube div button {
     font-size: calc(var(--textSize) * 1);
 }
+#Homepage main #loading,
 body[id*="Search"] main #loading {
     position: fixed;
     z-index: 1;

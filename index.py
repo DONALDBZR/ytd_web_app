@@ -119,3 +119,14 @@ def getSiteMap() -> Response:
         Response
     """
     return Application.send_static_file("Sitemap.xml")
+
+
+@Application.route('/manifest.json', methods=['GET'])
+def getManifest() -> Response:
+    """
+    Sending the manifest of the application.
+
+    Returns:
+        Response
+    """
+    return Application.send_static_file("manifest.json")

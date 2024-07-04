@@ -402,3 +402,6 @@ header nav div form input::placeholder {
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover {
     text-decoration: underline;
 }
+#Homepage main .Trend div .card div:nth-child(1) a:hover img {
+    opacity: calc(var(--percentage) / 2);
+}

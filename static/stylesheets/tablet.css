@@ -19,30 +19,10 @@ body[id*="Download"] footer {
 body[id*="Download"] main .YouTube div button {
     border: none;
 }
-#Homepage main,
 body[id*="Search"] main,
 body[id*="Download"] main {
     height: calc(var(--height) * 0.8);
     --component-height: calc(var(--height) * 0.8);
-}
-#Homepage main p {
-    margin: calc(var(--height) / 50) calc(var(--width) / 50);
-    margin-top: calc(var(--height) * 0);
-    letter-spacing: calc(var(--width) / 1000);
-    height: calc(var(--component-height) / 4);
-    font-size: calc(var(--textSize) * 0.59);
-}
-#Homepage main div {
-    height: calc(var(--component-height) / 10);
-    display: flex;
-    justify-content: space-evenly;
-}
-#Homepage main div div {
-    height: inherit;
-    width: calc(var(--width) / 10);
-    font-size: calc(var(--textSize) * 1.331);
-    justify-content: center;
-    align-items: center;
 }
 #Homepage footer,
 body[id*="Search"] footer,
@@ -171,103 +151,6 @@ body[id*="Download"] main .YouTube div video {
     width: auto;
     height: inherit;
 }
-#Homepage main .Trend {
-    height: calc(var(--component-height) * 0.65);
-    justify-content: normal;
-    align-items: normal;
-    flex-wrap: wrap;
-    overflow: auto;
-    width: var(--width);
-}
-#Homepage main .Trend .card {
-    height: var(--card-height);
-    width: var(--card-width);
-    display: flex;
-    --card-height: calc(var(--component-height) / 3);
-    --card-width: calc(var(--width) / 2);
-    justify-content: normal;
-    overflow: unset;
-    margin: calc(var(--card-height) / 25) calc(var(--card-width) * 0);
-}
-#Homepage main .Trend .card div {
-    width: calc(var(--card-width) / 2);
-    height: inherit;
-    overflow: unset;
-}
-#Homepage main .Trend .card div:nth-child(1) {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#Homepage main .Trend .card div:nth-child(1) a {
-    height: var(--card-height);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: calc(var(--card-width) / 2);
-}
-#Homepage main .Trend .card div:nth-child(1) a img {
-    width: calc(var(--card-width) / 2);
-    height: auto;
-}
-#Homepage main .Trend .card div:nth-child(2) {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: normal;
-    overflow: unset;
-}
-#Homepage main .Trend .card div:nth-child(2) div {
-    height: calc(var(--card-height) / 5);
-    font-size: calc(var(--textSize) / 7);
-    overflow: unset;
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(1) {
-    align-items: center;
-    justify-content: normal;
-    word-wrap: break-word;
-    font-size: calc(var(--textSize) / 15);
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) {
-    justify-content: normal;
-    font-size: calc(var(--textSize) / 5);
-    align-items: center;
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
-    font-size: calc(var(--textSize) * 0.315338531);
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(3),
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) {
-    width: calc(var(--card-width) / 2);
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div,
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div {
-    font-size: calc(var(--textSize) * 0.34867844);
-    width: calc(var(--card-width) / 4);
-    --stats-width: calc(var(--card-width) / 2);
-    align-items: center;
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a {
-    font-size: calc(var(--textSize) * 0.679475639);
-}
-#Homepage main .Trend div {
-    height: calc(var(--component-height) * 0.65);
-    width: var(--width);
-    justify-content: normal;
-    align-items: normal;
-    flex-wrap: wrap;
-    overflow: unset;
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
-    width: calc(var(--stats-width) / 3);
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(2),
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(2) {
-    width: calc(var(--stats-width) * (2 / 3));
-}
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) {
-    justify-content: center;
-}
 header {
     --header-height: calc(var(--height) / 10);
     --header-width: var(--width);
@@ -323,6 +206,7 @@ header nav div:nth-child(2) form input {
     border-bottom: solid 1px;
     letter-spacing: calc(var(--width) / 2000);
     width: calc(var(--search-bar-width) * 0.9);
+    font-size: calc(var(--textSize) * 0.43);
 }
 header nav div:nth-child(2) div {
     width: calc(var(--header-component-width) / 10);
@@ -340,4 +224,125 @@ header nav div:nth-child(2) div button {
 header nav div:nth-child(2) div button svg {
     width: auto;
     height: calc(var(--header-height) * 0.75);
+}
+#Homepage main {
+    --main-height: calc(var(--height) * 0.8);
+    --main-width: var(--width);
+    height: var(--main-height);
+    width: var(--main-width);
+}
+#Homepage main p {
+    margin-block: calc(var(--main-height) * 0);
+    letter-spacing: calc(var(--width) / 1000);
+    font-size: calc(var(--textSize) * 0.43);
+    text-align: justify;
+    display: block;
+    height: calc(var(--main-height) / 10);
+}
+#Homepage main div {
+    height: calc(var(--main-height) / 10);
+    display: flex;
+    justify-content: center;
+    width: inherit;
+}
+#Homepage main div div {
+    display: flex;
+    width: auto;
+    height: inherit;
+    align-items: center;
+}
+#Homepage main div div svg {
+    width: auto;
+    height: calc(var(--main-height) / 10.661);
+}
+#Homepage main .Trend {
+    display: block;
+    height: calc(var(--main-height) * 0.8);
+    width: inherit;
+}
+#Homepage main .Trend div {
+    --trend-height: calc(var(--main-height) * 0.8);
+    --trend-width: var(--main-width);
+    display: flex;
+    width: inherit;
+    height: inherit;
+    align-items: unset;
+    overflow: auto;
+    flex-wrap: wrap;
+}
+#Homepage main .Trend div .card {
+    --card-height: calc(var(--trend-height) / 2);
+    --card-width: calc(var(--trend-width) / 2);
+    display: flex;
+    height: var(--card-height);
+    width: var(--card-width);
+    overflow: unset;
+    flex-wrap: nowrap;
+}
+#Homepage main .Trend div .card div {
+    height: inherit;
+    width: calc(var(--card-width) / 2);
+    overflow: unset;
+}
+#Homepage main .Trend div .card div:nth-child(1) {
+    display: block;
+}
+#Homepage main .Trend div .card div:nth-child(1) a {
+    display: block;
+    width: inherit;
+    height: auto;
+}
+#Homepage main .Trend div .card div:nth-child(1) a img {
+    height: auto;
+    width: inherit;
+}
+#Homepage main .Trend div .card div:nth-child(2) {
+    display: flex;
+    flex-wrap: wrap;
+}
+#Homepage main .Trend div .card div:nth-child(2) div {
+    height: calc(var(--card-height) / 4);
+    display: block;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(1) {
+    letter-spacing: calc(var(--width) / 1000);
+    font-size: calc(var(--textSize) * 0.25);
+    width: inherit;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) {
+    width: inherit;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a {
+    letter-spacing: calc(var(--width) / 1000);
+    font-size: calc(var(--textSize) * 0.3);
+    display: block;
+    height: inherit;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(3),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) {
+    height: calc(var(--card-height) / 8);
+    width: inherit;
+    display: flex;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) div,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) div {
+    height: inherit;
+    width: calc(var(--card-width) / 4);
+    letter-spacing: calc(var(--width) / 1000);
+    font-size: calc(var(--textSize) * 0.35);
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a {
+    display: block;
+    width: auto;
+    height: calc(var(--card-height) / 4.265);
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a svg {
+    width: auto;
+    height: calc(var(--card-height) / 4.265);
 }

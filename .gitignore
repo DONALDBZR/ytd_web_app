@@ -11,5 +11,5 @@
 /Access.log
 /Logs
 /Auto/Classes/__pycache__/
-/*xml
+/static/Sitemap.xml
 /SQL/

@@ -5,7 +5,7 @@ from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
-from typing import Dict, Union, List
+from typing import Dict, Tuple, Union, List
 import time
 import os
 import logging
@@ -346,15 +346,15 @@ class YouTube_Downloader:
             }
         return response
 
-    def getYouTube(self) -> dict[str, int | list[RowType] | str]:
+    def getYouTube(self) -> Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]]:
         """
         Retrieving the metadata from the YouTube table.
 
-        Return:
-            (object)
+        Returns:
+            {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string}], timestamp: string}
         """
-        filter_parameters = tuple([self.getIdentifier()])
-        media = self.getDatabaseHandler().get_data(
+        filter_parameters: Tuple[str] = (self.getIdentifier(),)
+        media: Union[List[RowType], List[Dict[str, Union[str, int]]]] = self.getDatabaseHandler().getData(
             parameters=filter_parameters,
             table_name="YouTube",
             join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
@@ -364,17 +364,17 @@ class YouTube_Downloader:
             limit_condition=2
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response: dict[str, int | list[RowType] | str]
+        response: Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]]
         if len(media) == 0:
             response = {
                 'status': 204,
-                'data': media,
+                'data': media, # type: ignore
                 'timestamp': self.getTimestamp()
             }
         else:
             response = {
                 'status': 200,
-                'data': media,
+                'data': media, # type: ignore
                 'timestamp': self.getTimestamp()
             }
         return response

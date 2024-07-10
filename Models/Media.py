@@ -158,7 +158,7 @@ class Media:
             self.postMedia()
             self.verifyPlatform()
         else:
-            self.setIdentifier(int(media["data"][0][0]))  # type: ignore
+            self.setIdentifier(int(media["data"][0]["identifier"]))  # type: ignore
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             response = {
                 "status": 200,

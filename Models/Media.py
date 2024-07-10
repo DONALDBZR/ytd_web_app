@@ -149,10 +149,7 @@ class Media:
         Returns:
             {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
         """
-        response: Dict[
-            str,
-            Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]
-        ]
+        response: Dict[str, Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]]
         media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
         if media["status"] != 200:
             self.postMedia()

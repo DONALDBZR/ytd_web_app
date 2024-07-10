@@ -280,9 +280,7 @@ class YouTube_Downloader:
             self.getUniformResourceLocator()
         )
         self.sanitizeYouTubeIdentifier()
-        meta_data: Dict[
-            str, Union[int, List[RowType], str]
-        ] = self.getYouTube()
+        meta_data: Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]] = self.getYouTube()
         if meta_data["status"] == 200:
             self.setLength(int(meta_data["data"][0][4]))  # type: ignore
             self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore

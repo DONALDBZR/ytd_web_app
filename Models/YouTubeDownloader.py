@@ -282,16 +282,12 @@ class YouTube_Downloader:
         self.sanitizeYouTubeIdentifier()
         meta_data: Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]] = self.getYouTube()
         if meta_data["status"] == 200:
-            self.setLength(int(meta_data["data"][0][4]))  # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
-            self.setAuthor(str(meta_data["data"][0][0]))  # type: ignore
-            self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
-            self.setDuration(
-                time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
-            )
-            file_locations = self._getFileLocations(
-                list(meta_data["data"])  # type: ignore
-            )
+            self.setLength(int(meta_data["data"][0]["length"]))  # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0]["published_at"]))  # type: ignore
+            self.setAuthor(str(meta_data["data"][0]["author"]))  # type: ignore
+            self.setTitle(str(meta_data["data"][0]["title"]))  # type: ignore
+            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
+            file_locations = self._getFileLocations(list(meta_data["data"])) # type: ignore
             audio_file = file_locations["audio_file"]
             video_file = file_locations["video_file"]
         else:
@@ -299,9 +295,7 @@ class YouTube_Downloader:
             self.setPublishedAt(self.getVideo().publish_date)
             self.setAuthor(self.getVideo().author)
             self.setTitle(self.getVideo().title)
-            self.setDuration(
-                time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
-            )
+            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
             audio_file = None
             video_file = None
             self.postYouTube()

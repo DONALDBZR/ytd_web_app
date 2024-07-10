@@ -171,7 +171,7 @@ class Media:
         Retrieving the Media data from the Media table.
 
         Returns:
-            {status: int, data: {identifier: int, value: string}, timestamp: string}
+            {status: int, data: [{identifier: int, value: string}], timestamp: string}
         """
         filter_data = tuple([self.getValue()])
         media = self.getDatabaseHandler().getData(

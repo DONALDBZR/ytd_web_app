@@ -273,12 +273,8 @@ class YouTube_Downloader:
         response: Dict[str, Union[str, int, None]]
         audio_file: Union[str, None]
         video_file: Union[str, None]
-        self.setVideo(
-            YouTube(self.getUniformResourceLocator())
-        )
-        self.setIdentifier(
-            self.getUniformResourceLocator()
-        )
+        self.setVideo(YouTube(self.getUniformResourceLocator()))
+        self.setIdentifier(self.getUniformResourceLocator())
         self.sanitizeYouTubeIdentifier()
         meta_data: Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]] = self.getYouTube()
         if meta_data["status"] == 200:

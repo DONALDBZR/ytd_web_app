@@ -310,22 +310,22 @@ class YouTube_Downloader:
         }
         return response
 
-    def _getFileLocations(self, result_set: list[RowType]) -> dict[str, str | None]:
+    def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """
         Extracting the file location of the media content on the
         server.
 
         Parameters:
-            result_set: (array):    The data from the database server.
+            result_set: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string}]: The data from the database server.
 
-        Return:
-            (object)
+        Returns:
+            {audio_file: string | null, video_file: string | null}
         """
-        response: dict[str, str | None]
+        response: Dict[str, Union[str, None]]
         if len(result_set) == 2:
             response = {
-                "audio_file": str(result_set[0][5]),
-                "video_file": str(result_set[1][5])
+                "audio_file": str(result_set[0]["location"]), # type: ignore
+                "video_file": str(result_set[1]["location"]) # type: ignore
             }
         else:
             response = {

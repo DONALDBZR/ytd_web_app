@@ -992,6 +992,17 @@ class YouTubeDownloader extends Main {
     }
 
     /**
+     * Sending a GET request to the Media API to retrieve the
+     * metadata of the media content.
+     * @returns {Promise<Response>}
+     */
+    async sendGetMediaRequest() {
+        return fetch(this.generateMetadata(), {
+            method: "GET",
+        });
+    }
+
+    /**
      * Generating the uniform resource locator for retrieving the
      * metadata of the content.
      * @returns {string}

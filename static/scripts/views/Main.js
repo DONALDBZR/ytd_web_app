@@ -787,13 +787,12 @@ class Search extends Main {
 
     /**
      * Rendering the component
-     * @returns {HTMLMainElement}
+     * @returns {HTMLElement}
      */
     render() {
         return (
             <>
-                <div>a</div>
-                {/* <Media /> */}
+                <Media />
             </>
         );
     }
@@ -832,7 +831,7 @@ class Media extends Search {
         ) {
             return (
                 <div className="Media">
-                    <YouTube />
+                    {/* <YouTube /> */}
                 </div>
             );
         }

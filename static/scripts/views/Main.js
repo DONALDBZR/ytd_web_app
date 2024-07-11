@@ -82,10 +82,6 @@ class Main extends React.Component {
      */
     render() {
         if (window.location.pathname.includes("Search")) {
-            /**
-             * The data for the Search component.
-             * @type {{System: {view_route: string, dom_element: HTMLElement}}}
-             */
             const search = {
                 System: this.state.System,
             };
@@ -93,10 +89,6 @@ class Main extends React.Component {
         } else if (window.location.pathname.includes("Download")) {
             return <Download />;
         } else {
-            /**
-             * The data for the Homepage component.
-             * @type {{System: {view_route: string, dom_element: HTMLElement}}}
-             */
             const homepage = {
                 System: this.state.System,
             };

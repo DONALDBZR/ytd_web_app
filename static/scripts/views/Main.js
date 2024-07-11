@@ -753,22 +753,6 @@ class Search extends Main {
     render() {
         return (
             <>
-                <div id="loading">
-                    <i class="fa-solid fa-spinner fa-spin"></i>
-                </div>
-                <form method="POST" onSubmit={this.handleSubmit.bind(this)}>
-                    <input
-                        type="search"
-                        placeholder="Search..."
-                        name="search"
-                        value={this.state.Media.search}
-                        onChange={this.handleChange.bind(this)}
-                        required
-                    />
-                    <button>
-                        <i class="fa fa-search"></i>
-                    </button>
-                </form>
                 <Media />
             </>
         );

@@ -225,23 +225,6 @@ class Main extends React.Component {
     // }
 
     // /**
-    //  * Retrieving the data of the media content that is searched by
-    //  * the user.
-    //  * @returns {void}
-    //  */
-    // getMedia() {
-    //     fetch(this.generateMetadata(), {
-    //         method: "GET",
-    //     })
-    //         .then((response) => response.json())
-    //         .then((data) => this.setMetadata(data))
-    //         .then(
-    //             () =>
-    //                 (document.querySelector("#loading").style.display = "none")
-    //         );
-    // }
-
-    // /**
     //  * Retrieving Media from the server by using its uniform
     //  * resource locator.
     //  * @returns {void}
@@ -1008,6 +991,23 @@ class YouTubeDownloader extends Main {
                 this.getMedia();
             }
         }, 1);
+    }
+
+    /**
+     * Retrieving the data of the media content that is searched by
+     * the user.
+     * @returns {void}
+     */
+    getMedia() {
+        fetch(this.generateMetadata(), {
+            method: "GET",
+        })
+            .then((response) => response.json())
+            .then((data) => this.setMetadata(data))
+            .then(
+                () =>
+                    (document.querySelector("#loading").style.display = "none")
+            );
     }
 
     /**

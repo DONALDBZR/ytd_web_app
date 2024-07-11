@@ -763,6 +763,18 @@ class Search extends Main {
     }
 
     /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} previous_props The properties of the component
+     * @returns {void}
+     */
+    componentDidUpdate(previous_props) {
+        if (this.props != previous_props) {
+            this.setData();
+        }
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search\nComponent Status: Update`);
+    }
+
+    /**
      * Setting the main state of the component.
      * @returns {void}
      */

@@ -825,11 +825,12 @@ class Media extends Search {
         this.props = props;
         /**
          * The states of the application.
-         * @type {{System: {dom_element: HTMLElement}}}
+         * @type {{System: {dom_element: HTMLElement, api_call: number}}}
          */
         this.state = {
             System: {
                 dom_element: this.props.data.System.dom_element,
+                api_call: 0,
             },
         };
     }
@@ -875,16 +876,19 @@ class Media extends Search {
      * @returns {HTMLDivElement}
      */
     render() {
-        if (
-            window.location.pathname != "/Search/" &&
-            this.state.Media.YouTube.identifier != ""
-        ) {
-            return (
-                <div className="Media">
-                    {/* <YouTube /> */}
-                </div>
-            );
-        }
+        return (
+            <div className="Media"></div>
+        );
+        // if (
+        //     window.location.pathname != "/Search/" &&
+        //     this.state.Media.YouTube.identifier != ""
+        // ) {
+        //     return (
+        //         <div className="Media">
+        //             {/* <YouTube /> */}
+        //         </div>
+        //     );
+        // }
     }
 }
 

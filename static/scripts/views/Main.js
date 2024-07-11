@@ -143,25 +143,6 @@ class Main extends React.Component {
     // }
 
     // /**
-    //  * Generating the uniform resource locator for retrieving the
-    //  * metadata of the content.
-    //  * @returns {string}
-    //  */
-    // generateMetadata() {
-    //     if (this.state.System.view_route.includes("Search")) {
-    //         return `/Media/${this.state.System.view_route.replace(
-    //             "/Search/",
-    //             ""
-    //         )}`;
-    //     } else {
-    //         return `/Media/${this.state.System.view_route.replace(
-    //             "/Download/YouTube/",
-    //             ""
-    //         )}`;
-    //     }
-    // }
-
-    // /**
     //  * Setting the metadata into the state of the application.
     //  * @param {object} data Metadata
     //  * @returns {void}
@@ -1008,6 +989,19 @@ class YouTubeDownloader extends Main {
                 () =>
                     (document.querySelector("#loading").style.display = "none")
             );
+    }
+
+    /**
+     * Generating the uniform resource locator for retrieving the
+     * metadata of the content.
+     * @returns {string}
+     */
+    generateMetadata() {
+        if (window.location.pathname.includes("Search")) {
+            return `/Media/${window.location.pathname.replace("/Search/", "")}`;
+        } else {
+            return `/Media/${window.location.pathname.replace("/Download/YouTube/", "")}`;
+        }
     }
 
     /**

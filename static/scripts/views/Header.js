@@ -410,7 +410,7 @@ class ColorScheme extends Header {
      * @returns {void}
      */
     componentDidMount() {
-        console.log("Main Component: Header\nComponent: ColorScheme\nStatus: Mount");
+        console.log("Component: Header.ColorScheme\nStatus: Mount");
     }
 
     /**

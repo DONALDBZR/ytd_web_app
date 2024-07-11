@@ -811,7 +811,8 @@ class Search extends Main {
 }
 
 /**
- * The Media Component that will render according the to the data retrieved
+ * The component that will be used for the Search page that
+ * will have the data for the Media.
  */
 class Media extends Search {
     /**
@@ -821,6 +822,16 @@ class Media extends Search {
      */
     constructor(props) {
         super(props);
+        this.props = props;
+        /**
+         * The states of the application.
+         * @type {{System: {dom_element: HTMLElement}}}
+         */
+        this.state = {
+            System: {
+                dom_element: this.props.data.System.dom_element,
+            },
+        };
     }
 
     componentDidMount() {

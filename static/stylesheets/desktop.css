@@ -159,7 +159,8 @@ body[id*="Download"] main .YouTube div video {
     height: inherit;
     width: auto;
 }
-#Homepage main #loading {
+#Homepage main #loading,
+body[id*="Search"] main #loading {
     position: fixed;
     z-index: 1;
     left: calc(var(--width) * 0);

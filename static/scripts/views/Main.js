@@ -82,7 +82,14 @@ class Main extends React.Component {
      */
     render() {
         if (this.state.System.view_route.includes("Search")) {
-            return <Search />;
+            /**
+             * The data for the Search component.
+             * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+             */
+            const search = {
+                System: this.state.System,
+            };
+            return <Search data={search} />;
         } else if (this.state.System.view_route.includes("Download")) {
             return <Download />;
         } else {

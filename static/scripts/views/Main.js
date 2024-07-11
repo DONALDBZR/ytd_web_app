@@ -790,9 +790,18 @@ class Search extends Main {
      * @returns {HTMLElement}
      */
     render() {
+        /**
+         * The properties of the Media component.
+         * @type {{System: {dom_element: HTMLElement}}}
+         */
+        const media = {
+            System: {
+                dom_element: this.state.System.dom_element,
+            },
+        };
         return (
             <>
-                <Media />
+                <Media data={media} />
             </>
         );
     }

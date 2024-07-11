@@ -859,6 +859,18 @@ class Media extends Search {
     }
 
     /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {System: {dom_element: HTMLElement}}}} previous_props The properties of the component
+     * @returns {void}
+     */
+    componentDidUpdate(previous_props) {
+        if (this.props != previous_props) {
+            this.setData();
+        }
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media\nComponent Status: Update`);
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

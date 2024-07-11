@@ -747,10 +747,18 @@ class Trend extends Homepage {
 class Search extends Main {
     /**
      * Constructing the application from React's Component
-     * @param {*} props The properties of the component
+     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} props The properties of the component
      */
     constructor(props) {
         super(props);
+        this.props = props;
+        /**
+         * The data for the properties of the Search component.
+         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+         */
+        this.state = {
+            System: this.props.data.System,
+        };
     }
 
     /**
@@ -760,7 +768,8 @@ class Search extends Main {
     render() {
         return (
             <>
-                <Media />
+                <div>a</div>
+                {/* <Media /> */}
             </>
         );
     }

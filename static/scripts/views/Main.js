@@ -801,6 +801,9 @@ class Search extends Main {
         };
         return (
             <>
+                <div id="loading">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
                 <Media data={media} />
             </>
         );
@@ -812,8 +815,9 @@ class Search extends Main {
  */
 class Media extends Search {
     /**
-     * Constructing the media component and also inheriting the properties and states from the main
-     * @param {*} props
+     * Constructing the component that will be used for the Media
+     * data type.
+     * @param {{data: {System: {dom_element: HTMLElement}}}} props
      */
     constructor(props) {
         super(props);

@@ -59,7 +59,6 @@ class Main extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${this.state.System.view_route}\nComponent: Main\nComponent Status: Mount`);
     }
 
     /**

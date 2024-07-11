@@ -746,7 +746,7 @@ class Trend extends Homepage {
  */
 class Search extends Main {
     /**
-     * Constructing the application from React's Component
+     * Constructing the Search component of the application.
      * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} props The properties of the component
      */
     constructor(props) {

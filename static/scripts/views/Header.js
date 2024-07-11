@@ -420,7 +420,7 @@ class ColorScheme extends Header {
      */
     componentDidUpdate(previous_props) {
         this.setData(previous_props);
-        console.log("Main Component: Header\nComponent: ColorScheme\nStatus: Updated");
+        console.log("Component: Header.ColorScheme\nStatus: Updated");
     }
 
     /**

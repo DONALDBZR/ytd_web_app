@@ -834,14 +834,14 @@ class Media extends Search {
         };
     }
 
+    /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
     componentDidMount() {
-        this.getRoute();
-        setTimeout(() => {
-            if (this.state.System.view_route != "/Search/") {
-                document.querySelector("#loading").style.display = "flex";
-                this.getMedia();
-            }
-        }, 1);
+        this.setData();
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media\nComponent Status: Mount`);
     }
 
     /**

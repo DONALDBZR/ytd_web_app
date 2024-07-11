@@ -369,9 +369,9 @@ class Header extends React.Component {
                 dom_element: this.state.System.dom_element,
             },
         };
-        if (this.state.System.view_route.includes("Search")) {
+        if (window.location.pathname.includes("Search")) {
             return <Search data={application_data}  />;
-        } else if (this.state.System.view_route.includes("Download")) {
+        } else if (window.location.pathname.includes("Download")) {
             return <Download />;
         } else {
             return <Homepage data={application_data} />;

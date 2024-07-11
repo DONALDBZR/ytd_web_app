@@ -754,6 +754,27 @@ class Search extends Main {
     }
 
     /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search\nComponent Status: Mount`);
+    }
+
+    /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            System: this.props.data.System,
+        }));
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLMainElement}
      */

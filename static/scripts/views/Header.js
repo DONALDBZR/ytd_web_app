@@ -134,7 +134,6 @@ class Header extends React.Component {
                 dom_element: header,
             },
         }));
-        console.log(`Route: ${window.location.pathname}`);
     }
 
     /**

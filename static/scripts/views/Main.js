@@ -829,6 +829,20 @@ class YouTube extends Media {
     }
 
     /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                dom_element: this.props.data.System.dom_element,
+            },
+        }));
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

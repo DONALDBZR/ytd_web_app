@@ -855,6 +855,17 @@ class YouTube extends Media {
     }
 
     /**
+     * Sending a GET request to the Media API to retrieve the
+     * metadata of the media content.
+     * @returns {Promise<Response>}
+     */
+    async sendGetMediaRequest() {
+        return fetch(this.generateMetadata(), {
+            method: "GET",
+        });
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */
@@ -1006,17 +1017,6 @@ class YouTubeDownloader extends Main {
             status: response.status,
             data: await response.json(),
         };
-    }
-
-    /**
-     * Sending a GET request to the Media API to retrieve the
-     * metadata of the media content.
-     * @returns {Promise<Response>}
-     */
-    async sendGetMediaRequest() {
-        return fetch(this.generateMetadata(), {
-            method: "GET",
-        });
     }
 
     /**

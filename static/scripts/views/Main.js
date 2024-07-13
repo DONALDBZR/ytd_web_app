@@ -975,20 +975,33 @@ class YouTubeDownloader extends Main {
     }
 
     /**
-     * Retrieving the data of the media content that is searched by
-     * the user.
+     * Retrieving the metadata of the media content that is
+     * searched by the user.
      * @returns {void}
      */
-    getMedia() {
-        fetch(this.generateMetadata(), {
-            method: "GET",
-        })
-            .then((response) => response.json())
-            .then((data) => this.setMetadata(data))
-            .then(
-                () =>
-                    (document.querySelector("#loading").style.display = "none")
-            );
+    // getMedia() {
+    //     fetch(this.generateMetadata(), {
+    //         method: "GET",
+    //     })
+    //         .then((response) => response.json())
+    //         .then((data) => this.setMetadata(data))
+    //         .then(
+    //             () =>
+    //                 (document.querySelector("#loading").style.display = "none")
+    //         );
+    // }
+
+    /**
+     * Retrieving the metadata of the media content from the
+     * response retrieved from the Media API.
+     * @returns {Promise<{status: number, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}}}>}
+     */
+    async getMedia() {
+        const response = await this.sendGetMediaRequest();
+        return {
+            status: response.status,
+            data: await response.json(),
+        };
     }
 
     /**

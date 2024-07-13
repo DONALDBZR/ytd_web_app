@@ -866,6 +866,19 @@ class YouTube extends Media {
     }
 
     /**
+     * Generating the uniform resource locator for retrieving the
+     * metadata of the content.
+     * @returns {string}
+     */
+    generateMetadata() {
+        if (window.location.pathname.includes("Search")) {
+            return `/Media/${window.location.pathname.replace("/Search/", "")}`;
+        } else {
+            return `/Media/${window.location.pathname.replace("/Download/YouTube/", "")}`;
+        }
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */
@@ -1017,19 +1030,6 @@ class YouTubeDownloader extends Main {
             status: response.status,
             data: await response.json(),
         };
-    }
-
-    /**
-     * Generating the uniform resource locator for retrieving the
-     * metadata of the content.
-     * @returns {string}
-     */
-    generateMetadata() {
-        if (window.location.pathname.includes("Search")) {
-            return `/Media/${window.location.pathname.replace("/Search/", "")}`;
-        } else {
-            return `/Media/${window.location.pathname.replace("/Download/YouTube/", "")}`;
-        }
     }
 
     /**

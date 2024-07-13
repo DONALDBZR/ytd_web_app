@@ -855,6 +855,19 @@ class YouTube extends Media {
     }
 
     /**
+     * Retrieving the metadata of the media content from the
+     * response retrieved from the Media API.
+     * @returns {Promise<{status: number, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}}}>}
+     */
+    async getMedia() {
+        const response = await this.sendGetMediaRequest();
+        return {
+            status: response.status,
+            data: await response.json(),
+        };
+    }
+
+    /**
      * Sending a GET request to the Media API to retrieve the
      * metadata of the media content.
      * @returns {Promise<Response>}
@@ -1017,19 +1030,6 @@ class YouTubeDownloader extends Main {
         }
         document.querySelector("#loading").style.display = "none";
         return response.status;
-    }
-
-    /**
-     * Retrieving the metadata of the media content from the
-     * response retrieved from the Media API.
-     * @returns {Promise<{status: number, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}}}>}
-     */
-    async getMedia() {
-        const response = await this.sendGetMediaRequest();
-        return {
-            status: response.status,
-            data: await response.json(),
-        };
     }
 
     /**

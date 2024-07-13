@@ -961,7 +961,7 @@ class YouTube extends Media {
     render() {
         return (
             <div className="YouTube">
-                {/* <div>
+                <div>
                     <a
                         href={this.state.Media.YouTube.uniform_resource_locator}
                         target="__blank"
@@ -1005,7 +1005,7 @@ class YouTube extends Media {
                             <i class="fa-solid fa-download"></i>
                         </button>
                     </div>
-                </div> */}
+                </div>
             </div>
         );
     }

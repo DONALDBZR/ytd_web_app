@@ -794,15 +794,28 @@ class Media extends Search {
 }
 
 /**
- * The component that is the YouTube component given that it will only be rendered only when the data corresponds to it.
+ * The component that is the YouTube component given that it
+ * will only be rendered only when the data corresponds to it.
  */
 class YouTube extends Media {
     /**
-     * Constructing the Youtube component and also inheriting the properties and states from the media
-     * @param {*} props
+     * Constructing the Youtube component and also inheriting the
+     * properties and states from the media
+     * @param {{data: {System: {dom_element: HTMLElement}}}} props
      */
     constructor(props) {
         super(props);
+        this.props = props;
+        /**
+         * The states of the component.
+         * @type {{System: {dom_element: HTMLElement, api_call: number}}}
+         */
+        this.state = {
+            System: {
+                dom_element: this.props.data.System.dom_element,
+                api_call: 0,
+            },
+        };
     }
 
     /**
@@ -812,7 +825,7 @@ class YouTube extends Media {
     render() {
         return (
             <div className="YouTube">
-                <div>
+                {/* <div>
                     <a
                         href={this.state.Media.YouTube.uniform_resource_locator}
                         target="__blank"
@@ -856,7 +869,7 @@ class YouTube extends Media {
                             <i class="fa-solid fa-download"></i>
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
         );
     }

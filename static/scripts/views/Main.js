@@ -143,69 +143,6 @@ class Main extends React.Component {
     // }
 
     // /**
-    //  * Setting the metadata into the state of the application.
-    //  * @param {object} data Metadata
-    //  * @returns {void}
-    //  */
-    // setMetadata(data) {
-    //     if (
-    //         typeof data.Media.YouTube != "undefined" &&
-    //         ((typeof data.Media.YouTube.audio == "undefined" &&
-    //             typeof data.Media.YouTube.video == "undefined") ||
-    //             (typeof data.Media.YouTube.audio == "null" &&
-    //                 typeof data.Media.YouTube.video == "null"))
-    //     ) {
-    //         this.setState((previous) => ({
-    //             Media: {
-    //                 ...previous.Media,
-    //                 YouTube: {
-    //                     ...previous.Media.YouTube,
-    //                     uniform_resource_locator:
-    //                         data.Media.YouTube.uniform_resource_locator,
-    //                     title: data.Media.YouTube.title,
-    //                     author: data.Media.YouTube.author,
-    //                     author_channel: data.Media.YouTube.author_channel,
-    //                     views: data.Media.YouTube.views,
-    //                     published_at: data.Media.YouTube.published_at,
-    //                     thumbnail: data.Media.YouTube.thumbnail,
-    //                     duration: data.Media.YouTube.duration,
-    //                     identifier: data.Media.YouTube.identifier,
-    //                     File: {
-    //                         ...previous.Media.YouTube.File,
-    //                         audio: null,
-    //                         video: null,
-    //                     },
-    //                 },
-    //             },
-    //         }));
-    //     } else {
-    //         this.setState((previous) => ({
-    //             Media: {
-    //                 ...previous.Media,
-    //                 YouTube: {
-    //                     ...previous.Media.YouTube,
-    //                     uniform_resource_locator:
-    //                         data.Media.YouTube.uniform_resource_locator,
-    //                     title: data.Media.YouTube.title,
-    //                     author: data.Media.YouTube.author,
-    //                     author_channel: data.Media.YouTube.author_channel,
-    //                     views: data.Media.YouTube.views,
-    //                     published_at: data.Media.YouTube.published_at,
-    //                     thumbnail: data.Media.YouTube.thumbnail,
-    //                     duration: data.Media.YouTube.duration,
-    //                     identifier: data.Media.YouTube.identifier,
-    //                     File: {
-    //                         ...previous.Media.YouTube.File,
-    //                         audio: data.Media.YouTube.audio,
-    //                         video: data.Media.YouTube.video,
-    //                     },
-    //                 },
-    //             },
-    //         }));
-    //     }
-    // }
-
-    // /**
     //  * Retrieving Media from the server by using its uniform
     //  * resource locator.
     //  * @returns {void}
@@ -789,12 +726,11 @@ class Media extends Search {
         this.props = props;
         /**
          * The states of the application.
-         * @type {{System: {dom_element: HTMLElement, api_call: number}}}
+         * @type {{System: {dom_element: HTMLElement}}}
          */
         this.state = {
             System: {
                 dom_element: this.props.data.System.dom_element,
-                api_call: 0,
             },
         };
     }
@@ -975,21 +911,39 @@ class YouTubeDownloader extends Main {
     }
 
     /**
-     * Retrieving the metadata of the media content that is
-     * searched by the user.
-     * @returns {void}
+     * Setting the metadata for the media content.
+     * @returns {Promise<number>}
      */
-    // getMedia() {
-    //     fetch(this.generateMetadata(), {
-    //         method: "GET",
-    //     })
-    //         .then((response) => response.json())
-    //         .then((data) => this.setMetadata(data))
-    //         .then(
-    //             () =>
-    //                 (document.querySelector("#loading").style.display = "none")
-    //         );
-    // }
+    async setMediaMetadata() {
+        const response = await this.getMedia();
+        const data = response.data;
+        if (typeof data.Media.YouTube != "undefined" && response.status == 200) {
+            this.setState((previous) => ({
+                ...previous,
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator: data.Media.YouTube.uniform_resource_locator,
+                        author: data.Media.YouTube.author,
+                        title: data.Media.YouTube.title,
+                        identifier: data.Media.YouTube.identifier,
+                        author_channel: data.Media.YouTube.author_channel,
+                        published_at: data.Media.YouTube.published_at,
+                        thumbnail: data.Media.YouTube.thumbnail,
+                        duration: data.Media.YouTube.duration,
+                        File: {
+                            ...previous.Media.YouTube.File,
+                            audio: data.Media.YouTube.audio_file,
+                            video: data.Media.YouTube.video_file,
+                        },
+                    },
+                },
+            }))
+        }
+        document.querySelector("#loading").style.display = "none";
+        return response.status;
+    }
 
     /**
      * Retrieving the metadata of the media content from the

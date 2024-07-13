@@ -855,6 +855,41 @@ class YouTube extends Media {
     }
 
     /**
+     * Setting the metadata for the media content.
+     * @returns {Promise<number>}
+     */
+    async setMediaMetadata() {
+        const response = await this.getMedia();
+        const data = response.data;
+        if (typeof data.Media.YouTube != "undefined" && response.status == 200) {
+            this.setState((previous) => ({
+                ...previous,
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator: data.Media.YouTube.uniform_resource_locator,
+                        author: data.Media.YouTube.author,
+                        title: data.Media.YouTube.title,
+                        identifier: data.Media.YouTube.identifier,
+                        author_channel: data.Media.YouTube.author_channel,
+                        published_at: data.Media.YouTube.published_at,
+                        thumbnail: data.Media.YouTube.thumbnail,
+                        duration: data.Media.YouTube.duration,
+                        File: {
+                            ...previous.Media.YouTube.File,
+                            audio: data.Media.YouTube.audio_file,
+                            video: data.Media.YouTube.video_file,
+                        },
+                    },
+                },
+            }))
+        }
+        document.querySelector("#loading").style.display = "none";
+        return response.status;
+    }
+
+    /**
      * Retrieving the metadata of the media content from the
      * response retrieved from the Media API.
      * @returns {Promise<{status: number, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}}}>}
@@ -995,41 +1030,6 @@ class YouTubeDownloader extends Main {
                 this.getMedia();
             }
         }, 1);
-    }
-
-    /**
-     * Setting the metadata for the media content.
-     * @returns {Promise<number>}
-     */
-    async setMediaMetadata() {
-        const response = await this.getMedia();
-        const data = response.data;
-        if (typeof data.Media.YouTube != "undefined" && response.status == 200) {
-            this.setState((previous) => ({
-                ...previous,
-                Media: {
-                    ...previous.Media,
-                    YouTube: {
-                        ...previous.Media.YouTube,
-                        uniform_resource_locator: data.Media.YouTube.uniform_resource_locator,
-                        author: data.Media.YouTube.author,
-                        title: data.Media.YouTube.title,
-                        identifier: data.Media.YouTube.identifier,
-                        author_channel: data.Media.YouTube.author_channel,
-                        published_at: data.Media.YouTube.published_at,
-                        thumbnail: data.Media.YouTube.thumbnail,
-                        duration: data.Media.YouTube.duration,
-                        File: {
-                            ...previous.Media.YouTube.File,
-                            audio: data.Media.YouTube.audio_file,
-                            video: data.Media.YouTube.video_file,
-                        },
-                    },
-                },
-            }))
-        }
-        document.querySelector("#loading").style.display = "none";
-        return response.status;
     }
 
     /**

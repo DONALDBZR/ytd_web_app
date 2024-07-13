@@ -808,12 +808,27 @@ class YouTube extends Media {
         this.props = props;
         /**
          * The states of the component.
-         * @type {{System: {dom_element: HTMLElement, api_call: number}}}
+         * @type {{System: {dom_element: HTMLElement, api_call: number}, Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, published_at: string, thumbnail: string, File: {audio: string, video: string}}}}}
          */
         this.state = {
             System: {
                 dom_element: this.props.data.System.dom_element,
                 api_call: 0,
+            },
+            Media: {
+                YouTube: {
+                    uniform_resource_locator: "",
+                    author: "",
+                    title: "",
+                    identifier: "",
+                    author_channel: "",
+                    published_at: "",
+                    thumbnail: "",
+                    File: {
+                        audio: "",
+                        video: "",
+                    },
+                },
             },
         };
     }

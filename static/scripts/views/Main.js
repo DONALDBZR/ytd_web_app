@@ -863,8 +863,21 @@ class YouTube extends Media {
      * @returns {void}
      */
     componentDidUpdate(previous_props) {
+        let api_call = this.state.System.api_call;
         if (this.props != previous_props) {
             this.setData();
+        }
+        if (api_call < 1) {
+            api_call += 1;
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    api_call: api_call,
+                },
+            }));
+            this.setMediaMetadata()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update\nAPI: /Media\nAPI Status: ${status}`));
         }
         console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update`);
     }

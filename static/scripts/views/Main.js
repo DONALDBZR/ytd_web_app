@@ -776,19 +776,20 @@ class Media extends Search {
      * @returns {HTMLDivElement}
      */
     render() {
+        /**
+         * The properties of the Media component.
+         * @type {{System: {dom_element: HTMLElement}}}
+         */
+        const media = {
+            System: {
+                dom_element: this.state.System.dom_element,
+            },
+        };
         return (
-            <div className="Media"></div>
+            <div className="Media">
+                <YouTube data={media} />
+            </div>
         );
-        // if (
-        //     window.location.pathname != "/Search/" &&
-        //     this.state.Media.YouTube.identifier != ""
-        // ) {
-        //     return (
-        //         <div className="Media">
-        //             {/* <YouTube /> */}
-        //         </div>
-        //     );
-        // }
     }
 }
 

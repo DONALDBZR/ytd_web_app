@@ -681,7 +681,7 @@ class Search extends Header {
 
     /**
      * Rendering the component
-     * @returns {HTMLHeaderElement}
+     * @returns {HTMLElement}
      */
     render() {
         const application_data = {
@@ -705,11 +705,7 @@ class Search extends Header {
                             <input type="search" placeholder="Search..." name="search" value={this.state.Media.search} onChange={this.handleSearchChange.bind(this)} required />
                         </form>
                         <div>
-                            <button
-                                name="colorSchemeChanger"
-                                value={this.state.System.color_scheme}
-                                onClick={this.setColorScheme}
-                            >
+                            <button name="colorSchemeChanger" value={this.state.System.color_scheme} onClick={this.setColorScheme.bind(this)}>
                                 <ColorScheme data={application_data} />
                             </button>
                         </div>

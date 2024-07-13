@@ -819,6 +819,16 @@ class YouTube extends Media {
     }
 
     /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Mount`);
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

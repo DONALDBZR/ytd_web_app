@@ -904,6 +904,7 @@ class YouTube extends Media {
                         published_at: data.Media.YouTube.published_at,
                         thumbnail: data.Media.YouTube.thumbnail,
                         duration: data.Media.YouTube.duration,
+                        views: data.Media.YouTube.views,
                         File: {
                             ...previous.Media.YouTube.File,
                             audio: data.Media.YouTube.audio_file,

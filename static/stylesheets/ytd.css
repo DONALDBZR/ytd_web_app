@@ -243,93 +243,28 @@
         calc(var(--percentage) * 0)
     );
 }
-body,
-body[id*="Search"] main form input,
-body[id*="Search"] main form button,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
+body {
     font-family: sans-serif;
     background-color: var(--color1);
     color: var(--color2);
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
-    font-family: var(--sourceCodePro);
-}
-#Homepage footer div,
-body[id*="Search"] footer div,
-body[id*="Download"] footer div {
+footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
-body[id*="Search"] main form button:hover,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button:hover,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
 body[id*="Download"] main .YouTube div button:hover {
     color: var(--color3);
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover {
-    text-decoration: underline;
-}
-#Homepage footer div,
-body[id*="Search"] footer div,
-body[id*="Search"] main form input::placeholder,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
+footer div,
 body[id*="Download"] main .YouTube div button {
     color: var(--color2);
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button,
 body[id*="Download"] main .YouTube div button {
     background: none;
     cursor: pointer;
 }
 body[id*="Download"] main .YouTube div a {
     color: var(--color4);
-}
-body[id*="Search"] main form input::placeholder {
-    opacity: calc(var(--percentage) / 2);
-}
-body[id*="Search"] main form button {
-    cursor: pointer;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #duration
-    div:nth-child(1),
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #views
-    div:nth-child(1) {
-    font-weight: bold;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a {
-    text-decoration: none;
-}
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #duration
-    div:nth-child(2),
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #views
-    div:nth-child(2) {
-    font-weight: normal;
 }
 body[id*="Download"] main .YouTube div a:hover {
     opacity: calc(var(--percentage) / 2);

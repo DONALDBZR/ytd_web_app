@@ -3,13 +3,13 @@
     "name": "Extractio - YouTube Downloader",
     "icons": [
         {
-            "src": "https://cdn-icons-png.flaticon.com/256/724/724933.png",
-            "sizes": "256x256",
+            "src": "https://omnitechbros.ddns.net:591/static/images/icons/Extractio.png",
+            "sizes": "633x612",
             "type": "image/png"
         }
     ],
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#000000"
+    "background_color": "#FAFA5A",
+    "theme_color": "#1B365C"
 }

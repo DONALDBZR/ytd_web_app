@@ -256,7 +256,8 @@ body[id*="Download"] main .YouTube div button:hover {
     color: var(--color3);
 }
 footer div,
-body[id*="Download"] main .YouTube div button {
+body[id*="Download"] main .YouTube div button,
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a {
     color: var(--color2);
 }
 body[id*="Download"] main .YouTube div button {
@@ -281,7 +282,8 @@ header nav div a:hover {
 header nav .active a,
 header nav div div button:hover svg,
 header nav div form button:hover svg,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg {
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg,
+body[id*="Search"] main .Media .YouTube .data div button:hover {
     color: var(--color3);
 }
 header nav div div button,
@@ -328,15 +330,52 @@ header nav div form input::placeholder {
     .card
     div:nth-child(2)
     div:nth-child(4)
-    div:nth-child(1) {
+    div:nth-child(1),
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(1) {
     font-weight: 600;
 }
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a {
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a {
     text-decoration: none;
 }
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover {
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover,
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(2)
+    a:hover {
     text-decoration: underline;
 }
-#Homepage main .Trend div .card div:nth-child(1) a:hover img {
+#Homepage main .Trend div .card div:nth-child(1) a:hover img,
+body[id*="Search"] main .Media .YouTube div a:hover {
     opacity: calc(var(--percentage) / 2);
+}
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(2)
+    a:hover {
+    opacity: var(--percentage);
+}
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    div
+    div:nth-child(2) {
+    font-weight: 400;
+}
+body[id*="Search"] main .Media .YouTube .data div button {
+    color: var(--color2);
+    background-color: var(--color1);
+    cursor: pointer;
 }

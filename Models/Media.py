@@ -305,7 +305,7 @@ class Media:
         }
         return response
 
-    def getRelatedAuthorContents(self, author: str) -> List[Dict[str, str]]:
+    def getRelatedAuthorContents(self, author: str) -> List[Dict[str, Union[str, int]]]:
         """
         Retrieving the related content for the author.
 
@@ -313,10 +313,10 @@ class Media:
             author: string: The name of the author.
 
         Returns:
-            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]
+            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]
         """
-        response: List[Dict[str, str]] = []
-        database_response: Union[List[RowType], List[Dict[str, str]]] = self.getDatabaseHandler().getData(
+        response: List[Dict[str, Union[str, int]]] = []
+        database_response: Union[List[RowType], List[Dict[str, Union[str, int]]]] = self.getDatabaseHandler().getData(
             parameters=None,
             table_name="YouTube",
             filter_condition=f"title LIKE '%{author}%'",

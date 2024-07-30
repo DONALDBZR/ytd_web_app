@@ -254,15 +254,12 @@ class Media:
         """
         Extracting the identifier from the uniform resource locator.
 
-        Return:
-            (string)
+        Returns:
+            string
         """
         identifier: str
         if "youtube" in self.getSearch():
             identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
         else:
-            identifier = self.getSearch().replace(
-                "https://youtu.be/",
-                ""
-            ).rsplit("?")[0]
+            identifier = self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
         return identifier

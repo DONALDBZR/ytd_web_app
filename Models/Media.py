@@ -263,3 +263,39 @@ class Media:
         else:
             identifier = self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
         return identifier
+
+    def getRelatedContents(self, identifier: str) -> Dict:
+        """
+        Retrieving the related contents which is based on the
+        identifier of a specific content.
+
+        Parameters:
+            identifier: string: The identifier of the content to be looked upon.
+
+        Returns:
+            {}
+        """
+        response: Dict
+        payload: Union[RowType, Dict[str, str]] = self._getPayload(identifier)
+        return response
+
+    def _getPayload(self, identifier: str) -> Union[RowType, Dict[str, str]]:
+        """
+        Retrieving the payload of the content.
+
+        Parameters:
+            identifier: string: The identifier of the content to be looked upon.
+
+        Returns:
+            {author: string, title: string}
+        """
+        response: Union[RowType, Dict[str, str]]
+        parameters: Tuple[str] = (identifier,)
+        response = self.getDatabaseHandler().getData(
+            parameters=parameters,
+            table_name="YouTube",
+            filter_condition="identifier = %s",
+            column_names="author, title",
+            limit_condition=1
+        )[0]
+        return response

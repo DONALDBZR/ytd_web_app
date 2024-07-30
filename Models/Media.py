@@ -277,6 +277,8 @@ class Media:
         """
         response: Dict
         payload: Union[RowType, Dict[str, str]] = self._getPayload(identifier)
+        print(f"{payload=}")
+        response = {}
         return response
 
     def _getPayload(self, identifier: str) -> Union[RowType, Dict[str, str]]:
@@ -287,7 +289,7 @@ class Media:
             identifier: string: The identifier of the content to be looked upon.
 
         Returns:
-            {author: string, title: string}
+            {channel: string, title: string}
         """
         response: Union[RowType, Dict[str, str]]
         parameters: Tuple[str] = (identifier,)

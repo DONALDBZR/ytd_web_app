@@ -264,7 +264,7 @@ class Media:
             identifier = self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
         return identifier
 
-    def getRelatedContents(self, identifier: str) -> Dict:
+    def getRelatedContents(self, identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
         Retrieving the related contents which is based on the
         identifier of a specific content.
@@ -273,14 +273,13 @@ class Media:
             identifier: string: The identifier of the content to be looked upon.
 
         Returns:
-            {}
+            {status: int, data: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]}
         """
-        response: Dict
         payload: Dict[str, str] = self._getPayload(identifier)
         related_channel_contents: List[Dict[str, str]] = self.getRelatedChannelContents(payload["channel"])
         related_author_contents: List[Dict[str, str]] = self.getRelatedAuthorContents(payload["author"])
-        print(f"{related_author_contents=}")
-        response = {}
+        related_contents: List[Dict[str, str]] = list({value["identifier"]: value for value in related_author_contents + related_channel_contents}.values())
+        response: Dict[str, Union[int, List[Dict[str, str]]]] = self._getRelatedContents(related_contents)
         return response
 
     def getRelatedAuthorContents(self, author: str) -> List[Dict[str, str]]:

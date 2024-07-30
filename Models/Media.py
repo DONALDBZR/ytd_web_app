@@ -276,9 +276,38 @@ class Media:
             {}
         """
         response: Dict
-        payload: Union[RowType, Dict[str, str]] = self._getPayload(identifier)
-        print(f"{payload=}")
+        payload: Dict[str, str] = self._getPayload(identifier)
+        related_channel_contents: List[Dict[str, str]] = self.getRelatedChannelContents(payload["channel"])
+        print(f"{related_channel_contents=}")
         response = {}
+        return response
+
+    def getRelatedChannelContents(self, channel: str) -> List[Dict[str, str]]:
+        """
+        Retrieving the related content for the channel.
+
+        Parameters:
+            channel: string: The name of the channel.
+
+        Returns:
+            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]
+        """
+        parameters: Tuple[str] = (channel,)
+        response: List[Dict[str, str]] = []
+        database_response: Union[List[RowType], List[Dict[str, str]]] = self.getDatabaseHandler().getData(
+            parameters=parameters,
+            table_name="YouTube",
+            filter_condition="author = %s",
+            column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator"
+        )
+        for index in range(0, len(database_response), 1):
+            response.append({
+                "identifier": str(database_response[index]["identifier"]), # type: ignore
+                "duration": str(database_response[index]["duration"]), # type: ignore
+                "channel": str(database_response[index]["channel"]), # type: ignore
+                "title": str(database_response[index]["title"]), # type: ignore
+                "uniform_resource_locator": str(database_response[index]["uniform_resource_locator"]) # type: ignore
+            })
         return response
 
     def _getPayload(self, identifier: str) -> Dict[str, str]:

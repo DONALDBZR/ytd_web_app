@@ -211,15 +211,9 @@ class Media:
         Returns:
             {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}
         """
-        response: Dict[
-            str,
-            Union[str, int, None, Dict[str, Union[str, int, None]]]
-        ]
+        response: Dict[str, Union[str, int, None, Dict[str, Union[str, int, None]]]]
         identifier: str
-        self._YouTubeDownloader = YouTube_Downloader(
-            self.getSearch(),
-            self.getIdentifier()
-        )
+        self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()
             media = {

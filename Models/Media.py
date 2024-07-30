@@ -282,6 +282,29 @@ class Media:
         response: Dict[str, Union[int, List[Dict[str, str]]]] = self._getRelatedContents(related_contents)
         return response
 
+    def _getRelatedContents(self, related_contents: List[Dict[str, str]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
+        """
+        Retrieving all of the data needed based on the related
+        contents to build the response needed for the API.
+
+        Parameters:
+            related_contents: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]: The related contents
+
+        Returns:
+            {status: int, data: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]}
+        """
+        status: int
+        if len(related_contents) > 0:
+            status = 200
+        else:
+            status = 204
+        for index in range(0, len(related_contents), 1):
+
+        response: Dict[str, Union[int, List[Dict[str, str]]]] = {
+            "status": status
+        }
+        return response
+
     def getRelatedAuthorContents(self, author: str) -> List[Dict[str, str]]:
         """
         Retrieving the related content for the author.
@@ -325,7 +348,7 @@ class Media:
             parameters=parameters,
             table_name="YouTube",
             filter_condition="author = %s",
-            column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator"
+            column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
         )
         for index in range(0, len(database_response), 1):
             response.append({

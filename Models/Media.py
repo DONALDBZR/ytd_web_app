@@ -332,7 +332,7 @@ class Media:
             })
         return response
 
-    def getRelatedChannelContents(self, channel: str) -> List[Dict[str, str]]:
+    def getRelatedChannelContents(self, channel: str) -> List[Dict[str, Union[str, int]]]:
         """
         Retrieving the related content for the channel.
 
@@ -340,11 +340,11 @@ class Media:
             channel: string: The name of the channel.
 
         Returns:
-            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]
+            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]
         """
         parameters: Tuple[str] = (channel,)
-        response: List[Dict[str, str]] = []
-        database_response: Union[List[RowType], List[Dict[str, str]]] = self.getDatabaseHandler().getData(
+        response: List[Dict[str, Union[str, int]]] = []
+        database_response: Union[List[RowType], List[Dict[str, Union[str, int]]]] = self.getDatabaseHandler().getData(
             parameters=parameters,
             table_name="YouTube",
             filter_condition="author = %s",

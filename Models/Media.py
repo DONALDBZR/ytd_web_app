@@ -4,7 +4,7 @@ from Models.Logger import Extractio_Logger
 from datetime import datetime
 from Environment import Environment
 from mysql.connector.types import RowType
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 import json
 import logging
 
@@ -159,21 +159,21 @@ class Media:
             }
         return response
 
-    def getMedia(self) -> dict[str, int | list[RowType] | str]:
+    def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
         Retrieving the Media data from the Media table.
 
         Returns:
             {status: int, data: [{identifier: int, value: string}], timestamp: string}
         """
-        filter_data = tuple([self.getValue()])
+        response: Dict[str, Union[int, List[RowType], str]]
+        filter_data: Tuple[str] = (self.getValue(),)
         media = self.getDatabaseHandler().getData(
             parameters=filter_data,
             table_name="Media",
             filter_condition="value = %s"
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response = {}
         if len(media) == 0:
             response = {
                 'status': 404,

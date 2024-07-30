@@ -195,7 +195,7 @@ class Media:
         Returns:
             void
         """
-        data = tuple([self.getValue()])
+        data: Tuple[str] = (self.getValue(),)
         self.getDatabaseHandler().postData(
             table="Media",
             columns="value",

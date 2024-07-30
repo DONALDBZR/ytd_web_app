@@ -196,11 +196,11 @@ class Media:
         """
         Creating a record for the media with its data.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         data = tuple([self.getValue()])
-        self.getDatabaseHandler().post_data(
+        self.getDatabaseHandler().postData(
             table="Media",
             columns="value",
             values="%s",

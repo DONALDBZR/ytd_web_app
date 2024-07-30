@@ -356,7 +356,8 @@ class Media:
                 "duration": str(database_response[index]["duration"]), # type: ignore
                 "channel": str(database_response[index]["channel"]), # type: ignore
                 "title": str(database_response[index]["title"]), # type: ignore
-                "uniform_resource_locator": str(database_response[index]["uniform_resource_locator"]) # type: ignore
+                "uniform_resource_locator": str(database_response[index]["uniform_resource_locator"]), # type: ignore
+                "media_identifier": int(database_response[index]["media_identifier"]) # type: ignore
             })
         return response
 

@@ -21,7 +21,7 @@ class Media:
     """
     It will handle every operations related to YouTube.
     """
-    __referer: str | None
+    __referer: Union[str, None]
     """
     The http referrer which is the uniform resource locator that
     is needed to be able to allow the user to download the
@@ -88,10 +88,10 @@ class Media:
     def setSearch(self, search: str) -> None:
         self.__search = search
 
-    def getReferer(self) -> str | None:
+    def getReferer(self) -> Union[str, None]:
         return self.__referer
 
-    def setReferer(self, referer: str | None) -> None:
+    def setReferer(self, referer: Union[str, None]) -> None:
         self.__referer = referer
 
     def getDatabaseHandler(self) -> Database_Handler:

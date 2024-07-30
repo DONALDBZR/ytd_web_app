@@ -58,18 +58,16 @@ class Media:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, request: dict[str, str | None]) -> None:
+    def __init__(self, request: Dict[str, Union[str, None]]) -> None:
         """
         Instantiating the media's manager which will interact with
         the media's dataset and do the required processing.
 
         Parameters:
-            request:    (object): The request from the user.
+            request: {referer: string|null, search: string, platform: string, ip_address: string, port: string}: The request from the user.
         """
         ENV = Environment()
-        self.setDirectory(
-            f"{ENV.getDirectory()}/Cache/Media"
-        )
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(logging.getLogger(__name__))
         self.setDatabaseHandler(Database_Handler())
@@ -82,9 +80,7 @@ class Media:
         self.setReferer(request["referer"])
         self.setValue(str(request["platform"]))
         self.setIpAddress(str(request["ip_address"]))
-        self.getLogger().inform(
-            "The Media Management System has been successfully been initialized!"
-        )
+        self.getLogger().inform("The Media Management System has been successfully been initialized!")
 
     def getSearch(self) -> str:
         return self.__search

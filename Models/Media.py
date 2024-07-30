@@ -281,7 +281,7 @@ class Media:
         response = {}
         return response
 
-    def _getPayload(self, identifier: str) -> Union[RowType, Dict[str, str]]:
+    def _getPayload(self, identifier: str) -> Dict[str, str]:
         """
         Retrieving the payload of the content.
 
@@ -289,15 +289,19 @@ class Media:
             identifier: string: The identifier of the content to be looked upon.
 
         Returns:
-            {channel: string, title: string}
+            {channel: string, author: string}
         """
-        response: Union[RowType, Dict[str, str]]
         parameters: Tuple[str] = (identifier,)
-        response = self.getDatabaseHandler().getData(
+        database_response: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
             parameters=parameters,
             table_name="YouTube",
             filter_condition="identifier = %s",
-            column_names="author, title",
+            column_names="author AS channel, title",
             limit_condition=1
         )[0]
+        author: str = str(database_response["title"]).split(" - ")[0] # type: ignore
+        response: Dict[str, str] = {
+            "channel": str(database_response["channel"]), # type: ignore
+            "author": author
+        }
         return response

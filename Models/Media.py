@@ -282,26 +282,40 @@ class Media:
         response: Dict[str, Union[int, List[Dict[str, str]]]] = self._getRelatedContents(related_contents)
         return response
 
-    def _getRelatedContents(self, related_contents: List[Dict[str, str]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
+    def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
         Retrieving all of the data needed based on the related
         contents to build the response needed for the API.
 
         Parameters:
-            related_contents: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]: The related contents
+            related_contents: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]: The related contents
 
         Returns:
-            {status: int, data: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]}
+            {status: int, data: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}
         """
         status: int
+        data: List[Dict[str, str]] = []
         if len(related_contents) > 0:
             status = 200
         else:
             status = 204
         for index in range(0, len(related_contents), 1):
-
+            self._YouTubeDownloader = YouTube_Downloader(str(related_contents[index]["uniform_resource_locator"]), int(related_contents[index]["media_identifier"]))
+            metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
+            related_contents[index]["author_channel"] = str(metadata["author_channel"])
+            related_contents[index]["thumbnail"] = str(metadata["thumbnail"])
+            data.append({
+                "identifier": str(related_contents[index]["identifier"]),
+                "duration": str(related_contents[index]["duration"]),
+                "channel": str(related_contents[index]["channel"]),
+                "title": str(related_contents[index]["title"]),
+                "uniform_resource_locator": str(related_contents[index]["uniform_resource_locator"]),
+                "author_channel": str(related_contents[index]["author_channel"]),
+                "thumbnail": str(related_contents[index]["thumbnail"]),
+            })
         response: Dict[str, Union[int, List[Dict[str, str]]]] = {
-            "status": status
+            "status": status,
+            "data": data
         }
         return response
 

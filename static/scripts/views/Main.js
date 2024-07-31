@@ -880,6 +880,14 @@ class RelatedContents extends Media {
     async setRelatedContents() {
         const response = await this.getRelatedContents();
         const data = response.data;
+        this.setState((previous) => ({
+            ...previous,
+            Media: {
+                ...previous.Media,
+                RelatedContents: data,
+            },
+        }));
+        return response.status;
     }
 
     /**

@@ -867,8 +867,8 @@ class RelatedContents extends Media {
                     api_call: api_call,
                 },
             }));
-            // this.set()
-            // .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update\nAPI: /Media/RelatedContents\nAPI Status: ${status}`));
+            this.setRelatedContents()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update\nAPI: /Media/RelatedContents\nAPI Status: ${status}`));
         }
         console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update`);
     }

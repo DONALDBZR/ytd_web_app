@@ -811,12 +811,15 @@ class RelatedContents extends Media {
         this.props = props;
         /**
          * The states of the component.
-         * @type {{System: {dom_element: HTMLElement, api_call: number}}}
+         * @type {{System: {dom_element: HTMLElement, api_call: number}}, Media: {RelatedContents: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}}
          */
         this.state = {
             System: {
                 dom_element: this.props.data.System.dom_element,
                 api_call: 0,
+            },
+            Media: {
+                RelatedContents: [],
             },
         };
     }

@@ -273,7 +273,7 @@ class Media:
             identifier: string: The identifier of the content to be looked upon.
 
         Returns:
-            {status: int, data: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string}]}
+            {status: int, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string}]}
         """
         payload: Dict[str, str] = self._getPayload(identifier)
         related_channel_contents: List[Dict[str, Union[str, int]]] = self.getRelatedChannelContents(payload["channel"])

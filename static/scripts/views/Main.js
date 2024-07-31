@@ -788,7 +788,7 @@ class Media extends Search {
         return (
             <div className="Media">
                 <YouTube data={media} />
-                <div className="RelatedContents"></div>
+                <RelatedContents data={media} />
             </div>
         );
     }

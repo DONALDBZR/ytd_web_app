@@ -869,6 +869,16 @@ class RelatedContents extends Media {
         // }
         console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update`);
     }
+
+    /**
+     * Rendering the component
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return (
+            <div className="RelatedContents"></div>
+        );
+    }
 }
 
 /**

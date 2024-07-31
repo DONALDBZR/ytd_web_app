@@ -1,7 +1,7 @@
 from flask import Blueprint, Response, request
 from Models.Media import Media
 from io import TextIOWrapper
-from typing import Dict, Union
+from typing import Dict, Union, List
 import json
 import os
 
@@ -142,3 +142,29 @@ def retrieveMedia() -> Response:
     status = int(response["data"]["status"])  # type: ignore
     response = json.dumps(response, indent=4)  # type: ignore
     return Response(response, status, mimetype=mime_type)
+
+@Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
+def getRelatedContents(identifier: str) -> Response:
+    """
+    Retrieving the related contents of the media content that
+    has been downloaded from the application.
+
+    Parameters:
+        identifier: string: The identifier of the content
+
+    Returns:
+        Response
+    """
+    mime_type: str = "application/json"
+    system_request: Dict[str, Union[str, None]] = {
+        "referer": None,
+        "search": "",
+        "platform": "",
+        "ip_address": "127.0.0.1",
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    media: Media = Media(system_request)
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
+    status: int = int(model_response["status"]) # type: ignore
+    response = json.dumps(model_response["data"], indent=4)  # type: ignore
+    return Response(response, status, mimetype=mime_type) # type: ignore

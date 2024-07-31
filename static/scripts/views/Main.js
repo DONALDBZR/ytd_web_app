@@ -820,6 +820,16 @@ class RelatedContents extends Media {
             },
         };
     }
+
+    /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.RelatedContents\nComponent Status: Mount`);
+    }
 }
 
 /**

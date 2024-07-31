@@ -800,7 +800,26 @@ class Media extends Search {
  * identifier of content is related to them.
  */
 class RelatedContents extends Media {
-    
+    /**
+     * Constructing the component given that it will only render
+     * the related contents with the properties and states of the
+     * component.
+     * @param {{data: {System: {dom_element: HTMLElement}}}} props
+     */
+    constructor(props) {
+        super(props);
+        this.props = props;
+        /**
+         * The states of the component.
+         * @type {{System: {dom_element: HTMLElement, api_call: number}}}
+         */
+        this.state = {
+            System: {
+                dom_element: this.props.data.System.dom_element,
+                api_call: 0,
+            },
+        };
+    }
 }
 
 /**

@@ -291,7 +291,7 @@ class Media:
             related_contents: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]: The related contents
 
         Returns:
-            {status: int, data: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}
+            {status: int, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}
         """
         status: int
         data: List[Dict[str, str]] = []
@@ -305,7 +305,6 @@ class Media:
             related_contents[index]["author_channel"] = str(metadata["author_channel"])
             related_contents[index]["thumbnail"] = str(metadata["thumbnail"])
             data.append({
-                "identifier": str(related_contents[index]["identifier"]),
                 "duration": str(related_contents[index]["duration"]),
                 "channel": str(related_contents[index]["channel"]),
                 "title": str(related_contents[index]["title"]),

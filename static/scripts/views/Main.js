@@ -871,6 +871,15 @@ class RelatedContents extends Media {
     }
 
     /**
+     * Setting the data for the related contents.
+     * @returns {Promise<number>}
+     */
+    async setRelatedContents() {
+        const response = await this.getRelatedContents();
+        const data = response.data;
+    }
+
+    /**
      * Retrieving the related contents from the response retrieved
      * from the Media API.
      * @returns {Promise<{status: number, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}>}

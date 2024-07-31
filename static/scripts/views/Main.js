@@ -830,6 +830,20 @@ class RelatedContents extends Media {
         this.setData();
         console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.RelatedContents\nComponent Status: Mount`);
     }
+
+    /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                dom_element: this.props.data.System.dom_element,
+            },
+        }));
+    }
 }
 
 /**

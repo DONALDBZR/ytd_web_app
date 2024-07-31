@@ -871,6 +871,18 @@ class RelatedContents extends Media {
     }
 
     /**
+     * Sending the request to the server for the related contents
+     * for the Media API to retrieve the contents.
+     * @returns {Promise<Response>}
+     */
+    async sendGetRelatedContentsRequest() {
+        const identifier = window.location.pathname.replace("/Search/", "");
+        return fetch(`/Media/RelatedContents/${identifier}`, {
+            method: "GET",
+        });
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

@@ -276,7 +276,7 @@ class Header extends Homepage {
             },
         };
         return (
-            <>
+            <header>
                 <nav>
                     <div class="active">
                         <a href="/">Extractio</a>
@@ -295,7 +295,7 @@ class Header extends Homepage {
                         </div>
                     </div>
                 </nav>
-            </>
+            </header>
         );
     }
 }
@@ -373,6 +373,11 @@ class Main extends Homepage {
          */
         this.state = {};
     }
+
+    /**
+     * Rendering the component
+     * 
+     */
 }
 
 // Rendering the page

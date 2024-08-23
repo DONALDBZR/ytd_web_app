@@ -379,6 +379,24 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Adjusting the color scheme of the application
+     * @returns {Promise<number>}
+     */
+    async adjustPage() {
+        const root = document.querySelector(":root");
+        const status = await this.verifyColorScheme();
+        const color1 = (this.state.System.color_scheme == "light" || this.state.System.color_scheme == "") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
+        const color2 = (this.state.System.color_scheme == "light" || this.state.System.color_scheme == "") ? "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))" : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
+        const color3 = (this.state.System.color_scheme == "light" || this.state.System.color_scheme == "") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))" : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
+        const color5 = (this.state.System.color_scheme == "light" || this.state.System.color_scheme == "") ? "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))" : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))";
+        root.style.setProperty("--color1", color1);
+        root.style.setProperty("--color2", color2);
+        root.style.setProperty("--color3", color3);
+        root.style.setProperty("--color5", color5);
+        return status;
+    }
+
+    /**
      * Extracting the session data from the response.
      * @returns {Promise<{status: number, data: {Client: {timestamp: number, color_scheme: string}}}>}
      */

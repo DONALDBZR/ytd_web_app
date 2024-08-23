@@ -69,6 +69,26 @@ class Header extends Homepage {
     }
 
     /**
+     * Updating the component as soon as the states are different.
+     * @returns {void}
+     */
+    componentDidUpdate() {
+        let api_call = this.state.System.api_call;
+        if (api_call < 1) {
+            api_call++;
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    api_call: api_call,
+                },
+            }));
+            this.setData()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header\nComponent Status: Updated\nSession API Route: /\nSession API Status: ${status}`));
+        }
+    }
+
+    /**
      * Setting the data for the header.
      * @returns {Promise<number>}
      */

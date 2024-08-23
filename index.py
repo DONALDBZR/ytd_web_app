@@ -156,3 +156,21 @@ def serveJS(file: str) -> Response:
     response.cache_control.no_cache = False
     response.cache_control.public = True
     return response
+
+
+@Application.route('/static/scripts/views/<string:file>', methods=['GET'])
+def serveViews(file: str) -> Response:
+    """
+    Serving the React Components.
+
+    Parameters:
+        file: string: The name of the file.
+
+    Returns:
+        Response
+    """
+    response = send_from_directory('static/scripts/views', file)
+    response.cache_control.max_age = 604800
+    response.cache_control.no_cache = False
+    response.cache_control.public = True
+    return response

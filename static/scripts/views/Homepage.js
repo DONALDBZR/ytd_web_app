@@ -537,6 +537,15 @@ class Trend extends Main {
     }
 
     /**
+     * Adding the mouse leave event handler for the trend list.
+     * @returns {void}
+     */
+    handleTrendListMouseLeave() {
+        const trend_list = document.querySelector("#Homepage main .Trend div");
+        trend_list.style.animationPlayState = (window.innerWidth < 640) ? "running" : "unset";
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

@@ -153,6 +153,24 @@ class Header extends Homepage {
     }
 
     /**
+     * Setting the route to be redirected.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @returns {Promise<number>}
+     */
+    async setRoute(platform, search) {
+        const response = await this.setMediaYouTubeIdentifier(platform, search);
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                view_route: `/Search/${this.state.Media.YouTube.identifier}`,
+            },
+        }));
+        return response;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

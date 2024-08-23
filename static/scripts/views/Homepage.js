@@ -450,11 +450,10 @@ class ColorScheme extends Header {
      * @returns {Promise<number>}
      */
     async verifyColorScheme() {
-        const response = await this.getSessionResponse();
         this.setState((previous) => ({
             System: {
                 ...previous.System,
-                color_scheme: response.data.Client.color_scheme,
+                color_scheme: this.props.System.color_scheme,
             },
         }));
         if (this.state.System.color_scheme == "") {

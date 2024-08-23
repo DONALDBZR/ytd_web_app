@@ -344,6 +344,17 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Sending the request to the server to retrieve the session
+     * data.
+     * @returns {Promise<Response>}
+     */
+    async sendGetSessionRequest() {
+        return fetch("/Session/", {
+            method: "GET",
+        });
+    }
+
+    /**
      * Rendering the component which will allow the user to change
      * the color scheme.
      * @returns {HTMLElement}

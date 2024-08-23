@@ -270,11 +270,6 @@ class Header extends Homepage {
      * @returns {HTMLHeaderElement}
      */
     render() {
-        const application_data = {
-            System: {
-                color_scheme: this.state.System.color_scheme,
-            },
-        };
         return (
             <header>
                 <nav>
@@ -290,7 +285,7 @@ class Header extends Homepage {
                         </form>
                         <div>
                             <button name="colorSchemeChanger" value={this.state.System.color_scheme} onClick={this.setColorScheme.bind(this)}>
-                                <ColorScheme data={application_data} />
+                                <ColorScheme />
                             </button>
                         </div>
                     </div>
@@ -314,11 +309,12 @@ class ColorScheme extends Header {
         this.props = props.data;
         /**
          * The states of the component.
-         * @type {{System: {color_scheme: string}}}
+         * @type {{System: {color_scheme: string, api_call: number}}}
          */
         this.state = {
             System: {
                 color_scheme: this.props.System.color_scheme,
+                api_call: 0,
             },
         }
     }

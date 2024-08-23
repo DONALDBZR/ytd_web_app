@@ -355,6 +355,18 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Extracting the session data from the response.
+     * @returns {Promise<{status: number, data: {Client: {timestamp: number, color_scheme: string}}}>}
+     */
+    async getSessionResponse() {
+        const response = await this.sendGetSessionRequest();
+        return {
+            status: response.status,
+            data: await response.json(),
+        };
+    }
+
+    /**
      * Rendering the component which will allow the user to change
      * the color scheme.
      * @returns {HTMLElement}

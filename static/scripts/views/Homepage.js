@@ -355,6 +355,30 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Verifying that the color scheme does not have a value
+     * @returns {Promise<number>}
+     */
+    async verifyColorScheme() {
+        const response = await this.getSessionResponse();
+        this.setState((previous) => ({
+            System: {
+                ...previous.System,
+                color_scheme: response.data.Client.color_scheme,
+                timestamp: response.data.Client.timestamp,
+            },
+        }));
+        if (this.state.System.color_scheme == "") {
+            this.setState((previous) => ({
+                System: {
+                    ...previous.System,
+                    color_scheme: "light",
+                },
+            }));
+        }
+        return response.status;
+    }
+
+    /**
      * Extracting the session data from the response.
      * @returns {Promise<{status: number, data: {Client: {timestamp: number, color_scheme: string}}}>}
      */

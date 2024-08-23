@@ -600,5 +600,12 @@ class Trend extends Main {
     }
 }
 
+/**
+ * The component that is the footer for the homepage.
+ */
+class Footer extends Homepage {
+    
+}
+
 // Rendering the page
 ReactDOM.render(<Homepage />, document.body);

@@ -415,6 +415,17 @@ class Main extends Homepage {
     }
 
     /**
+     * Sending a request to the server to retrieve the weekly trend
+     * based on the usage of the application.
+     * @returns {Promise<Response>}
+     */
+    async sendGetTrendRequest() {
+        return fetch("/Trend/", {
+            method: "GET",
+        });
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLMainElement}
      */

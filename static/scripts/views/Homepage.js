@@ -277,6 +277,18 @@ class Header extends Homepage {
     }
 
     /**
+     * Extracting the session data from the response.
+     * @returns {Promise<{status: number, data: {Client: {timestamp: number, color_scheme: string}}}>}
+     */
+    async getSessionResponse() {
+        const response = await this.sendGetSessionRequest();
+        return {
+            status: response.status,
+            data: await response.json(),
+        };
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */
@@ -408,18 +420,6 @@ class ColorScheme extends Header {
         root.style.setProperty("--color3", color3);
         root.style.setProperty("--color5", color5);
         return status;
-    }
-
-    /**
-     * Extracting the session data from the response.
-     * @returns {Promise<{status: number, data: {Client: {timestamp: number, color_scheme: string}}}>}
-     */
-    async getSessionResponse() {
-        const response = await this.sendGetSessionRequest();
-        return {
-            status: response.status,
-            data: await response.json(),
-        };
     }
 
     /**

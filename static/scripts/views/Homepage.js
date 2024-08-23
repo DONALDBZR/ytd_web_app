@@ -32,7 +32,7 @@ class Header extends Homepage {
         super(props);
         /**
          * The states of the header.
-         * @type {{Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {color_scheme: string}}}
+         * @type {{Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {color_scheme: string, api_call: number}}}
          */
         this.state = {
             Media: {
@@ -44,6 +44,7 @@ class Header extends Homepage {
             },
             System: {
                 color_scheme: "",
+                api_call: 0,
             },
         };
     }
@@ -54,12 +55,22 @@ class Header extends Homepage {
      * @returns {void}
      */
     componentDidMount() {
-        this.setData();
+        let api_call = this.state.System.api_call;
+        api_call++;
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                api_call: api_call,
+            },
+        }));
+        this.setData()
+        .then((status) => console.info(`Route: ${window.location.pathname}\nComponentL Homepage.Header\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
     }
 
     /**
      * Setting the data for the header.
-     * @returns {void}
+     * @returns {Promise<number>}
      */
     async setData() {
         const response = await this.getSessionResponse();
@@ -384,7 +395,6 @@ class ColorScheme extends Header {
         this.adjustPage()
         .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header.ColorScheme\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
     }
-    
 
     /**
      * Updating the component as soon as the states are different.

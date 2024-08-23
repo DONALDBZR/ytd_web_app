@@ -357,5 +357,10 @@ class ColorScheme extends Header {
     }
 }
 
+/**
+ * The component that the main of the page.
+ */
+class Main extends Homepage {}
+
 // Rendering the page
 ReactDOM.render(<Homepage />, document.body);

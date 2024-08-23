@@ -119,6 +119,22 @@ class Header extends Homepage {
     }
 
     /**
+     * Handling the form submission which target the Search API of
+     * Extractio.
+     * @param {Event} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+    handleSearchSubmit(event) {
+        const loading_icon = document.querySelector("main #loading");
+        const delay = 200;
+        const uniform_resource_locator = new URL(this.state.Media.search);
+        const platform = uniform_resource_locator.host.replaceAll("www.", "").replaceAll(".com", "");
+        loading_icon.style.display = "flex";
+        event.preventDefault();
+        this.searchMediaMetadata(platform, this.state.Media.search, delay);
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

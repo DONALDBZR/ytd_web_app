@@ -453,7 +453,7 @@ class ColorScheme extends Header {
         this.setState((previous) => ({
             System: {
                 ...previous.System,
-                color_scheme: this.props.System.color_scheme,
+                color_scheme: this.props.data.System.color_scheme,
             },
         }));
         if (this.state.System.color_scheme == "") {

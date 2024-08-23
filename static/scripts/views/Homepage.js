@@ -56,7 +56,22 @@ class Header extends Homepage {
     componentDidMount() {
         this.setData();
     }
-    
+
+    /**
+     * Setting the data for the header.
+     * @returns {void}
+     */
+    async setData() {
+        const response = await this.getSessionResponse();
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                color_scheme: response.data.Client.color_scheme,
+            },
+        }));
+        return response.status;
+    }
 
     /**
      * Changing the color scheme according to the user's taste.

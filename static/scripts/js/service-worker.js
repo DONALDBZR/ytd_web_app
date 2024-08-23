@@ -22,11 +22,21 @@ self.addEventListener("install", (event) => {
         })
     );
 });
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)
         .then((response) => {
-            return response || fetch(event.request);
+            if (response) {
+                return response;
+            }
+            return fetch(event.request)
+            .then((response) => {
+                return caches.open(main_cache_name)
+                .then((cache) => {
+                    cache.put(event.request, response.clone());
+                    return response;
+                });
+            });
         })
     );
 });

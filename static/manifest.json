@@ -1,6 +1,13 @@
 {
-    "short_name": "Extractio",
     "name": "Extractio - YouTube Downloader",
+    "short_name": "Extractio",
+    "description": "The ultimate platform for extracting media content and tracking trends.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#FAFA5A",
+    "theme_color": "#1B365C",
+    "orientation": "portrait-primary",
+    "scope": "/",
     "icons": [
         {
             "src": "https://omnitechbros.ddns.net:591/static/images/icons/Extractio.png",
@@ -8,8 +15,8 @@
             "type": "image/png"
         }
     ],
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#FAFA5A",
-    "theme_color": "#1B365C"
+    "lang": "en-US",
+    "display_override": ["fullscreen", "minimal-ui"],
+    "related_applications": [],
+    "prefer_related_applications": false
 }

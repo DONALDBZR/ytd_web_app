@@ -507,6 +507,17 @@ class Trend extends Main {
     }
 
     /**
+     * Retrieving the width of the trend list's carousel.
+     * @param {[{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]} trend_list The list of media content
+     * @returns {string}
+     */
+    getTrendListWidth(trend_list) {
+        const application_width = window.innerWidth;
+        let trend_list_width_pixelate = "";
+        return (application_width < 640) ? `${application_width * trend_list}px` : `${application_width}px`;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

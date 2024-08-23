@@ -474,6 +474,15 @@ class Trend extends Main {
             Trend: this.props.Trend,
         };
     }
+
+    /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+    }
 }
 
 // Rendering the page

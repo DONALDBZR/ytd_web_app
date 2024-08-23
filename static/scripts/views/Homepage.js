@@ -388,6 +388,21 @@ class Main extends Homepage {
     }
 
     /**
+     * Setting the data of the weekly trend in the state of the
+     * component.
+     * @returns {Promise<number>}
+     */
+    async setTrend() {
+        const response = await this.getTrend();
+        const response_data = response.data;
+        this.setState((previous) => ({
+            ...previous,
+            Trend: response_data,
+        }));
+        return response.status;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLMainElement}
      */

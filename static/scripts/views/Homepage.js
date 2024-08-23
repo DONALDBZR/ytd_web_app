@@ -135,6 +135,24 @@ class Header extends Homepage {
     }
 
     /**
+     * Searching for the Media content and redirecting the user to
+     * the searched content.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @param {number} delay The amount of delay in milliseconds.
+     * @returns {void}
+     */
+    searchMediaMetadata(platform, search, delay) {
+        this.setRoute(platform, search)
+        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: /\nComponent: Header.Homepage\nDelay: ${delay} ms`))
+        .then(() => {
+            setTimeout(() => {
+                window.location.href = this.state.System.view_route;
+            }, delay);
+        });
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

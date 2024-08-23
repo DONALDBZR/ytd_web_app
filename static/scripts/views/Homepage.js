@@ -528,6 +528,15 @@ class Trend extends Main {
     }
 
     /**
+     * Adding the mouse enter event handler for the trend list.
+     * @returns {void}
+     */
+    handleTrendListMouseEnter() {
+        const trend_list = document.querySelector("#Homepage main .Trend div");
+        trend_list.style.animationPlayState = (window.innerWidth < 640) ? "paused" : "unset";
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

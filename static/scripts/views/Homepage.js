@@ -349,6 +349,12 @@ class Header extends Homepage {
      * @returns {HTMLHeaderElement}
      */
     render() {
+        const color_scheme = {
+            System: {
+                color_scheme: this.state.System.color_scheme,
+                api_call: this.state.System.api_call,
+            },
+        }
         return (
             <header>
                 <nav>
@@ -364,7 +370,7 @@ class Header extends Homepage {
                         </form>
                         <div>
                             <button name="colorSchemeChanger" value={this.state.System.color_scheme} onClick={this.setColorScheme.bind(this)}>
-                                <ColorScheme />
+                                <ColorScheme data={color_scheme} />
                             </button>
                         </div>
                     </div>

@@ -211,6 +211,27 @@ class Header extends Homepage {
     }
 
     /**
+     * Setting the uniform resource locator for a specific YouTube
+     * content.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @returns {Promise<number>}
+     */
+    async setMediaYouTubeUniformResourceLocator(platform, search) {
+        const response = await this.getSearchMedia(platform, search);
+        this.setState((previous) => ({
+            Media: {
+                ...previous.Media,
+                YouTube: {
+                    ...previous.Media.YouTube,
+                    uniform_resource_locator: response.data.uniform_resource_locator,
+                },
+            },
+        }));
+        return response.status;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

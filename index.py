@@ -7,7 +7,7 @@ Link:
 """
 
 
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request, Response, send_from_directory
 from flask_compress import Compress
 from Models.DatabaseHandler import Database_Handler
 from Models.SecurityManagementSystem import Security_Management_System
@@ -113,7 +113,9 @@ def homepage() -> Response:
     template = render_template('Homepage.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
     mime_type = "text/html"
     status = 200
-    return Response(template, status, mimetype=mime_type)
+    response = Response(template, status, mimetype=mime_type)
+    response.headers["Cache-Control"] = "public, max-age=604800"
+    return response
 
 
 @Application.route('/Sitemap.xml', methods=['GET'])
@@ -136,3 +138,19 @@ def getManifest() -> Response:
         Response
     """
     return Application.send_static_file("manifest.json")
+
+
+@Application.route('/static/scripts/js/<string:file>', methods=['GET'])
+def serveJS(file: str) -> Response:
+    """
+    Serving the JavaScript files.
+
+    Parameters:
+        file: string: The name of the file.
+
+    Returns:
+        Response
+    """
+    response = send_from_directory('static/js', file)
+    response.cache_control.max_age = 604800
+    return response

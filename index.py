@@ -82,7 +82,7 @@ def debug(mime_type: str = None, status: int = 500, response: str = None) -> Non
         void
     """
     directory = ""
-    if request.environ.get("SERVER_PORT") == '80':
+    if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '591':
         directory = "/var/www/html/ytd_web_app"
     else:
         directory = "/home/darkness4869/Documents/extractio"

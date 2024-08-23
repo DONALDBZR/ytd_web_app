@@ -103,6 +103,15 @@ class ColorScheme extends Header {
     }
 
     /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {System: {color_scheme: string}}}} previous_properties The properties of the component.
+     * @returns {void}
+     */
+    componentDidUpdate(previous_properties) {
+        this.setData(previous_properties);
+    }
+
+    /**
      * Rendering the component which will allow the user to change
      * the color scheme.
      * @returns {HTMLElement}

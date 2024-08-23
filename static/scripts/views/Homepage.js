@@ -410,7 +410,7 @@ class ColorScheme extends Header {
      * @returns {void}
      */
     componentDidMount() {
-        let api_call = this.props.System.api_call;
+        let api_call = this.props.data.System.api_call;
         if (api_call < 1) {
             api_call++;
             this.setState((previous) => ({

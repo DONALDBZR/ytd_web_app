@@ -403,6 +403,18 @@ class Main extends Homepage {
     }
 
     /**
+     * Retrieving the response's data.
+     * @returns {Promise<{status: number, data: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}>}
+     */
+    async getTrend() {
+        const server_response = await this.sendGetTrendRequest();
+        return {
+            status: server_response.status,
+            data: await server_response.json(),
+        };
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLMainElement}
      */

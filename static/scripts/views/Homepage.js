@@ -604,7 +604,17 @@ class Trend extends Main {
  * The component that is the footer for the homepage.
  */
 class Footer extends Homepage {
-    
+    /**
+     * Rendering the component
+     * @returns {HTMLFooterElement}
+     */
+    render() {
+        return (
+            <footer>
+                <div>Extractio</div>
+            </footer>
+        );
+    }
 }
 
 // Rendering the page

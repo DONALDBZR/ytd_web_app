@@ -517,6 +517,17 @@ class Trend extends Main {
     }
 
     /**
+     * Retrieving the animation of the trend list's carousel.
+     * @param {[{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]} trend_list The list of media content
+     * @returns {string}
+     */
+    getTrendListAnimation(trend_list) {
+        const delay = 8;
+        const application_width = window.innerWidth;
+        return (application_width < 640) ? `trend-scroll ${delay * trend_list.length}s linear infinite` : "none";
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

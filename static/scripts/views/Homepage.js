@@ -411,16 +411,18 @@ class ColorScheme extends Header {
      */
     componentDidMount() {
         let api_call = this.state.System.api_call;
-        api_call++;
-        this.setState((previous) => ({
-            ...previous,
-            System: {
-                ...previous.System,
-                api_call: api_call,
-            },
-        }));
-        this.adjustPage()
-        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header.ColorScheme\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
+        if (api_call < 1) {
+            api_call++;
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    api_call: api_call,
+                },
+            }));
+            this.adjustPage()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header.ColorScheme\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
+        }
     }
 
     /**

@@ -96,7 +96,7 @@ class Header extends Homepage {
             headers: {
                 "Content-Type": "application/json",
             },
-        })
+        });
     }
 
     /**

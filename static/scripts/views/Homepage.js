@@ -18,6 +18,15 @@ class Homepage extends React.Component {
             },
         };
     }
+
+    /**
+     * Rendering the component which will be the body of the
+     * application.
+     * @returns {HTMLBodyElement}
+     */
+    render() {
+        return [<Header />, <Main />, <Footer />];
+    }
 }
 
 // Rendering the page

@@ -45,6 +45,18 @@ class Header extends Homepage {
     }
 
     /**
+     * Changing the color scheme according to the user's taste.
+     * @param {Event} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+    setColorScheme(event) {
+        const delay = 200;
+        let color_scheme = (String(event.target.parentElement.parentElement.value) == "light") ? "dark" : "light";
+        event.preventDefault();
+        this.updateColorScheme(color_scheme, delay);
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

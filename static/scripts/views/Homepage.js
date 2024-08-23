@@ -387,18 +387,19 @@ class Header extends Homepage {
 class ColorScheme extends Header {
     /**
      * Constructing the color scheme's component from the header.
-     * @param {*} props The properties of the component.
+     * @param {{data: {System: {color_scheme: string, api_call: number}}}} props The properties of the component.
      */
     constructor(props) {
         super(props);
+        this.props = props.data;
         /**
          * The states of the component.
          * @type {{System: {color_scheme: string, api_call: number}}}
          */
         this.state = {
             System: {
-                color_scheme: "",
-                api_call: 0,
+                color_scheme: this.props.System.color_scheme,
+                api_call: this.props.System.api_call,
             },
         }
     }

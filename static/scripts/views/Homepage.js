@@ -381,65 +381,6 @@ class Main extends Homepage {
     }
 
     /**
-     * Updating the component as soon as there is a change in the
-     * properties.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        let api_call = this.state.System.api_call;
-        if (api_call < 1) {
-            api_call++;
-            this.setState((previous) => ({
-                ...previous,
-                System: {
-                    ...previous.System,
-                    api_call: api_call,
-                },
-            }));
-            this.setTrend()
-            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main\nComponent Status: Update\nTrend API Route: /\nTrend API Status: ${status}`));
-        }
-    }
-
-    /**
-     * Setting the data of the weekly trend in the state of the
-     * component.
-     * @returns {Promise<number>}
-     */
-    async setTrend() {
-        const response = await this.getTrend();
-        const response_data = response.data;
-        this.setState((previous) => ({
-            ...previous,
-            Trend: response_data,
-        }));
-        return response.status;
-    }
-
-    /**
-     * Retrieving the response's data.
-     * @returns {Promise<{status: number, data: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}>}
-     */
-    async getTrend() {
-        const server_response = await this.sendGetTrendRequest();
-        return {
-            status: server_response.status,
-            data: await server_response.json(),
-        };
-    }
-
-    /**
-     * Sending a request to the server to retrieve the weekly trend
-     * based on the usage of the application.
-     * @returns {Promise<Response>}
-     */
-    async sendGetTrendRequest() {
-        return fetch("/Trend/", {
-            method: "GET",
-        });
-    }
-
-    /**
      * Rendering the component
      * @returns {HTMLMainElement}
      */
@@ -500,25 +441,62 @@ class Trend extends Main {
     }
 
     /**
-     * Setting the main state of the component.
+     * Updating the component as soon as there is a change in the
+     * properties.
      * @returns {void}
      */
-    setData() {
-        this.setState((previous) => ({
-            ...previous,
-            Trend: this.props.Trend,
-        }));
+    componentDidUpdate() {
+        let api_call = this.state.System.api_call;
+        if (api_call < 1) {
+            api_call++;
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    api_call: api_call,
+                },
+            }));
+            this.setTrend()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main\nComponent Status: Update\nTrend API Route: /\nTrend API Status: ${status}`));
+        }
     }
 
     /**
-     * Updating the component as soon as the states are different.
-     * @param {{data: {Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}} previous_properties The properties of the component
-     * @returns {void}
+     * Setting the data of the weekly trend in the state of the
+     * component.
+     * @returns {Promise<number>}
      */
-    componentDidUpdate(previous_properties) {
-        if (this.props != previous_properties.data) {
-            this.setData();
-        }
+    async setTrend() {
+        const response = await this.getTrend();
+        const response_data = response.data;
+        this.setState((previous) => ({
+            ...previous,
+            Trend: response_data,
+        }));
+        return response.status;
+    }
+
+    /**
+     * Retrieving the response's data.
+     * @returns {Promise<{status: number, data: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}>}
+     */
+    async getTrend() {
+        const server_response = await this.sendGetTrendRequest();
+        return {
+            status: server_response.status,
+            data: await server_response.json(),
+        };
+    }
+
+    /**
+     * Sending a request to the server to retrieve the weekly trend
+     * based on the usage of the application.
+     * @returns {Promise<Response>}
+     */
+    async sendGetTrendRequest() {
+        return fetch("/Trend/", {
+            method: "GET",
+        });
     }
 
     /**

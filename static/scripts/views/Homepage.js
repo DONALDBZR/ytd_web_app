@@ -65,7 +65,7 @@ class Header extends Homepage {
             },
         }));
         this.setData()
-        .then((status) => console.info(`Route: ${window.location.pathname}\nComponentL Homepage.Header\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
+        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
     }
 
     /**

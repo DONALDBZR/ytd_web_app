@@ -248,6 +248,19 @@ class Header extends Homepage {
     }
 
     /**
+     * Sending a request to the server on the Media API to retrieve
+     * the data needed.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @returns {Promise<Response>}
+     */
+    async sendGetSearchMediaRequest(platform, search) {
+        return fetch(`/Media/Search?platform=${platform}&search=${search}`, {
+            method: "GET",
+        });
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

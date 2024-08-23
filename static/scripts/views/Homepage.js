@@ -49,6 +49,16 @@ class Header extends Homepage {
     }
 
     /**
+     * Running the methods needed as soon as the component is
+     * mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+    }
+    
+
+    /**
      * Changing the color scheme according to the user's taste.
      * @param {Event} event An event which takes place in the DOM.
      * @returns {void}

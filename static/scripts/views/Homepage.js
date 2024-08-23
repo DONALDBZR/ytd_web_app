@@ -319,26 +319,42 @@ class ColorScheme extends Header {
     }
 
     /**
-     * Updating the component as soon as the states are different.
-     * @param {{data: {System: {color_scheme: string}}}} previous_properties The properties of the component.
+     * Running the functions needed as soon as the component is
+     * mount.
      * @returns {void}
      */
-    componentDidUpdate(previous_properties) {
-        this.setData(previous_properties);
+    componentDidMount() {
+        let api_call = this.state.System.api_call;
+        api_call++;
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                api_call: api_call,
+            },
+        }));
+        this.adjustPage()
+        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header.ColorScheme\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
     }
+    
 
     /**
-     * Setting the data for the component.
-     * @param {{data: {System: {color_scheme: string}}}} properties The properties of the component.
+     * Updating the component as soon as the states are different.
      * @returns {void}
      */
-    setData(properties) {
-        if (this.props != properties.data) {
-            this.setState(() => ({
+    componentDidUpdate() {
+        let api_call = this.state.System.api_call;
+        if (api_call < 1) {
+            api_call++;
+            this.setState((previous) => ({
+                ...previous,
                 System: {
-                    color_scheme: this.props.System.color_scheme,
+                    ...previous.System,
+                    api_call: api_call,
                 },
             }));
+            this.adjustPage()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header.ColorScheme\nComponent Status: Updated\nSession API Route: /\nSession API Status: ${status}`));
         }
     }
 

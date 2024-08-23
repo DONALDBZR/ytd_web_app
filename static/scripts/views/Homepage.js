@@ -360,7 +360,20 @@ class ColorScheme extends Header {
 /**
  * The component that the main of the page.
  */
-class Main extends Homepage {}
+class Main extends Homepage {
+    /**
+     * Constructing the main component which is based on the
+     * Homepage.
+     * @param {*} props The properties of the component.
+     */
+    constructor(props) {
+        super(props);
+        /**
+         * The states of the component.
+         */
+        this.state = {};
+    }
+}
 
 // Rendering the page
 ReactDOM.render(<Homepage />, document.body);

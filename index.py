@@ -141,7 +141,7 @@ def getManifest() -> Response:
 
 
 @Application.route('/static/scripts/js/<string:file>', methods=['GET'])
-def serveJS(file: str) -> Response:
+def serveScripts(file: str) -> Response:
     """
     Serving the JavaScript files.
 
@@ -170,6 +170,24 @@ def serveViews(file: str) -> Response:
         Response
     """
     response = send_from_directory('static/scripts/views', file)
+    response.cache_control.max_age = 604800
+    response.cache_control.no_cache = False
+    response.cache_control.public = True
+    return response
+
+
+@Application.route('/static/stylesheets/<string:file>', methods=['GET'])
+def serveStylesheets(file: str) -> Response:
+    """
+    Serving the stylesheets.
+
+    Parameters:
+        file: string: The name of the file.
+
+    Returns:
+        Response
+    """
+    response = send_from_directory('static/stylesheets', file)
     response.cache_control.max_age = 604800
     response.cache_control.no_cache = False
     response.cache_control.public = True

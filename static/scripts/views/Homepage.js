@@ -378,6 +378,16 @@ class Main extends Homepage {
     }
 
     /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setTrend()
+        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.Homepage\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLMainElement}
      */

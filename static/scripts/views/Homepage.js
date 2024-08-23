@@ -387,7 +387,28 @@ class Main extends Homepage {
      */
     componentDidMount() {
         this.setTrend()
-        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.Homepage\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
+        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
+    }
+
+    /**
+     * Updating the component as soon as there is a change in the
+     * properties.
+     * @returns {void}
+     */
+    componentDidUpdate() {
+        let api_call = this.state.System.api_call;
+        if (api_call < 1) {
+            api_call++;
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    api_call: api_call,
+                },
+            }));
+            this.setTrend()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main\nComponent Status: Update\nTrend API Route: /\nTrend API Status: ${status}`));
+        }
     }
 
     /**

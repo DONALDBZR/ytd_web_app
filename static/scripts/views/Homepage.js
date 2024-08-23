@@ -30,6 +30,52 @@ class Header extends Homepage {
      */
     constructor(props) {
         super(props);
+        /**
+         * The states of the header.
+         * @type {{Media: {search: string}, System: {color_scheme: string}}}
+         */
+        this.state = {
+            Media: {
+                search: "",
+            },
+            System: {
+                color_scheme: "",
+            },
+        };
+    }
+
+    /**
+     * Rendering the component
+     * @returns {HTMLHeaderElement}
+     */
+    render() {
+        const application_data: {System: {color_scheme: string}} = {
+            System: {
+                color_scheme: this.state.System.color_scheme,
+            },
+        };
+        return (
+            <>
+                <nav>
+                    <div class="active">
+                        <a href="/">Extractio</a>
+                    </div>
+                    <div>
+                        <form method="GET" onSubmit={this.handleSearchSubmit.bind(this)}>
+                            <button>
+                                <i class="fa fa-search"></i>
+                            </button>
+                            <input type="search" placeholder="Search..." name="search" value={this.state.Media.search} onChange={this.handleSearchChange.bind(this)} required />
+                        </form>
+                        <div>
+                            <button name="colorSchemeChanger" value={this.state.System.color_scheme} onClick={this.setColorScheme.bind(this)}>
+                                <ColorScheme data={application_data} />
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </>
+        );
     }
 }
 

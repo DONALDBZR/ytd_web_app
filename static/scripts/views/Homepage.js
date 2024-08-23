@@ -8,15 +8,6 @@ class Homepage extends React.Component {
      */
     constructor(props) {
         super(props);
-        /**
-         * The states of the application
-         * @type {{System: {view_route: string}}}
-         */
-        this.state = {
-            System: {
-                view_route: "",
-            },
-        };
     }
 
     /**
@@ -27,6 +18,13 @@ class Homepage extends React.Component {
     render() {
         return [<Header />, <Main />, <Footer />];
     }
+}
+
+/**
+ * The header of the page.
+ */
+class Header extends Homepage {
+
 }
 
 // Rendering the page

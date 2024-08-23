@@ -266,6 +266,17 @@ class Header extends Homepage {
     }
 
     /**
+     * Sending the request to the server to retrieve the session
+     * data.
+     * @returns {Promise<Response>}
+     */
+    async sendGetSessionRequest() {
+        return fetch("/Session/", {
+            method: "GET",
+        });
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */
@@ -359,17 +370,6 @@ class ColorScheme extends Header {
     }
 
     /**
-     * Sending the request to the server to retrieve the session
-     * data.
-     * @returns {Promise<Response>}
-     */
-    async sendGetSessionRequest() {
-        return fetch("/Session/", {
-            method: "GET",
-        });
-    }
-
-    /**
      * Verifying that the color scheme does not have a value
      * @returns {Promise<number>}
      */
@@ -407,12 +407,6 @@ class ColorScheme extends Header {
         root.style.setProperty("--color2", color2);
         root.style.setProperty("--color3", color3);
         root.style.setProperty("--color5", color5);
-        super.setState((previous) => ({
-            ...previous,
-            System: {
-                color_scheme: this.state.System.color_scheme,
-            },
-        }));
         return status;
     }
 

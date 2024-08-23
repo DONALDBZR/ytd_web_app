@@ -381,16 +381,6 @@ class Main extends Homepage {
     }
 
     /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
-     * @returns {void}
-     */
-    componentDidMount() {
-        this.setTrend()
-        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
-    }
-
-    /**
      * Updating the component as soon as there is a change in the
      * properties.
      * @returns {void}
@@ -505,7 +495,8 @@ class Trend extends Main {
      * @returns {void}
      */
     componentDidMount() {
-        this.setData();
+        this.setTrend()
+        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main.Trend\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
     }
 
     /**

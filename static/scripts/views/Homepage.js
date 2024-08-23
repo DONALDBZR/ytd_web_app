@@ -101,7 +101,15 @@ class ColorScheme extends Header {
             },
         }
     }
-    
+
+    /**
+     * Rendering the component which will allow the user to change
+     * the color scheme.
+     * @returns {HTMLElement}
+     */
+    render() {
+        return (this.state.System.color_scheme == "dark") ? (<i class="fa-solid fa-toggle-on"></i>) : (<i class="fa-solid fa-toggle-off"></i>);
+    }
 }
 
 // Rendering the page

@@ -81,6 +81,25 @@ class Header extends Homepage {
     }
 
     /**
+     * Sending the request to update the session data.
+     * @param {string} color_scheme The color scheme of the application.
+     * @returns {Promise<Response>}
+     */
+    async sendUpdateSessionRequest(color_scheme) {
+        return fetch("/Session/", {
+            method: "PUT",
+            body: JSON.stringify({
+                Client: {
+                    color_scheme: color_scheme,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

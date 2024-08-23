@@ -79,5 +79,13 @@ class Header extends Homepage {
     }
 }
 
+/**
+ * It allows the component to be changed on the intereaction of
+ * the user to change its color scheme.
+ */
+class ColorScheme extends Header {
+    
+}
+
 // Rendering the page
 ReactDOM.render(<Homepage />, document.body);

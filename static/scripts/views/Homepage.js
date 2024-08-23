@@ -483,6 +483,17 @@ class Trend extends Main {
     componentDidMount() {
         this.setData();
     }
+
+    /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            Trend: this.props.Trend,
+        }));
+    }
 }
 
 // Rendering the page

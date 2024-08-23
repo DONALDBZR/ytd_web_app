@@ -24,7 +24,13 @@ class Homepage extends React.Component {
  * The header of the page.
  */
 class Header extends Homepage {
-
+    /**
+     * Constructing that application from the React's Component
+     * @param {*} props The properties of the component
+     */
+    constructor(props) {
+        super(props);
+    }
 }
 
 // Rendering the page

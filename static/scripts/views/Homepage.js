@@ -312,7 +312,7 @@ class ColorScheme extends Header {
          */
         this.state = {
             System: {
-                color_scheme: this.props.System.color_scheme,
+                color_scheme: "",
                 api_call: 0,
             },
         }

@@ -368,16 +368,6 @@ class Main extends Homepage {
      */
     constructor(props) {
         super(props);
-        /**
-         * The states of the component.
-         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}], System: {api_call: number}}}
-         */
-        this.state = {
-            Trend: [],
-            System: {
-                api_call: 0,
-            },
-        };
     }
 
     /**
@@ -416,17 +406,19 @@ class Trend extends Main {
     /**
      * Constructing the Trend component which is based on the Main
      * component of the Homepage.
-     * @param {{data: {Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}} props The properties of the component
+     * @param {*} props The properties of the component
      */
     constructor(props) {
         super(props);
-        this.props = props.data;
         /**
-         * The state of the component.
-         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}
+         * The states of the component.
+         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}], System: {api_call: number}}}
          */
         this.state = {
-            Trend: this.props.Trend,
+            Trend: [],
+            System: {
+                api_call: 0,
+            },
         };
     }
 

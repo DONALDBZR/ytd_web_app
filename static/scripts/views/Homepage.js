@@ -421,6 +421,15 @@ class Trend extends Main {
      * @returns {void}
      */
     componentDidMount() {
+        let api_call = this.state.System.api_call;
+        api_call++;
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                api_call: api_call,
+            },
+        }));
         this.setTrend()
         .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main.Trend\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
     }
@@ -442,7 +451,7 @@ class Trend extends Main {
                 },
             }));
             this.setTrend()
-            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main\nComponent Status: Update\nTrend API Route: /\nTrend API Status: ${status}`));
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main.Trend\nComponent Status: Update\nTrend API Route: /\nTrend API Status: ${status}`));
         }
     }
 

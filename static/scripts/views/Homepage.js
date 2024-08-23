@@ -430,12 +430,19 @@ class Main extends Homepage {
      * @returns {HTMLMainElement}
      */
     render() {
+        /**
+         * The data to be used for the Trend component.
+         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}
+         */
+        const trend = {
+            Trend: this.state.Trend,
+        };
         return (
             <main>
                 <div id="loading">
                     <i class="fa-solid fa-spinner fa-spin"></i>
                 </div>
-                <p> The aim of the application is that software and contents must be free and it allows anyone to get content from certain platforms to be obtained for free as it is an application developed for people by people.</p>
+                <p>The aim of the application is that software and contents must be free and it allows anyone to get content from certain platforms to be obtained for free as it is an application developed for people by people.</p>
                 <div>
                     <div>
                         <i class="fa-brands fa-youtube"></i>

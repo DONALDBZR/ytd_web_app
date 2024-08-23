@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head key={{ google_analytics_key }}>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="author" content="Darkness4869" />
+        <meta name="repository" content="https://github.com/DONALDBZR/ytd_web_app" />
+        <link rel="manifest" href="/manifest.json">
+        <link rel="preconnect" href="https://fonts.cdnfonts.com">
+        <script src="https://unpkg.com/react@18/umd/react.production.min.js" defer></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" defer></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
+        <link rel="icon" href="/static/images/icons/Extractio.png" type="image/png" />
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_key }}"></script>
+        <script defer>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag('js', new Date());
+            gtag('config', '{{ google_analytics_key }}');
+        </script>
+        <script src="/static/scripts/js/ytd.js" defer></script>
+    </head>
+    <body>
+        <script src="/static/scripts/views/Homepage.js" type="text/babel" defer></script>
+    </body>
+</html>

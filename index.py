@@ -151,6 +151,8 @@ def serveJS(file: str) -> Response:
     Returns:
         Response
     """
-    response = send_from_directory('static/js', file)
+    response = send_from_directory('static/scripts/js', file)
     response.cache_control.max_age = 604800
+    response.cache_control.no_cache = False
+    response.cache_control.public = True
     return response

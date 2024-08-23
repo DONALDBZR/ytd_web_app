@@ -40,16 +40,17 @@ self.addEventListener('fetch', (event) => {
         })
     );
 });
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
     const cache_whitelist = [main_cache_name];
     event.waitUntil(
-        caches.keys()
-        .then((cache_names) => {
-            return Promise.all(cache_names.map((cache_name) => {
-                if (cache_whitelist.indexOf(cache_name) === -1) {
-                    return caches.delete(cache_name);
-                }
-            }));
+        caches.keys().then((cache_names) => {
+            return Promise.all(
+                cache_names.map((cache_name) => {
+                    if (!cache_whitelist.includes(cache_name)) {
+                        return caches.delete(cache_name);
+                    }
+                })
+            );
         })
     );
 });

@@ -6,13 +6,14 @@
         <meta name="author" content="Darkness4869" />
         <meta name="repository" content="https://github.com/DONALDBZR/ytd_web_app" />
         <link rel="manifest" href="/manifest.json">
-        <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-        <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+        <link rel="preconnect" href="https://fonts.cdnfonts.com">
+        <script src="https://unpkg.com/react@18/umd/react.production.min.js" defer></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" defer></script>
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer></script>
         <link rel="icon" href="/static/images/icons/Extractio.png" type="image/png" />
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics_key }}"></script>
-        <script>
+        <script defer>
             window.dataLayer = window.dataLayer || [];
             function gtag() {
                 dataLayer.push(arguments);
@@ -24,23 +25,14 @@
     </head>
     <body>
         <header>
-            <script
-                src="/static/scripts/views/Header.js"
-                type="text/babel"
-            ></script>
+            <script src="/static/scripts/views/Header.js" type="text/babel" defer></script>
         </header>
         <main>
-            <script
-                src="/static/scripts/views/Main.js"
-                type="text/babel"
-            ></script>
+            <script src="/static/scripts/views/Main.js" type="text/babel" defer></script>
         </main>
         <footer>
-            <script
-                src="/static/scripts/views/Footer.js"
-                type="text/babel"
-            ></script>
+            <script src="/static/scripts/views/Footer.js" type="text/babel" defer></script>
         </footer>
-        <script src="/static/scripts/js/service-worker.js"></script>
+        <script src="/static/scripts/js/service-worker.js" defer></script>
     </body>
 </html>

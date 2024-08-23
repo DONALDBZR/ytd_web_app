@@ -49,7 +49,7 @@ class Header extends Homepage {
      * @returns {HTMLHeaderElement}
      */
     render() {
-        const application_data: {System: {color_scheme: string}} = {
+        const application_data = {
             System: {
                 color_scheme: this.state.System.color_scheme,
             },

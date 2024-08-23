@@ -8,6 +8,7 @@ Link:
 
 
 from flask import Flask, render_template, request, Response
+from flask_compress import Compress
 from Models.DatabaseHandler import Database_Handler
 from Models.SecurityManagementSystem import Security_Management_System
 from Routes.Session import Session_Portal
@@ -55,12 +56,17 @@ ENV File of the application
 """
 Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
+Application.config["COMPRESS_ALGORITHM"] = "gzip"
+Application.config["COMPRESS_LEVEL"] = 6
+Application.config["COMPRESS_MIN_SIZE"] = 500
+Application.config["COMPRESS_MIMETYPES"] = ["text/html", "text/css", "text/javascript", "application/json"]
 Application.register_blueprint(Session_Portal, url_prefix="/Session")
 Application.register_blueprint(Search_Portal, url_prefix="/Search")
 Application.register_blueprint(Media_Portal, url_prefix="/Media")
 Application.register_blueprint(Download_Portal, url_prefix="/Download")
 Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
+Compress(Application)
 
 
 def debug(mime_type: str = None, status: int = 500, response: str = None) -> None:  # type: ignore

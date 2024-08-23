@@ -9,9 +9,7 @@ const uniform_resource_locators_to_cache = [
     "https://unpkg.com/react-dom@18/umd/react-dom.production.min.js",
     "https://unpkg.com/@babel/standalone/babel.min.js",
     "/static/scripts/js/ytd.js",
-    "/static/scripts/views/Header.js",
-    "/static/scripts/views/Main.js",
-    "/static/scripts/views/Footer.js",
+    "/static/scripts/views/Homepage.js",
     "/manifest.json",
     "/static/images/icons/Extractio.png",
 ];

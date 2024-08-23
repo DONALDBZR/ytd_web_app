@@ -55,7 +55,8 @@ class Header extends Homepage {
      */
     setColorScheme(event) {
         const delay = 200;
-        let color_scheme = (String(event.target.parentElement.parentElement.value) == "light") ? "dark" : "light";
+        const color_scheme = (String(event.target.parentElement.parentElement.value) == "light") ? "dark" : "light";
+        console.log(`Color Scheme: ${color_scheme}`);
         event.preventDefault();
         this.updateColorScheme(color_scheme, delay);
     }
@@ -378,7 +379,6 @@ class ColorScheme extends Header {
             System: {
                 ...previous.System,
                 color_scheme: response.data.Client.color_scheme,
-                timestamp: response.data.Client.timestamp,
             },
         }));
         if (this.state.System.color_scheme == "") {
@@ -407,6 +407,12 @@ class ColorScheme extends Header {
         root.style.setProperty("--color2", color2);
         root.style.setProperty("--color3", color3);
         root.style.setProperty("--color5", color5);
+        super.setState((previous) => ({
+            ...previous,
+            System: {
+                color_scheme: this.state.System.color_scheme,
+            },
+        }));
         return status;
     }
 

@@ -32,7 +32,7 @@ class Header extends Homepage {
         super(props);
         /**
          * The states of the header.
-         * @type {{Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {color_scheme: string}}}
+         * @type {{Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {color_scheme: string, view_route: string}}}
          */
         this.state = {
             Media: {
@@ -44,6 +44,7 @@ class Header extends Homepage {
             },
             System: {
                 color_scheme: "",
+                view_route: "",
             },
         };
     }

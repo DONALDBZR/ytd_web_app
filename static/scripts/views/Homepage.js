@@ -494,6 +494,17 @@ class Trend extends Main {
             Trend: this.props.Trend,
         }));
     }
+
+    /**
+     * Updating the component as soon as the states are different.
+     * @param {{data: {Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}} previous_properties The properties of the component
+     * @returns {void}
+     */
+    componentDidUpdate(previous_properties) {
+        if (this.props != previous_properties.data) {
+            this.setData();
+        }
+    }
 }
 
 // Rendering the page

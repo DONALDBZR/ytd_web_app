@@ -12,6 +12,7 @@ const uniform_resource_locators_to_cache = [
     "/static/scripts/views/Homepage.js",
     "/manifest.json",
     "/static/images/icons/Extractio.png",
+    "/Trend/",
 ];
 self.addEventListener("install", (event) => {
     event.waitUntil(

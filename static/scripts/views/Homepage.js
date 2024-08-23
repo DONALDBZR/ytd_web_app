@@ -100,6 +100,25 @@ class Header extends Homepage {
     }
 
     /**
+     * Handling the change of the data form the search form of the
+     * User-Interface of Extractio.
+     * @param {Event} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+    handleSearchChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState((previous) => ({
+            ...previous,
+            Media: {
+                ...previous.Media,
+                [name]: value,
+            },
+        }));
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLHeaderElement}
      */

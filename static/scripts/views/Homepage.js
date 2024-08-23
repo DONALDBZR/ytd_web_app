@@ -505,6 +505,60 @@ class Trend extends Main {
             this.setData();
         }
     }
+
+    /**
+     * Rendering the component
+     * @returns {HTMLDivElement}
+     */
+    render() {
+        return (
+            <div className="Trend">
+                <div style={{width: this.getTrendListWidth(this.state.Trend), animation: this.getTrendListAnimation(this.state.Trend)}} onMouseEnter={this.handleTrendListMouseEnter} onMouseLeave={this.handleTrendListMouseLeave}>
+                    {this.state.Trend.map((content) => {
+                        return (
+                            <div class="card">
+                                <div>
+                                    <a
+                                        href={content.uniform_resource_locator}
+                                        target="__blank"
+                                    >
+                                        <img src={content.thumbnail} />
+                                    </a>
+                                </div>
+                                <div>
+                                    <div>{content.title}</div>
+                                    <div>
+                                        <a href={content.author_channel}>
+                                            {content.author}
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <div>Duration:</div>
+                                        <div>{content.duration}</div>
+                                    </div>
+                                    <div>
+                                        <div>Views:</div>
+                                        <div>
+                                            {content.views.toLocaleString(
+                                                "en-US"
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <a
+                                            href={`/Download/YouTube/${content.identifier}`}
+                                        >
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
 }
 
 // Rendering the page

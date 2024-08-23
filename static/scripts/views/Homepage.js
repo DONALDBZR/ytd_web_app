@@ -513,7 +513,6 @@ class Trend extends Main {
      */
     getTrendListWidth(trend_list) {
         const application_width = window.innerWidth;
-        let trend_list_width_pixelate = "";
         return (application_width < 640) ? `${application_width * trend_list}px` : `${application_width}px`;
     }
 

@@ -17,6 +17,7 @@ self.addEventListener("install", (event) => {
     event.waitUntil(
         caches.open(main_cache_name)
         .then((cache) => {
+            console.log('Opened cache');
             return cache.addAll(uniform_resource_locators_to_cache);
         })
     );

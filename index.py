@@ -9,6 +9,7 @@ Link:
 
 from flask import Flask, render_template, request, Response, send_from_directory
 from flask_compress import Compress
+from flask_cors import CORS
 from Models.DatabaseHandler import Database_Handler
 from Models.SecurityManagementSystem import Security_Management_System
 from Routes.Session import Session_Portal
@@ -67,6 +68,7 @@ Application.register_blueprint(Download_Portal, url_prefix="/Download")
 Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Compress(Application)
+CORS(Application)
 
 
 def debug(mime_type: str = None, status: int = 500, response: str = None) -> None:  # type: ignore

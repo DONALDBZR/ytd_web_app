@@ -358,7 +358,7 @@ class Header extends Component {
                     <div>
                         <form method="GET" onSubmit={this.handleSearchSubmit.bind(this)}>
                             <button>
-                                <i class="fa fa-search"></i>
+                                <i className="fa fa-search"></i>
                             </button>
                             <input type="search" placeholder="Search..." name="search" value={this.state.Media.search} onChange={this.handleSearchChange.bind(this)} required />
                         </form>

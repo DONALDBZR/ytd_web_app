@@ -100,7 +100,7 @@ class ColorScheme extends Component {
      * @returns {HTMLElement}
      */
     render() {
-        return (this.state.System.color_scheme == "dark") ? (<i class="fa-solid fa-toggle-on"></i>) : (<i class="fa-solid fa-toggle-off"></i>);
+        return (this.state.System.color_scheme == "dark") ? (<i className="fa-solid fa-toggle-on"></i>) : (<i className="fa-solid fa-toggle-off"></i>);
     }
 }
 

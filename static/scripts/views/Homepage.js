@@ -464,7 +464,7 @@ class ColorScheme extends Header {
                 },
             }));
         }
-        return 200;
+        return 304;
     }
 
     /**

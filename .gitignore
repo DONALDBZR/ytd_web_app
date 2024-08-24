@@ -14,3 +14,7 @@
 /static/Sitemap.xml
 /SQL/
 /static/images/
+/node_modules/
+/package.json
+/package-lock.json
+/.babelrc

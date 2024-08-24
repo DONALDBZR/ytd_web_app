@@ -79,6 +79,11 @@ class YTD {
          * @type {HTMLHeadElement}
          */
         this.__head;
+        /**
+         * The origin of the server connection.
+         * @type {string}
+         */
+        this.__origin;
         this.init();
     }
 
@@ -218,10 +223,26 @@ class YTD {
     }
 
     /**
+     * @returns {string}
+     */
+    getOrigin() {
+        return this.__origin;
+    }
+
+    /**
+     * @param {number} port
+     * @returns {void}
+     */
+    setOrigin(port) {
+        this.__origin = (port == 591) ? "https://omnitechbros.ddns.net:591" : "https://omnitechbros.ddns.net:5000";
+    }
+
+    /**
      * Initializing the application
      * @returns {void}
      */
     init() {
+        this.setOrigin(Number(window.location.port));
         this.setRequestURI(window.location.pathname);
         this.setBody(document.body);
         this.setHead(document.head);

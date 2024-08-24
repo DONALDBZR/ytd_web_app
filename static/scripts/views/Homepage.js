@@ -1,7 +1,10 @@
+import React, { Component } from "react";
+
+
 /**
  * The component that is the homepage of the application.
  */
-class Homepage extends React.Component {
+class Homepage extends Component {
     /**
      * Constructing that application from the React's Component
      * @param {*} props The properties of the component
@@ -742,5 +745,4 @@ class Footer extends Homepage {
     }
 }
 
-// Rendering the page
-ReactDOM.render(<Homepage />, document.body);
+export default Homepage;

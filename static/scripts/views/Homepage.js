@@ -686,7 +686,7 @@ class Trend extends Main {
                                         href={content.uniform_resource_locator}
                                         target="__blank"
                                     >
-                                        <img src={content.thumbnail} />
+                                        <img src={content.thumbnail} loading="lazy" />
                                     </a>
                                 </div>
                                 <div>

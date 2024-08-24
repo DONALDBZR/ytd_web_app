@@ -145,6 +145,53 @@ class Trend extends Component {
     }
 
     /**
+     * Rendering the media card.
+     * @param {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}} content
+     * @return {HTMLDivElement}
+     */
+    renderMediaCard(content) {
+        return (
+            <div class="card" key={content.identifier}>
+                <div>
+                    <a
+                        href={content.uniform_resource_locator}
+                        target="__blank"
+                    >
+                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`} />
+                    </a>
+                </div>
+                <div>
+                    <div>{content.title}</div>
+                    <div>
+                        <a href={content.author_channel}>
+                            {content.author}
+                        </a>
+                    </div>
+                    <div>
+                        <div>Duration:</div>
+                        <div>{content.duration}</div>
+                    </div>
+                    <div>
+                        <div>Views:</div>
+                        <div>
+                            {content.views.toLocaleString(
+                                "en-US"
+                            )}
+                        </div>
+                    </div>
+                    <div>
+                        <a
+                            href={`/Download/YouTube/${content.identifier}`}
+                        >
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */
@@ -152,47 +199,7 @@ class Trend extends Component {
         return (
             <div className="Trend">
                 <div style={{width: this.getTrendListWidth(this.state.Trend), animation: this.getTrendListAnimation(this.state.Trend)}} onMouseEnter={this.handleTrendListMouseEnter} onMouseLeave={this.handleTrendListMouseLeave}>
-                    {this.state.Trend.map((content) => {
-                        return (
-                            <div class="card" key={content.identifier}>
-                                <div>
-                                    <a
-                                        href={content.uniform_resource_locator}
-                                        target="__blank"
-                                    >
-                                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`} />
-                                    </a>
-                                </div>
-                                <div>
-                                    <div>{content.title}</div>
-                                    <div>
-                                        <a href={content.author_channel}>
-                                            {content.author}
-                                        </a>
-                                    </div>
-                                    <div>
-                                        <div>Duration:</div>
-                                        <div>{content.duration}</div>
-                                    </div>
-                                    <div>
-                                        <div>Views:</div>
-                                        <div>
-                                            {content.views.toLocaleString(
-                                                "en-US"
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <a
-                                            href={`/Download/YouTube/${content.identifier}`}
-                                        >
-                                            <i class="fa-solid fa-download"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                    {this.state.Trend.map((content) => this.renderMediaCard(content))}
                 </div>
             </div>
         );

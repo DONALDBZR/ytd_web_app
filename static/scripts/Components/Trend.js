@@ -151,7 +151,7 @@ class Trend extends Component {
      */
     renderMediaCard(content) {
         return (
-            <div class="card" key={content.identifier}>
+            <div className="card" key={content.identifier}>
                 <div>
                     <a
                         href={content.uniform_resource_locator}
@@ -183,7 +183,7 @@ class Trend extends Component {
                         <a
                             href={`/Download/YouTube/${content.identifier}`}
                         >
-                            <i class="fa-solid fa-download"></i>
+                            <i className="fa-solid fa-download"></i>
                         </a>
                     </div>
                 </div>

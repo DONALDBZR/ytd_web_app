@@ -352,7 +352,7 @@ class Header extends Component {
         return (
             <header>
                 <nav>
-                    <div class="active">
+                    <div className="active">
                         <a href="/">Extractio</a>
                     </div>
                     <div>

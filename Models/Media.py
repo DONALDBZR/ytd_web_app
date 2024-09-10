@@ -275,9 +275,12 @@ class Media:
         Returns:
             {status: int, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string}]}
         """
-        payload: Dict[str, str] = self._getPayload(identifier)
+        payload: Union[Dict[str, str], Dict[str, Union[str, List[str]]]] = self._getPayload(identifier)
         related_channel_contents: List[Dict[str, Union[str, int]]] = self.getRelatedChannelContents(payload["channel"])
-        related_author_contents: List[Dict[str, Union[str, int]]] = self.getRelatedAuthorContents(payload["author"])
+        related_author_contents: List[Dict[str, Union[str, int]]] = []
+        payload["author"] = payload["author"].split(", ") # type: ignore
+        for index in range(0, len(payload["author"]), 1):
+            related_author_contents = list({value["identifier"]: value for value in related_author_contents + self.getRelatedAuthorContents(payload["author"][index])}.values())
         related_contents: List[Dict[str, Union[str, int]]] = list({value["identifier"]: value for value in related_author_contents + related_channel_contents}.values())
         response: Dict[str, Union[int, List[Dict[str, str]]]] = self._getRelatedContents(related_contents)
         return response

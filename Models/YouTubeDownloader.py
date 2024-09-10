@@ -376,7 +376,7 @@ class YouTube_Downloader:
         """
         data = (self.getIdentifier(), self.getLength(), self.getPublishedAt(
         ), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
-        self.getDatabaseHandler().post_data(
+        self.getDatabaseHandler().postData(
             table="YouTube",
             columns="identifier, length, published_at, author, title, Media",
             values="%s, %s, %s, %s, %s, %s",

@@ -505,7 +505,7 @@ class YouTube_Downloader:
                 file_path,
                 self.getIdentifier()
             )
-            self.getDatabaseHandler().post_data(
+            self.getDatabaseHandler().postData(
                 table="MediaFile",
                 columns="type, date_downloaded, location, YouTube",
                 values="%s, %s, %s, %s",

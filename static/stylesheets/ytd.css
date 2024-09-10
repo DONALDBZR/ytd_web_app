@@ -283,7 +283,8 @@ header nav .active a,
 header nav div div button:hover svg,
 header nav div form button:hover svg,
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg,
-body[id*="Search"] main .Media .YouTube .data div button:hover {
+body[id*="Search"] main .Media .YouTube .data div button:hover,
+header nav .active button svg {
     color: var(--color3);
 }
 header nav div div button,
@@ -378,4 +379,7 @@ body[id*="Search"] main .Media .YouTube .data div button {
     color: var(--color2);
     background-color: var(--color1);
     cursor: pointer;
+}
+body[id*="Search"] header nav .active input {
+    border-bottom: var(--color3) solid calc(var(--form-height) / 58.2);
 }

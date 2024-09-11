@@ -66,7 +66,7 @@ class YouTube extends Component {
             },
         }));
         this.setMediaMetadata()
-        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.YouTube\nAPI: /Media\nAPI Status: ${status}`));
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.YouTube\nAPI: /Media\nAPI Status: ${status}`));
     }
 
     /**

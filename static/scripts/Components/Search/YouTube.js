@@ -90,7 +90,7 @@ class YouTube extends Component {
         const identifier = window.location.pathname.replace("/Search/", "");
         let response = (localStorage.getItem("get_media") != null && Number(JSON.parse(localStorage.getItem("get_media")).timestamp) + 604800 > current_time && String(JSON.parse(localStorage.getItem("get_media")).Media.YouTube.identifier) == identifier) ? {status: 304, data: JSON.parse(localStorage.getItem("get_media"))} : await this.getMedia();
         const data = response.data;
-        if (typeof data.Media.YouTube != "undefined" && response.status == 200) {
+        if (typeof data.Media.YouTube != "undefined" && (response.status == 200 || response.status == 304)) {
             this.setState((previous) => ({
                 ...previous,
                 Media: {

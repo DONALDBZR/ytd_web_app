@@ -258,7 +258,8 @@ body[id*="Search"] main .Media .YouTube {
     --youtube-height: var(--component-height);
     --youtube-width: calc(var(--component-width) * (2 / 3));
     height: var(--youtube-height);
-    width: var(--youtube-width);
+    width: calc(var(--youtube-width) * 0.9);
+    margin-left: calc(var(--youtube-width) / 10);
 }
 body[id*="Search"] main .Media .RelatedContents {
     --related-contents-height: var(--component-height);
@@ -283,7 +284,7 @@ body[id*="Search"] main .Media .YouTube div a img {
 }
 body[id*="Search"] main .Media .YouTube .data {
     --youtube-data-height: calc(var(--youtube-height) / 5);
-    --youtube-data-width: var(--youtube-width);
+    --youtube-data-width: calc(var(--youtube-width) * 0.9);
     height: var(--youtube-data-height);
     width: var(--youtube-data-width);
     display: flex;

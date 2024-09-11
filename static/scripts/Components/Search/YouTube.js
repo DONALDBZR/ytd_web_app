@@ -86,7 +86,9 @@ class YouTube extends Component {
      * @returns {Promise<number>}
      */
     async setMediaMetadata() {
-        const response = await this.getMedia();
+        const current_time = Date.now() / 1000;
+        const identifier = window.location.pathname.replace("/Search/", "");
+        let response = (localStorage.getItem("get_media") != null && Number(JSON.parse(localStorage.getItem("get_media")).timestamp) + 604800 > current_time && String(JSON.parse(localStorage.getItem("get_media")).Media.YouTube.identifier) == identifier) ? {status: 304, data: JSON.parse(localStorage.getItem("get_media"))} : await this.getMedia();
         const data = response.data;
         if (typeof data.Media.YouTube != "undefined" && response.status == 200) {
             this.setState((previous) => ({
@@ -113,6 +115,7 @@ class YouTube extends Component {
                 },
             }))
         }
+        localStorage.setItem("get_media", JSON.stringify(response.data));
         document.querySelector("#loading").style.display = "none";
         return response.status;
     }

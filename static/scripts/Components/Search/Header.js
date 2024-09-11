@@ -116,7 +116,7 @@ class Header extends Component {
     updateColorScheme(color_scheme, delay) {
         const uniform_resource_locator = window.location.href;
         this.updateSession(color_scheme)
-        .then((status) => console.log(`Request Method: PUT\nRoute: /Session\nStatus: ${status}`));
+            .then((status) => console.log(`Request Method: PUT\nRoute: /Session\nStatus: ${status}`));
         setTimeout(() => {
             window.location.href = uniform_resource_locator;
         }, delay);
@@ -129,6 +129,9 @@ class Header extends Component {
      */
     async updateSession(color_scheme) {
         const response = await this.sendUpdateSessionRequest(color_scheme);
+        if (response.status == 202) {
+            localStorage.setItem("get_session", JSON.stringify(await response.json()));
+        }
         return response.status;
     }
 

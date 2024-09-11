@@ -256,13 +256,13 @@ body[id*="Search"] main .Media {
 }
 body[id*="Search"] main .Media .YouTube {
     --youtube-height: var(--component-height);
-    --youtube-width: calc(var(--component-width) * (4 / 5));
+    --youtube-width: calc(var(--component-width) * (2 / 3));
     height: var(--youtube-height);
     width: var(--youtube-width);
 }
 body[id*="Search"] main .Media .RelatedContents {
     --related-contents-height: var(--component-height);
-    --related-contents-width: calc(var(--component-width) / 5);
+    --related-contents-width: calc(var(--component-width) / 3);
     height: var(--related-contents-height);
     width: var(--related-contents-width);
     overflow: scroll;
@@ -271,7 +271,6 @@ body[id*="Search"] main .Media .YouTube div {
     height: calc(var(--youtube-height) * (4 / 5));
     width: auto;
     display: flex;
-    justify-content: center;
 }
 body[id*="Search"] main .Media .YouTube div a {
     display: block;
@@ -419,26 +418,27 @@ body[id*="Search"] main .Media .YouTube .data div:nth-child(2) button svg {
     height: calc(var(--youtube-data-height) / 3.438);
 }
 body[id*="Search"] main .Media .RelatedContents .card {
-    width: var(--related-contents-width);
+    width: calc(var(--related-contents-width) * (4 / 5));
     height: calc(var(--related-contents-height) / 1.8953);
     margin-block: calc(var(--related-contents-height) / 100);
+    margin-left: calc(var(--related-contents-width) / 5);
 }
 body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) {
     height: calc(var(--related-contents-height) / 1.8953 * (16 / 26));
-    width: var(--related-contents-width);
+    width: fit-content;
 }
 body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) {
-    width: var(--related-contents-width);
+    width: calc(var(--related-contents-width) * (4 / 5));
     height: calc(var(--related-contents-height) / 1.8953 * (10 / 26));
 }
 body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a {
     display: block;
     height: calc(var(--related-contents-height) / 2.0532 * (16 / 24));
-    width: var(--related-contents-width);
+    width: auto;
 }
 body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a img {
-    width: var(--related-contents-width);
-    height: auto;
+    width: auto;
+    height: inherit;
 }
 body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div {
     height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
@@ -484,7 +484,7 @@ body[id*="Search"]
     div:nth-child(2)
     div:nth-child(3)
     div:nth-child(1) {
-    width: calc(var(--related-contents-width) / 3);
+    width: calc(var(--related-contents-width) * (4 / 5) / 6);
 }
 body[id*="Search"]
     main
@@ -494,7 +494,7 @@ body[id*="Search"]
     div:nth-child(2)
     div:nth-child(3)
     div:nth-child(2) {
-    width: calc(var(--related-contents-width) * (2 / 3));
+    width: calc(var(--related-contents-width) * (4 / 5) * (5 / 6));
 }
 body[id*="Search"]
     main

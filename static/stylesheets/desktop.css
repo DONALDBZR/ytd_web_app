@@ -386,7 +386,7 @@ body[id*="Search"]
     div:nth-child(3)
     #views
     div:nth-child(1) {
-    width: calc(var(--youtube-data-width) / 10);
+    width: calc(var(--youtube-data-width) / 8);
 }
 body[id*="Search"]
     main
@@ -406,7 +406,7 @@ body[id*="Search"]
     div:nth-child(3)
     #views
     div:nth-child(2) {
-    width: calc(var(--youtube-data-width) * (9 / 10));
+    width: calc(var(--youtube-data-width) * (7 / 8));
 }
 body[id*="Search"] main .Media .YouTube .data div:nth-child(2) button {
     width: auto;

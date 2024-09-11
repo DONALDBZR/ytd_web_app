@@ -3,6 +3,7 @@
     --textSize: var(--percentage);
     --height: 0px;
     --width: 0px;
+    --aspect-ratio: calc(16 / 9);
 }
 body {
     height: var(--height);
@@ -179,7 +180,8 @@ header nav div:nth-child(2) form button svg {
     flex-wrap: wrap;
     overflow: auto;
 }
-#Homepage main .Trend div::-webkit-scrollbar {
+#Homepage main .Trend div::-webkit-scrollbar,
+body[id*="Search"] main .Media .RelatedContents::-webkit-scrollbar {
     display: none;
 }
 #Homepage main .Trend div .card {
@@ -248,74 +250,81 @@ body[id*="Search"] main #loading {
     display: flex;
 }
 body[id*="Search"] main .Media {
-    width: inherit;
     height: inherit;
-    --youtube-height: var(--component-height);
-    --youtube-width: calc(var(--component-width) * 0.8);
-    --related-contents-height: var(--component-height);
-    --related-contents-width: calc(var(--component-width) / 5);
+    width: inherit;
     display: flex;
 }
-body[id*="Search"] main .Media div {
-    height: inherit;
-}
 body[id*="Search"] main .Media .YouTube {
+    --youtube-height: var(--component-height);
+    --youtube-width: calc(var(--component-width) * (4 / 5));
+    height: var(--youtube-height);
     width: var(--youtube-width);
 }
 body[id*="Search"] main .Media .RelatedContents {
+    --related-contents-height: var(--component-height);
+    --related-contents-width: calc(var(--component-width) / 5);
+    height: var(--related-contents-height);
     width: var(--related-contents-width);
+    overflow: scroll;
 }
 body[id*="Search"] main .Media .YouTube div {
-    height: calc(var(--youtube-height) * 0.8);
-    width: inherit;
-}
-body[id*="Search"] main .Media .YouTube .data {
-    height: calc(var(--youtube-height) / 5);
+    height: calc(var(--youtube-height) * (4 / 5));
+    width: auto;
     display: flex;
+    justify-content: center;
 }
 body[id*="Search"] main .Media .YouTube div a {
-    display: flex;
-    height: inherit;
-    width: auto;
-    justify-content: center;
-    align-items: center;
+    display: block;
+    height: calc(var(--youtube-height) * (4 / 5));
+    width: calc(var(--youtube-height) * (4 / 5) * var(--aspect-ratio));
 }
 body[id*="Search"] main .Media .YouTube div a img {
-    height: inherit;
     width: auto;
+    height: calc(var(--youtube-height) * (4 / 5));
 }
-body[id*="Search"] main .Media .YouTube .data div {
-    width: calc(var(--youtube-width) / 10);
-    height: inherit;
+body[id*="Search"] main .Media .YouTube .data {
+    --youtube-data-height: calc(var(--youtube-height) / 5);
+    --youtube-data-width: var(--youtube-width);
+    height: var(--youtube-data-height);
+    width: var(--youtube-data-width);
     display: flex;
+    justify-content: normal;
+}
+body[id*="Search"] main .Media .YouTube .data .metadata {
+    height: var(--youtube-data-height);
+    width: calc(var(--youtube-data-width) * (4 / 5));
+    justify-content: normal;
+    display: block;
+}
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) {
+    height: var(--youtube-data-height);
+    width: calc(var(--youtube-data-width) / 5);
     justify-content: center;
     align-items: center;
 }
-body[id*="Search"] main .Media .YouTube .data .metadata {
-    width: calc(var(--youtube-width) * 0.9);
-    display: block;
-}
 body[id*="Search"] main .Media .YouTube .data .metadata div {
-    height: calc(var(--youtube-height) / 20);
-    width: inherit;
     justify-content: normal;
+    width: calc(var(--youtube-data-width) * (4 / 5));
 }
 body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(1) {
-    display: flex;
-    width: inherit;
-    letter-spacing: calc(var(--width) / 2000);
+    height: calc(var(--youtube-data-height) / 4);
     align-items: center;
+    letter-spacing: calc(var(--width) / 2000);
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) {
-    height: calc(var(--youtube-height) / 10);
-    display: block;
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) {
+    height: calc(var(--youtube-data-height) / 4);
 }
 body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a {
-    justify-content: normal;
+    display: flex;
+    height: calc(var(--youtube-data-height) / 4);
+    display: flex;
+    align-items: center;
+    letter-spacing: calc(var(--width) / 2000);
     width: auto;
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) div {
-    display: flex;
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) {
+    flex-wrap: wrap;
+    height: calc(var(--youtube-data-height) / 2);
 }
 body[id*="Search"]
     main
@@ -324,19 +333,198 @@ body[id*="Search"]
     .data
     .metadata
     div:nth-child(3)
-    div
+    #duration,
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    #views {
+    height: calc(var(--youtube-data-height) / 4);
+    align-items: normal;
+    letter-spacing: normal;
+}
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    #duration
+    div,
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    #views
     div {
-    width: calc(var(--youtube-width) / 10);
+    height: inherit;
     align-items: center;
     letter-spacing: calc(var(--width) / 2000);
 }
-body[id*="Search"] main .Media .YouTube .data div button {
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    #duration
+    div:nth-child(1),
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    #views
+    div:nth-child(1) {
+    width: calc(var(--youtube-data-width) / 10);
+}
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    #duration
+    div:nth-child(2),
+body[id*="Search"]
+    main
+    .Media
+    .YouTube
+    .data
+    .metadata
+    div:nth-child(3)
+    #views
+    div:nth-child(2) {
+    width: calc(var(--youtube-data-width) * (9 / 10));
+}
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) button {
+    width: auto;
+    height: auto;
     border: none;
     padding: unset;
-    height: auto;
-    width: auto;
 }
-body[id*="Search"] main .Media .YouTube .data div button svg {
+body[id*="Search"] main .Media .YouTube .data div:nth-child(2) button svg {
     width: auto;
-    height: calc(var(--youtube-height) / 23.27);
+    height: calc(var(--youtube-data-height) / 3.438);
+}
+body[id*="Search"] main .Media .RelatedContents .card {
+    width: var(--related-contents-width);
+    height: calc(var(--related-contents-height) / 1.8953);
+    margin-block: calc(var(--related-contents-height) / 100);
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) {
+    height: calc(var(--related-contents-height) / 1.8953 * (16 / 26));
+    width: var(--related-contents-width);
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) {
+    width: var(--related-contents-width);
+    height: calc(var(--related-contents-height) / 1.8953 * (10 / 26));
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a {
+    display: block;
+    height: calc(var(--related-contents-height) / 2.0532 * (16 / 24));
+    width: var(--related-contents-width);
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a img {
+    width: var(--related-contents-width);
+    height: auto;
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div {
+    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
+    font-size: calc(var(--textSize) * 0.6561);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1) {
+    letter-spacing: calc(var(--width) / 2000);
+    height: calc(var(--related-contents-height) / 1.8953 * (4 / 26));
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(3) {
+    display: flex;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(3)
+    div {
+    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
+    font-size: unset;
+    display: flex;
+    align-items: center;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(3)
+    div:nth-child(1) {
+    width: calc(var(--related-contents-width) / 3);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(3)
+    div:nth-child(2) {
+    width: calc(var(--related-contents-width) * (2 / 3));
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(4) {
+    display: flex;
+    justify-content: center;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(4)
+    a {
+    font-size: unset;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(4)
+    a
+    svg {
+    width: auto;
+    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
 }

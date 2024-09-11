@@ -83,13 +83,15 @@ class RelatedContents extends Component {
     /**
      * Retrieving the metadata of the related content from the
      * response retrieved from the Media API.
-     * @returns {Promise<{status: number, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}>}
+     * @returns {Promise<{status: number, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}], timestamp: number}>}
      */
     async getRelatedContents() {
+        const current_time = Date.now() / 1000;
         const response = await this.sendGetRelatedContentsRequest();
         return {
             status: response.status,
             data: await response.json(),
+            timestamp: current_time,
         };
     }
 
@@ -123,7 +125,7 @@ class RelatedContents extends Component {
                 <div>
                     <div>{content.title}</div>
                     <div>
-                        <a href={content.author_channel}>{content.author}</a>
+                        <a href={content.author_channel}>{content.channel}</a>
                     </div>
                     <div>
                         <div>Duration:</div>

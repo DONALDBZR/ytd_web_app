@@ -38,21 +38,11 @@ class Header extends Component {
      * @returns {void}
      */
     componentDidMount() {
-        const api_origin = (window.location.port == 591) ? "https://omnitechbros.ddns.net:591" : "https://omnitechbros.ddns.net:5000";
         let api_call = this.state.System.api_call;
         if (api_call < 1) {
-            api_call++;
-            this.setState((previous) => ({
-                ...previous,
-                System: {
-                    ...previous.System,
-                    api_call: api_call,
-                    api_origin: api_origin,
-                },
-            }));
-            this.setData(api_origin)
-            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header\nComponent Status: Mount\nSession API Route: /\nSession API Status: ${status}`));
+            this.setData(api_call);
         }
+        console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header\nComponent Status: Mount`);
     }
 
     /**
@@ -79,18 +69,39 @@ class Header extends Component {
 
     /**
      * Setting the data for the header.
-     * @param {string} api_origin
-     * @returns {Promise<number>}
+     * @param {number} api_call
+     * @returns {void}
      */
-    async setData(api_origin) {
-        const response = await this.getSessionResponse(api_origin);
+    setData(api_call) {
+        api_call += 1;
         this.setState((previous) => ({
             ...previous,
             System: {
                 ...previous.System,
-                color_scheme: response.data.Client.color_scheme,
+                api_call: api_call,
             },
         }));
+        this.setSession()
+            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Header\nAPI: /Session\nAPI Status: ${status}`));
+    }
+
+    /**
+     * Setting the session of the user.
+     * @returns {Promise<number>}
+     */
+    async setSession() {
+        const current_time = Date.now() / 1000;
+        let response = (localStorage.getItem("get_session") != null && Number(JSON.parse(localStorage.getItem("get_session")).Client.timestamp) + 3600 > current_time) ? {status: 304, data: JSON.parse(localStorage.getItem("get_session"))} : await this.getSessionResponse();
+        console.log(`Condition: ${(localStorage.getItem("get_session") != null && Number(JSON.parse(localStorage.getItem("get_session")).Client.timestamp) + 3600 > current_time)}\nStatus: ${response.status}`);
+        let browser_session = response.data;
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                color_scheme: browser_session.Client.color_scheme,
+            },
+        }));
+        localStorage.setItem("get_session", JSON.stringify(response.data));
         return response.status;
     }
 
@@ -317,10 +328,10 @@ class Header extends Component {
     /**
      * Sending the request to the server to retrieve the session
      * data.
-     * @param {string} api_origin
      * @returns {Promise<Response>}
      */
-    async sendGetSessionRequest(api_origin) {
+    async sendGetSessionRequest() {
+        const api_origin = (window.location.port == 591) ? "https://omnitechbros.ddns.net:591" : "https://omnitechbros.ddns.net:5000";
         return fetch(`${api_origin}/Session/`, {
             method: "GET",
         });
@@ -328,11 +339,10 @@ class Header extends Component {
 
     /**
      * Extracting the session data from the response.
-     * @param {string} api_origin
      * @returns {Promise<{status: number, data: {Client: {timestamp: number, color_scheme: string}}}>}
      */
-    async getSessionResponse(api_origin) {
-        const response = await this.sendGetSessionRequest(api_origin);
+    async getSessionResponse() {
+        const response = await this.sendGetSessionRequest();
         return {
             status: response.status,
             data: await response.json(),

@@ -73,12 +73,18 @@ class RelatedContents extends Component {
     async setRelatedContents() {
         const current_time = Date.now() / 1000;
         const identifier = window.location.pathname.replace("/Search/", "");
-        // let response = (localStorage.getItem("get_related_contents") != null && Number(JSON.parse(localStorage.getItem("get_related_contents")).timestamp) + 604800 > current_time) await this.getRelatedContents();
+        let response = (localStorage.getItem("get_related_contents") != null && Number(JSON.parse(localStorage.getItem("get_related_contents")).timestamp) + 604800 > current_time && String(JSON.parse(localStorage.getItem("get_related_contents")).api_request).includes(identifier)) ? {status: 304, data: JSON.parse(localStorage.getItem("get_related_contents")).data, timestamp: Number(JSON.parse(localStorage.getItem("get_related_contents")).timestamp), api_request: String(JSON.parse(localStorage.getItem("get_related_contents")).api_request)} : await this.getRelatedContents();
         const data = response.data;
         this.setState((previous) => ({
             ...previous,
             Media: data,
         }));
+        const browser_data = {
+            data: response.data,
+            timestamp: response.timestamp,
+            api_request: response.api_request,
+        };
+        localStorage.setItem("get_related_contents", JSON.stringify(browser_data));
         return response.status;
     }
 

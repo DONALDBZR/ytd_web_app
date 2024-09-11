@@ -50,21 +50,11 @@ class Header extends Component {
      * @returns {void}
      */
     componentDidUpdate() {
-        const api_origin = (window.location.port == 591) ? "https://omnitechbros.ddns.net:591" : "https://omnitechbros.ddns.net:5000";
         let api_call = this.state.System.api_call;
         if (api_call < 1) {
-            api_call++;
-            this.setState((previous) => ({
-                ...previous,
-                System: {
-                    ...previous.System,
-                    api_call: api_call,
-                    api_origin: api_origin,
-                },
-            }));
-            this.setData(api_origin)
-            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header\nComponent Status: Updated\nSession API Route: /\nSession API Status: ${status}`));
+            this.setData(api_call);
         }
+        console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Header\nComponent Status: Update`);
     }
 
     /**

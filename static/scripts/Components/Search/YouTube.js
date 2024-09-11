@@ -126,10 +126,12 @@ class YouTube extends Component {
      * @returns {Promise<{status: number, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}}}>}
      */
     async getMedia() {
+        const current_time = Date.now() / 1000;
         const response = await this.sendGetMediaRequest();
         return {
             status: response.status,
             data: await response.json(),
+            timestamp: current_time,
         };
     }
 

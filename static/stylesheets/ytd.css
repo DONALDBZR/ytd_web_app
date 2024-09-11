@@ -252,12 +252,15 @@ footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
-body[id*="Download"] main .YouTube div button:hover {
+body[id*="Download"] main .YouTube div button:hover,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg:hover {
     color: var(--color3);
 }
 footer div,
 body[id*="Download"] main .YouTube div button,
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a {
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg {
     color: var(--color2);
 }
 body[id*="Download"] main .YouTube div button {
@@ -332,11 +335,19 @@ header nav div form input::placeholder {
     div:nth-child(2)
     div:nth-child(4)
     div:nth-child(1),
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(1) {
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(1),
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1) {
     font-weight: 600;
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a {
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a {
     text-decoration: none;
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover,
@@ -347,11 +358,20 @@ body[id*="Search"]
     .data
     .metadata
     div:nth-child(2)
-    a:hover {
+    a:hover,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a:hover {
     text-decoration: underline;
 }
 #Homepage main .Trend div .card div:nth-child(1) a:hover img,
-body[id*="Search"] main .Media .YouTube div a:hover {
+body[id*="Search"] main .Media .YouTube div a:hover,
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(1)
+    a:hover
+    img {
     opacity: calc(var(--percentage) / 2);
 }
 body[id*="Search"]

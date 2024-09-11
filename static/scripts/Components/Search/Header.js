@@ -82,7 +82,6 @@ class Header extends Component {
     async setSession() {
         const current_time = Date.now() / 1000;
         let response = (localStorage.getItem("get_session") != null && Number(JSON.parse(localStorage.getItem("get_session")).Client.timestamp) + 3600 > current_time) ? {status: 304, data: JSON.parse(localStorage.getItem("get_session"))} : await this.getSessionResponse();
-        console.log(`Condition: ${(localStorage.getItem("get_session") != null && Number(JSON.parse(localStorage.getItem("get_session")).Client.timestamp) + 3600 > current_time)}\nStatus: ${response.status}`);
         let browser_session = response.data;
         this.setState((previous) => ({
             ...previous,

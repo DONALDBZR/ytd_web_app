@@ -71,7 +71,9 @@ class RelatedContents extends Component {
      * @returns {Promise<number>}
      */
     async setRelatedContents() {
-        const response = await this.getRelatedContents();
+        const current_time = Date.now() / 1000;
+        const identifier = window.location.pathname.replace("/Search/", "");
+        // let response = (localStorage.getItem("get_related_contents") != null && Number(JSON.parse(localStorage.getItem("get_related_contents")).timestamp) + 604800 > current_time) await this.getRelatedContents();
         const data = response.data;
         this.setState((previous) => ({
             ...previous,
@@ -83,15 +85,18 @@ class RelatedContents extends Component {
     /**
      * Retrieving the metadata of the related content from the
      * response retrieved from the Media API.
-     * @returns {Promise<{status: number, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}], timestamp: number}>}
+     * @returns {Promise<{status: number, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}], timestamp: number, api_request: string}>}
      */
     async getRelatedContents() {
         const current_time = Date.now() / 1000;
+        const identifier = window.location.pathname.replace("/Search/", "");
+        const api_request = `/Media/RelatedContents/${identifier}`;
         const response = await this.sendGetRelatedContentsRequest();
         return {
             status: response.status,
             data: await response.json(),
             timestamp: current_time,
+            api_request: api_request,
         };
     }
 

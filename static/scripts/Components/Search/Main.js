@@ -9,7 +9,7 @@ import RelatedContents from "./RelatedContents";
 class Main extends Component {
     /**
      * Rendering the component for the desktop users.
-     * @returns {HTMLMainElement}
+     * @returns {HTMLElement}
      */
     renderDesktop() {
         return (
@@ -26,8 +26,25 @@ class Main extends Component {
     }
 
     /**
+     * Rendering the component for the tablet and mobile users.
+     * @returns {HTMLElement}
+     */
+    renderTabletMobile() {
+        return (
+            <main>
+                <div id="loading">
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <div className="Media">
+                    <YouTube />
+                </div>
+            </main>
+        );
+    }
+
+    /**
      * Rendering the component
-     * @returns {HTMLMainElement}
+     * @returns {HTMLElement}
      */
     render() {
         return (

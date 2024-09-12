@@ -11,17 +11,15 @@ body {
     padding: calc(var(--height) * 0) calc(var(--width) * 0);
     font-size: var(--textSize);
 }
-#Homepage footer,
-body[id*="Search"] footer,
-body[id*="Download"] footer {
+footer {
     height: calc(var(--height) / 10);
+    display: flex;
+    justify-content: center;
 }
 body[id*="Download"] main .YouTube div button {
     border: none;
 }
-#Homepage main,
-body[id*="Search"] main,
-body[id*="Download"] main {
+main {
     height: calc(var(--height) * 0.8);
     --component-height: calc(var(--height) * 0.8);
 }
@@ -42,90 +40,10 @@ body[id*="Download"] main {
     align-items: center;
     font-size: calc(var(--textSize) * 1);
 }
-#Homepage footer,
-body[id*="Search"] footer,
-body[id*="Download"] footer {
-    display: flex;
-    justify-content: center;
-}
-#Homepage footer div,
-body[id*="Search"] footer div,
-body[id*="Download"] footer div {
+footer div {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-body[id*="Search"] main form {
-    height: calc(var(--component-height) / 10);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: var(--width);
-}
-body[id*="Search"] main form input {
-    width: calc(var(--width) * 0.9);
-    border: none;
-    font-size: calc(var(--textSize) * 0.43046721);
-}
-body[id*="Search"] main form button {
-    width: calc(var(--width) / 10);
-    border: none;
-    font-size: calc(var(--textSize) * 0.43046721);
-}
-body[id*="Search"] main .Media {
-    height: calc(var(--component-height) * 0.9);
-    --media-height: calc(var(--component-height) * 0.9);
-}
-body[id*="Search"] main .Media .YouTube {
-    height: var(--media-height);
-}
-body[id*="Search"] main .Media .YouTube div:nth-child(1) {
-    height: calc(var(--media-height) * 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-body[id*="Search"] main .Media .YouTube div:nth-child(1) a img {
-    width: calc(var(--width) * 0.9);
-    height: auto;
-}
-body[id*="Search"] main .Media .YouTube .data {
-    height: calc(var(--media-height) / 5);
-    display: flex;
-    flex-wrap: wrap;
-    --data-height: calc(var(--media-height) / 5);
-}
-body[id*="Search"] main .Media .YouTube .data div {
-    height: calc(var(--data-height) / 2);
-    font-size: calc(var(--textSize) * 0.43046721);
-    width: calc(var(--width) / 3);
-    display: flex;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(1) {
-    width: var(--width);
-    font-size: calc(var(--textSize) * 0.34867844);
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) {
-    font-size: calc(var(--textSize) * 0.34867844);
-    align-items: center;
-    justify-content: center;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(3) {
-    --stats-height: calc(var(--data-height) / 2);
-    display: block;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(3) div {
-    height: calc(var(--stats-height) / 2);
-    width: calc(var(--width) / 3);
-    font-size: calc(var(--textSize) * 0.4782969);
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) {
-    justify-content: center;
-    align-items: center;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
-    border: none;
-    font-size: var(--textSize);
 }
 body[id*="Download"] main .YouTube {
     height: var(--component-height);

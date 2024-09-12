@@ -47,8 +47,17 @@ class Main extends Component {
      * @returns {HTMLElement}
      */
     render() {
-        const root = document.querySelector(":root");
-        return (root.clientWidth >= 1024) ? this.renderDesktop() : this.renderTabletMobile();
+        return (
+            <main>
+                <div id="loading">
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <div className="Media">
+                    <YouTube />
+                    <RelatedContents />
+                </div>
+            </main>
+        );
     }
 }
 

@@ -14,7 +14,7 @@ class Header extends Component {
         super(props);
         /**
          * The states of the header.
-         * @type {{Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {color_scheme: string, api_call: number, api_origin: string}}}
+         * @type {{Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {color_scheme: string, api_call: number, api_origin: string, is_related_contents: number}}}
          */
         this.state = {
             Media: {
@@ -28,6 +28,7 @@ class Header extends Component {
                 color_scheme: "",
                 api_call: 0,
                 api_origin: "",
+                is_related_contents: 0,
             },
         };
     }
@@ -342,6 +343,28 @@ class Header extends Component {
     }
 
     /**
+     * Displaying the related contents of the media content.
+     * @param {Event} event
+     * @returns {void}
+     */
+    displayRelatedContents(event) {
+        const youtube = document.querySelector("main div.Media div.YouTube");
+        const related_contents = document.querySelector("main div.Media div.RelatedContents");
+        const svg = event.target.parentElement;
+        let is_related_contents = (event.target.parentElement.parentElement.value == 1) ? 0 : 1;
+        youtube.style.display = (event.target.parentElement.parentElement.value == 1) ? "block" : "none";
+        related_contents.style.display = (event.target.parentElement.parentElement.value == 1) ? "none" : "block";
+        svg.style.color = (event.target.parentElement.parentElement.value == 1) ? "var(--color2)" : "var(--color3)";
+        this.setState((previous) => ({
+            ...previous,
+            System: {
+                ...previous.System,
+                is_related_contents: is_related_contents,
+            },
+        }));
+    }
+
+    /**
      * Rendering the component for desktop users.
      * @returns {HTMLElement}
      */
@@ -406,7 +429,7 @@ class Header extends Component {
                             </button>
                         </div>
                         <div>
-                            <button name="relatedContents">
+                            <button name="relatedContents" value={this.state.System.is_related_contents} onClick={this.displayRelatedContents.bind(this)}>
                                 <i class="fa-solid fa-puzzle-piece"></i>
                             </button>
                         </div>

@@ -253,14 +253,37 @@ footer div {
     font-family: var(--pacifico);
 }
 body[id*="Download"] main .YouTube div button:hover,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg:hover {
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(4)
+    a
+    svg:hover {
     color: var(--color3);
 }
 footer div,
 body[id*="Download"] main .YouTube div button,
 body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg {
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(2)
+    a,
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(4)
+    a
+    svg {
     color: var(--color2);
 }
 body[id*="Download"] main .YouTube div button {
@@ -347,7 +370,14 @@ body[id*="Search"]
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
 body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a {
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(2)
+    a {
     text-decoration: none;
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover,
@@ -359,7 +389,14 @@ body[id*="Search"]
     .metadata
     div:nth-child(2)
     a:hover,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a:hover {
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(2)
+    a:hover {
     text-decoration: underline;
 }
 #Homepage main .Trend div .card div:nth-child(1) a:hover img,
@@ -401,5 +438,5 @@ body[id*="Search"] main .Media .YouTube .data div button {
     cursor: pointer;
 }
 body[id*="Search"] header nav .active input {
-    border-bottom: var(--color3) solid calc(var(--form-height) / 58.2);
+    border-bottom: var(--color3) solid calc(var(--search-bar-height) / 58.2);
 }

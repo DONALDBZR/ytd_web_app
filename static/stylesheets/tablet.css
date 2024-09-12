@@ -101,7 +101,7 @@ header nav div:nth-child(2) {
 }
 header nav div:nth-child(2) form {
     --search-bar-height: var(--header-height);
-    --search-bar-width: calc(var(--header-component-width) * 0.9);
+    --search-bar-width: calc(var(--header-component-width) * 0.8);
     display: flex;
     height: var(--search-bar-height);
     width: var(--search-bar-width);

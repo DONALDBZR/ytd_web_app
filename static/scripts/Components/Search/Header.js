@@ -421,34 +421,8 @@ class Header extends Component {
      * @returns {HTMLElement}
      */
     render() {
-        const color_scheme = {
-            System: {
-                color_scheme: this.state.System.color_scheme,
-                api_call: this.state.System.api_call,
-            },
-        }
-        return (
-            <header>
-                <nav>
-                    <div>
-                        <a href="/">Extractio</a>
-                    </div>
-                    <div>
-                        <form method="GET" onSubmit={this.handleSearchSubmit.bind(this)} className="active">
-                            <button>
-                                <i className="fa fa-search"></i>
-                            </button>
-                            <input type="search" placeholder="Search..." name="search" value={this.state.Media.search} onChange={this.handleSearchChange.bind(this)} required />
-                        </form>
-                        <div>
-                            <button name="colorSchemeChanger" value={this.state.System.color_scheme} onClick={this.setColorScheme.bind(this)}>
-                                <ColorScheme data={color_scheme} />
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-        );
+        const root = document.querySelector(":root");
+        return (root.clientWidth >= 1024) ? this.renderDesktop() : this.renderTabletMobile();
     }
 }
 

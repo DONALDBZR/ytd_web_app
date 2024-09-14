@@ -195,31 +195,8 @@ class RelatedContents extends Component {
      * @returns {HTMLDivElement}
      */
     renderRelatedContentCard(content) {
-        let identifier = content.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "");
-        return (
-            <div className="card" key={identifier}>
-                <div>
-                    <a href={content.uniform_resource_locator} target="__blank">
-                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`} />
-                    </a>
-                </div>
-                <div>
-                    <div>{content.title}</div>
-                    <div>
-                        <a href={content.author_channel}>{content.channel}</a>
-                    </div>
-                    <div>
-                        <div>Duration:</div>
-                        <div>{content.duration}</div>
-                    </div>
-                    <div>
-                        <a href={`/Download/YouTube/${identifier}`}>
-                            <i className="fa-solid fa-download"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        );
+        const root = document.querySelector(":root");
+        return (root.clientWidth >= 1024) ? this.renderRelatedContentCardDesktop(content) : this.renderRelatedContentCardTabletandMobile(content);
     }
 
     /**

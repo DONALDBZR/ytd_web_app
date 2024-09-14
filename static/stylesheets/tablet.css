@@ -275,6 +275,156 @@ body[id*="Search"] main .Media .YouTube {
 }
 body[id*="Search"] main .Media .RelatedContents {
     display: none;
+    height: inherit;
+    overflow-y: scroll;
+    width: calc(var(--media-width) * 0.9);
+    margin-left: calc(var(--media-width) / 10);
+    scroll-snap-type: y mandatory;
+}
+body[id*="Search"] main .Media .RelatedContents .card {
+    scroll-snap-align: start;
+    height: inherit;
+    width: inherit;
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) {
+    height: fit-content;
+    width: fit-content;
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a {
+    display: block;
+    height: auto;
+    width: auto;
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) {
+    --related-contents-height: calc(var(--component-height) / 4.79);
+    --related-contents-width: calc(var(--media-width) * 0.84);
+    width: var(--related-contents-width);
+    height: var(--related-contents-height);
+    display: flex;
+}
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div {
+    height: var(--related-contents-height);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1) {
+    --related-contents-data-height: var(--related-contents-height);
+    --related-contents-data-width: calc(var(--related-contents-width) * 0.9);
+    width: var(--related-contents-data-width);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div {
+    width: inherit;
+    height: calc(var(--related-contents-data-height) / 3);
+    display: flex;
+    justify-content: normal;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div:nth-child(1) {
+    align-items: center;
+    font-size: calc(var(--textSize) * 0.43046721);
+    letter-spacing: calc(var(--width) / 2000);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div:nth-child(2) {
+    align-items: center;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div:nth-child(2)
+    a {
+    font-size: calc(var(--textSize) * 0.43046721);
+    letter-spacing: calc(var(--width) / 2000);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div:nth-child(3) {
+    --related-contents-data-duration-height: calc(
+        var(--related-contents-data-height) / 3
+    );
+    --related-contents-data-duration-width: var(--related-contents-data-width);
+    height: var(--related-contents-data-duration-height);
+    width: inherit;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div:nth-child(3)
+    div {
+    height: inherit;
+    display: flex;
+    align-items: center;
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div:nth-child(3)
+    div:nth-child(1) {
+    width: calc(var(--related-contents-data-duration-width) / 8);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(1)
+    div:nth-child(3)
+    div:nth-child(2) {
+    width: calc(var(--related-contents-data-duration-width) * (7 / 8));
+    font-size: calc(var(--textSize) * 0.43046721);
+}
+body[id*="Search"]
+    main
+    .Media
+    .RelatedContents
+    .card
+    div:nth-child(2)
+    div:nth-child(2) {
+    width: calc(var(--related-contents-width) / 10);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 body[id*="Search"] main .Media .YouTube div {
     height: calc(var(--media-height) / 1.2639);
@@ -286,7 +436,8 @@ body[id*="Search"] main .Media .YouTube div a {
     width: fit-content;
     display: block;
 }
-body[id*="Search"] main .Media .YouTube div a img {
+body[id*="Search"] main .Media .YouTube div a img,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a img {
     width: auto;
     height: calc(var(--media-height) / 1.2639);
 }

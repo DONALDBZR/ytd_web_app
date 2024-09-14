@@ -120,6 +120,40 @@ class RelatedContents extends Component {
     }
 
     /**
+     * Rendering the media card for the related contents for the
+     * desktop users.
+     * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}} content
+     * @returns {HTMLDivElement}
+     */
+    renderRelatedContentCardDesktop(content) {
+        let identifier = content.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "");
+        return (
+            <div className="card" key={identifier}>
+                <div>
+                    <a href={content.uniform_resource_locator} target="__blank">
+                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`} />
+                    </a>
+                </div>
+                <div>
+                    <div>{content.title}</div>
+                    <div>
+                        <a href={content.author_channel}>{content.channel}</a>
+                    </div>
+                    <div>
+                        <div>Duration:</div>
+                        <div>{content.duration}</div>
+                    </div>
+                    <div>
+                        <a href={`/Download/YouTube/${identifier}`}>
+                            <i className="fa-solid fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    /**
      * Rendering the media card for the related contents.
      * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}} content
      * @returns {HTMLDivElement}

@@ -207,6 +207,20 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Refreshing the page while updating the color scheme.
+     * @param {string} color_scheme The color scheme of the application.
+     * @param {number} delay The delay in terms of milliseconds
+     * @returns {void}
+     */
+    updateColorScheme(color_scheme, delay) {
+        this.updateSession(color_scheme)
+        .then((status) => console.log(`Request: PUT /Session\nStatus: ${status}`));
+        setTimeout(() => {
+            window.location.href = window.location.href;
+        }, delay);
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */

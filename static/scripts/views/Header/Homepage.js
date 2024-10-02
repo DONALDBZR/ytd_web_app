@@ -195,6 +195,18 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Changing the color scheme according to the user's taste.
+     * @param {MouseEvent} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+    setColorScheme(event) {
+        const delay = 200;
+        const color_scheme = (String(event.target.parentElement.parentElement.value) == "light") ? "dark" : "light";
+        event.preventDefault();
+        this.updateColorScheme(color_scheme, delay);
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */

@@ -40,29 +40,14 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
-     * Updating the component as soon as the states are different.
-     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} previous_props The properties of the component.
-     * @returns {void}
-     */
-    componentDidUpdate(previous_props) {
-        this.setData(previous_props);
-        console.log("Component: Header.Homepage\nStatus: Updated");
-    }
-
-    /**
      * Setting the data for the component.
-     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} properties The properties of the component.
      * @returns {void}
      */
-    setData(properties) {
-        if (this.props != properties) {
-            this.setState(() => ({
-                System: {
-                    view_route: this.props.data.System.view_route,
-                    dom_element: this.props.data.System.dom_element,
-                },
-            }));
-        }
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            Session: JSON.parse(localStorage.getItem("session")),
+        }));
     }
 
     /**

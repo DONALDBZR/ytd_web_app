@@ -400,6 +400,14 @@ class YTD {
         root.style.setProperty("--width", width);
         this.loadData();
     }
+
+    /**
+     * Loading the data needed for the API.
+     * @returns {void}
+     */
+    loadData() {
+        this.loadDataHomepage();
+    }
 }
 
 const application = new YTD();

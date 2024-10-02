@@ -226,7 +226,17 @@ class HeaderHomepage extends React.Component {
      * @returns {Promise<number>}
      */
     async updateSession(color_scheme) {
-        const response = await this.sendUpdateSessionRequest(color_scheme);
+        const response = await fetch("/Session/", {
+            method: "PUT",
+            body: JSON.stringify({
+                Client: {
+                    color_scheme: color_scheme,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
         return response.status;
     }
 

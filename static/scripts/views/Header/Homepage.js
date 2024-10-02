@@ -36,8 +36,7 @@ class HeaderHomepage extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        this.getSession();
-        console.log("Component: Header.Homepage\nStatus: Mount");
+        console.log("Component: Homepage.Header.HeaderHomepage\nStatus: Mount");
     }
 
     /**

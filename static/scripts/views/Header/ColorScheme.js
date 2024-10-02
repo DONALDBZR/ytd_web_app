@@ -46,19 +46,6 @@ class ColorScheme extends React.Component {
     }
 
     /**
-     * Setting the data for the HTML Element.
-     * @param {HTMLElement} i The HTML Element.
-     * @returns {void}
-     */
-    setHtmlElementData(i) {
-        if (this.state.System.color_scheme == "dark") {
-            i.setAttribute("class", "fa-solid fa-toggle-on");
-        } else {
-            i.setAttribute("class", "fa-solid fa-toggle-off");
-        }
-    }
-
-    /**
      * Setting the data for the SVG SVG Element.
      * @param {SVGSVGElement} svg
      * @returns {void}
@@ -80,7 +67,7 @@ class ColorScheme extends React.Component {
     setSvg() {
         const dom_element = document.querySelector("header nav div div button").children[0];
         if (typeof dom_element != null) {
-            (String(element).includes("HTMLElement")) ? this.setHtmlElementData(dom_element) : this.setSvgSvgElement(element);
+            (String(dom_element).includes("HTMLElement")) ? ((this.state.Session.Client.color_scheme == "dark") ? dom_element.setAttribute("class", "fa-solid fa-toggle-on") : dom_element.setAttribute("class", "fa-solid fa-toggle-off")) : this.setSvgSvgElement(dom_element);
         }
     }
 

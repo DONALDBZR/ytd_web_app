@@ -166,7 +166,9 @@ class HeaderHomepage extends React.Component {
      * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string | null, thumbnail: string, duration: string, audio_file: string | null, video_file: string | null}}>}
      */
     async getSearchMedia(platform, search) {
-        const response = await this.getSearchMediaRequest(platform, search);
+        const response = await fetch(`/Media/Search?platform=${platform}&search=${search}`, {
+            method: "GET",
+        });
         return {
             status: response.status,
             data: await response.json().data.data,

@@ -414,7 +414,39 @@ class YTD {
      * @returns {void}
      */
     loadDataHomepage() {
-        this.setSession();
+        this.getSession();
+    }
+
+    /**
+     * Retrieving the session of the user.
+     * @returns {void}
+     */
+    async getSession() {
+        const data_object = "session";
+        const session: {Client: {timestamp: number, color_scheme: string}} = JSON.parse(localStorage.getItem(data_object));
+        const route = "/Session/";
+        const request_method = "GET";
+        let status = 0;
+        if (!session) {
+            const response = await fetch(route, {
+                method: request_method,
+            });
+            const data = await response.json();
+            status = response.status;
+            localStorage.setItem(data_object, JSON.stringify(data));
+            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        } else {
+            // const current_time = Math.floor(Date.now() / 1000);
+            // const session_expiration_time = session.Client.timestamp + 3600;
+            // if (current_time < session_expiration_time) {
+            //     status = 304;
+            //     session.Client.timestamp = current_time + 3600;
+            //     localStorage.setItem(data_object, JSON.stringify(session));
+            //     console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+            // } else {
+                
+            // }
+        }
     }
 }
 

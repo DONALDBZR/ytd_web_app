@@ -51,6 +51,22 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Handling the form submission which target the Search API of
+     * Extractio.
+     * @param {SubmitEvent} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+    handleSubmit(event) {
+        const loading_icon = document.querySelector("main #loading");
+        const delay = 200;
+        const uniform_resource_locator = new URL(this.state.Media.search);
+        const platform = uniform_resource_locator.host.replaceAll("www.", "").replaceAll(".com", "");
+        loading_icon.style.display = "flex";
+        event.preventDefault();
+        this.searchMediaMetadata(platform, this.state.Media.search, delay);
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */
@@ -62,7 +78,7 @@ class HeaderHomepage extends React.Component {
                         <a href="/">Extractio</a>
                     </div>
                     <div>
-                        <form method="GET" onSubmit={this.handleSearchSubmit.bind(this)}>
+                        <form method="GET" onSubmit={this.handleSubmit.bind(this)}>
                             <button>
                                 <i class="fa fa-search"></i>
                             </button>

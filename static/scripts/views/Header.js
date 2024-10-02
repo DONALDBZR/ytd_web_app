@@ -20,7 +20,7 @@ class Header extends React.Component {
         // } else if (window.location.pathname.includes("Download")) {
         //     return <Download />;
         // } else {
-            return <Homepage />;
+            return <HeaderHomepage />;
         // }
     }
 }

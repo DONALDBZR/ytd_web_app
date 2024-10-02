@@ -221,6 +221,16 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Checking the response of the server to handle it correctly.
+     * @param {string} color_scheme The color scheme of the application.
+     * @returns {Promise<number>}
+     */
+    async updateSession(color_scheme) {
+        const response = await this.sendUpdateSessionRequest(color_scheme);
+        return response.status;
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */

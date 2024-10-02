@@ -15,7 +15,7 @@ class HeaderHomepage extends React.Component {
         this.state = {
             Session: {
                 Client: {
-                    timestamp: 0,
+                    timestamp: "",
                     color_scheme: "",
                 },
             },
@@ -78,7 +78,7 @@ class HeaderHomepage extends React.Component {
                         <div>
                             <button
                                 name="colorSchemeChanger"
-                                value={this.state.System.color_scheme}
+                                value={this.state.Session.Client.color_scheme}
                                 onClick={this.setColorScheme.bind(this)}
                             >
                                 <ColorScheme />

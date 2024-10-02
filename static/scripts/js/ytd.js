@@ -419,9 +419,25 @@ class YTD {
 
     /**
      * Retrieving the session of the user.
+     * @param {string} route The route to the API endpoint.
+     * @param {string} request_method The request method
+     * @param {string} data_object The name of the data object in the Local Storage
+     * @returns {Promise<number>}
+     */
+    async getSession(route, request_method, data_object) {
+        const response = await fetch(route, {
+            method: request_method,
+        });
+        const data = await response.json();
+        localStorage.setItem(data_object, JSON.stringify(data));
+        return response.status;
+    }
+
+    /**
+     * Retrieving the session of the user.
      * @returns {void}
      */
-    async getSession() {
+    async setSession() {
         const data_object = "session";
         const session: {Client: {timestamp: number, color_scheme: string}} = JSON.parse(localStorage.getItem(data_object));
         const route = "/Session/";

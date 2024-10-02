@@ -159,6 +159,22 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Retrieving the response of the Media API for the search
+     * data.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string | null, thumbnail: string, duration: string, audio_file: string | null, video_file: string | null}}>}
+     */
+    async getSearchMedia(platform, search) {
+        const response = await this.sendGetSearchMediaRequest(platform, search);
+        const response_data = await response.json();
+        return {
+            status: response.status,
+            data: response_data.data.data,
+        };
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */

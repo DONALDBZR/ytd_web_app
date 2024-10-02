@@ -408,6 +408,14 @@ class YTD {
     loadData() {
         this.loadDataHomepage();
     }
+
+    /**
+     * Loading the data specifically for the homepage.
+     * @returns {void}
+     */
+    loadDataHomepage() {
+        this.setSession();
+    }
 }
 
 const application = new YTD();

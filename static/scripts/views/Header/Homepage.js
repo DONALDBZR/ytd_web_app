@@ -237,6 +237,9 @@ class HeaderHomepage extends React.Component {
                 "Content-Type": "application/json",
             },
         });
+        if (response.status == 202) {
+            localStorage.removeItem("session");
+        }
         return response.status;
     }
 

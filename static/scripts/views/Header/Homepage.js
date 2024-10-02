@@ -15,7 +15,7 @@ class HeaderHomepage extends React.Component {
         this.state = {
             Session: {
                 Client: {
-                    timestamp: "",
+                    timestamp: 0,
                     color_scheme: "",
                 },
             },

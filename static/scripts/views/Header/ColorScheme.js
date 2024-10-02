@@ -33,31 +33,14 @@ class ColorScheme extends React.Component {
     }
 
     /**
-     * Updating the component as soon as the states are different.
-     * @param {{data: {System: {color_scheme: string, timestamp: number, dom_element: HTMLElement}}}} previous_props The properties of the component.
-     * @returns {void}
-     */
-    componentDidUpdate(previous_props) {
-        this.setData(previous_props);
-        console.log("Component: Header.ColorScheme\nStatus: Updated");
-    }
-
-    /**
      * Setting the data for the component.
-     * @param {{data: {System: {color_scheme: string, timestamp: number, dom_element: HTMLElement}}}} properties The properties of the component.
      * @returns {void}
      */
-    setData(properties) {
-        const dom_element = document.querySelector("header nav div:nth-child(2) div:nth-child(2) button").children[0];
-        if (this.props != properties) {
-            this.setState(() => ({
-                System: {
-                    color_scheme: this.props.data.System.color_scheme,
-                    timestamp: this.props.data.System.timestamp,
-                    dom_element: dom_element,
-                },
-            }));
-        }
+    setData() {
+        this.setState((previous) => ({
+            ...previous,
+            Session: JSON.parse(localStorage.getItem("session")),
+        }));
         this.setSvg();
     }
 

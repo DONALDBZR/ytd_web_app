@@ -366,7 +366,7 @@ class Header extends Component {
 
     /**
      * Rendering the component for desktop users.
-     * @returns {HTMLElement}
+     * @returns {Component}
      */
     renderDesktop() {
         const color_scheme = {
@@ -401,7 +401,7 @@ class Header extends Component {
 
     /**
      * Rendering the component for tablet and mobile users.
-     * @returns {HTMLElement}
+     * @returns {Component}
      */
     renderTabletMobile() {
         const color_scheme = {
@@ -441,7 +441,7 @@ class Header extends Component {
 
     /**
      * Rendering the component
-     * @returns {HTMLElement}
+     * @returns {Component}
      */
     render() {
         const root = document.querySelector(":root");

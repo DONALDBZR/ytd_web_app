@@ -176,6 +176,25 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Handling the change of the data form the search form of the
+     * User-Interface of Extractio.
+     * @param {InputEvent} event An event which takes place in the DOM.
+     * @returns {void}
+     */
+    handleChange(event) {
+        const target = event.target;
+        const value = target.value;
+        const name = target.name;
+        this.setState((previous) => ({
+            ...previous,
+            Media: {
+                ...previous.Media,
+                [name]: value,
+            },
+        }));
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */
@@ -196,7 +215,7 @@ class HeaderHomepage extends React.Component {
                                 placeholder="Search..."
                                 name="search"
                                 value={this.state.Media.search}
-                                onChange={this.handleSearchChange.bind(this)}
+                                onChange={this.handleChange.bind(this)}
                                 required
                             />
                         </form>

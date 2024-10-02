@@ -74,26 +74,13 @@ class ColorScheme extends React.Component {
     }
 
     /**
-     * Setting the data for the DOM Element.
-     * @param {SVGSVGElement | HTMLElement} element The HTML Element.
-     * @returns {void}
-     */
-    setDomElementData(element) {
-        if (String(element).includes("HTMLElement")) {
-            this.setHtmlElementData(element);
-        } else {
-            this.setSvgSvgElement(element);
-        }
-    }
-
-    /**
      * Setting the SVG Element.
      * @returns {void}
      */
     setSvg() {
         const dom_element = document.querySelector("header nav div div button").children[0];
         if (typeof dom_element != null) {
-            this.setDomElementData(dom_element);
+            (String(element).includes("HTMLElement")) ? this.setHtmlElementData(dom_element) : this.setSvgSvgElement(element);
         }
     }
 

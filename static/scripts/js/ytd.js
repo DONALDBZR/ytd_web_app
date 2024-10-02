@@ -456,6 +456,7 @@ class YTD {
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
         } else {
             status = 204;
+            localStorage.removeItem(data_object);
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
             this.getSession(route, request_method, data_object)
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));

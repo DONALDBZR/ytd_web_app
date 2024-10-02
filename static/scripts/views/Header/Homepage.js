@@ -10,7 +10,7 @@ class HeaderHomepage extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}}}
+         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {view_route: string}}}
          */
         this.state = {
             Session: {
@@ -25,6 +25,9 @@ class HeaderHomepage extends React.Component {
                     uniform_resource_locator: "",
                     identifier: "",
                 },
+            },
+            System: {
+                view_route: "",
             },
         };
     }
@@ -64,6 +67,24 @@ class HeaderHomepage extends React.Component {
         loading_icon.style.display = "flex";
         event.preventDefault();
         this.searchMediaMetadata(platform, this.state.Media.search, delay);
+    }
+
+    /**
+     * Searching for the Media content and redirecting the user to
+     * the searched content.
+     * @param {string} platform The platform to be searched on.
+     * @param {string} search The search data to be searched.
+     * @param {number} delay The amount of delay in milliseconds.
+     * @returns {void}
+     */
+    searchMediaMetadata(platform, search, delay) {
+        this.setRoute(platform, search)
+        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`))
+        .then(() => {
+            setTimeout(() => {
+                window.location.href = this.state.System.view_route;
+            }, delay);
+        });
     }
 
     /**

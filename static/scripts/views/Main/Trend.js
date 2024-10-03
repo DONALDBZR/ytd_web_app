@@ -42,66 +42,6 @@ class Trend extends React.Component {
     }
 
     /**
-     * Setting the data of the weekly trend in the state of the
-     * component.
-     * @param {string} api_origin
-     * @returns {Promise<number>}
-     */
-    async setTrend(api_origin) {
-        const response = await this.getTrend(api_origin);
-        const response_data = response.data;
-        this.setState((previous) => ({
-            ...previous,
-            Trend: response_data,
-        }));
-        return response.status;
-    }
-
-    /**
-     * Retrieving the response's data.
-     * @param {string} api_origin
-     * @returns {Promise<{status: number, data: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}>}
-     */
-    async getTrend(api_origin) {
-        const server_response = await this.sendGetTrendRequest(api_origin);
-        return {
-            status: server_response.status,
-            data: await server_response.json(),
-        };
-    }
-
-    /**
-     * Sending a request to the server to retrieve the weekly trend
-     * based on the usage of the application.
-     * @param {string} api_origin
-     * @returns {Promise<Response>}
-     */
-    async sendGetTrendRequest(api_origin) {
-        return fetch(`${api_origin}/Trend/`, {
-            method: "GET",
-        });
-    }
-
-    /**
-     * Retrieving the width of the trend list's carousel.
-     * @param {[{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]} trend_list The list of media content
-     * @returns {string}
-     */
-    getTrendListWidth(trend_list) {
-        return (window.innerWidth < 640) ? `${window.innerWidth * trend_list}px` : `${window.innerWidth}px`;
-    }
-
-    /**
-     * Retrieving the animation of the trend list's carousel.
-     * @param {[{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]} trend_list The list of media content
-     * @returns {string}
-     */
-    getTrendListAnimation(trend_list) {
-        const delay = 8;
-        return (window.innerWidth < 640) ? `trend-scroll ${delay * trend_list.length}s linear infinite` : "none";
-    }
-
-    /**
      * Adding the mouse enter event handler for the trend list.
      * @returns {void}
      */
@@ -171,9 +111,12 @@ class Trend extends React.Component {
      * @returns {React.Component}
      */
     render() {
+        const delay = 8;
+        const width = (window.innerWidth < 640) ? `${window.innerWidth * this.state.Trend.length}px` : `${window.innerWidth}px`;
+        const animation = (window.innerWidth < 640) ? `trend-scroll ${delay * this.state.Trend.length}s linear infinite` : "none";
         return (
             <div className="Trend">
-                <div style={{width: this.getTrendListWidth(this.state.Trend), animation: this.getTrendListAnimation(this.state.Trend)}} onMouseEnter={this.handleTrendListMouseEnter} onMouseLeave={this.handleTrendListMouseLeave}>
+                <div style={{width: width, animation: animation}} onMouseEnter={this.handleTrendListMouseEnter} onMouseLeave={this.handleTrendListMouseLeave}>
                     {this.state.Trend.map((content) => this.renderMediaCard(content))}
                 </div>
             </div>

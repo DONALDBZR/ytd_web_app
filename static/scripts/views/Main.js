@@ -3,53 +3,11 @@
  */
 class Main extends React.Component {
     /**
-     * Constructing the Main component of the application which
-     * reflects eveything of the Main tag.
+     * Constructing the Main component of the application.
      * @param {*} props The properties of the component
      */
     constructor(props) {
         super(props);
-        /**
-         * The states of the component
-         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
-         */
-        this.state = {
-            System: {
-                view_route: "",
-                dom_element: "",
-            },
-        };
-        // /**
-        //  * States of the application
-        //  * @type {{ System: { view_route: string, status: number, message: string, url: string }, Media: { search: string, YouTube: { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? }, } }, Trend: [ { uniform_resource_locator: string, title: string, author: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, identifier: string, File: { audio: string?, video: string? } } ] }}
-        //  */
-        // this.state = {
-        //     System: {
-        //         view_route: "",
-        //         status: 0,
-        //         message: "",
-        //         url: "",
-        //     },
-        //     Media: {
-        //         search: "",
-        //         YouTube: {
-        //             uniform_resource_locator: "",
-        //             title: "",
-        //             author: "",
-        //             author_channel: "",
-        //             views: 0,
-        //             published_at: "",
-        //             thumbnail: "",
-        //             duration: "",
-        //             identifier: "",
-        //             File: {
-        //                 audio: "",
-        //                 video: "",
-        //             },
-        //         },
-        //     },
-        //     Trend: [],
-        // };
     }
 
     /**

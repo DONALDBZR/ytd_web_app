@@ -435,6 +435,36 @@ class YTD {
     }
 
     /**
+     * Setting the trend of the week.
+     * @returns {void}
+     */
+    setTrend() {
+        const data_object = "trend";
+        const trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}] = JSON.parse(localStorage.getItem(data_object));
+        const route = "/Trend/";
+        const request_method = "GET";
+        let status = 0;
+        const current_time = Math.floor(Date.now() / 1000);
+        if (!trend) {
+            this.getTrend(route, request_method, data_object)
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
+        }
+        if (current_time < trend.Client.timestamp + 3600) {
+            status = 304;
+            trend.Client.timestamp = current_time + 3600;
+            localStorage.setItem(data_object, JSON.stringify(trend));
+            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        } else {
+            status = 204;
+            localStorage.removeItem(data_object);
+            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+            this.getTrend(route, request_method, data_object)
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+        }
+    }
+
+    /**
      * Setting the session of the user.
      * @returns {void}
      */

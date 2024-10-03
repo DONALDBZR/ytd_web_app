@@ -9,13 +9,6 @@ class MainHomepage extends React.Component {
      */
     constructor(props) {
         super(props);
-        /**
-         * The states of the component.
-         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}
-         */
-        this.state = {
-            Trend: [],
-        };
     }
 
     /**

@@ -35,22 +35,16 @@ class Main extends React.Component {
 
     /**
      * Rendering the component
-     * @returns {HTMLElement}
+     * @returns {React.Component}
      */
     render() {
-        if (window.location.pathname.includes("Search")) {
-            const search = {
-                System: this.state.System,
-            };
-            return <Search data={search} />;
-        } else if (window.location.pathname.includes("Download")) {
-            return <Download />;
-        } else {
-            const homepage = {
-                System: this.state.System,
-            };
-            return <Homepage data={homepage} />;
-        }
+        // if (window.location.pathname.includes("Search")) {
+        //     return <Search data={search} />;
+        // } else if (window.location.pathname.includes("Download")) {
+        //     return <Download />;
+        // } else {
+            return <Homepage />;
+        // }
     }
 
     // /**

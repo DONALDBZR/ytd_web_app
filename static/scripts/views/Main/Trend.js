@@ -62,25 +62,20 @@ class Trend extends React.Component {
     /**
      * Rendering the media card.
      * @param {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}} content
-     * @return {HTMLDivElement}
+     * @return {React.Component}
      */
     renderMediaCard(content) {
         return (
             <div className="card" key={content.identifier}>
                 <div>
-                    <a
-                        href={content.uniform_resource_locator}
-                        target="__blank"
-                    >
+                    <a href={content.uniform_resource_locator} target="__blank">
                         <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`} />
                     </a>
                 </div>
                 <div>
                     <div>{content.title}</div>
                     <div>
-                        <a href={content.author_channel}>
-                            {content.author}
-                        </a>
+                        <a href={content.author_channel}>{content.author}</a>
                     </div>
                     <div>
                         <div>Duration:</div>
@@ -89,15 +84,11 @@ class Trend extends React.Component {
                     <div>
                         <div>Views:</div>
                         <div>
-                            {content.views.toLocaleString(
-                                "en-US"
-                            )}
+                            {content.views.toLocaleString("en-US")}
                         </div>
                     </div>
                     <div>
-                        <a
-                            href={`/Download/YouTube/${content.identifier}`}
-                        >
+                        <a href={`/Download/YouTube/${content.identifier}`}>
                             <i className="fa-solid fa-download"></i>
                         </a>
                     </div>

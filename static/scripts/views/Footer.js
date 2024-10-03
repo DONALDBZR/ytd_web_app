@@ -4,15 +4,13 @@
 class Footer extends React.Component {
     /**
      * Rendering the component
-     * @returns {HTMLFooterElement}
+     * @returns {React.Component}
      */
     render() {
         return (
-            <>
+            <footer>
                 <div>Extractio</div>
-            </>
+            </footer>
         );
     }
 }
-// Rendering the page
-ReactDOM.render(<Footer />, document.querySelector("footer"));

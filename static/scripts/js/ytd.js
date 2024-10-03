@@ -471,9 +471,9 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
-        if (current_time < trend.Client.timestamp + 3600) {
+        if (current_time < trend.timestamp + 86400) {
             status = 304;
-            trend.Client.timestamp = current_time + 3600;
+            trend.timestamp = current_time + 86400;
             localStorage.setItem(data_object, JSON.stringify(trend));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
         } else {

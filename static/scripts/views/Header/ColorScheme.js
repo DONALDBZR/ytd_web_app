@@ -75,5 +75,3 @@ class ColorScheme extends React.Component {
         return (this.state.Session.Client.color_scheme == "dark") ? <i class="fa-solid fa-toggle-on"></i> : <i class="fa-solid fa-toggle-off"></i>;
     }
 }
-
-ReactDOM.render(<ColorScheme />, document.body);

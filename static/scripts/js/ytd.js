@@ -415,6 +415,7 @@ class YTD {
      */
     loadDataHomepage() {
         this.setSession();
+        this.setTrend();
     }
 
     /**

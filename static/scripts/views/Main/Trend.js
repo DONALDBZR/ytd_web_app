@@ -29,24 +29,16 @@ class Trend extends React.Component {
     }
 
     /**
-     * Updating the component as soon as there is a change in the
-     * properties.
+     * Setting the data for the weekly trend in the state for the
+     * component.
      * @returns {void}
      */
-    componentDidUpdate() {
-        let api_call = this.state.System.api_call;
-        if (api_call < 1) {
-            api_call++;
-            this.setState((previous) => ({
-                ...previous,
-                System: {
-                    ...previous.System,
-                    api_call: api_call,
-                },
-            }));
-            this.setTrend()
-            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main.Trend\nComponent Status: Update\nTrend API Route: /\nTrend API Status: ${status}`));
-        }
+    setData() {
+        const trend = JSON.parse(localStorage.getItem("trend")).data;
+        this.setState((previous) => ({
+            ...previous,
+            Trend: trend,
+        }));
     }
 
     /**

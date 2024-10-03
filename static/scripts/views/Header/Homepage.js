@@ -47,10 +47,20 @@ class HeaderHomepage extends React.Component {
      * @returns {void}
      */
     setData() {
+        const session = JSON.parse(localStorage.getItem("session"));
+        const root = document.querySelector(":root");
+        const color_1 = (session.Client.color_scheme == "dark") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
+        const color_2 = (session.Client.color_scheme == "light") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
+        const color_3 = "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
+        const color_5 = (session.Client.color_scheme == "dark") ? "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))" : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))";
         this.setState((previous) => ({
             ...previous,
-            Session: JSON.parse(localStorage.getItem("session")),
+            Session: session,
         }));
+        root.style.setProperty("--color1", color_1);
+        root.style.setProperty("--color2", color_2);
+        root.style.setProperty("--color3", color_3);
+        root.style.setProperty("--color5", color_5);
     }
 
     /**

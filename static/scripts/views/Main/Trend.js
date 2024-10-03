@@ -24,19 +24,8 @@ class Trend extends React.Component {
      * @returns {void}
      */
     componentDidMount() {
-        const api_origin = (window.location.port == 591) ? "https://omnitechbros.ddns.net:591" : "https://omnitechbros.ddns.net:5000";
-        let api_call = this.state.System.api_call;
-        api_call++;
-        this.setState((previous) => ({
-            ...previous,
-            System: {
-                ...previous.System,
-                api_call: api_call,
-                api_origin: api_origin,
-            },
-        }));
-        this.setTrend(api_origin)
-        .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Homepage.Main.Trend\nComponent Status: Mount\nTrend API Route: /\nTrend API Status: ${status}`));
+        this.setData();
+        console.info("Component: Homepage.Main.MainHomepage.Trend\nStatus: Mount");
     }
 
     /**

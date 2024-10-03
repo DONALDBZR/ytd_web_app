@@ -16,7 +16,7 @@ class Homepage extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        return [<Header />];
+        return [<Header />, <Main />];
         // return [<Header />, <Main />, <Footer />];
     }
 }

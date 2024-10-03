@@ -293,5 +293,3 @@ class HeaderHomepage extends React.Component {
         );
     }
 }
-
-ReactDOM.render(<HeaderHomepage />, document.body);

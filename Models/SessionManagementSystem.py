@@ -373,7 +373,7 @@ class Session_Manager:
             {status: int}
         """
         response = {}
-        if file_name.endswith(".json"):
+        if file_name.endswith(".json") and os.path.isfile(f"{self.getDirectory()}{file_name}"):
             response = self._handleFile(file_name)
         else:
             response = {

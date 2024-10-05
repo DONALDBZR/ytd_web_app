@@ -4,7 +4,7 @@
  */
 class HeaderSearch extends React.Component {
     /**
-     * Constructing the header of the homepage.
+     * Constructing the header of the search page.
      * @param {*} props The properties of the component
      */
     constructor(props) {

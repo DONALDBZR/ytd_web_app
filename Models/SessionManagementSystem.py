@@ -197,7 +197,7 @@ class Session_Manager:
             file = open(file_name, "r")
             content: Union[str, None] = file.read().strip()
             file.close()
-            if content is not None or content != "":
+            if content is not None or content != "" and len(content) != 0:
                 data = json.loads(content)
                 age = int(time.time()) - int(data["Client"]["timestamp"])
                 self.verifyInactiveSession(age, data, file_name)

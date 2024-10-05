@@ -441,13 +441,17 @@ class Session_Manager:
         Returns:
             {status: int}
         """
+        content: Union[str, None]
         file_path: str = f"{self.getDirectory()}{name}"
         if not os.path.isfile(file_path):
             return {
                 "status": 204
             }
-        file = open(file_path, "r")
-        content: Union[str, None] = file.read().strip()
+        try:
+            file = open(file_path, "r")
+            content = file.read().strip()
+        except FileNotFoundError:
+            content = None
         if status == 200 and content is not None and content != "":
             data = json.loads(content)
             self.setSession(data)

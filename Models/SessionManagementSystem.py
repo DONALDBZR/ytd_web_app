@@ -197,7 +197,7 @@ class Session_Manager:
             file = open(file_name, "r")
             content: Union[str, None] = file.read().strip()
             file.close()
-            if content is not None or content != "" and len(content) != 0:
+            if (content is not None or content != "") and len(content) != 0:
                 data = json.loads(content)
                 age = int(time.time()) - int(data["Client"]["timestamp"])
                 self.verifyInactiveSession(age, data, file_name)
@@ -473,9 +473,8 @@ class Session_Manager:
             session_data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: Session's data
 
         Returns:
-            (void)
+            void
         """
-        # Verifying that the data has been received or created in order to verify it to renew access.
         if session_data["status"] == 200 or session_data["status"] == 201:
             self.renew(self.getSession())
         else:

@@ -310,12 +310,12 @@ class YTD {
         } else if (this.getRequestURI() == "/Search/") {
             this.getMeta().content = "The content needed can be searched, here.";
         } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
-            media = JSON.parse(localStorage.getItem("media"));
+            media = JSON.parse(localStorage.getItem("media")).data;
             const uniform_resource_locator = new URL(media.Media.YouTube.uniform_resource_locator);
             const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
             this.getMeta().content = `Metadata for the content from ${media.Media.YouTube.author} on ${platform} entitled ${media.Media.YouTube.title}`;
         } else if (this.getRequestURI().includes("/Download/")) {
-            media = JSON.parse(localStorage.getItem("media"));
+            media = JSON.parse(localStorage.getItem("media")).data;
             const uniform_resource_locator = new URL(media.Media.YouTube.uniform_resource_locator);
             const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
             this.getMeta().content = `Content from ${media.Media.YouTube.author} on ${platform} entitled ${media.Media.YouTube.title}`;

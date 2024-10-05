@@ -441,7 +441,7 @@ class Session_Manager:
         file_path: str = f"{self.getDirectory()}{name}"
         file = open(file_path, "r")
         content: Union[str, None] = file.read().strip()
-        if status == 200 and content is not None:
+        if status == 200 and content is not None and content != "":
             data = json.loads(content)
             self.setSession(data)
             response = {
@@ -456,6 +456,11 @@ class Session_Manager:
             os.remove(file_path)
             response = {
                 "status": 202
+            }
+        else:
+            os.remove(file_path)
+            response = {
+                "status": 204
             }
         return response
 

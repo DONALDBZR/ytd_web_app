@@ -1,5 +1,6 @@
 /**
- * The component to be rendered for the header of the homepage.
+ * The component to be rendered for the header of the search
+ * page.
  */
 class HeaderSearch extends React.Component {
     /**

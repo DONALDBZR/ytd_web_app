@@ -432,7 +432,7 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
-        if ((current_time < media.timestamp + 3600) && (media.Media.YouTube.identifier == this.getRequestURI().replace("/Search/", ""))) {
+        if ((current_time < media.timestamp + 3600) && (media.data.Media.YouTube.identifier == this.getRequestURI().replace("/Search/", ""))) {
             status = 304;
             media.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(media));

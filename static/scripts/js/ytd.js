@@ -406,8 +406,9 @@ class YTD {
      * @returns {void}
      */
     loadData() {
+        this.setSession();
         if (window.location.pathname.includes("Search")) {
-            console.log(1);
+            this.loadDataSearchPage();
         } else {
             this.loadDataHomepage();
         }
@@ -419,7 +420,6 @@ class YTD {
      * @returns {void}
      */
     loadDataHomepage() {
-        this.setSession();
         this.setTrend();
     }
 

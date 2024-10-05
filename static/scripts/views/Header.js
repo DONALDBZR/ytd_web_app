@@ -15,12 +15,12 @@ class Header extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        // if (window.location.pathname.includes("Search")) {
-        //     return <Search />;
+        if (window.location.pathname.includes("Search")) {
+            return <HeaderSearch />;
         // } else if (window.location.pathname.includes("Download")) {
         //     return <Download />;
-        // } else {
+        } else {
             return <HeaderHomepage />;
-        // }
+        }
     }
 }

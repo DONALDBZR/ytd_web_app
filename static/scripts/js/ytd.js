@@ -416,10 +416,10 @@ class YTD {
      */
     loadDataHomepage() {
         this.setSession();
+        this.setTrend();
         if (window.location.pathname.includes("Search")) {
             console.log(1);
         } else {
-            this.setTrend();
         }
     }
 

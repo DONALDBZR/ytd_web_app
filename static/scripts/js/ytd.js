@@ -281,7 +281,7 @@ class YTD {
      * @returns {void}
      */
     addTitle() {
-        let media: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}, timestamp: number};
+        let media;
         this.setTitle(document.createElement("title"));
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
             this.getTitle().text = "Extractio";
@@ -302,6 +302,7 @@ class YTD {
      * @returns {void}
      */
     addDescription() {
+        let media: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}, timestamp: number};
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
@@ -309,19 +310,15 @@ class YTD {
         } else if (this.getRequestURI() == "/Search/") {
             this.getMeta().content = "The content needed can be searched, here.";
         } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
-            this.getMedia("/Search/")
-            .then((response) => {
-                const uniform_resource_locator = new URL(response.Media.YouTube.uniform_resource_locator);
-                const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
-                this.getMeta().content = `Metadata for the content from ${response.Media.YouTube.author} on ${platform} entitled ${response.Media.YouTube.title}`;
-            });
+            media = JSON.parse(localStorage.getItem("media"));
+            const uniform_resource_locator = new URL(media.Media.YouTube.uniform_resource_locator);
+            const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
+            this.getMeta().content = `Metadata for the content from ${media.Media.YouTube.author} on ${platform} entitled ${media.Media.YouTube.title}`;
         } else if (this.getRequestURI().includes("/Download/")) {
-            this.getMedia("/Download/YouTube/")
-            .then((response) => {
-                const uniform_resource_locator = new URL(response.Media.YouTube.uniform_resource_locator);
-                const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
-                this.getMeta().content = `Content from ${response.Media.YouTube.author} on ${platform} entitled ${response.Media.YouTube.title}`;
-            });
+            media = JSON.parse(localStorage.getItem("media"));
+            const uniform_resource_locator = new URL(media.Media.YouTube.uniform_resource_locator);
+            const platform = uniform_resource_locator.hostname.replace("www.", "").replace(".com", "");
+            this.getMeta().content = `Content from ${media.Media.YouTube.author} on ${platform} entitled ${media.Media.YouTube.title}`;
         }
         this.getHead().appendChild(this.getMeta());
         setTimeout(() => this.configureRobot(), 2000);

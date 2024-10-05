@@ -346,14 +346,15 @@ class Session_Manager:
         Returns:
             {status: int}
         """
-        file_path = f"{self.getDirectory()}/{file_name}"
-        file = open(file_path)
-        if not file.read().strip():
+        file_path = f"{self.getDirectory()}{file_name}"
+        file = open(file_path, "r", encoding="utf-8")
+        content: Union[str, None] = file.read().strip()
+        if not content:
             return {
                 "status": 204
             }
         else:
-            data = json.load(file)
+            data = json.loads(content)
             return {
                 "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
             }

@@ -193,12 +193,14 @@ class Session_Manager:
         age: int
         data: Dict[str, Dict[str, Union[str, int]]]
         for index in range(0, self.getLength(), 1):
-            file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
+            file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
             file = open(file_name, "r")
-            data = json.load(file)
-            age = int(time.time()) - int(data["Client"]["timestamp"])
+            content: Union[str, None] = file.read().strip()
             file.close()
-            self.verifyInactiveSession(age, data, file_name)
+            if content is not None:
+                data = json.loads(content)
+                age = int(time.time()) - int(data["Client"]["timestamp"])
+                self.verifyInactiveSession(age, data, file_name)
 
     def verifyInactiveSession(self, age: int, session: Dict[str, Dict[str, Union[str, int]]], file_name: str) -> None:
         """

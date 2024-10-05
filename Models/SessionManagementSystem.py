@@ -437,11 +437,12 @@ class Session_Manager:
         Returns:
             {status: int}
         """
-        response = {}
-        file_path = f"{self.getDirectory()}/{name}"
-        file = open(file_path)
-        data = json.load(file)
-        if status == 200:
+        response: Dict[str, int] = {}
+        file_path: str = f"{self.getDirectory()}{name}"
+        file = open(file_path, "r")
+        content: Union[str, None] = file.read().strip()
+        if status == 200 and content is not None:
+            data = json.loads(content)
             self.setSession(data)
             response = {
                 "status": status

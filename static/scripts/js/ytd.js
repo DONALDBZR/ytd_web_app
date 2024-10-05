@@ -424,6 +424,36 @@ class YTD {
     }
 
     /**
+     * Setting the media metadata of the content.
+     * @returns {void}
+     */
+    setMedia() {
+        const data_object = "media";
+        const media: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}, timestamp: number} = JSON.parse(localStorage.getItem(data_object));
+        const route = `/Media/${this.getRequestURI().replace("/Search/", "")}`;
+        const request_method = "GET";
+        let status = 0;
+        const current_time = Math.floor(Date.now() / 1000);
+        if (!media) {
+            this.getMedia(route, request_method, data_object)
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
+        }
+        if ((current_time < media.timestamp + 3600) && (media.Media.YouTube.identifier == this.getRequestURI().replace("/Search/", ""))) {
+            status = 304;
+            media.timestamp = current_time + 3600;
+            localStorage.setItem(data_object, JSON.stringify(media));
+            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        } else {
+            status = 204;
+            localStorage.removeItem(data_object);
+            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+            this.getMedia(route, request_method, data_object)
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+        }
+    }
+
+    /**
      * Loading the data specifically for the homepage.
      * @returns {void}
      */

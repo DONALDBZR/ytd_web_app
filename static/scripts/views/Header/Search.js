@@ -40,7 +40,7 @@ class HeaderSearch extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        console.log("Component: Homepage.Header.HeaderHomepage\nStatus: Mount");
+        console.log("Component: Search.Header.HeaderSearch\nStatus: Mount");
     }
 
     /**

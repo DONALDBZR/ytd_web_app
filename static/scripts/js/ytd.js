@@ -391,7 +391,6 @@ class YTD {
         const width = `${root.clientWidth}px`;
         root.style.setProperty("--height", height);
         root.style.setProperty("--width", width);
-        this.loadData();
     }
 
     /**

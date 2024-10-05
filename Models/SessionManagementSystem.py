@@ -437,32 +437,34 @@ class Session_Manager:
         Returns:
             {status: int}
         """
-        response: Dict[str, int] = {}
         file_path: str = f"{self.getDirectory()}{name}"
+        if not os.path.isfile(file_path):
+            return {
+                "status": 204
+            }
         file = open(file_path, "r")
         content: Union[str, None] = file.read().strip()
         if status == 200 and content is not None and content != "":
             data = json.loads(content)
             self.setSession(data)
-            response = {
+            return {
                 "status": status
             }
-        elif status == 204:
-            response = {
+        if status == 204:
+            return {
                 "status": status
             }
-        elif status == 205:
+        if status == 205:
             self.getSession().clear()
             os.remove(file_path)
-            response = {
+            return {
                 "status": 202
             }
-        else:
-            os.remove(file_path) if os.path.isfile(file_path) else None
-            response = {
-                "status": 204
-            }
-        return response
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        return {
+            "status": 204
+        }
 
     def handleSessionData(self, session_data: Dict[str, int]) -> None:
         """

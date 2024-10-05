@@ -475,7 +475,7 @@ class Session_Manager:
         Returns:
             void
         """
-        if session_data["status"] == 200 or session_data["status"] == 201:
+        if "status" in session_data and (session_data["status"] == 200 or session_data["status"] == 201):
             self.renew(self.getSession())
         else:
             self.createSession()

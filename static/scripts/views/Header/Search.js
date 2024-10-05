@@ -90,7 +90,7 @@ class HeaderSearch extends React.Component {
      */
     searchMediaMetadata(platform, search, delay) {
         this.setRoute(platform, search)
-        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`))
+        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Search.Header.HeaderSearch\nDelay: ${delay} ms`))
         .then(() => {
             setTimeout(() => {
                 window.location.href = this.state.System.view_route;

@@ -47,7 +47,7 @@ data = DatabaseHandler.getData(
     sort_condition="identifier ASC",
     limit_condition=1
 )
-key = str(data[0]["hash"]) # type: ignore
+key = str(data[0]["hash"])  # type: ignore
 """
 Encryption key of the application
 """
@@ -60,7 +60,8 @@ Application.config["SESSION_TYPE"] = 'filesystem'
 Application.config["COMPRESS_ALGORITHM"] = "gzip"
 Application.config["COMPRESS_LEVEL"] = 6
 Application.config["COMPRESS_MIN_SIZE"] = 500
-Application.config["COMPRESS_MIMETYPES"] = ["text/html", "text/css", "text/javascript", "application/json", "text/babel"]
+Application.config["COMPRESS_MIMETYPES"] = [
+    "text/html", "text/css", "text/javascript", "application/json", "text/babel"]
 Application.register_blueprint(Session_Portal, url_prefix="/Session")
 Application.register_blueprint(Search_Portal, url_prefix="/Search")
 Application.register_blueprint(Media_Portal, url_prefix="/Media")
@@ -112,7 +113,8 @@ def homepage() -> Response:
     Returns:
         Response
     """
-    template = render_template('Homepage.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
+    template = render_template(
+        'Homepage.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
     mime_type = "text/html"
     status = 200
     response = Response(template, status, mimetype=mime_type)
@@ -160,7 +162,7 @@ def serveScripts(file: str) -> Response:
     return response
 
 
-@Application.route('/static/scripts/views/<string:file>', methods=['GET'])
+@Application.route('/static/scripts/views/<path:file>', methods=['GET'])
 def serveViews(file: str) -> Response:
     """
     Serving the React Components.

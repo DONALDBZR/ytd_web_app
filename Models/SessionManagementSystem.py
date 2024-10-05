@@ -89,7 +89,8 @@ class Session_Manager:
         self.setProxyIpAddress(str(request["proxy_ip_address"]))
         self.__maintain()
         self.setSession(session)
-        self.getLogger().inform("The Session Management System has been successfully been initialized!")
+        self.getLogger().inform(
+            "The Session Management System has been successfully been initialized!")
         self.verifySession()
 
     def getDirectory(self) -> str:
@@ -334,6 +335,28 @@ class Session_Manager:
                 continue
         return response
 
+    def _handleFile(self, file_path: str) -> Dict[str, int]:
+        """
+        Verifying that the file is not empty to return the correct
+        response.
+
+        Parameters:
+            file_path: string: The path of the file.
+
+        Returns:
+            {status: int}
+        """
+        file = open(file_path)
+        if not file.read().strip():
+            return {
+                "status": 204
+            }
+        else:
+            data = json.load(file)
+            return {
+                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
+            }
+
     def handleFile(self, file_name: str) -> Dict[str, int]:
         """
         Ensuring that the file is of type JSON in order to process
@@ -348,11 +371,7 @@ class Session_Manager:
         response = {}
         if file_name.endswith(".json"):
             file_path = f"{self.getDirectory()}/{file_name}"
-            file = open(file_path)
-            data = json.load(file)
-            response = {
-                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
-            }
+            response = self._handleFile(file_path)
         else:
             response = {
                 "status": 204

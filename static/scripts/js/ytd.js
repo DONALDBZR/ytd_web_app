@@ -257,24 +257,23 @@ class YTD {
 
     /**
      * Retrieving the metadata of the media content.
-     * @param {string} needle The needle to be excluded.
-     * @returns {Promise<{Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}>}
+     * @param {string} route The route to the API endpoint.
+     * @param {string} request_method The request method
+     * @param {string} data_object The name of the data object in the Local Storage
+     * @returns {Promise<number>}
      */
-    async getMedia(needle) {
-        const response = await this.getMediaResponse(needle);
-        return response.json();
-    }
-
-    /**
-     * Sending the request to the server to retrieve the data
-     * needed to the Media API.
-     * @param {string} needle The needle to be excluded.
-     * @returns {Promise<Response>}
-     */
-    async getMediaResponse(needle) {
-        return fetch(`/Media/${this.getRequestURI().replace(needle, "")}`, {
-            method: "GET",
+    async getMedia(route, request_method, data_object) {
+        const response = await fetch(route, {
+            method: request_method,
         });
+        const current_time = Math.floor(Date.now() / 1000);
+        const data = await response.json();
+        const media = {
+            timestamp: current_time,
+            data: data,
+        };
+        localStorage.setItem(data_object, JSON.stringify(media));
+        return response.status;
     }
 
     /**

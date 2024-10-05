@@ -252,7 +252,7 @@ class YTD {
             this.setBodyId(this.getRequestURI().replaceAll("/", ""));
         }
         this.getBody().id = this.getBodyId();
-        this.optimize();
+        this.loadData();
     }
 
     /**

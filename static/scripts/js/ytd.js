@@ -302,7 +302,7 @@ class YTD {
      * @returns {void}
      */
     addDescription() {
-        let media: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}, timestamp: number};
+        let media;
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {

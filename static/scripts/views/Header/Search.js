@@ -262,12 +262,12 @@ class HeaderSearch extends React.Component {
         return (
             <header>
                 <nav>
-                    <div class="active">
+                    <div>
                         <a href="/">Extractio</a>
                     </div>
                     <div>
                         <form method="GET" onSubmit={this.handleSubmit.bind(this)}>
-                            <button>
+                            <button class="active">
                                 <i class="fa fa-search"></i>
                             </button>
                             <input

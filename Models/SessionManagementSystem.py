@@ -456,12 +456,17 @@ class Session_Manager:
             }
         if status == 205:
             self.getSession().clear()
-            os.remove(file_path)
+            try:
+                os.remove(file_path)
+            except FileNotFoundError:
+                pass
             return {
                 "status": 202
             }
-        if os.path.isfile(file_path):
+        try:
             os.remove(file_path)
+        except FileNotFoundError:
+            pass
         return {
             "status": 204
         }

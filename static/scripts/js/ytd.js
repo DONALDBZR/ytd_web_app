@@ -406,7 +406,11 @@ class YTD {
      * @returns {void}
      */
     loadData() {
-        this.loadDataHomepage();
+        if (window.location.pathname.includes("Search")) {
+            console.log(1);
+        } else {
+            this.loadDataHomepage();
+        }
         this.optimize();
     }
 
@@ -417,10 +421,6 @@ class YTD {
     loadDataHomepage() {
         this.setSession();
         this.setTrend();
-        if (window.location.pathname.includes("Search")) {
-            console.log(1);
-        } else {
-        }
     }
 
     /**

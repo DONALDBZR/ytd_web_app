@@ -348,9 +348,13 @@ class Session_Manager:
         Returns:
             {status: int}
         """
-        file_path = f"{self.getDirectory()}{file_name}"
-        file = open(file_path, "r", encoding="utf-8")
-        content: Union[str, None] = file.read().strip()
+        file_path: str = f"{self.getDirectory()}{file_name}"
+        content: Union[str, None]
+        if os.path.isfile(file_path):
+            file = open(file_path, "r", encoding="utf-8")
+            content = file.read().strip()
+        else:
+            content = None
         if not content:
             return {
                 "status": 204

@@ -30,7 +30,7 @@ class ColorScheme extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        console.log("Component: Homepage.Header.HeaderHomepage.ColorScheme\nStatus: Mount");
+        console.log("Component: Header.HeaderHomepage.ColorScheme\nStatus: Mount");
     }
 
     /**

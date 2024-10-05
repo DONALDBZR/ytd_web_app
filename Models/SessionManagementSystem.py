@@ -335,17 +335,18 @@ class Session_Manager:
                 continue
         return response
 
-    def _handleFile(self, file_path: str) -> Dict[str, int]:
+    def _handleFile(self, file_name: str) -> Dict[str, int]:
         """
         Verifying that the file is not empty to return the correct
         response.
 
         Parameters:
-            file_path: string: The path of the file.
+            file_name: string: The path of the file.
 
         Returns:
             {status: int}
         """
+        file_path = f"{self.getDirectory()}/{file_name}"
         file = open(file_path)
         if not file.read().strip():
             return {
@@ -370,8 +371,7 @@ class Session_Manager:
         """
         response = {}
         if file_name.endswith(".json"):
-            file_path = f"{self.getDirectory()}/{file_name}"
-            response = self._handleFile(file_path)
+            response = self._handleFile(file_name)
         else:
             response = {
                 "status": 204

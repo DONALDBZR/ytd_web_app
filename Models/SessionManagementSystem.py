@@ -350,10 +350,10 @@ class Session_Manager:
         """
         file_path: str = f"{self.getDirectory()}{file_name}"
         content: Union[str, None]
-        if os.path.isfile(file_path):
+        try:
             file = open(file_path, "r", encoding="utf-8")
             content = file.read().strip()
-        else:
+        except FileNotFoundError:
             content = None
         if not content:
             return {

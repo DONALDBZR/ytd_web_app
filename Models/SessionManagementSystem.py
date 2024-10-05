@@ -484,13 +484,13 @@ class Session_Manager:
         Returns:
             SessionMixin|void
         """
-        file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+        file_path: str = f"{self.getDirectory()}{self.getIpAddress()}.json"
         if session_data['Client']['ip_address'] == self.getIpAddress():
             self.setTimestamp(int(time.time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
             file = open(file_path, "w")
-            file.write(json.dumps(self.getSession()))
+            file.write(json.dumps(self.getSession(), indent=4))
             file.close()
             self.getLogger().inform("The session has been successfully renewed!")
             return self.getSession()

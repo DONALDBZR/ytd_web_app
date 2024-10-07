@@ -29,7 +29,7 @@ def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str
     """
     if os.path.isfile(file_name):
         file = open(file_name, "r")
-        content = file.read().strip()
+        content: str = file.read().strip()
         return loads(content)
     else:
         directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"
@@ -80,23 +80,15 @@ def getMedia(identifier: str) -> Response:
     Parameters:
         identifier: string: Identifier of the content.
 
-    Returns: Response
+    Returns:
+        Response
     """
     directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"
-    system_request: dict[str, str | None] = {
-        "referer": None,
-        "search": "",
-        "platform": "",
-        "ip_address": "127.0.0.1",
-        "port": str(request.environ.get("SERVER_PORT"))
-    }
-    media = Media(system_request)
-    file_name = f"{directory}/Cache/Media/{identifier}.json"
-    file = getMetaData(file_name)
-    response = file.read()
-    mime_type = "application/json"
-    status = 200
-    return Response(response, status, mimetype=mime_type)
+    file_name: str = f"{directory}/Cache/Media/{identifier}.json"
+    response: Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]] = getMetaData(file_name)
+    mime_type: str = "application/json"
+    status: int = 200
+    return Response(dumps(response, indent=4), status, mimetype=mime_type)
 
 
 @Media_Portal.route('/Download', methods=['POST'])

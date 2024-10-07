@@ -8,7 +8,7 @@ from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Tuple
 import os
 import json
 import time
@@ -204,7 +204,8 @@ class Session_Manager:
     def verifyInactiveSession(self, age: int, session: Dict[str, Dict[str, Union[str, int]]], file_name: str) -> None:
         """
         Verifying that the session is inactive to remove it from the
-        document database and to store it in the relational database.
+        document database and to store it in the relational
+        database.
 
         Parameters:
             age: int: Age of the session.
@@ -215,10 +216,7 @@ class Session_Manager:
             void
         """
         if age > 3600:
-            expired_sessions = (
-                int(session["Client"]["timestamp"]),
-                str(session["Client"]["ip_address"])
-            )
+            expired_sessions: Tuple[int, str] = (int(session["Client"]["timestamp"]), str(session["Client"]["ip_address"]))
             self.getDatabaseHandler().postData(
                 table="Visitors",
                 columns="timestamp, client",

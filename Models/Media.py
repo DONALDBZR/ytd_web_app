@@ -5,6 +5,7 @@ from datetime import datetime
 from Environment import Environment
 from mysql.connector.types import RowType
 from typing import Dict, Union, List, Tuple
+from io import _WrappedBuffer, TextIOWrapper
 import json
 import logging
 
@@ -195,7 +196,7 @@ class Media:
             parameters=data
         )
 
-    def handleYouTube(self) -> Dict[str, Union[str, int, None, Dict[str, Union[str, int, None]]]]:
+    def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
@@ -203,9 +204,14 @@ class Media:
         Returns:
             {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}
         """
-        response: Dict[str, Union[str, int, None, Dict[str, Union[str, int, None]]]]
-        identifier: str
+        response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]
+        youtube: Union[Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]
+        media: Union[Dict[str, Dict[str, Dict[str, Union[str, int, None]]]], Dict[str, Dict[str, Dict[str, Union[str, int]]]]]
+        status: int
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
+        identifier: str = self._getIdentifier()
+        filename: str = f"{self.getDirectory()}/{identifier}.json"
+        file: TextIOWrapper[_WrappedBuffer] = open(filename, "w")
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()
             media = {
@@ -213,15 +219,7 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            identifier = self._getIdentifier()
-            filename = f"{self.getDirectory()}/{identifier}.json"
-            file = open(filename, "w")
-            file.write(json.dumps(media, indent=4))
-            file.close()
-            response = {
-                "status": 200,
-                "data": youtube
-            }
+            status = 200
         else:
             youtube = self._YouTubeDownloader.retrievingStreams()
             media = {
@@ -229,17 +227,13 @@ class Media:
                     "YouTube": youtube
                 }
             }
-            identifier = self._getIdentifier()
-            filename = f"{self.getDirectory()}/{identifier}.json"
-            file = open(filename, "w")
-            file.write(json.dumps(media, indent=4))
-            file.close()
-            response = {
-                "status": 200,
-                "data": {
-                    "url": f"/Download/YouTube/{youtube['identifier']}"
-                }
-            }
+            status = 201
+        file.write(json.dumps(media, indent=4))
+        file.close()
+        response = {
+            "status": status,
+            "data": youtube
+        }
         return response
 
     def _getIdentifier(self) -> str:

@@ -260,7 +260,6 @@ class Session_Manager:
         }
         self.getSession()['Client'] = data
         session_data = self.retrieveSession()
-        self.getLogger().debug(f"Status: Created\nSession Data: {session_data}")
         file_path = f"{self.getDirectory()}{self.getIpAddress()}.json"
         session_file = open(file_path, 'w')
         session_file.write(session_data)
@@ -301,6 +300,7 @@ class Session_Manager:
         Returns:
             SessionMixin
         """
+        session_data: Union[Dict[str, Dict[str, Union[str, int]]], None]
         self.setTimestamp(int(time.time()))
         self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name: str = f"{self.getDirectory()}{self.getIpAddress()}.json"
@@ -311,8 +311,11 @@ class Session_Manager:
             exit()
         content: Union[str, None] = file.read().strip()
         file.close()
-        data = json.loads(content)
-        if self.getIpAddress() == data['Client']['ip_address']:
+        try:
+            session_data = json.loads(content)
+        except json.JSONDecodeError:
+            session_data = None
+        if session_data is not None and self.getIpAddress() == session_data['Client']['ip_address']:
             new_data: Dict[str, Union[str, int]] = {
                 "ip_address": self.getIpAddress(),
                 "http_client_ip_address": self.getHttpClientIpAddress(),
@@ -322,7 +325,6 @@ class Session_Manager:
             }
             file = open(file_name, "w")
             self.getSession()["Client"] = new_data
-            self.getLogger().debug(f"Status: Updated\nSession Data: {self.retrieveSession()}")
             file.write(self.retrieveSession())
             file.close()
             self.getLogger().inform("The session has been successfully updated!")

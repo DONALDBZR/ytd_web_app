@@ -11,10 +11,12 @@ class YouTube extends React.Component {
     constructor(props) {
         super(props);
         /**
-         * The states of the component.
-         * @type {*}
+         * The data for the properties of the Search component.
+         * @type {{Media: {YouTube: {uniform_resource_locator: string, author: string, title: string,identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string,audio_file: string, video_file: string}}}}
          */
-        this.state = {};
+        this.state = {
+            Media: {},
+        };
     }
 
     /**
@@ -32,13 +34,7 @@ class YouTube extends React.Component {
      * @returns {void}
      */
     setData() {
-        this.setState((previous) => ({
-            ...previous,
-            System: {
-                ...previous.System,
-                dom_element: this.props.data.System.dom_element,
-            },
-        }));
+
     }
 
     /**

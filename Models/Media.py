@@ -197,26 +197,6 @@ class Media:
             parameters=data
         )
 
-    def getYouTube(self, identifier: str) -> RowType:
-        """
-        Retrieving the YouTube content from the relational database
-        server.
-
-        Parameters:
-            identifier: string: The identifier of the media content.
-
-        Returns:
-            [{identifier: string, duration: string, published_at: string, author: string, title: string}]
-        """
-        parameters: Tuple[str] = (identifier,)
-        return self.getDatabaseHandler().getData(
-            table_name="YouTube",
-            filter_condition="identifier = %s",
-            column_names="identifier, TIME(FROM_UNIXTIME(length) - INTERVAL 4 HOUR) AS duration, DATE(published_at) AS published_at, author, title",
-            parameters=parameters,
-            limit_condition=1
-        )[0]
-
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]:
         """
         Handling the data throughout the You Tube Downloader which

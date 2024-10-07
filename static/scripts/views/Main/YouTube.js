@@ -49,7 +49,7 @@ class YouTube extends React.Component {
      */
     setData() {
         const media = JSON.parse(localStorage.getItem("media")).data.Media;
-        this.setData((previous) => ({
+        this.setState((previous) => ({
             ...previous,
             Media: media,
         }));

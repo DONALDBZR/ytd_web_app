@@ -58,19 +58,10 @@ class Media extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        /**
-         * The properties of the Media component.
-         * @type {{System: {dom_element: HTMLElement}}}
-         */
-        const media = {
-            System: {
-                dom_element: this.state.System.dom_element,
-            },
-        };
         return (
             <div className="Media">
-                <YouTube data={media} />
-                <RelatedContents data={media} />
+                <YouTube />
+                <RelatedContents />
             </div>
         );
     }

@@ -66,17 +66,9 @@ def search() -> Response:
     }
     mime_type: str = "application/json"
     media: Media = Media(user_request)
-    response: Dict[
-        str,
-        Union[
-            int,
-            Dict[
-                str, Union[str, int, Dict[str, Union[str, int, None]], None]
-            ]
-        ]
-    ] = media.verifyPlatform()
-    status: int = int(response["data"]["status"])  # type: ignore
-    return Response(json.dumps(response, indent=4), status, mimetype=mime_type)
+    response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]] = media.verifyPlatform()
+    status: int = int(response["status"])  # type: ignore
+    return Response(dumps(response, indent=4), status, mimetype=mime_type)
 
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])

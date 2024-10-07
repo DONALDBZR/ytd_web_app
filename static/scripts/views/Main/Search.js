@@ -50,7 +50,6 @@ class MainSearch extends React.Component {
                     <i class="fa-solid fa-spinner fa-spin"></i>
                 </div>
                 <Media />
-                <RelatedContents />
             </main>
         );
     }

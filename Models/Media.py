@@ -5,7 +5,6 @@ from datetime import datetime
 from Environment import Environment
 from mysql.connector.types import RowType
 from typing import Dict, Union, List, Tuple
-from io import _WrappedBuffer, TextIOWrapper
 import json
 import logging
 
@@ -213,7 +212,7 @@ class Media:
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         identifier: str = self._getIdentifier()
         filename: str = f"{self.getDirectory()}/{identifier}.json"
-        file: TextIOWrapper[_WrappedBuffer] = open(filename, "w")
+        file = open(filename, "w")
         if self.getReferer() is None:
             youtube = self._YouTubeDownloader.search()
             media = {

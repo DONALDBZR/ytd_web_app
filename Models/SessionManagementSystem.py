@@ -191,12 +191,16 @@ class Session_Manager:
         """
         age: int
         data: Union[Dict[str, Dict[str, Union[str, int]]], None]
+        content: Union[str, None]
         for index in range(0, self.getLength(), 1):
             file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
-            file = open(file_name, "r")
-            content: Union[str, None] = file.read().strip()
-            file.close()
-            if (content is not None or content != "") and len(content) != 0:
+            try:
+                file = open(file_name, "r")
+                content = file.read().strip()
+                file.close()
+            except FileNotFoundError:
+                content = None
+            if (content is not None or content != "") and len(str(content)) != 0:
                 data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self._verifyExistingSessionsGetSessionData(content)
                 age = int(time.time()) - int(data["Client"]["timestamp"]) if data is not None else int(time.time()) - 3601
                 self.verifyInactiveSession(age, data, file_name)

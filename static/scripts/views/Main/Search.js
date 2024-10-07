@@ -4,18 +4,15 @@
 class Search extends React.Component {
     /**
      * Constructing the Search component of the application.
-     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} props The properties of the component
+     * @param {*} props The properties of the component
      */
     constructor(props) {
         super(props);
-        this.props = props;
         /**
          * The data for the properties of the Search component.
-         * @type {{System: {view_route: string, dom_element: HTMLElement}}}
+         * @type {{}}
          */
-        this.state = {
-            System: this.props.data.System,
-        };
+        this.state = {};
     }
 
     /**

@@ -6,7 +6,7 @@ from flask import Blueprint, Response, request
 from Models.Media import Media
 from io import TextIOWrapper
 from typing import Dict, Union, List
-from json import dumps
+from json import dumps, loads
 import json
 import os
 
@@ -17,45 +17,33 @@ The Routing for all the Media.
 """
 
 
-def getDirectory() -> str:
-    """
-    Retrieving the directory of the application which depends on
-    the server that is used.
-
-    Returns:
-        string
-    """
-    if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591':
-        return "/var/www/html/ytd_web_app"
-    else:
-        return "/home/darkness4869/Documents/extractio"
-
-
-def getMetaData(file_name: str) -> TextIOWrapper:
+def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]:
     """
     Retrieving the metadata.
 
     Parameters:
         file_name:  string: Name of the file.
 
-    Returns: TextIOWrapper
+    Returns:
+        {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}
     """
     if os.path.isfile(file_name):
-        return open(file_name)
+        file = open(file_name, "r")
+        content = file.read().strip()
+        return loads(content)
     else:
-        directory = getDirectory()
-        identifier = file_name.replace(
-            f"{directory}/Cache/Media/", "").replace(".json", "")
-        user_request = {
+        directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"
+        identifier: str = file_name.replace(f"{directory}/Cache/Media/", "").replace(".json", "")
+        user_request: Dict[str, Union[None, str]] = {
             "referer": None,
             "search": f"https://www.youtube.com/watch?v={identifier}",
             "platform": "youtube",
             "ip_address": str(request.environ.get("REMOTE_ADDR")),
             "port": str(request.environ.get("SERVER_PORT"))
         }
-        media = Media(user_request)
-        response = json.dumps(media.verifyPlatform(), indent=4)
-        return open(file_name)
+        media: Media = Media(user_request)
+        model_response: Dict[str, int | Dict[str, str | int | None] | Dict[str, str | int]] = media.verifyPlatform()
+        return model_response["data"] # type: ignore
 
 
 @Media_Portal.route("/Search", methods=["GET"])
@@ -102,7 +90,7 @@ def getMedia(identifier: str) -> Response:
 
     Returns: Response
     """
-    directory = getDirectory()
+    directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"
     system_request: dict[str, str | None] = {
         "referer": None,
         "search": "",

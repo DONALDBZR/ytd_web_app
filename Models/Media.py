@@ -137,7 +137,7 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]]:
+    def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -146,7 +146,7 @@ class Media:
         Returns:
             {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
         """
-        response: Dict[str, Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]]
+        response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]
         media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
         if media["status"] != 200:
             self.postMedia()
@@ -154,9 +154,11 @@ class Media:
         else:
             self.setIdentifier(int(media["data"][0]["identifier"]))  # type: ignore
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+            response = self.handleYouTube()
+        else:
             response = {
-                "status": 200,
-                "data": self.handleYouTube()
+                "status": 401,
+                "data": {}
             }
         return response
 

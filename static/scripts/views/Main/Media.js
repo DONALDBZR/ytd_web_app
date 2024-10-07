@@ -32,25 +32,11 @@ class Media extends React.Component {
      * @returns {void}
      */
     setData() {
-        this.setState((previous) => ({
+        const media = JSON.parse(localStorage.getItem("media")).data.Media;
+        this.setData((previous) => ({
             ...previous,
-            System: {
-                ...previous.System,
-                dom_element: this.props.data.System.dom_element,
-            },
+            Media: media,
         }));
-    }
-
-    /**
-     * Updating the component as soon as the states are different.
-     * @param {{data: {System: {dom_element: HTMLElement}}}} previous_props The properties of the component
-     * @returns {void}
-     */
-    componentDidUpdate(previous_props) {
-        if (this.props != previous_props) {
-            this.setData();
-        }
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media\nComponent Status: Update`);
     }
 
     /**

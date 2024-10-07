@@ -140,6 +140,39 @@ class YouTube extends React.Component {
     }
 
     /**
+     * Retrieving Media from the server by using its uniform
+     * resource locator.
+     * @param {MouseEvent} event The event that is to be handled
+     * @returns {void}
+     */
+    retrieveMedia(event) {
+        event.preventDefault();
+        const delay = 200;
+        const uniform_resource_locator = document.querySelector("button[name='mediaDownloader']").value;
+        const platform = new URL(uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
+        console.debug(`Uniform Resource Locator: ${uniform_resource_locator}\nPlatform: ${platform}`);
+        // document.querySelector("#loading").style.display = "flex";
+        // fetch("/Media/Download", {
+        //     method: "POST",
+        //     body: JSON.stringify({
+        //         Media: {
+        //             uniform_resource_locator: uniform_resource_locator,
+        //             platform: platform,
+        //         },
+        //     }),
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        // })
+        //     .then((response) => response.json())
+        //     .then((data) => {
+        //         setTimeout(() => {
+        //             window.location.href = data.data.data.url;
+        //         }, delay);
+        //     });
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */
@@ -147,10 +180,7 @@ class YouTube extends React.Component {
         return (
             <div className="YouTube">
                 <div>
-                    <a
-                        href={this.state.Media.YouTube.uniform_resource_locator}
-                        target="__blank"
-                    >
+                    <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank">
                         <img src={this.state.Media.YouTube.thumbnail} />
                     </a>
                 </div>
@@ -158,10 +188,7 @@ class YouTube extends React.Component {
                     <div class="metadata">
                         <div>{this.state.Media.YouTube.title}</div>
                         <div>
-                            <a
-                                href={this.state.Media.YouTube.author_channel}
-                                target="__blank"
-                            >
+                            <a href={this.state.Media.YouTube.author_channel} target="__blank">
                                 {this.state.Media.YouTube.author}
                             </a>
                         </div>
@@ -173,22 +200,13 @@ class YouTube extends React.Component {
                             <div id="views">
                                 <div>Views:</div>
                                 <div>
-                                    {this.state.Media.YouTube.views.toLocaleString(
-                                        "en-US"
-                                    )}
+                                    {this.state.Media.YouTube.views.toLocaleString("en-US")}
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <button
-                            name="mediaDownloader"
-                            value={
-                                this.state.Media.YouTube
-                                    .uniform_resource_locator
-                            }
-                            onClick={this.retrieveMedia}
-                        >
+                        <button name="mediaDownloader" value={this.state.Media.YouTube.uniform_resource_locator} onClick={this.retrieveMedia.bind(this)}>
                             <i class="fa-solid fa-download"></i>
                         </button>
                     </div>

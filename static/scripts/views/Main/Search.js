@@ -38,15 +38,6 @@ class MainSearch extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        /**
-         * The properties of the Media component.
-         * @type {{System: {dom_element: HTMLElement}}}
-         */
-        const media = {
-            System: {
-                dom_element: this.state.System.dom_element,
-            },
-        };
         return (
             <>
                 <div id="loading">

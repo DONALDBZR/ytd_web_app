@@ -26,7 +26,7 @@ class YouTube extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Mount`);
+        console.info(`Route: ${window.location.pathname}\nComponent: Search.Main.MainSearch.Media.YouTube\nComponent Status: Mount`);
     }
 
     /**
@@ -34,7 +34,11 @@ class YouTube extends React.Component {
      * @returns {void}
      */
     setData() {
-
+        const media = JSON.parse(localStorage.getItem("media")).data.Media;
+        this.setData((previous) => ({
+            ...previous,
+            Media: media,
+        }));
     }
 
     /**

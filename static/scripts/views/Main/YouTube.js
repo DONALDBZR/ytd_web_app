@@ -82,7 +82,7 @@ class YouTube extends React.Component {
                 "Content-Type": "application/json",
             },
         })
-        .then((response) => response.json());
+        .then((response) => response.json())
         .then((data) => this.redirector(delay, data.url));
     }
 

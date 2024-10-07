@@ -140,7 +140,7 @@ def retrieveMedia() -> Response:
     }
     if "Search" in request.referrer:
         media: Media = Media(user_request) # type: ignore
-        model_response: Dict[str, Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]] = media.verifyPlatform()
+        model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]] = media.verifyPlatform()
         status = int(model_response["data"]["status"])  # type: ignore
         response = dumps(model_response["data"]["data"], indent=4) # type: ignore
     else:

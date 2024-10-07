@@ -24,7 +24,7 @@ class MainSearch extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search\nComponent Status: Mount`);
+        console.info(`Route: ${window.location.pathname}\nComponent: Search.Main.MainSearch\nComponent Status: Mount`);
     }
 
     /**

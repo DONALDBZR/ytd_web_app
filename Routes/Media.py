@@ -145,8 +145,7 @@ def getRelatedContents(identifier: str) -> Response:
         "port": str(request.environ.get("SERVER_PORT"))
     }
     media: Media = Media(system_request)
-    model_response: Dict[str, Union[int, List[Dict[str, str]]]
-                         ] = media.getRelatedContents(identifier)
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
     status: int = int(model_response["status"])  # type: ignore
     response = json.dumps(model_response["data"], indent=4)  # type: ignore
     return Response(response, status, mimetype=mime_type)  # type: ignore

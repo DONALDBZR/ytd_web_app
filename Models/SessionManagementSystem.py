@@ -89,8 +89,7 @@ class Session_Manager:
         self.setProxyIpAddress(str(request["proxy_ip_address"]))
         self.__maintain()
         self.setSession(session)
-        self.getLogger().inform(
-            "The Session Management System has been successfully been initialized!")
+        self.getLogger().inform("The Session Management System has been successfully been initialized!")
         self.verifySession()
 
     def getDirectory(self) -> str:

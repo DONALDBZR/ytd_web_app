@@ -65,29 +65,29 @@ class YouTube extends React.Component {
      */
     retrieveMedia(event) {
         event.preventDefault();
+        const loading_icon = document.querySelector("#loading");
         const delay = 200;
-        const uniform_resource_locator = document.querySelector("button[name='mediaDownloader']").value;
+        const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
         const platform = new URL(uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
-        console.debug(`Uniform Resource Locator: ${uniform_resource_locator}\nPlatform: ${platform}`);
-        // document.querySelector("#loading").style.display = "flex";
-        // fetch("/Media/Download", {
-        //     method: "POST",
-        //     body: JSON.stringify({
-        //         Media: {
-        //             uniform_resource_locator: uniform_resource_locator,
-        //             platform: platform,
-        //         },
-        //     }),
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        // })
-        //     .then((response) => response.json())
-        //     .then((data) => {
-        //         setTimeout(() => {
-        //             window.location.href = data.data.data.url;
-        //         }, delay);
-        //     });
+        loading_icon.style.display = "flex";
+        fetch("/Media/Download", {
+            method: "POST",
+            body: JSON.stringify({
+                Media: {
+                    uniform_resource_locator: uniform_resource_locator,
+                    platform: platform,
+                },
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            setTimeout(() => {
+                window.location.href = data.data.data.url;
+            }, delay);
+        });
     }
 
     /**

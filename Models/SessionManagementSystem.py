@@ -307,7 +307,8 @@ class Session_Manager:
         try:
             file = open(file_name, "r")
         except FileNotFoundError:
-            print(f"No such file!\n{file_name=}")
+            self.getLogger().error(f"No such file!\n{file_name=}")
+            exit()
         content: Union[str, None] = file.read().strip()
         file.close()
         data = json.loads(content)
@@ -383,10 +384,16 @@ class Session_Manager:
                 "status": 204
             }
         else:
-            data = json.loads(content)
-            return {
-                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
-            }
+            try:
+                data = json.loads(content)
+                return {
+                    "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
+                }
+            except json.JSONDecodeError:
+                data = None
+                return {
+                    "status": self.handleSession(205, file_name)["status"]
+                }
 
     def handleFile(self, file_name: str) -> Dict[str, int]:
         """

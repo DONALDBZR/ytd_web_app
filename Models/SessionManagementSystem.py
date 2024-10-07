@@ -217,7 +217,7 @@ class Session_Manager:
         except json.JSONDecodeError:
             return None
 
-    def verifyInactiveSession(self, age: int, session: Dict[str, Dict[str, Union[str, int]]], file_name: str) -> None:
+    def verifyInactiveSession(self, age: int, session: Union[Dict[str, Dict[str, Union[str, int]]], None], file_name: str) -> None:
         """
         Verifying that the session is inactive to remove it from the
         document database and to store it in the relational
@@ -225,13 +225,13 @@ class Session_Manager:
 
         Parameters:
             age: int: Age of the session.
-            session: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: The data of the session.
+            session: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}|null: The data of the session.
             file_name: string: The name of the file.
 
         Returns:
             void
         """
-        if age > 3600:
+        if age > 3600 and session is not None:
             expired_sessions: Tuple[int, str] = (int(session["Client"]["timestamp"]), str(session["Client"]["ip_address"]))
             self.getDatabaseHandler().postData(
                 table="Visitors",

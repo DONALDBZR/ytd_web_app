@@ -24,7 +24,7 @@ class Media extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media\nComponent Status: Mount`);
+        console.info(`Route: ${window.location.pathname}\nComponent: Search.Main.MainSearch.Media\nComponent Status: Mount`);
     }
 
     /**

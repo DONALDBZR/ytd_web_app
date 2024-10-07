@@ -1,3 +1,7 @@
+"""
+The Endpoint for the Media Management System.
+"""
+
 from flask import Blueprint, Response, request
 from Models.Media import Media
 from io import TextIOWrapper
@@ -6,11 +10,10 @@ from json import dumps
 import json
 import os
 
-Media_Portal = Blueprint("Media", __name__)
+
+Media_Portal: Blueprint = Blueprint("Media", __name__)
 """
 The Routing for all the Media.
-
-Type: Blueprint
 """
 
 

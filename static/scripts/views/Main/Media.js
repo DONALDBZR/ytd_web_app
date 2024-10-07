@@ -6,20 +6,15 @@ class Media extends React.Component {
     /**
      * Constructing the component that will be used for the Media
      * data type.
-     * @param {{data: {System: {dom_element: HTMLElement}}}} props
+     * @param {*} props
      */
     constructor(props) {
         super(props);
-        this.props = props;
         /**
          * The states of the application.
-         * @type {{System: {dom_element: HTMLElement}}}
+         * @type {{}}
          */
-        this.state = {
-            System: {
-                dom_element: this.props.data.System.dom_element,
-            },
-        };
+        this.state = {};
     }
 
     /**

@@ -402,7 +402,7 @@ class Session_Manager:
         try:
             data = json.loads(content)
             return {
-                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
+                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"] # type: ignore
             }
         except json.JSONDecodeError:
             data = None

@@ -384,16 +384,31 @@ class Session_Manager:
                 "status": 204
             }
         else:
-            try:
-                data = json.loads(content)
-                return {
-                    "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
-                }
-            except json.JSONDecodeError:
-                data = None
-                return {
-                    "status": self.handleSession(205, file_name)["status"]
-                }
+            return self.__handleFileJsonLoad(content, file_name)
+
+    def __handleFileJsonLoad(self, content: str, file_name: str) -> Dict[str, int]:
+        """
+        Loading the session file and returning the correct status of
+        the data.
+
+        Parameters:
+            content: string: The data of the file as a string.
+            file_name: string: The name of the file.
+
+        Returns:
+            {status: int}
+        """
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None]
+        try:
+            data = json.loads(content)
+            return {
+                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
+            }
+        except json.JSONDecodeError:
+            data = None
+            return {
+                "status": self.handleSession(205, file_name)["status"]
+            }
 
     def handleFile(self, file_name: str) -> Dict[str, int]:
         """

@@ -190,15 +190,18 @@ class Session_Manager:
             void
         """
         age: int
-        data: Dict[str, Dict[str, Union[str, int]]]
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None]
         for index in range(0, self.getLength(), 1):
             file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
             file = open(file_name, "r")
             content: Union[str, None] = file.read().strip()
             file.close()
             if (content is not None or content != "") and len(content) != 0:
-                data = json.loads(content)
-                age = int(time.time()) - int(data["Client"]["timestamp"])
+                try:
+                    data = json.loads(content)
+                except json.JSONDecodeError:
+                    data = None
+                age = int(time.time()) - int(data["Client"]["timestamp"]) if data is not None else int(time.time()) - 3601
                 self.verifyInactiveSession(age, data, file_name)
 
     def verifyInactiveSession(self, age: int, session: Dict[str, Dict[str, Union[str, int]]], file_name: str) -> None:
@@ -244,6 +247,7 @@ class Session_Manager:
         }
         self.getSession()['Client'] = data
         session_data = self.retrieveSession()
+        self.getLogger().debug(f"Status: Created\nSession Data: {session_data}")
         file_path = f"{self.getDirectory()}{self.getIpAddress()}.json"
         session_file = open(file_path, 'w')
         session_file.write(session_data)
@@ -287,7 +291,10 @@ class Session_Manager:
         self.setTimestamp(int(time.time()))
         self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name: str = f"{self.getDirectory()}{self.getIpAddress()}.json"
-        file = open(file_name, "r")
+        try:
+            file = open(file_name, "r")
+        except FileNotFoundError:
+            print(f"No such file!\n{file_name=}")
         content: Union[str, None] = file.read().strip()
         file.close()
         data = json.loads(content)
@@ -301,6 +308,7 @@ class Session_Manager:
             }
             file = open(file_name, "w")
             self.getSession()["Client"] = new_data
+            self.getLogger().debug(f"Status: Updated\nSession Data: {self.retrieveSession()}")
             file.write(self.retrieveSession())
             file.close()
             self.getLogger().inform("The session has been successfully updated!")

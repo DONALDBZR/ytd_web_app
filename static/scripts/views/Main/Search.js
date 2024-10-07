@@ -45,12 +45,13 @@ class MainSearch extends React.Component {
      */
     render() {
         return (
-            <>
+            <main>
                 <div id="loading">
                     <i class="fa-solid fa-spinner fa-spin"></i>
                 </div>
-                {/* <Media data={media} /> */}
-            </>
+                <Media />
+                <RelatedContents />
+            </main>
         );
     }
 }

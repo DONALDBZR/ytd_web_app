@@ -15,12 +15,12 @@ class Main extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        // if (window.location.pathname.includes("Search")) {
-        //     return <Search data={search} />;
+        if (window.location.pathname.includes("Search")) {
+            return <MainSearch />;
         // } else if (window.location.pathname.includes("Download")) {
         //     return <Download />;
-        // } else {
+        } else {
             return <MainHomepage />;
-        // }
+        }
     }
 }

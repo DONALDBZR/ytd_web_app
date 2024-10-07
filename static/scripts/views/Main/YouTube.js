@@ -82,12 +82,21 @@ class YouTube extends React.Component {
                 "Content-Type": "application/json",
             },
         })
-        .then((response) => response.json())
-        .then((data) => {
-            setTimeout(() => {
-                window.location.href = data.data.data.url;
-            }, delay);
-        });
+        .then((response) => response.json());
+        .then((data) => this.redirector(delay, data.url));
+    }
+
+    /**
+     * Redirecting the user to an intended uniform resource
+     * locator.
+     * @param {number} delay The amount of time in milliseconds before firing the method
+     * @param {string} uniform_resource_locator The route
+     * @returns {void}
+     */
+    redirector(delay, uniform_resource_locator) {
+        setTimeout(() => {
+            window.location.href = uniform_resource_locator;
+        }, delay);
     }
 
     /**

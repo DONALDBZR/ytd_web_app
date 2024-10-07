@@ -1,7 +1,7 @@
 /**
  * The component to be rendered for the search page
  */
-class Search extends React.Component {
+class MainSearch extends React.Component {
     /**
      * Constructing the Search component of the application.
      * @param {*} props The properties of the component
@@ -26,26 +26,11 @@ class Search extends React.Component {
     }
 
     /**
-     * Updating the component as soon as the states are different.
-     * @param {{data: {System: {view_route: string, dom_element: HTMLElement}}}} previous_props The properties of the component
-     * @returns {void}
-     */
-    componentDidUpdate(previous_props) {
-        if (this.props != previous_props) {
-            this.setData();
-        }
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search\nComponent Status: Update`);
-    }
-
-    /**
      * Setting the main state of the component.
      * @returns {void}
      */
     setData() {
-        this.setState((previous) => ({
-            ...previous,
-            System: this.props.data.System,
-        }));
+        
     }
 
     /**
@@ -67,7 +52,7 @@ class Search extends React.Component {
                 <div id="loading">
                     <i class="fa-solid fa-spinner fa-spin"></i>
                 </div>
-                <Media data={media} />
+                {/* <Media data={media} /> */}
             </>
         );
     }

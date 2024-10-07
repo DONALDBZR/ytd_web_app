@@ -2,6 +2,7 @@ from flask import Blueprint, Response, request
 from Models.Media import Media
 from io import TextIOWrapper
 from typing import Dict, Union, List
+from json import dumps
 import json
 import os
 
@@ -122,26 +123,31 @@ def retrieveMedia() -> Response:
     locator and stores it in the server while allowing the user
     to download it.
 
-    Returns: string
+    Returns:
+        Response
     """
-    payload = request.json
-    data = payload["Media"]  # type: ignore
-    user_request = {
+    response: Union[Dict[str, Union[int, Dict[str, Union[str, int, None]]]], str]
+    payload: Dict[str, Dict[str, str]] = request.json  # type: ignore
+    data: Dict[str, str] = payload["Media"]
+    status: int
+    mime_type: str = "application/json"
+    user_request: Dict[str, str] = {
         "referer": request.referrer,
-        "search": str(data["uniform_resource_locator"]),  # type: ignore
-        "platform": str(data["platform"]),  # type: ignore
+        "search": data["uniform_resource_locator"],
+        "platform": data["platform"],
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
-        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))
     }
-    response: dict[str, int | dict[str, str | int | None]] | str
-    # Ensuring that the payload is from the search page
     if "Search" in request.referrer:
-        media = Media(user_request)  # type: ignore
-        response = media.verifyPlatform()  # type: ignore
-    mime_type = "application/json"
-    status = int(response["data"]["status"])  # type: ignore
-    response = json.dumps(response, indent=4)  # type: ignore
+        media: Media = Media(user_request) # type: ignore
+        model_response: Dict[str, Union[int, Dict[str, Union[str, int, Dict[str, Union[str, int, None]], None]]]] = media.verifyPlatform()
+        status = int(model_response["data"]["status"])  # type: ignore
+        response = dumps(model_response["data"]["data"], indent=4) # type: ignore
+    else:
+        status = 403
+        response = dumps({}, indent=4)
     return Response(response, status, mimetype=mime_type)
+
 
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
 def getRelatedContents(identifier: str) -> Response:
@@ -164,7 +170,8 @@ def getRelatedContents(identifier: str) -> Response:
         "port": str(request.environ.get("SERVER_PORT"))
     }
     media: Media = Media(system_request)
-    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
-    status: int = int(model_response["status"]) # type: ignore
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]
+                         ] = media.getRelatedContents(identifier)
+    status: int = int(model_response["status"])  # type: ignore
     response = json.dumps(model_response["data"], indent=4)  # type: ignore
-    return Response(response, status, mimetype=mime_type) # type: ignore
+    return Response(response, status, mimetype=mime_type)  # type: ignore

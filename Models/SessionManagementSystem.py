@@ -300,19 +300,19 @@ class Session_Manager:
         Returns:
             SessionMixin
         """
+        content: Union[str, None]
         session_data: Union[Dict[str, Dict[str, Union[str, int]]], None]
         self.setTimestamp(int(time.time()))
         self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name: str = f"{self.getDirectory()}{self.getIpAddress()}.json"
         try:
             file = open(file_name, "r")
+            content = file.read().strip()
+            file.close()
         except FileNotFoundError:
-            self.getLogger().error(f"No such file!\n{file_name=}")
-            exit()
-        content: Union[str, None] = file.read().strip()
-        file.close()
+            content = None
         try:
-            session_data = json.loads(content)
+            session_data = json.loads(content) if content is not None else None
         except json.JSONDecodeError:
             session_data = None
         if session_data is not None and self.getIpAddress() == session_data['Client']['ip_address']:

@@ -197,12 +197,25 @@ class Session_Manager:
             content: Union[str, None] = file.read().strip()
             file.close()
             if (content is not None or content != "") and len(content) != 0:
-                try:
-                    data = json.loads(content)
-                except json.JSONDecodeError:
-                    data = None
+                data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self._verifyExistingSessionsGetSessionData(content)
                 age = int(time.time()) - int(data["Client"]["timestamp"]) if data is not None else int(time.time()) - 3601
                 self.verifyInactiveSession(age, data, file_name)
+
+    def _verifyExistingSessionsGetSessionData(self, content: Union[str, None]) -> Union[Dict[str, Dict[str, Union[str, int]]], None]:
+        """
+        Retrieving the session data that will be used to verify
+        existing sessions.
+
+        Parameters:
+            content: string|null: The content of the file that is in a string form.
+
+        Returns:
+            {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}|null
+        """
+        try:
+            return json.loads(str(content))
+        except json.JSONDecodeError:
+            return None
 
     def verifyInactiveSession(self, age: int, session: Dict[str, Dict[str, Union[str, int]]], file_name: str) -> None:
         """

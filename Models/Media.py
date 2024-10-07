@@ -166,27 +166,19 @@ class Media:
         Returns:
             {status: int, data: [{identifier: int, value: string}], timestamp: string}
         """
-        response: Dict[str, Union[int, List[RowType], str]]
         filter_data: Tuple[str] = (self.getValue(),)
-        media = self.getDatabaseHandler().getData(
+        media: List[RowType] = self.getDatabaseHandler().getData(
             parameters=filter_data,
             table_name="Media",
             filter_condition="value = %s"
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        if len(media) == 0:
-            response = {
-                'status': 404,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        else:
-            response = {
-                'status': 200,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        return response
+        status: int = 404 if len(media) == 0 else 200
+        return {
+            "status": status,
+            "data": media,
+            "timestamp": self.getTimestamp()
+        }
 
     def postMedia(self) -> None:
         """

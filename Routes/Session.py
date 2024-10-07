@@ -1,8 +1,11 @@
+"""
+The endpoint of the Session Management System.
+"""
+
 from Models.SessionManagementSystem import Session_Manager
 from flask import Blueprint, Response, request, session
 from typing import Dict, Union
 from json import dumps
-import json
 
 
 Session_Portal: Blueprint = Blueprint("Session", __name__)

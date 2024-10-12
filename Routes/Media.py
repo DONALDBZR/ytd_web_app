@@ -4,9 +4,9 @@ The Endpoint for the Media Management System.
 
 from flask import Blueprint, Response, request
 from Models.Media import Media
-from io import TextIOWrapper
 from typing import Dict, Union, List
 from json import dumps, loads
+from os.path import isfile
 import json
 import os
 
@@ -15,6 +15,22 @@ Media_Portal: Blueprint = Blueprint("Media", __name__)
 """
 The Routing for all the Media.
 """
+
+def loadFile(file_name: str) -> Union[str, None]:
+    """
+    Loading the file needed.
+
+    Parameters:
+        file_name:  string: Name of the file.
+
+    Returns:
+        string|null
+    """
+    try:
+        file = open(file_name, "r")
+        return file.read().strip()
+    except FileNotFoundError:
+        return None
 
 
 def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]:
@@ -27,9 +43,8 @@ def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str
     Returns:
         {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}
     """
-    if os.path.isfile(file_name):
-        file = open(file_name, "r")
-        content: str = file.read().strip()
+    if isfile(file_name):
+        content: str = loadFile(file_name)
         return loads(content)
     else:
         directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"

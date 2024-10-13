@@ -150,18 +150,22 @@ class Media:
         media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
         status: int = int(str(media["status"]))
         if status != 200:
-            self.postMedia()
+            status = self.postMedia()
+            if status == 503:
+                return {
+                    "status": status,
+                    "data": {}
+                }
             self.verifyPlatform()
         else:
             self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
-        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
-            response = self.handleYouTube()
-        else:
-            response = {
-                "status": 401,
-                "data": {}
-            }
-        return response
+            if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+                return self.handleYouTube()
+            else:
+                return {
+                    "status": 401,
+                    "data": {}
+                }
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
@@ -205,7 +209,7 @@ class Media:
             self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
             return 503
 
-    def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]:
+    def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
@@ -213,9 +217,8 @@ class Media:
         Returns:
             {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}
         """
-        response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]
-        youtube: Union[Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]
-        media: Union[Dict[str, Dict[str, Dict[str, Union[str, int, None]]]], Dict[str, Dict[str, Dict[str, Union[str, int]]]]]
+        response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
+        youtube: Dict[str, Union[str, int, None]]
         status: int
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         identifier: str = self._getIdentifier()

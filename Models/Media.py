@@ -6,7 +6,7 @@ from Environment import Environment
 from mysql.connector.types import RowType
 from typing import Dict, Union, List, Tuple
 from mysql.connector import Error
-import json
+from json import dumps
 import logging
 
 
@@ -229,29 +229,18 @@ class Media:
             {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}
         """
         response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
-        youtube: Dict[str, Union[str, int, None]]
-        status: int
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         identifier: str = self._getIdentifier()
         filename: str = f"{self.getDirectory()}/{identifier}.json"
+        status: int = 200 if self.getReferer() is None else 201
+        youtube: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search() if self.getReferer() is None else self._YouTubeDownloader.retrievingStreams() # type: ignore
         file = open(filename, "w")
-        if self.getReferer() is None:
-            youtube = self._YouTubeDownloader.search()
-            media = {
-                "Media": {
-                    "YouTube": youtube
-                }
+        media: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = {
+            "Media": {
+                "YouTube": youtube
             }
-            status = 200
-        else:
-            youtube = self._YouTubeDownloader.retrievingStreams()
-            media = {
-                "Media": {
-                    "YouTube": youtube
-                }
-            }
-            status = 201
-        file.write(json.dumps(media, indent=4))
+        }
+        file.write(dumps(media, indent=4))
         file.close()
         response = {
             "status": status,

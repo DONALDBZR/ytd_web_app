@@ -390,9 +390,7 @@ class Media:
             column_names="author AS channel, title",
             limit_condition=1
         )[0]
-        author: str = str(database_response["title"]).split(" - ")[0] # type: ignore
-        response: Dict[str, str] = {
+        return {
             "channel": str(database_response["channel"]), # type: ignore
-            "author": author
+            "author": str(database_response["title"]).split(" - ")[0] # type: ignore
         }
-        return response

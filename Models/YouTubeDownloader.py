@@ -6,6 +6,8 @@ from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from typing import Dict, Tuple, Union, List
+from os.path import isfile
+from time import strftime, gmtime
 import time
 import os
 import logging
@@ -271,29 +273,19 @@ class YouTube_Downloader:
             {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}
         """
         response: Dict[str, Union[str, int, None]]
-        audio_file: Union[str, None]
-        video_file: Union[str, None]
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
         self.sanitizeYouTubeIdentifier()
         meta_data: Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]] = self.getYouTube()
-        if meta_data["status"] == 200:
-            self.setLength(int(meta_data["data"][0]["length"]))  # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0]["published_at"]))  # type: ignore
-            self.setAuthor(str(meta_data["data"][0]["author"]))  # type: ignore
-            self.setTitle(str(meta_data["data"][0]["title"]))  # type: ignore
-            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
-            file_locations = self._getFileLocations(list(meta_data["data"])) # type: ignore
-            audio_file = file_locations["audio_file"]
-            video_file = file_locations["video_file"]
-        else:
-            self.setLength(self.getVideo().length)
-            self.setPublishedAt(self.getVideo().publish_date)
-            self.setAuthor(self.getVideo().author)
-            self.setTitle(self.getVideo().title)
-            self.setDuration(time.strftime("%H:%M:%S", time.gmtime(self.getLength())))
-            audio_file = None
-            video_file = None
+        file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) # type: ignore
+        self.setLength(int(meta_data["data"][0]["length"])) if int(str(meta_data["status"])) == 200 else self.setLength(self.getVideo().length) # type: ignore
+        self.setPublishedAt(str(meta_data["data"][0]["published_at"])) if int(str(meta_data["status"])) == 200 else self.setPublishedAt(self.getVideo().publish_date) # type: ignore
+        self.setAuthor(str(meta_data["data"][0]["author"])) if int(str(meta_data["status"])) == 200 else self.setAuthor(self.getVideo().author) # type: ignore
+        self.setTitle(str(meta_data["data"][0]["title"])) if int(str(meta_data["status"])) == 200 else self.setTitle(self.getVideo().title) # type: ignore
+        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength()))) if int(str(meta_data["status"])) == 200 else self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
+        audio_file: Union[str, None] = file_locations["audio_file"] if int(str(meta_data["status"])) == 200 else None
+        video_file: Union[str, None] = file_locations["video_file"] if int(str(meta_data["status"])) == 200 else None
+        if int(meta_data["status"]) != 200: # type: ignore
             self.postYouTube()
         response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
@@ -394,20 +386,20 @@ class YouTube_Downloader:
         if not os.path.exists(f"{self.getDirectory()}/Audio"):
             os.makedirs(f"{self.getDirectory()}/Audio")
 
-    def retrievingStreams(self) -> dict[str, str | int]:
+    def retrievingStreams(self) -> Dict[str, Union[str, int]]:
         """
         Downloading the contents of the media from the platform to
         save on the server.
 
-        Return:
-            (object)
+        Returns:
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio: string, video: string}
         """
-        response: dict[str, str | int]
-        metadata = self.search()
+        response: Dict[str, Union[str, int]]
+        metadata: Dict[str, Union[str, int, None]] = self.search()
         self.setIdentifier(str(metadata["identifier"]))
         audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
         video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        if os.path.isfile(audio_file_location) == False and os.path.isfile(video_file_location) == False:
+        if isfile(audio_file_location) == False and isfile(video_file_location) == False:
             self.setVideo(YouTube(self.getUniformResourceLocator()))
             self.getDatabaseHandler()._execute()
             self.setStreams(self.getVideo().streams)

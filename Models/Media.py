@@ -234,12 +234,12 @@ class Media:
         filename: str = f"{self.getDirectory()}/{identifier}.json"
         status: int = 200 if self.getReferer() is None else 201
         youtube: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search() if self.getReferer() is None else self._YouTubeDownloader.retrievingStreams() # type: ignore
-        file = open(filename, "w")
         media: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = {
             "Media": {
                 "YouTube": youtube
             }
         }
+        file = open(filename, "w")
         file.write(dumps(media, indent=4))
         file.close()
         response = {

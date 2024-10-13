@@ -420,27 +420,16 @@ class YouTube_Downloader:
         Retrieving the audio file and saving it on the server as
         well as adding its meta data in the database.
 
-        Return:
-            (string)
+        Returns:
+            string
         """
-        response: str
-        for index in range(0, len(self.getStreams().filter(mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")), 1):
-            self.setITAG(
-                self.getStreams().filter(
-                    mime_type="audio/mp4",
-                    abr="128kbps",
-                    audio_codec="mp4a.40.2"
-                )[index].itag
-            )
-        self.setStream(
-            self.getStreams().get_by_itag(self.getITAG())
-        )
-        self.setMimeType("audio/mp3")
-        if type(self.getStream()) is Stream:
-            response = self.__downloadAudio()
-        else:
-            response = ""
-        return response
+        streams: List[Stream] = [stream for stream in self.getStreams().filter(mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")]
+        if streams:
+            self.setITAG(streams[0].itag)
+            self.setStream(self.getStreams().get_by_itag(self.getITAG()))
+            self.setMimeType("audio/mp3")
+            return self.__downloadAudio()
+        return ""
 
     def getVideoFile(self) -> str:
         """

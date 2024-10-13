@@ -73,18 +73,16 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
             "status": status,
             "data": data
         }
-    else:
-        identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
-        user_request: Dict[str, Union[None, str]] = {
-            "referer": None,
-            "search": f"https://www.youtube.com/watch?v={identifier}",
-            "platform": "youtube",
-            "ip_address": str(request.environ.get("REMOTE_ADDR")),
-            "port": str(request.environ.get("SERVER_PORT"))
-        }
-        media: Media = Media(user_request)
-        model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
-        return model_response
+    identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
+    user_request: Dict[str, Union[None, str]] = {
+        "referer": None,
+        "search": f"https://www.youtube.com/watch?v={identifier}",
+        "platform": "youtube",
+        "ip_address": str(request.environ.get("REMOTE_ADDR")),
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    media: Media = Media(user_request)
+    return media.verifyPlatform()
 
 
 @Media_Portal.route("/Search", methods=["GET"])

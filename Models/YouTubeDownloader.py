@@ -392,8 +392,8 @@ class YouTube_Downloader:
         response: Dict[str, Union[str, int]]
         metadata: Dict[str, Union[str, int, None]] = self.search()
         self.setIdentifier(str(metadata["identifier"]))
-        audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+        audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+        video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         if isfile(audio_file_location) == False and isfile(video_file_location) == False:
             self.setVideo(YouTube(self.getUniformResourceLocator()))
             self.getDatabaseHandler()._execute()

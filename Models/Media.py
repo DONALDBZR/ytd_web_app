@@ -137,6 +137,24 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
+    def __verifyPlatform(self, status: int) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
+        """
+        Verifying that the media platform data has been sucessfully
+        inserted in order to process the data needed.
+
+        Parameters:
+            status: int: The status of the HTTP request.
+
+        Returns:
+            {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
+        """
+        if status == 503:
+            return {
+                "status": status,
+                "data": {}
+            }
+        return self.verifyPlatform()
+
     def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
         Verifying the uniform resource locator in order to switch to
@@ -146,26 +164,19 @@ class Media:
         Returns:
             {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
         """
-        response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]
         media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
         status: int = int(str(media["status"]))
         if status != 200:
             status = self.postMedia()
-            if status == 503:
-                return {
-                    "status": status,
-                    "data": {}
-                }
-            self.verifyPlatform()
+            return self.__verifyPlatform(status)
+        self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
+        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+            return self.handleYouTube()
         else:
-            self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
-            if "youtube" in self.getValue() or "youtu.be" in self.getValue():
-                return self.handleYouTube()
-            else:
-                return {
-                    "status": 401,
-                    "data": {}
-                }
+            return {
+                "status": 401,
+                "data": {}
+            }
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """

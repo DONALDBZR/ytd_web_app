@@ -125,8 +125,8 @@ def getMedia(identifier: str) -> Response:
     mime_type: str = "application/json"
     ENV.__setDirectory(int(str(request.environ.get("SERVER_PORT"))))
     file_name: str = f"{ENV.getDirectory()}/Cache/Media/{identifier}.json"
-    response: Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]] = getMetaData(file_name)
-    return Response(dumps(response, indent=4), status, mimetype=mime_type)
+    response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = getMetaData(file_name)
+    return Response(dumps(response["data"], indent=4), int(str(response["status"])), mimetype=mime_type)
 
 
 @Media_Portal.route('/Download', methods=['POST'])

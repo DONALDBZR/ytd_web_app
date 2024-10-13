@@ -8,7 +8,6 @@ from urllib.error import HTTPError
 from typing import Dict, Tuple, Union, List
 from os.path import isfile
 from time import strftime, gmtime
-import time
 import os
 import logging
 
@@ -41,7 +40,7 @@ class YouTube_Downloader:
     """
     The duration of the video in the format of HH:mm:ss.
     """
-    __published_at: str | datetime | None
+    __published_at: Union[str, datetime, None]
     """
     The date at which the video has been published.
     """
@@ -70,7 +69,7 @@ class YouTube_Downloader:
     """
     Interface for querying the available media streams.
     """
-    __stream: Stream | None
+    __stream: Union[Stream, None]
     """
     Container for stream manifest data.
     """
@@ -93,13 +92,11 @@ class YouTube_Downloader:
         Instantiating the class and launching the operations needed.
 
         Parameters:
-            uniform_resource_locator:   (string): The uniform resource locator to be searched.
-            media_identifier:           (int):    The media type for the system.
+            uniform_resource_locator: string: The uniform resource locator to be searched.
+            media_identifier: int: The media type for the system.
         """
         ENV = Environment()
-        self.setDirectory(
-            f"{ENV.getDirectory()}/Public"
-        )
+        self.setDirectory(f"{ENV.getDirectory()}/Public")
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(logging.getLogger(__name__))
         self.mediaDirectory()
@@ -116,9 +113,7 @@ class YouTube_Downloader:
         self.getDatabaseHandler()._execute()
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
-        self.getLogger().inform(
-            "The YouTube Downloader has been successfully been initialized!"
-        )
+        self.getLogger().inform("The YouTube Downloader has been successfully been initialized!")
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator

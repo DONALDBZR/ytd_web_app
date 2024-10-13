@@ -151,10 +151,10 @@ class YouTube_Downloader:
     def setDuration(self, duration: str) -> None:
         self.__duration = duration
 
-    def getPublishedAt(self) -> str | datetime | None:
+    def getPublishedAt(self) -> Union[str, datetime, None]:
         return self.__published_at
 
-    def setPublishedAt(self, published_at: str | datetime | None) -> None:
+    def setPublishedAt(self, published_at: Union[str, datetime, None]) -> None:
         self.__published_at = str(published_at)
 
     def getDatabaseHandler(self) -> Database_Handler:
@@ -193,10 +193,10 @@ class YouTube_Downloader:
     def setStreams(self, streams: StreamQuery) -> None:
         self.__streams = streams
 
-    def getStream(self) -> Stream | None:
+    def getStream(self) -> Union[Stream, None]:
         return self.__stream
 
-    def setStream(self, stream: Stream | None) -> None:
+    def setStream(self, stream: Union[Stream, None]) -> None:
         self.__stream = stream
 
     def getITAG(self) -> int:
@@ -217,22 +217,6 @@ class YouTube_Downloader:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def retrieveIdentifier(self, identifier: str) -> str:
-        """
-        Retrieving the identifier of the content in the condition
-        that it is in a playlist.
-
-        Parameters:
-            identifier: (string):   The ID of the content.
-
-        Return:
-            (string)
-        """
-        if "&" in identifier:
-            return identifier.rsplit("&", 1)[0]
-        else:
-            return identifier
-
     def sanitizeYouTubeIdentifier(self) -> None:
         """
         Sanitizing the identifier of the content from the platform
@@ -242,23 +226,9 @@ class YouTube_Downloader:
             void
         """
         if "youtube" in self.getUniformResourceLocator():
-            self.setIdentifier(
-                self.retrieveIdentifier(
-                    self.getIdentifier().replace(
-                        "https://www.youtube.com/watch?v=",
-                        ""
-                    )
-                )
-            )
+            self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "").rsplit("&", 1)[0]) if "&" in self.getIdentifier() else self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))
         else:
-            self.setIdentifier(
-                self.retrieveIdentifier(
-                    self.getIdentifier().replace(
-                        "https://youtu.be/",
-                        ""
-                    ).rsplit("?")[0]
-                )
-            )
+            self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0].rsplit("&", 1)[0]) if "&" in self.getIdentifier() else self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0]
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """

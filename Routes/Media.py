@@ -107,7 +107,7 @@ def search() -> Response:
         "port": str(request.environ.get("SERVER_PORT"))
     }
     media: Media = Media(user_request)
-    response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]] = media.verifyPlatform()
+    response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
     status: int = int(response["status"])  # type: ignore
     return Response(dumps(response, indent=4), status, mimetype=mime_type)
 

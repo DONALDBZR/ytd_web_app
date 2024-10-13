@@ -5,6 +5,7 @@ from datetime import datetime
 from Environment import Environment
 from mysql.connector.types import RowType
 from typing import Dict, Union, List, Tuple
+from mysql.connector import Error
 import json
 import logging
 
@@ -136,7 +137,7 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]:
+    def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -147,11 +148,12 @@ class Media:
         """
         response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]
         media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
-        if media["status"] != 200:
+        status: int = int(str(media["status"]))
+        if status != 200:
             self.postMedia()
             self.verifyPlatform()
         else:
-            self.setIdentifier(int(media["data"][0]["identifier"]))  # type: ignore
+            self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             response = self.handleYouTube()
         else:
@@ -182,20 +184,26 @@ class Media:
             "timestamp": self.getTimestamp()
         }
 
-    def postMedia(self) -> None:
+    def postMedia(self) -> int:
         """
         Creating a record for the media with its data.
 
         Returns:
-            void
+            int
         """
         data: Tuple[str] = (self.getValue(),)
-        self.getDatabaseHandler().postData(
-            table="Media",
-            columns="value",
-            values="%s",
-            parameters=data
-        )
+        try:
+            self.getDatabaseHandler().postData(
+                table="Media",
+                columns="value",
+                values="%s",
+                parameters=data
+            )
+            self.getLogger().inform("The data has been inserted in the relational database server.")
+            return 201
+        except Error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {Error}")
+            return 503
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]:
         """
@@ -283,12 +291,8 @@ class Media:
         Returns:
             {status: int, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}
         """
-        status: int
+        status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
-        if len(related_contents) > 0:
-            status = 200
-        else:
-            status = 204
         for index in range(0, len(related_contents), 1):
             self._YouTubeDownloader = YouTube_Downloader(str(related_contents[index]["uniform_resource_locator"]), int(related_contents[index]["media_identifier"]))
             metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()

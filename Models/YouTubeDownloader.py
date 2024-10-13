@@ -6,9 +6,9 @@ from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from typing import Dict, Tuple, Union, List
-from os.path import isfile
+from os.path import isfile, exists
 from time import strftime, gmtime
-import os
+from os import makedirs
 import logging
 
 
@@ -326,17 +326,17 @@ class YouTube_Downloader:
             parameters=data
         )
 
-    def mediaDirectory(self):
+    def mediaDirectory(self) -> None:
         """
         Creating the directories for storing the media files.
 
         Return:
-            (void)
+            void
         """
-        if not os.path.exists(f"{self.getDirectory()}/Video"):
-            os.makedirs(f"{self.getDirectory()}/Video")
-        if not os.path.exists(f"{self.getDirectory()}/Audio"):
-            os.makedirs(f"{self.getDirectory()}/Audio")
+        if not exists(f"{self.getDirectory()}/Video"):
+            makedirs(f"{self.getDirectory()}/Video")
+        if not exists(f"{self.getDirectory()}/Audio"):
+            makedirs(f"{self.getDirectory()}/Audio")
 
     def retrievingStreams(self) -> Dict[str, Union[str, int]]:
         """

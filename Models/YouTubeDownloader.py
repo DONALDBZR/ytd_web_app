@@ -287,7 +287,7 @@ class YouTube_Downloader:
         video_file: Union[str, None] = file_locations["video_file"] if int(str(meta_data["status"])) == 200 else None
         if int(meta_data["status"]) != 200: # type: ignore
             self.postYouTube()
-        response = {
+        return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
@@ -300,7 +300,6 @@ class YouTube_Downloader:
             "audio_file": audio_file,
             "video_file": video_file
         }
-        return response
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """

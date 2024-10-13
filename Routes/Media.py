@@ -68,9 +68,9 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     """
     data: Dict[str, Union[str, int, None]]
     if isfile(file_name):
-        data = loadData(readFile(file_name)) # type: ignore
-        status: int = 200 if data is not None else 503
-        data = data if status == 200 else {}
+        file_data: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = loadData(readFile(file_name)) # type: ignore
+        status: int = 200 if file_data is not None else 503
+        data = file_data["Media"]["YouTube"] if status == 200 else {}
         return {
             "status": status,
             "data": data

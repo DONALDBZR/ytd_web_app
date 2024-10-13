@@ -10,6 +10,8 @@ from os.path import isfile
 from Environment import Environment
 import json
 
+import index
+
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)
 """
@@ -139,11 +141,11 @@ def retrieveMedia() -> Response:
     Returns:
         Response
     """
-    response: Union[Dict[str, Union[int, Dict[str, Union[str, int, None]]]], str]
+    mime_type: str = "application/json"
+    if "Search" not in request.referrer:
+        return Response(dumps({}, indent=4), 403, mimetype=mime_type)
     payload: Dict[str, Dict[str, str]] = request.json  # type: ignore
     data: Dict[str, str] = payload["Media"]
-    status: int
-    mime_type: str = "application/json"
     user_request: Dict[str, str] = {
         "referer": request.referrer,
         "search": data["uniform_resource_locator"],
@@ -151,15 +153,9 @@ def retrieveMedia() -> Response:
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
         "port": str(request.environ.get("SERVER_PORT"))
     }
-    if "Search" in request.referrer:
-        media: Media = Media(user_request) # type: ignore
-        model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]] = media.verifyPlatform()
-        status = int(model_response["data"]["status"])  # type: ignore
-        response = dumps(model_response["data"]["data"], indent=4) # type: ignore
-    else:
-        status = 403
-        response = dumps({}, indent=4)
-    return Response(response, status, mimetype=mime_type)
+    media: Media = Media(user_request) # type: ignore
+    model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
+    return Response(dumps(model_response["data"], indent=4), int(str(model_response["status"])), mimetype=mime_type)
 
 
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])

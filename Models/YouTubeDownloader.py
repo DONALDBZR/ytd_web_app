@@ -311,18 +311,15 @@ class YouTube_Downloader:
         Returns:
             {audio_file: string | null, video_file: string | null}
         """
-        response: Dict[str, Union[str, None]]
         if len(result_set) == 2:
-            response = {
+            return {
                 "audio_file": str(result_set[0]["location"]), # type: ignore
                 "video_file": str(result_set[1]["location"]) # type: ignore
             }
-        else:
-            response = {
-                "audio_file": None,
-                "video_file": None
-            }
-        return response
+        return {
+            "audio_file": None,
+            "video_file": None
+        }
 
     def getYouTube(self) -> Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]]:
         """

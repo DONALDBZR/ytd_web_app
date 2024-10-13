@@ -401,7 +401,7 @@ class YouTube_Downloader:
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()
         self.getLogger().inform("The media content has been downloaded!")
-        response = {
+        return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
@@ -414,7 +414,6 @@ class YouTube_Downloader:
             "audio": audio_file_location,
             "video": video_file_location
         }
-        return response
 
     def getAudioFile(self) -> str:
         """

@@ -298,15 +298,13 @@ class Media:
         for index in range(0, len(related_contents), 1):
             self._YouTubeDownloader = YouTube_Downloader(str(related_contents[index]["uniform_resource_locator"]), int(related_contents[index]["media_identifier"]))
             metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
-            related_contents[index]["author_channel"] = str(metadata["author_channel"])
-            related_contents[index]["thumbnail"] = str(metadata["thumbnail"])
             data.append({
                 "duration": str(related_contents[index]["duration"]),
                 "channel": str(related_contents[index]["channel"]),
                 "title": str(related_contents[index]["title"]),
                 "uniform_resource_locator": str(related_contents[index]["uniform_resource_locator"]),
-                "author_channel": str(related_contents[index]["author_channel"]),
-                "thumbnail": str(related_contents[index]["thumbnail"]),
+                "author_channel": str(metadata["author_channel"]),
+                "thumbnail": str(metadata["thumbnail"])
             })
         response: Dict[str, Union[int, List[Dict[str, str]]]] = {
             "status": status,

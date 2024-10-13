@@ -74,8 +74,7 @@ def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str
             "data": data
         } # type: ignore
     else:
-        directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"
-        identifier: str = file_name.replace(f"{directory}/Cache/Media/", "").replace(".json", "")
+        identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
         user_request: Dict[str, Union[None, str]] = {
             "referer": None,
             "search": f"https://www.youtube.com/watch?v={identifier}",

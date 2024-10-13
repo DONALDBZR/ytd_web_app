@@ -306,11 +306,10 @@ class Media:
                 "author_channel": str(metadata["author_channel"]),
                 "thumbnail": str(metadata["thumbnail"])
             })
-        response: Dict[str, Union[int, List[Dict[str, str]]]] = {
+        return {
             "status": status,
             "data": data
         }
-        return response
 
     def getRelatedAuthorContents(self, author: str) -> List[Dict[str, Union[str, int]]]:
         """

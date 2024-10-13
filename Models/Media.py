@@ -201,8 +201,8 @@ class Media:
             )
             self.getLogger().inform("The data has been inserted in the relational database server.")
             return 201
-        except Error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {Error}")
+        except Error as relational_database_server_error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
             return 503
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]]:

@@ -272,7 +272,6 @@ class YouTube_Downloader:
         Returns:
             {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}
         """
-        response: Dict[str, Union[str, int, None]]
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
         self.sanitizeYouTubeIdentifier()

@@ -455,19 +455,14 @@ class YouTube_Downloader:
         Returns:
             string
         """
-        file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+        file_path: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         try:
-            self.getStream().download(  # type: ignore
+            self.getStream().download( # type: ignore
                 output_path=f"{self.getDirectory()}/Video",
                 filename=f"{self.getIdentifier()}.mp4"
             )
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            data = (
-                self.getMimeType(),
-                self.getTimestamp(),
-                file_path,
-                self.getIdentifier()
-            )
+            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
             self.getDatabaseHandler().postData(
                 table="MediaFile",
                 columns="type, date_downloaded, location, YouTube",
@@ -476,31 +471,8 @@ class YouTube_Downloader:
             )
             return file_path
         except HTTPError as error:
-            self.getLogger().error(
-                f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
-            )
-            return self.handleHttpError(error, file_path)
-
-    def handleHttpError(self, error: HTTPError, file_path: str) -> str:
-        """
-        Handling the HTTP Errors accordingly as it must be noted
-        that HTTP/403 is being caused as the application could not
-        keep track of the file path which gets lost where the back
-        end which acts the front-end of YouTube's datacenter,
-        generates the HTTP/403 which in turn generate the HTTP/500
-        into the application's front-end.
-
-        Parameters:
-            error: HTTPError: Raised when HTTP error occurs, but also acts like non-error return
-            file_path: string: The path of the file.
-
-        Returns:
-            string
-        """
-        if "403" in str(error):
-            return file_path
-        else:
-            return ""
+            self.getLogger().error(f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}")
+            return file_path if "403" in str(error) else ""
 
     def __downloadAudio(self) -> str:
         """

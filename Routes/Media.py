@@ -54,7 +54,7 @@ def loadData(contents: Union[str, None]) -> Union[Dict, List, None]:
         return None
 
 
-def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]:
+def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
     """
     Retrieving the metadata.
 
@@ -64,15 +64,15 @@ def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str
     Returns:
         {status: int, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}}
     """
-    
+    data: Dict[str, Union[str, int, None]]
     if isfile(file_name):
-        data: Union[Dict[str, Dict[str, Union[str, int]]], None] = loadData(readFile(file_name)) # type: ignore
+        data = loadData(readFile(file_name)) # type: ignore
         status: int = 200 if data is not None else 503
         data = data if status == 200 else {}
         return {
             "status": status,
             "data": data
-        } # type: ignore
+        }
     else:
         identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
         user_request: Dict[str, Union[None, str]] = {
@@ -83,8 +83,8 @@ def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str
             "port": str(request.environ.get("SERVER_PORT"))
         }
         media: Media = Media(user_request)
-        model_response: Dict[str, int | Dict[str, str | int | None] | Dict[str, str | int]] = media.verifyPlatform()
-        return model_response # type: ignore
+        model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
+        return model_response
 
 
 @Media_Portal.route("/Search", methods=["GET"])
@@ -98,6 +98,7 @@ def search() -> Response:
     """
     platform: str = str(request.args.get("platform"))
     search: str = str(request.args.get("search"))
+    mime_type: str = "application/json"
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,
         "search": search,
@@ -105,7 +106,6 @@ def search() -> Response:
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
         "port": str(request.environ.get("SERVER_PORT"))
     }
-    mime_type: str = "application/json"
     media: Media = Media(user_request)
     response: Dict[str, Union[int, Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]] = media.verifyPlatform()
     status: int = int(response["status"])  # type: ignore
@@ -124,11 +124,10 @@ def getMedia(identifier: str) -> Response:
     Returns:
         Response
     """
-    directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"
-    file_name: str = f"{directory}/Cache/Media/{identifier}.json"
-    response: Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]] = getMetaData(file_name)
     mime_type: str = "application/json"
-    status: int = 200
+    ENV.__setDirectory(int(str(request.environ.get("SERVER_PORT"))))
+    file_name: str = f"{ENV.getDirectory()}/Cache/Media/{identifier}.json"
+    response: Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]] = getMetaData(file_name)
     return Response(dumps(response, indent=4), status, mimetype=mime_type)
 
 

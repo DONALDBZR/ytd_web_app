@@ -5,20 +5,24 @@ The Endpoint for the Media Management System.
 from flask import Blueprint, Response, request
 from Models.Media import Media
 from typing import Dict, Union, List
-from json import dumps, loads
+from json import dumps, loads, JSONDecodeError
 from os.path import isfile
+from Environment import Environment
 import json
-import os
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)
 """
 The Routing for all the Media.
 """
+ENV = Environment()
+"""
+ENV File of the application
+"""
 
-def loadFile(file_name: str) -> Union[str, None]:
+def readFile(file_name: str) -> Union[str, None]:
     """
-    Loading the file needed.
+    Reading the file needed.
 
     Parameters:
         file_name:  string: Name of the file.
@@ -32,6 +36,23 @@ def loadFile(file_name: str) -> Union[str, None]:
     except FileNotFoundError:
         return None
 
+def loadData(contents: Union[str, None]) -> Union[Dict, List, None]:
+    """
+    Loading the data from the contents.
+
+    Parameters:
+        contents:  string|null: Contents to be loaded.
+
+    Returns:
+        object|array|null
+    """
+    if contents is None:
+        return None
+    try:
+        return loads(contents)
+    except JSONDecodeError:
+        return None
+
 
 def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str, int]]]], Dict[str, Union[str, int, None]], Dict[str, Union[str, int]]]:
     """
@@ -41,11 +62,17 @@ def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str
         file_name:  string: Name of the file.
 
     Returns:
-        {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}
+        {status: int, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}}
     """
+    
     if isfile(file_name):
-        content: str = loadFile(file_name)
-        return loads(content)
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None] = loadData(readFile(file_name)) # type: ignore
+        status: int = 200 if data is not None else 503
+        data = data if status == 200 else {}
+        return {
+            "status": status,
+            "data": data
+        } # type: ignore
     else:
         directory: str = "/var/www/html/ytd_web_app" if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591' else "/home/darkness4869/Documents/extractio"
         identifier: str = file_name.replace(f"{directory}/Cache/Media/", "").replace(".json", "")
@@ -58,7 +85,7 @@ def getMetaData(file_name: str) -> Union[Dict[str, Dict[str, Dict[str, Union[str
         }
         media: Media = Media(user_request)
         model_response: Dict[str, int | Dict[str, str | int | None] | Dict[str, str | int]] = media.verifyPlatform()
-        return model_response["data"] # type: ignore
+        return model_response # type: ignore
 
 
 @Media_Portal.route("/Search", methods=["GET"])

@@ -1,5 +1,8 @@
 """
 The Endpoint for the Media Management System.
+
+Authors:
+    Darkness4869
 """
 
 from flask import Blueprint, Response, request
@@ -8,9 +11,6 @@ from typing import Dict, Union, List
 from json import dumps, loads, JSONDecodeError
 from os.path import isfile
 from Environment import Environment
-import json
-
-import index
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)
@@ -180,6 +180,4 @@ def getRelatedContents(identifier: str) -> Response:
     }
     media: Media = Media(system_request)
     model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
-    status: int = int(model_response["status"])  # type: ignore
-    response = json.dumps(model_response["data"], indent=4)  # type: ignore
-    return Response(response, status, mimetype=mime_type)  # type: ignore
+    return Response(dumps(model_response["data"], indent=4), int(str(model_response["status"])), mimetype=mime_type)

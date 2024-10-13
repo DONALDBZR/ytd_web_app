@@ -304,20 +304,12 @@ class YouTube_Downloader:
             limit_condition=2
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response: Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]]
-        if len(media) == 0:
-            response = {
-                'status': 204,
-                'data': media, # type: ignore
-                'timestamp': self.getTimestamp()
-            }
-        else:
-            response = {
-                'status': 200,
-                'data': media, # type: ignore
-                'timestamp': self.getTimestamp()
-            }
-        return response
+        status: int = 204 if len(media) == 0 else 200
+        return {
+            "status": status,
+            "data": media, # type: ignore
+            "timestamp": self.getTimestamp()
+        }
 
     def postYouTube(self) -> None:
         """

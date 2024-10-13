@@ -1,3 +1,12 @@
+"""
+The module of the model which will interact between the
+internal relational database server of the application as
+well as with the external servers of YouTube.
+
+Authors:
+    Darkness4869
+"""
+
 from pytube import YouTube, StreamQuery, Stream
 from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
@@ -346,7 +355,6 @@ class YouTube_Downloader:
         Returns:
             {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio: string, video: string}
         """
-        response: Dict[str, Union[str, int]]
         metadata: Dict[str, Union[str, int, None]] = self.search()
         self.setIdentifier(str(metadata["identifier"]))
         audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"

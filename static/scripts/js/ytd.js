@@ -415,6 +415,36 @@ class YTD {
     }
 
     /**
+     * Setting the related contents of the related media content.
+     * @returns {void}
+     */
+    setRelatedContents() {
+        const data_object = "related_content";
+        const related_content: {timestamp: number,, identifier: string, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string}]} = JSON.parse(localStorage.getItem(data_object));
+        const route = `/Media/RelatedContents/${this.getRequestURI().replace("/Search/", "")}`;
+        const request_method = "GET";
+        let status = 0;
+        const current_time = Math.floor(Date.now() / 1000);
+        if (!related_content) {
+            this.getRelatedContents(route, request_method, data_object)
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
+        }
+        if ((current_time < related_content.timestamp + 3600) && (related_content.identifier == this.getRequestURI().replace("/Search/", ""))) {
+            status = 304;
+            related_content.timestamp = current_time + 3600;
+            localStorage.setItem(data_object, JSON.stringify(related_content));
+            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        } else {
+            status = 204;
+            localStorage.removeItem(data_object);
+            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+            this.getRelatedContents(route, request_method, data_object)
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+        }
+    }
+
+    /**
      * Setting the media metadata of the content.
      * @returns {void}
      */

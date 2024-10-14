@@ -71,16 +71,17 @@ class YouTube extends React.Component {
         const platform = new URL(this.state.Media.YouTube.uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
         this.postMediaDownload(uniform_resource_locator, platform)
-        .then((response) => this.manageResponse(response));
+        .then((response) => this.manageResponse(response, delay));
     }
 
     /**
      * Managing the flow of the application based on the response
      * of the back-end.
      * @param {{status: number, uniform_resource_locator: string}} response The response from the back-end.
+     * @param {number} delay The delay before the application.
      * @returns {void}
      */
-    manageResponse(response) {
+    manageResponse(response, delay) {
         const uniform_resource_locator = (response.status == 201) ? response.uniform_resource_locator : window.location.href;
         this.redirector(delay, uniform_resource_locator);
     }

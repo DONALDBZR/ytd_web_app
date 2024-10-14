@@ -49,7 +49,7 @@ class YouTube extends React.Component {
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
-        const media = JSON.parse(localStorage.getItem("media")).data.Media;
+        const media = JSON.parse(localStorage.getItem("media")).data;
         this.setState((previous) => ({
             ...previous,
             Media: media,

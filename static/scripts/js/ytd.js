@@ -289,6 +289,7 @@ class YTD {
             this.getTitle().text = "Extractio: Search";
         } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
             media = JSON.parse(localStorage.getItem("media")).data;
+            console.log(media);
             this.getTitle().text = `Extractio Data: ${media.Media.YouTube.title}`;
         } else if (this.getRequestURI().includes("/Download/")) {
             media = JSON.parse(localStorage.getItem("media")).data;
@@ -431,7 +432,7 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
-        if ((current_time < media.timestamp + 3600) && (media.data.Media.YouTube.identifier == this.getRequestURI().replace("/Search/", ""))) {
+        if ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) {
             status = 304;
             media.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(media));

@@ -38,80 +38,14 @@ class RelatedContents extends React.Component {
      * @returns {void}
      */
     setData() {
-        this.setState((previous) => ({
-            ...previous,
-            System: {
-                ...previous.System,
-                dom_element: this.props.data.System.dom_element,
-            },
-        }));
-    }
-
-    /**
-     * Updating the component as soon as the states are different.
-     * @param {{data: {System: {dom_element: HTMLElement}}}} previous_props The properties of the component
-     * @returns {void}
-     */
-    componentDidUpdate(previous_props) {
-        let api_call = this.state.System.api_call;
-        if (this.props != previous_props) {
-            this.setData();
-        }
-        if (api_call < 1) {
-            api_call += 1;
-            this.setState((previous) => ({
-                ...previous,
-                System: {
-                    ...previous.System,
-                    api_call: api_call,
-                },
-            }));
-            this.setRelatedContents()
-            .then((status) => console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update\nAPI: /Media/RelatedContents\nAPI Status: ${status}`));
-        }
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update`);
-    }
-
-    /**
-     * Setting the data for the related contents.
-     * @returns {Promise<number>}
-     */
-    async setRelatedContents() {
-        const response = await this.getRelatedContents();
-        const data = response.data;
+        const related_content = JSON.parse(localStorage.getItem("related_content")).data;
         this.setState((previous) => ({
             ...previous,
             Media: {
                 ...previous.Media,
-                RelatedContents: data,
+                RelatedContents: related_content,
             },
         }));
-        return response.status;
-    }
-
-    /**
-     * Retrieving the related contents from the response retrieved
-     * from the Media API.
-     * @returns {Promise<{status: number, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}>}
-     */
-    async getRelatedContents() {
-        const response = await this.sendGetRelatedContentsRequest();
-        return {
-            status: response.status,
-            data: await response.json(),
-        };
-    }
-
-    /**
-     * Sending the request to the server for the related contents
-     * for the Media API to retrieve the contents.
-     * @returns {Promise<Response>}
-     */
-    async sendGetRelatedContentsRequest() {
-        const identifier = window.location.pathname.replace("/Search/", "");
-        return fetch(`/Media/RelatedContents/${identifier}`, {
-            method: "GET",
-        });
     }
 
     /**

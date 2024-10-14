@@ -89,8 +89,8 @@ class YouTube extends React.Component {
     /**
      * Sending the request to the server to download the media file
      * needed for the application.
-     * @param {string} platform The platform of the application needed.
      * @param {string} uniform_resource_locator The uniform resource locator of the content.
+     * @param {string} platform The platform of the application needed.
      * @returns {Promise<{status: number, uniform_resource_locator: string}>}
      */
     async postMediaDownload(uniform_resource_locator, platform) {

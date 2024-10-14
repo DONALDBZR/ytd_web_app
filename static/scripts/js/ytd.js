@@ -256,27 +256,6 @@ class YTD {
     }
 
     /**
-     * Retrieving the metadata of the media content.
-     * @param {string} route The route to the API endpoint.
-     * @param {string} request_method The request method
-     * @param {string} data_object The name of the data object in the Local Storage
-     * @returns {Promise<number>}
-     */
-    async getMedia(route, request_method, data_object) {
-        const response = await fetch(route, {
-            method: request_method,
-        });
-        const current_time = Math.floor(Date.now() / 1000);
-        const data = await response.json();
-        const media = {
-            timestamp: current_time,
-            data: data,
-        };
-        localStorage.setItem(data_object, JSON.stringify(media));
-        return response.status;
-    }
-
-    /**
      * Defining the title of the page for the application.
      * @returns {void}
      */
@@ -480,6 +459,27 @@ class YTD {
      */
     loadDataHomepage() {
         this.setTrend();
+    }
+
+    /**
+     * Retrieving the metadata of the media content.
+     * @param {string} route The route to the API endpoint.
+     * @param {string} request_method The request method
+     * @param {string} data_object The name of the data object in the Local Storage
+     * @returns {Promise<number>}
+     */
+    async getMedia(route, request_method, data_object) {
+        const response = await fetch(route, {
+            method: request_method,
+        });
+        const current_time = Math.floor(Date.now() / 1000);
+        const data = await response.json();
+        const media = {
+            timestamp: current_time,
+            data: data,
+        };
+        localStorage.setItem(data_object, JSON.stringify(media));
+        return response.status;
     }
 
     /**

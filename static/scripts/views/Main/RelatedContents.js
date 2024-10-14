@@ -41,12 +41,14 @@ class RelatedContents extends React.Component {
      * @returns {void}
      */
     setData() {
+        let data_loaded = this.state.System.data_loaded;
         const related_content = JSON.parse(localStorage.getItem("related_content")).data;
+        data_loaded = (related_content != null);
         this.setState((previous) => ({
             ...previous,
             Media: {
                 ...previous.Media,
-                RelatedContents: related_content,
+                RelatedContents: (data_loaded != null) ? related_content : this.state.Media.RelatedContents,
             },
         }));
     }

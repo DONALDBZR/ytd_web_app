@@ -107,10 +107,10 @@ class YouTube extends React.Component {
             },
         });
         const data = await response.json();
-        const uniform_resource_locator = (response.status == 201) ? data.uniform_resource_locator : "";
+        const response_uniform_resource_locator = (response.status == 201) ? data.uniform_resource_locator : "";
         return {
             status: response.status,
-            uniform_resource_locator: uniform_resource_locator,
+            uniform_resource_locator: response_uniform_resource_locator,
         };
     }
 

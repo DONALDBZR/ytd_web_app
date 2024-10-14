@@ -68,7 +68,7 @@ class YouTube extends React.Component {
         const loading_icon = document.querySelector("#loading");
         const delay = 200;
         const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
-        const platform = new URL(uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
+        const platform = new URL(this.state.Media.YouTube.uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
         this.postMediaDownload(uniform_resource_locator, platform)
         .then((data) => this.redirector(delay, data.url));

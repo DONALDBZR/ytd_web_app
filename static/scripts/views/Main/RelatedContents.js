@@ -14,11 +14,14 @@ class RelatedContents extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{Media: {RelatedContents: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}}
+         * @type {{Media: {RelatedContents: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}, System: {data_loaded: boolean}}}
          */
         this.state = {
             Media: {
                 RelatedContents: [],
+            },
+            System: {
+                data_loaded: false,
             },
         };
     }

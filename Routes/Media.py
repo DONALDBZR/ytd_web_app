@@ -81,7 +81,11 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
         "port": str(request.environ.get("SERVER_PORT"))
     }
     media: Media = Media(user_request)
-    return media.verifyPlatform()
+    model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
+    return {
+        "status": 200 if int(str(model_response["status"])) >= 200 and int(str(model_response["status"])) <= 299 else 503,
+        "data": model_response["data"]
+    }
 
 @Media_Portal.route("/Search", methods=["GET"])
 def search() -> Response:

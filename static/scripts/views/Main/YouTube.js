@@ -143,9 +143,7 @@ class YouTube extends React.Component {
                     <div class="metadata">
                         <div>{this.state.Media.YouTube.title}</div>
                         <div>
-                            <a href={this.state.Media.YouTube.author_channel} target="__blank">
-                                {this.state.Media.YouTube.author}
-                            </a>
+                            <a href={this.state.Media.YouTube.author_channel} target="__blank">{this.state.Media.YouTube.author}</a>
                         </div>
                         <div>
                             <div id="duration">
@@ -154,9 +152,7 @@ class YouTube extends React.Component {
                             </div>
                             <div id="views">
                                 <div>Views:</div>
-                                <div>
-                                    {this.state.Media.YouTube.views.toLocaleString("en-US")}
-                                </div>
+                                <div>{this.state.Media.YouTube.views.toLocaleString("en-US")}</div>
                             </div>
                         </div>
                     </div>

@@ -381,7 +381,7 @@ class YTD {
         } else {
             this.loadDataHomepage();
         }
-        this.optimize();
+        setTimeout(() => this.optimize(), 1000);
     }
 
     /**

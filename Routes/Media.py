@@ -71,7 +71,7 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
             "data": data
         }
     ENV: Environment = Environment()
-    ENV.__setDirectory(int(str(request.environ.get("SERVER_PORT"))))
+    ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
     identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,

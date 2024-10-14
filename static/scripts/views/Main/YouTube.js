@@ -70,7 +70,19 @@ class YouTube extends React.Component {
         const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
         const platform = new URL(uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
-        fetch("/Media/Download", {
+        this.postMediaDownload(uniform_resource_locator, platform)
+        .then((data) => this.redirector(delay, data.url));
+    }
+
+    /**
+     * Sending the request to the server to download the media file
+     * needed for the application.
+     * @param {string} platform The platform of the application needed.
+     * @param {string} uniform_resource_locator The uniform resource locator of the content.
+     * @returns {Promise<{status: number, uniform_resource_locator: string}>}
+     */
+    async postMediaDownload(uniform_resource_locator, platform) {
+        const response = await fetch("/Media/Download", {
             method: "POST",
             body: JSON.stringify({
                 Media: {
@@ -81,9 +93,13 @@ class YouTube extends React.Component {
             headers: {
                 "Content-Type": "application/json",
             },
-        })
-        .then((response) => response.json())
-        .then((data) => this.redirector(delay, data.url));
+        });
+        const data = await response.json();
+        const uniform_resource_locator = (response.status == 201) ? data.uniform_resource_locator : "";
+        return {
+            status: response.status,
+            uniform_resource_locator: uniform_resource_locator,
+        };
     }
 
     /**

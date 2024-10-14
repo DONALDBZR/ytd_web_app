@@ -8,20 +8,15 @@ class RelatedContents extends React.Component {
      * Constructing the component given that it will only render
      * the related contents with the properties and states of the
      * component.
-     * @param {{data: {System: {dom_element: HTMLElement}}}} props
+     * @param {*} props The properties of the component.
      */
     constructor(props) {
         super(props);
-        this.props = props;
         /**
          * The states of the component.
-         * @type {{System: {dom_element: HTMLElement, api_call: number}}, Media: {RelatedContents: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}}
+         * @type {{Media: {RelatedContents: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}}
          */
         this.state = {
-            System: {
-                dom_element: this.props.data.System.dom_element,
-                api_call: 0,
-            },
             Media: {
                 RelatedContents: [],
             },

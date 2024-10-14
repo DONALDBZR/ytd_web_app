@@ -399,7 +399,7 @@ class YTD {
      */
     setRelatedContents() {
         const data_object = "related_content";
-        const related_content: {timestamp: number,, identifier: string, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string}]} = JSON.parse(localStorage.getItem(data_object));
+        const related_content: {timestamp: number, identifier: string, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string}]} = JSON.parse(localStorage.getItem(data_object));
         const route = `/Media/RelatedContents/${this.getRequestURI().replace("/Search/", "")}`;
         const request_method = "GET";
         let status = 0;
@@ -459,6 +459,29 @@ class YTD {
      */
     loadDataHomepage() {
         this.setTrend();
+    }
+
+    /**
+     * Retrieving the metadata of the media content.
+     * @param {string} route The route to the API endpoint.
+     * @param {string} request_method The request method
+     * @param {string} data_object The name of the data object in the Local Storage
+     * @param {string} identifier The identifier of the related media content.
+     * @returns {Promise<number>}
+     */
+    async getRelatedContents(route, request_method, data_object, identifier) {
+        const response = await fetch(route, {
+            method: request_method,
+        });
+        const current_time = Math.floor(Date.now() / 1000);
+        const data = await response.json();
+        const related_content = {
+            timestamp: current_time,
+            identifier: identifier,
+            data: data,
+        };
+        localStorage.setItem(data_object, JSON.stringify(related_content));
+        return response.status;
     }
 
     /**

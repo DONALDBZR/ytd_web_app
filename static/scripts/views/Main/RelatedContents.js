@@ -64,6 +64,9 @@ class RelatedContents extends React.Component {
                 ...previous.Media,
                 RelatedContents: (data_loaded != null) ? related_content : this.state.Media.RelatedContents,
             },
+            System: {
+                data_loaded: data_loaded,
+            },
         }));
     }
 

@@ -17,10 +17,6 @@ Media_Portal: Blueprint = Blueprint("Media", __name__)
 """
 The Routing for all the Media.
 """
-ENV = Environment()
-"""
-ENV File of the application
-"""
 
 def readFile(file_name: str) -> Union[str, None]:
     """
@@ -55,7 +51,6 @@ def loadData(contents: Union[str, None]) -> Union[Dict, List, None]:
     except JSONDecodeError:
         return None
 
-
 def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
     """
     Retrieving the metadata.
@@ -86,7 +81,6 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     media: Media = Media(user_request)
     return media.verifyPlatform()
 
-
 @Media_Portal.route("/Search", methods=["GET"])
 def search() -> Response:
     """
@@ -111,7 +105,6 @@ def search() -> Response:
     status: int = int(response["status"])  # type: ignore
     return Response(dumps(response, indent=4), status, mimetype=mime_type)
 
-
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
 def getMedia(identifier: str) -> Response:
     """
@@ -124,12 +117,12 @@ def getMedia(identifier: str) -> Response:
     Returns:
         Response
     """
-    mime_type: str = "application/json"
+    ENV: Environment = Environment()
     ENV.__setDirectory(int(str(request.environ.get("SERVER_PORT"))))
+    mime_type: str = "application/json"
     file_name: str = f"{ENV.getDirectory()}/Cache/Media/{identifier}.json"
     response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = getMetaData(file_name)
     return Response(dumps(response["data"], indent=4), int(str(response["status"])), mimetype=mime_type)
-
 
 @Media_Portal.route('/Download', methods=['POST'])
 def retrieveMedia() -> Response:
@@ -156,7 +149,6 @@ def retrieveMedia() -> Response:
     media: Media = Media(user_request) # type: ignore
     model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
     return Response(dumps(model_response["data"], indent=4), int(str(model_response["status"])), mimetype=mime_type)
-
 
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
 def getRelatedContents(identifier: str) -> Response:

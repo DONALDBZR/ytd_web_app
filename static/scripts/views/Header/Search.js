@@ -50,8 +50,10 @@ class HeaderSearch extends React.Component {
      */
     componentDidUpdate() {
         if (!this.state.System.data_loaded) {
-            this.setData();
-            console.info("Component: Search.Header.HeaderSearch\nStatus: Update");
+            setTimeout(() => {
+                this.setData();
+                console.info("Component: Search.Header.HeaderSearch\nStatus: Update");
+            }, 2000);
         }
     }
 

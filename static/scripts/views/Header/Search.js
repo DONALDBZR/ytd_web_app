@@ -40,7 +40,19 @@ class HeaderSearch extends React.Component {
      */
     componentDidMount() {
         this.setData();
-        console.log("Component: Search.Header.HeaderSearch\nStatus: Mount");
+        console.info("Component: Search.Header.HeaderSearch\nStatus: Mount");
+    }
+
+    /**
+     * Running the methods needed whenever the component is
+     * updated.
+     * @returns {void}
+     */
+    componentDidUpdate() {
+        if (!this.state.System.data_loaded) {
+            this.setData();
+            console.info("Component: Search.Header.HeaderSearch\nStatus: Update");
+        }
     }
 
     /**

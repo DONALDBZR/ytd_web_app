@@ -38,9 +38,15 @@ class ColorScheme extends React.Component {
      * @returns {void}
      */
     setData() {
+        const session = JSON.parse(localStorage.getItem("session"));
+        const data_loaded = (session != null);
         this.setState((previous) => ({
             ...previous,
-            Session: JSON.parse(localStorage.getItem("session")),
+            Session: (data_loaded) ? session : this.state.Session,
+            System: {
+                ...previous.System,
+                data_loaded: data_loaded,
+            },
         }));
         this.setSvg();
     }

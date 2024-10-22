@@ -75,8 +75,10 @@ class RelatedContents extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        return (
-            <div className="RelatedContents"></div>
-        );
+        return (this.state.Media.RelatedContents.length > 0) ? (
+            <div className="RelatedContents">
+                {this.state.Media.RelatedContents.map((media) => this.renderRelatedContents(media))}
+            </div>
+        ) : (<div className="RelatedContents" style={{display: "none"}}></div>);
     }
 }

@@ -69,7 +69,7 @@ class Trend extends React.Component {
             <div className="card" key={content.identifier}>
                 <div>
                     <a href={content.uniform_resource_locator} target="__blank">
-                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`} />
+                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`}  width="1280" height="720" />
                     </a>
                 </div>
                 <div>

@@ -14,7 +14,7 @@ class RelatedContents extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{Media: {RelatedContents: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}, System: {data_loaded: boolean}}}
+         * @type {{Media: {RelatedContents: {duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}[]}, System: {data_loaded: boolean}}}
          */
         this.state = {
             Media: {
@@ -68,6 +68,35 @@ class RelatedContents extends React.Component {
                 data_loaded: data_loaded,
             },
         }));
+    }
+
+    /**
+     * Rendering the media content that are related with the main
+     * content.
+     * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}} media The metadata of the media content.
+     * @returns {React.Component}
+     */
+    renderRelatedContents(media) {
+        const identifier = media.uniform_resource_locator.replaceAll("https://www.youtube.com/watch?v=", "");
+        return (
+            <div className="content" key={identifier}>
+                <div className="thumbnail">
+                    <a href={media.uniform_resource_locator} target="__blank">
+                        <img src={media.thumbnail} loading="lazy" alt={`Thumbnail for ${media.title}`} />
+                    </a>
+                </div>
+                <div className="metadata">
+                    <div className="title">{media.title}</div>
+                    <div className="author">
+                        <a href={media.author_channel} target="__blank">{media.channel}</a>
+                    </div>
+                    <div className="duration">
+                        <div>Duration</div>
+                        <div>{media.duration}</div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     /**

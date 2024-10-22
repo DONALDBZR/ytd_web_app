@@ -44,6 +44,20 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Updating the component as soon as there is an update in the
+     * states.
+     * @returns {void}
+     */
+    componentDidUpdate() {
+        if (!this.state.System.data_loaded) {
+            setTimeout(() => {
+                this.setData();
+                console.log("Component: Homepage.Header.HeaderHomepage\nStatus: Updated");
+            }, 1000);
+        }
+    }
+
+    /**
      * Setting the data for the component.
      * @returns {void}
      */

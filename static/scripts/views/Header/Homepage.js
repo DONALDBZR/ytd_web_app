@@ -71,7 +71,7 @@ class HeaderHomepage extends React.Component {
         const color_5 = (data_loaded) ? ((session.Client.color_scheme == "light") ? "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))" : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))") : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))";
         this.setState((previous) => ({
             ...previous,
-            Session: session,
+            Session: (data_loaded) ? session : this.state.Session,
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,

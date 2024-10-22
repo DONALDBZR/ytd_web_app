@@ -10,7 +10,7 @@ class HeaderHomepage extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {view_route: string}}}
+         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {view_route: string, data_loaded: boolean}}}
          */
         this.state = {
             Session: {
@@ -28,6 +28,7 @@ class HeaderHomepage extends React.Component {
             },
             System: {
                 view_route: "",
+                data_loaded: false,
             },
         };
     }

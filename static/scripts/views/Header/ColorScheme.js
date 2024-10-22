@@ -11,7 +11,7 @@ class ColorScheme extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}}}
+         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}, System: {data_loaded: boolean}}}
          */
         this.state = {
             Session: {
@@ -19,6 +19,9 @@ class ColorScheme extends React.Component {
                     timestamp: "",
                     color_scheme: "",
                 },
+            },
+            System: {
+                data_loaded: false,
             },
         };
     }

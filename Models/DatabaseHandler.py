@@ -290,7 +290,7 @@ class Database_Handler:
         Returns:
             void
         """
-        query = f"INSERT INTO {table}({columns}) VALUES ({values})"
+        query: str = f"INSERT INTO {table}({columns}) VALUES ({values})"
         self.setQuery(query)
         self.setParameters(parameters)
         self._query(self.getQuery(), self.getParameters())

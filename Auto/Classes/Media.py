@@ -120,7 +120,7 @@ class Media:
         response.
 
         Return:
-            {status: int, error: string} | {status: int, data: {}}
+            {status: int, error: string} | {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}}}
         """
         error_message: str
         media: Dict[str, Union[int, str, List[RowType]]] = self.getMedia()

@@ -82,7 +82,7 @@ class Crawler:
         """
         Initializing the crawler to scrape the data needed.
         """
-        ENV = Environment()
+        ENV: Environment = Environment()
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(getLogger(__name__))
         self.getLogger().getLogger().setLevel(DEBUG)

@@ -11,9 +11,10 @@ from os import getcwd
 from typing import List, Dict, Union, Tuple, cast
 from logging import getLogger, DEBUG
 from inspect import stack
+from time import time
+from json import dumps
 import inspect
 import time
-import json
 import sys
 
 
@@ -264,17 +265,15 @@ class Crawler:
         """
         Saving the data.
 
-        Return:
+        Returns:
             void
         """
-        timestamp = int(time.time())
-        file_name = f"{self.getDirectory()}{timestamp}.json"
+        timestamp: int = int(time())
+        file_name: str = f"{self.getDirectory()}{timestamp}.json"
         file = open(file_name, "w")
-        file.write(json.dumps(self.getData(), indent=4))
+        file.write(dumps(self.getData(), indent=4))
         file.close()
-        self.getLogger().inform(
-            f"The latest content has been saved!\nFile Name: {file_name}"
-        )
+        self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
         self.getDriver().quit()
 
     def prepareFirstRun(self, identifiers: list[RowType]) -> int:

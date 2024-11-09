@@ -200,10 +200,11 @@ class Crawler:
         )
         dataset: List[Dict[str, Union[str, int, None]]] = self.getData()
         referrer: str = stack()[1][3]
-        first_run_dataset: int = self.prepareFirstRun(identifiers)
+        if referrer == "__init__":
+            self.prepareFirstRun(identifiers)
         second_run_dataset: int = self.prepareSecondRun(dataset)
-        if referrer == "__init__" and first_run_dataset > 0:
-            self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {first_run_dataset}\n")
+        if referrer == "__init__" and len(self.getData()) > 0:
+            self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
             self.firstRun()
         elif referrer == "firstRun" and second_run_dataset > 0:
             self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {second_run_dataset}")
@@ -274,7 +275,7 @@ class Crawler:
         self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
         self.getDriver().quit()
 
-    def prepareFirstRun(self, identifiers: Union[List[RowType], List[Dict[str, str]]]) -> int:
+    def prepareFirstRun(self, identifiers: Union[List[RowType], List[Dict[str, str]]]) -> None:
         """
         Setting up the data for the first run.
 
@@ -282,10 +283,9 @@ class Crawler:
             identifiers: [{YouTube: string}]: The result set of the identifiers for the last weeks.
 
         Returns:
-            int
+            void
         """
         dataset: List[Dict[str, Union[str, int, None]]] = []
-        self.setData([])
         for index in range(0, len(identifiers), 1):
             parameters: Tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
             data: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
@@ -304,7 +304,6 @@ class Crawler:
             }
             dataset.append(metadata)
         self.setData(dataset)
-        return len(self.getData())
 
     def firstRun(self) -> None:
         """
@@ -314,6 +313,7 @@ class Crawler:
         Returns:
             void
         """
+        print(f"{self.getData()=}")
         total: int = 0
         for index in range(0, len(self.getData()), 1):
             total += len(str(self.getData()[index]["uniform_resource_locator"]))

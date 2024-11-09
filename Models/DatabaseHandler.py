@@ -66,7 +66,7 @@ class Database_Handler:
         Instantiating the class which will try to connect to the
         database.
         """
-        ENV = Environment()
+        ENV: Environment = Environment()
         self.setLogger(Extractio_Logger())
         self.getLogger().setLogger(getLogger(__name__))
         self.__setHost(ENV.getDatabaseHost())
@@ -176,14 +176,10 @@ class Database_Handler:
         Returns:
             array
         """
-        result_set = self.__getStatement().fetchall()
-        self.getLogger().debug(
-            "The data has been successfully retrieved!"
-        )
+        result_set: List[RowType] = self.__getStatement().fetchall()
+        self.getLogger().debug("The data has been successfully retrieved!")
         self.__getStatement().close()
-        self.getLogger().inform(
-            "The connection between the application and the database server will be closed!"
-        )
+        self.getLogger().inform("The connection between the application and the database server will be closed!")
         return result_set
 
     def getData(self, parameters: Union[Tuple, None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0, group_condition = "") -> List[RowType]:

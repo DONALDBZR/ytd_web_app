@@ -1,6 +1,7 @@
 from pytube import YouTube
 from datetime import datetime
 from mysql.connector.types import RowType
+from typing import Dict, List, Tuple, Union
 import time
 import logging
 import sys
@@ -180,34 +181,19 @@ class YouTube_Downloader:
         else:
             return identifier
 
-    def search(self) -> dict[str, str | int | None]:
+    def search(self) -> Dict[str, Union[str, int, None]]:
         """
         Searching for the video in YouTube.
 
         Return:
             (object)
         """
-        response: dict[str, str | int | None]
-        audio_file: str | None
-        video_file: str | None
+        response: Dict[str, Union[str, int, None]]
+        audio_file: Union[str, None]
+        video_file: Union[str, None]
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
-        if "youtube" in self.getUniformResourceLocator():
-            self.setIdentifier(
-                self.retrieveIdentifier(
-                    self.getIdentifier().replace(
-                        "https://www.youtube.com/watch?v=",
-                        ""
-                    )
-                )
-            )
-        else:
-            self.setIdentifier(
-                self.getIdentifier().replace(
-                    "https://youtu.be/",
-                    ""
-                ).rsplit("?")[0]
-            )
+        self.setIdentifier(self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))) if "youtube" in self.getUniformResourceLocator() else self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
         meta_data = self.getYouTube()
         if meta_data["status"] == 200:
             self.setLength(int(meta_data["data"][0][4]))  # type: ignore
@@ -269,16 +255,15 @@ class YouTube_Downloader:
             }
         return response
 
-    def getYouTube(self) -> dict[str, int | list[RowType] | str]:
+    def getYouTube(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
         Retrieving the metadata from the YouTube table.
 
-        Return:
-            (object)
+        Returns:
+            {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string}], timestamp: string}
         """
-        response: dict[str, int | list[RowType] | str]
-        filter_parameters = tuple([self.getIdentifier()])
-        media = self.getDatabaseHandler().get_data(
+        filter_parameters: Tuple[str] = (self.getIdentifier(),)
+        media: List[RowType] = self.getDatabaseHandler().getData(
             parameters=filter_parameters,
             table_name="YouTube",
             join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
@@ -288,22 +273,13 @@ class YouTube_Downloader:
             limit_condition=2
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        self.getLogger().inform(
-            f"The media content has been retrieved from the database server!\nContent Amount: {len(media)}\nCurrent Media: {media}"
-        )
-        if len(media) == 0:
-            response = {
-                'status': 404,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        else:
-            response = {
-                'status': 200,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        return response
+        self.getLogger().inform(f"The media content has been retrieved from the database server!\nContent Amount: {len(media)}\nCurrent Media: {media}")
+        status: int = 404 if len(media) == 0 else 200
+        return {
+            "status": status,
+            "data": media,
+            "timestamp": self.getTimestamp()
+        }
 
     def postYouTube(self) -> None:
         """

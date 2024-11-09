@@ -221,10 +221,7 @@ class Database_Handler:
         Returns:
             void
         """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} LEFT JOIN {condition}"
+        query: str = self.getQuery() if condition == "" else f"{self.getQuery()} LEFT JOIN {condition}"
         self.setQuery(query)
 
     def _getJoin(self, condition: str) -> None:

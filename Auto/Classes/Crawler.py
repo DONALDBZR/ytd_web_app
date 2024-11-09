@@ -317,7 +317,7 @@ class Crawler:
         """
         self.setData([])
         for index in range(0, len(identifiers), 1):
-            data = self.getDatabaseHandler().get_data(
+            data = self.getDatabaseHandler().getData(
                 parameters=identifiers[index],
                 table_name="YouTube",
                 join_condition="Media ON YouTube.Media = Media.identifier",

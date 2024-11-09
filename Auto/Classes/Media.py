@@ -120,35 +120,31 @@ class Media:
         response.
 
         Return:
-            (object)
+            {status: int, error: string} | {status: int, data: {}}
         """
         response: Union[Dict[str, Union[int, Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]], Dict[str, Union[int, str]]]
         error_message: str
-        media = self.getMedia()
-        if media["status"] == 200:
-            self.setIdentifier(int(media["data"][0][0]))  # type: ignore
-        else:
+        media: Dict[str, Union[int, str, List[RowType]]] = self.getMedia()
+        status: int
+        if media["status"] != 200:
             error_message = "The content does not come from YouTube!"
             self.getLogger().error(error_message)
             raise Exception(error_message)
-        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
-            response = {
-                "status": 200,
-                "data": self.handleYouTube()
-            }
-            self.getLogger().inform(
-                f"The data from YouTube has been handled successfully!\nStatus: {response['status']}"
-            )
-        else:
+        if "youtube" not in self.getValue() or "youtu.be" not in self.getValue():
             error_message = "This application cannot retrieve content from that application!"
-            response = {
-                "status": 403,
+            status = 403
+            self.getLogger().error(f"{error_message}\nStatus: {status}")
+            return {
+                "status": status,
                 "error": error_message
             }
-            self.getLogger().error(
-                f"{error_message}\nStatus: {response['status']}"
-            )
-        return response
+        self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
+        status = 200
+        self.getLogger().inform(f"The data from YouTube has been handled successfully!\nStatus: {status}")
+        return {
+            "status": status,
+            "data": self.handleYouTube()
+        }
 
     def getMedia(self) -> Dict[str, Union[int, str, List[RowType]]]:
         """

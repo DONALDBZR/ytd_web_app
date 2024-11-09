@@ -42,7 +42,7 @@ class YouTube_Downloader:
     """
     The duration of the video in the format of HH:mm:ss.
     """
-    __published_at: str | datetime | None
+    __published_at: Union[str, datetime, None]
     """
     The date at which the video has been published.
     """
@@ -123,10 +123,10 @@ class YouTube_Downloader:
     def setDuration(self, duration: str) -> None:
         self.__duration = duration
 
-    def getPublishedAt(self) -> str | datetime | None:
+    def getPublishedAt(self) -> Union[str, datetime, None]:
         return self.__published_at
 
-    def setPublishedAt(self, published_at: str | datetime | None) -> None:
+    def setPublishedAt(self, published_at: Union[str, datetime, None]) -> None:
         self.__published_at = str(published_at)
 
     def getDatabaseHandler(self) -> Database_Handler:
@@ -171,15 +171,12 @@ class YouTube_Downloader:
         that it is in a playlist.
 
         Parameters:
-            identifier: (string):   The ID of the content.
+            identifier: string: The ID of the content.
 
-        Return:
-            (string)
+        Returns:
+            string
         """
-        if "&" in identifier:
-            return identifier.rsplit("&", 1)[0]
-        else:
-            return identifier
+        return identifier.rsplit("&", 1)[0] if "&" in identifier else identifier
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """

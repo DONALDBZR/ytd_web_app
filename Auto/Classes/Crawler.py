@@ -350,23 +350,14 @@ class Crawler:
         Retrieving the data needed from the target page.
 
         Parameters:
-            referrer:   (string):   Referrer of the function.
-            index:      (int):      The identifier of the data.
+            referrer: string: Referrer of the function.
+            index: int: The identifier of the data.
 
-        Return:
-            (void )
+        Returns:
+            void
         """
         if referrer == "firstRun":
-            self.getData()[index]["author_channel"] = self.getDriver().find_element(
-                By.XPATH,
-                '//*[@id="text"]/a').get_attribute("href")
+            self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href")
         elif referrer == "secondRun":
-            self.setHtmlTags(
-                self.getDriver().find_elements(
-                    By.XPATH,
-                    '//a[@id="thumbnail"]'
-                )
-            )
-            self.getData()[index]["latest_content"] = str(
-                self.getHtmlTags()[2].get_attribute("href")
-            )
+            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
+            self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))

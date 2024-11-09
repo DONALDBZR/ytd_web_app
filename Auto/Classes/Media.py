@@ -122,7 +122,6 @@ class Media:
         Return:
             {status: int, error: string} | {status: int, data: {}}
         """
-        response: Union[Dict[str, Union[int, Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]], Dict[str, Union[int, str]]]
         error_message: str
         media: Dict[str, Union[int, str, List[RowType]]] = self.getMedia()
         status: int

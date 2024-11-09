@@ -284,6 +284,7 @@ class Crawler:
         Returns:
             int
         """
+        dataset: List[Dict[str, Union[str, int, None]]] = []
         self.setData([])
         for index in range(0, len(identifiers), 1):
             parameters: Tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
@@ -301,7 +302,8 @@ class Crawler:
                 "uniform_resource_locator": uniform_resource_locator,
                 "author_channel": None
             }
-            self.getData().append(metadata)
+            dataset.append(metadata)
+        self.setData(dataset)
         return len(self.getData())
 
     def firstRun(self) -> None:

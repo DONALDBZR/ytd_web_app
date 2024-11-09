@@ -234,8 +234,8 @@ class YouTube_Downloader:
         Returns:
             {audio_file: string|null, video_file: string|null}
         """
-        audio_file: Union[str, None] = str(result_set[0]["location"]) if len(result_set) == 2 else None
-        video_file: Union[str, None] = str(result_set[1]["location"]) if len(result_set) == 2 else None
+        audio_file: Union[str, None] = str(result_set[0]["location"]) if len(result_set) == 2 else None # type: ignore
+        video_file: Union[str, None] = str(result_set[1]["location"]) if len(result_set) == 2 else None # type: ignore
         return {
             "audio_file": audio_file,
             "video_file": video_file

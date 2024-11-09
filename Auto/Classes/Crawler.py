@@ -7,16 +7,16 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from Classes.Media import Media
 from mysql.connector.types import RowType
+from os import getcwd
+from typing import List, Dict, Union, Tuple
+from logging import getLogger, DEBUG
 import inspect
 import time
 import json
-import logging
-import datetime
 import sys
-import os
 
 
-sys.path.append(os.getcwd())
+sys.path.append(getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
@@ -32,7 +32,7 @@ class Crawler:
     Controls the ChromeDriver and allows you to drive the
     browser.
     """
-    __data: list[dict[str, str | int | None]]
+    __data: List[Dict[str, Union[str, int, None]]]
     """
     The data from the cache data.
     """
@@ -40,11 +40,11 @@ class Crawler:
     """
     The directory of the metadata files.
     """
-    __files: list[str]
+    __files: List[str]
     """
     The files that are inside of the directory.
     """
-    __html_tags: list[WebElement]
+    __html_tags: List[WebElement]
     """
     A list of HTML tags which are pieces of markup language
     used to indicate the beginning and end of an HTML element in
@@ -84,14 +84,12 @@ class Crawler:
         """
         ENV = Environment()
         self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
-        self.getLogger().getLogger().setLevel(logging.DEBUG)
+        self.getLogger().setLogger(getLogger(__name__))
+        self.getLogger().getLogger().setLevel(DEBUG)
         self.__setServices()
         self.__setOptions()
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
-        self.setDirectory(
-            f"{ENV.getDirectory()}/Cache/Trend/"
-        )
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Trend/")
         self.setDatabaseHandler(Database_Handler())
         self.setData([])
         self.setUpData()
@@ -333,7 +331,7 @@ class Crawler:
             self.getData().append(metadata)
         return len(self.getData())
 
-    def verifyPlatform(self, data: RowType) -> str:
+    def verifyPlatform(self, data: Union[RowType]) -> str:
         """
         Veryfing the platform of the metadata to be able to generate
         its correct uniform resource locator.
@@ -345,8 +343,9 @@ class Crawler:
             (string)
         """
         response: str
-        if data[2] == "youtube" or data[2] == "youtu.be":
-            response = f"https://www.youtube.com/watch?v={data[0]}"
+        print(f"{data=}")
+        if str(data["platform"]) == "youtube" or str(data["platform"]) == "youtu.be":
+            response = f"https://www.youtube.com/watch?v={data['identifier']}"
         else:
             response = ""
         return response

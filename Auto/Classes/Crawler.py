@@ -11,9 +11,8 @@ from os import getcwd
 from typing import List, Dict, Union, Tuple, cast
 from logging import getLogger, DEBUG
 from inspect import stack
-from time import time
+from time import time, sleep
 from json import dumps
-import inspect
 import time
 import sys
 
@@ -328,26 +327,22 @@ class Crawler:
         Entering the targeted page.
 
         Parameters:
-            target: (string):   The uniform resource locator of the targeted page.
-            delay:  (float):    The amount of time that the Crawler will wait which is based on the average typing speed of a person
-            index:  (int):      The identifier of the data.
+            target: string: The uniform resource locator of the targeted page.
+            delay: float: The amount of time that the Crawler will wait which is based on the average typing speed of a person
+            index: int: The identifier of the data.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        referrer = inspect.stack()[1][3]
+        referrer: str = stack()[1][3]
         if referrer == "firstRun":
-            self.getLogger().inform(
-                f"Entering the target!\nTarget: {target}"
-            )
+            self.getLogger().inform(f"Entering the target!\nTarget: {target}")
             self.getDriver().get(target)
-            time.sleep(delay)
+            sleep(delay)
         elif referrer == "secondRun":
-            self.getLogger().inform(
-                f"Entering the target!\nTarget: {target}/videos"
-            )
+            self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
             self.getDriver().get(f"{target}/videos")
-            time.sleep(delay)
+            sleep(delay)
         self.retrieveData(referrer, index)
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:

@@ -196,15 +196,13 @@ class Crawler:
         identifiers = self.getDatabaseHandler().getData(
             parameters=None,
             table_name="MediaFile",
-            filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK",
+            filter_condition="date_downloaded >= NOW() - INTERVAL 2 WEEK",
             column_names="DISTINCT YouTube"
         )
         dataset = self.getData()
         referrer = inspect.stack()[1][3]
         if referrer == "__init__" and self.prepareFirstRun(identifiers) > 0:
-            self.getLogger().inform(
-                f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {self.prepareFirstRun(identifiers)}\n"
-            )
+            self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {self.prepareFirstRun(identifiers)}\n")
             self.firstRun()
         elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
             self.getLogger().inform(
@@ -317,8 +315,9 @@ class Crawler:
         """
         self.setData([])
         for index in range(0, len(identifiers), 1):
+            parameters: tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
             data = self.getDatabaseHandler().getData(
-                parameters=identifiers[index],
+                parameters=parameters,
                 table_name="YouTube",
                 join_condition="Media ON YouTube.Media = Media.identifier",
                 filter_condition="YouTube.identifier = %s",

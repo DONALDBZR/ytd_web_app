@@ -248,10 +248,7 @@ class Database_Handler:
         Returns:
             void
         """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} WHERE {condition}"
+        query: str = self.getQuery() if condition == "" else  f"{self.getQuery()} WHERE {condition}"
         self.setQuery(query)
 
     def _getSort(self, condition: str) -> None:

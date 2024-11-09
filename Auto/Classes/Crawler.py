@@ -289,14 +289,14 @@ class Crawler:
         self.setData([])
         for index in range(0, len(identifiers), 1):
             parameters: Tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
-            data = self.getDatabaseHandler().getData(
+            data: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
                 parameters=parameters,
                 table_name="YouTube",
                 join_condition="Media ON YouTube.Media = Media.identifier",
                 filter_condition="YouTube.identifier = %s",
                 column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform"
             )[0]
-            uniform_resource_locator: str = self.verifyPlatform(data)
+            uniform_resource_locator: str = f"https://www.youtube.com/watch?v={data['identifier']}" if str(data["platform"]) == "youtube" or str(data["platform"]) == "youtu.be" else "" # type: ignore
             metadata: Dict[str, Union[str, int, None]] = {
                 "identifier": str(data["identifier"]), # type: ignore
                 "author": str(data["author"]), # type: ignore
@@ -305,25 +305,6 @@ class Crawler:
             }
             self.getData().append(metadata)
         return len(self.getData())
-
-    def verifyPlatform(self, data: Union[RowType]) -> str:
-        """
-        Veryfing the platform of the metadata to be able to generate
-        its correct uniform resource locator.
-
-        Parameters:
-            data:   (array):    The record of a metadata.
-
-        Return:
-            (string)
-        """
-        response: str
-        print(f"{data=}")
-        if str(data["platform"]) == "youtube" or str(data["platform"]) == "youtu.be":
-            response = f"https://www.youtube.com/watch?v={data['identifier']}"
-        else:
-            response = ""
-        return response
 
     def firstRun(self) -> None:
         """

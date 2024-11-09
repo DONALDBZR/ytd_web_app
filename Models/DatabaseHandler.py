@@ -11,8 +11,8 @@ from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
 from typing import Union, Generator, List, Tuple
-import mysql.connector
-import logging
+from logging import getLogger
+from mysql.connector import connect, Error
 
 
 class Database_Handler:
@@ -68,28 +68,23 @@ class Database_Handler:
         """
         ENV = Environment()
         self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.getLogger().setLogger(getLogger(__name__))
         self.__setHost(ENV.getDatabaseHost())
         self.__setDatabase(ENV.getDatabaseSchema())
         self.__setUsername(ENV.getDatabaseUsername())
         self.__setPassword(ENV.getDatabasePassword())
         try:
             self.__setDatabaseHandler(
-                mysql.connector.connect(
+                connect(
                     host=self.__getHost(),
                     database=self.__getDatabase(),
                     username=self.__getUsername(),
                     password=self.__getPassword()
                 )
             )
-            self.getLogger().inform(
-                "The application has been successfully connected to the database server!"
-            )
-        except mysql.connector.Error as error:
-            print(f"Connection Failed!\nError: {str(error)}")
-            self.getLogger().error(
-                f"Connection Failed!\nError: {str(error)}"
-            )
+            self.getLogger().inform("The application has been successfully connected to the database server!")
+        except Error as error:
+            self.getLogger().error(f"Connection Failed!\nError: {str(error)}")
 
     def __getHost(self) -> str:
         return self.__host
@@ -220,6 +215,23 @@ class Database_Handler:
         self._getLimit(limit_condition)
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
+
+    def _getJoin(self, condition: str) -> None:
+        """
+        Building the query needed for retrieving data that is in at
+        least two tables.
+
+        Parameters:
+            condition: string: The JOIN statement that is used.
+
+        Returns:
+            void
+        """
+        if condition == "":
+            query = self.getQuery()
+        else:
+            query = f"{self.getQuery()} LEFT JOIN {condition}"
+        self.setQuery(query)
 
     def _getJoin(self, condition: str) -> None:
         """

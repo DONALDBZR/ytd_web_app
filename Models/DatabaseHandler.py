@@ -275,10 +275,7 @@ class Database_Handler:
         Returns:
             void
         """
-        if limit > 0:
-            query = f"{self.getQuery()} LIMIT {limit}"
-        else:
-            query = self.getQuery()
+        query: str = f"{self.getQuery()} LIMIT {limit}" if limit > 0 else self.getQuery()
         self.setQuery(query)
 
     def postData(self, table: str, columns: str, values: str, parameters: Tuple) -> None:

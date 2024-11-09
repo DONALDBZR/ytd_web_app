@@ -313,7 +313,6 @@ class Crawler:
         Returns:
             void
         """
-        print(f"{self.getData()=}")
         total: int = 0
         for index in range(0, len(self.getData()), 1):
             total += len(str(self.getData()[index]["uniform_resource_locator"]))

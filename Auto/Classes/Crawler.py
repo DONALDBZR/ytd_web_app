@@ -276,19 +276,19 @@ class Crawler:
         self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
         self.getDriver().quit()
 
-    def prepareFirstRun(self, identifiers: list[RowType]) -> int:
+    def prepareFirstRun(self, identifiers: Union[List[RowType], List[Dict[str, str]]]) -> int:
         """
         Setting up the data for the first run.
 
         Parameters:
-            identifiers:    (array):    The result set of the identifiers for the last weeks.
+            identifiers: [{YouTube: string}]: The result set of the identifiers for the last weeks.
 
-        Return:
-            (int)
+        Returns:
+            int
         """
         self.setData([])
         for index in range(0, len(identifiers), 1):
-            parameters: tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
+            parameters: Tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
             data = self.getDatabaseHandler().getData(
                 parameters=parameters,
                 table_name="YouTube",
@@ -296,10 +296,10 @@ class Crawler:
                 filter_condition="YouTube.identifier = %s",
                 column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform"
             )[0]
-            uniform_resource_locator = self.verifyPlatform(data)
-            metadata: dict[str, str | int | None] = {
-                "identifier": str(data[0]),
-                "author": str(data[1]),
+            uniform_resource_locator: str = self.verifyPlatform(data)
+            metadata: Dict[str, Union[str, int, None]] = {
+                "identifier": str(data["identifier"]), # type: ignore
+                "author": str(data["author"]), # type: ignore
                 "uniform_resource_locator": uniform_resource_locator,
                 "author_channel": None
             }

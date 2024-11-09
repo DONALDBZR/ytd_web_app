@@ -193,7 +193,7 @@ class Database_Handler:
         )
         return result_set
 
-    def getData(self, parameters: Union[Tuple, None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> List[RowType]:
+    def getData(self, parameters: Union[Tuple, None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0, group_condition = "") -> List[RowType]:
         """
         Retrieving data from the database.
 
@@ -205,6 +205,7 @@ class Database_Handler:
             filter_condition: string: Items to be filtered with.
             sort_condition: string: The items to be sorted.
             limit_condition: int: The amount of items to be returned
+            group_condition: string: The items to be grouped.
 
         Returns:
             array
@@ -214,6 +215,7 @@ class Database_Handler:
         self.setParameters(parameters)
         self._getJoin(join_condition)
         self._getFilter(filter_condition)
+        self._getGroup(group_condition)
         self._getSort(sort_condition)
         self._getLimit(limit_condition)
         self._query(self.getQuery(), self.getParameters())

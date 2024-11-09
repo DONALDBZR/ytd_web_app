@@ -193,7 +193,7 @@ class Crawler:
         Return:
             (void)
         """
-        identifiers = self.getDatabaseHandler().get_data(
+        identifiers = self.getDatabaseHandler().getData(
             parameters=None,
             table_name="MediaFile",
             filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK",

@@ -311,25 +311,16 @@ class Crawler:
         Preparing for the first run of crawling based on the data in
         the cache.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        delay: float = 0.0
         total: int = 0
         for index in range(0, len(self.getData()), 1):
-            total += len(
-                str(self.getData()[index]["uniform_resource_locator"])
-            )
-        delay = ((total / len(self.getData())) / (40 * 5)) * 60
-        self.getLogger().inform(
-            f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s"
-        )
+            total += len(str(self.getData()[index]["uniform_resource_locator"]))
+        delay: float = ((total / len(self.getData())) / 200) * 60
+        self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s")
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(
-                str(self.getData()[index]["uniform_resource_locator"]),
-                delay,
-                index
-            )
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:

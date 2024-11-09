@@ -148,9 +148,7 @@ class Database_Handler:
         Returns:
             Generator[MySQLCursor, None, None] | None
         """
-        self.getLogger().debug(
-            f"Query to be executed!\nQuery: {query}\nParameters: {parameters}"
-        )
+        self.getLogger().debug(f"Query to be executed!\nQuery: {query}\nParameters: {parameters}")
         self.__setStatement(
             self.__getDatabaseHandler().cursor(
                 prepared=True,

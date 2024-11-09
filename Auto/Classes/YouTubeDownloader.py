@@ -186,11 +186,8 @@ class YouTube_Downloader:
         Searching for the video in YouTube.
 
         Returns:
-            {}
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}
         """
-        response: Dict[str, Union[str, int, None]]
-        audio_file: Union[str, None]
-        video_file: Union[str, None]
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
         self.setIdentifier(self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))) if "youtube" in self.getUniformResourceLocator() else self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
@@ -200,15 +197,12 @@ class YouTube_Downloader:
         self.setAuthor(str(meta_data["data"][0]["author"])) if meta_data["status"] == 200 else self.setAuthor(self.getVideo().author) # type: ignore
         self.setTitle(str(meta_data["data"][0][1])) if meta_data["status"] == 200 else self.setTitle(self.getVideo().title) # type: ignore
         self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength()))) if meta_data["status"] == 200 else self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-        if meta_data["status"] == 200:
-            File_Location = self._getFileLocations(meta_data["data"]) # type: ignore
-            audio_file = File_Location["audio_file"]
-            video_file = File_Location["video_file"]
-        else:
-            audio_file = None
-            video_file = None
+        File_Location: Union[Dict[str, Union[str, None]], None] = self._getFileLocations(meta_data["data"]) if meta_data["status"] == 200 else None # type: ignore
+        audio_file: Union[str, None] = File_Location["audio_file"] if File_Location != None else None
+        video_file: Union[str, None] = File_Location["audio_file"] if File_Location != None else None
+        if meta_data["status"] != 200:
             self.postYouTube()
-        response = {
+        return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
@@ -221,7 +215,6 @@ class YouTube_Downloader:
             "audio_file": audio_file,
             "video_file": video_file
         }
-        return response
 
     def _getFileLocations(self, result_set: List[RowType]) -> Dict[str, Union[str, None]]:
         """

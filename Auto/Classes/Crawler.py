@@ -13,11 +13,10 @@ from logging import getLogger, DEBUG
 from inspect import stack
 from time import time, sleep
 from json import dumps
-import time
-import sys
+from sys import path
 
 
-sys.path.append(getcwd())
+path.append(getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment

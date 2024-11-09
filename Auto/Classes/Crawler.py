@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 from Classes.Media import Media
 from mysql.connector.types import RowType
 from os import getcwd
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Union, Tuple, cast
 from logging import getLogger, DEBUG
 from inspect import stack
 import inspect
@@ -218,21 +218,11 @@ class Crawler:
         Preparing for the second run of crawling based on the data
         in the cache.
 
-        Return:
-            (void)
+        Returns:
+            int
         """
-        new_dataset: list[str] = []
-        data: dict[str, str | None] = {}
-        self.setData([])
-        for index in range(0, len(dataset), 1):
-            new_dataset.append(str(dataset[index]["author_channel"]))
-        new_dataset = list(set(new_dataset))
-        for index in range(0, len(new_dataset), 1):
-            data = {
-                "author_channel": new_dataset[index],
-                "latest_content": None
-            }
-            self.getData().append(data)  # type: ignore
+        new_dataset: List[Dict[str, Union[str, None]]] = [{"author_channel": author_channel, "latest_content": None} for author_channel in list(set([str(media_metadata["author_channel"]) for media_metadata in dataset]))]
+        self.setData(cast(List[Dict[str, Union[str, int, None]]], new_dataset))
         return len(self.getData())
 
     def secondRun(self):

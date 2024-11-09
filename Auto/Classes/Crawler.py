@@ -202,7 +202,8 @@ class Crawler:
         referrer: str = stack()[1][3]
         if referrer == "__init__":
             self.prepareFirstRun(identifiers)
-        second_run_dataset: int = self.prepareSecondRun(dataset)
+        elif referrer == "firstRun":
+            self.prepareSecondRun(dataset)
         if referrer == "__init__" and len(self.getData()) > 0:
             self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
             self.firstRun()
@@ -213,17 +214,16 @@ class Crawler:
             self.getLogger().inform(f"No new data has been found for the last seven days.\nWeekly Content Downloaded Amount: {len(identifiers)}")
             exit()
 
-    def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:
+    def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> None:
         """
         Preparing for the second run of crawling based on the data
         in the cache.
 
         Returns:
-            int
+            void
         """
         new_dataset: List[Dict[str, Union[str, None]]] = [{"author_channel": author_channel, "latest_content": None} for author_channel in list(set([str(media_metadata["author_channel"]) for media_metadata in dataset]))]
         self.setData(cast(List[Dict[str, Union[str, int, None]]], new_dataset))
-        return len(self.getData())
 
     def secondRun(self):
         """
@@ -313,6 +313,8 @@ class Crawler:
         Returns:
             void
         """
+        print(f"{self.getData()=}")
+        exit()
         total: int = 0
         for index in range(0, len(self.getData()), 1):
             total += len(str(self.getData()[index]["uniform_resource_locator"]))

@@ -1,13 +1,13 @@
 from Classes.YouTubeDownloader import YouTube_Downloader
 from datetime import datetime
 from mysql.connector.types import RowType
+from sys import path
+from os import getcwd
+from logging import getLogger
 import json
-import sys
-import os
-import logging
 
 
-sys.path.append(os.getcwd())
+path.append(getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
@@ -58,15 +58,13 @@ class Media:
         the media's dataset and do the required processing.
 
         Parameters:
-            search: (string):   The uniform resource locator to be searched.
-            value:  (string):   The value of the required media which have to correspond to the name of the platform from which the media comes from.
+            search string: The uniform resource locator to be searched.
+            value: string: The value of the required media which have to correspond to the name of the platform from which the  media comes from.
         """
-        ENV = Environment()
-        self.setDirectory(
-            f"{ENV.getDirectory()}/Cache/Media"
-        )
+        ENV: Environment = Environment()
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
         self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.getLogger().setLogger(getLogger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setSearch(search)
         self.setValue(value)

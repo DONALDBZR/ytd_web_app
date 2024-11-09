@@ -230,23 +230,16 @@ class Crawler:
         The second run for the web-crawler to seek for the data
         needed from the targets.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        delay: float = 0.0
         total: int = 0
         for index in range(0, len(self.getData()), 1):
             total += len(str(self.getData()[index]["author_channel"]))
-        delay = ((total / len(self.getData())) / (40 * 5)) * 60
-        self.getLogger().debug(
-            f"The delay has been calculated!\nDelay: {delay} s"
-        )
+        delay: float = ((total / len(self.getData())) / 200) * 60
+        self.getLogger().debug(f"The delay has been calculated!\nDelay: {delay} s")
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(
-                str(self.getData()[index]["author_channel"]),
-                delay,
-                index
-            )
+            self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
 
     def buildData(self) -> None:

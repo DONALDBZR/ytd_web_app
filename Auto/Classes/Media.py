@@ -172,15 +172,12 @@ class Media:
         that it is in a playlist.
 
         Parameters:
-            identifier: (string):   The ID of the content.
+            identifier: string: The ID of the content.
 
-        Return:
-            (string)
+        Returns:
+            string
         """
-        if "&" in identifier:
-            return identifier.rsplit("&", 1)[0]
-        else:
-            return identifier
+        return identifier.rsplit("&", 1)[0] if "&" in identifier else identifier
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """

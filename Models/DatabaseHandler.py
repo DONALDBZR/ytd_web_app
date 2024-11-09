@@ -328,7 +328,7 @@ class Database_Handler:
         Returns:
             void
         """
-        query = f"DELETE FROM {table}"
+        query: str = f"DELETE FROM {table}"
         self.setQuery(query)
         self.setParameters(parameters)
         self._getFilter(condition)

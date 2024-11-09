@@ -199,7 +199,7 @@ class Database_Handler:
         Returns:
             array
         """
-        query = f"SELECT {column_names} FROM {table_name}"
+        query: str = f"SELECT {column_names} FROM {table_name}"
         self.setQuery(query)
         self.setParameters(parameters)
         self._getJoin(join_condition)

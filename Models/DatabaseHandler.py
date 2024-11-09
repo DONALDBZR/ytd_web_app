@@ -224,10 +224,10 @@ class Database_Handler:
         query: str = self.getQuery() if condition == "" else f"{self.getQuery()} LEFT JOIN {condition}"
         self.setQuery(query)
 
-    def _getJoin(self, condition: str) -> None:
+    def _getGroup(self, condition: str) -> None:
         """
-        Building the query needed for retrieving data that is in at
-        least two tables.
+        Building the query needed for retrieving the data that
+        needed to be regrouped.
 
         Parameters:
             condition: string: The JOIN statement that is used.
@@ -235,10 +235,7 @@ class Database_Handler:
         Returns:
             void
         """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} LEFT JOIN {condition}"
+        query: str = self.getQuery() if condition == "" else f"{self.getQuery()} GROUP BY {condition}"
         self.setQuery(query)
 
     def _getFilter(self, condition: str) -> None:

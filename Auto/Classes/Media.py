@@ -129,7 +129,7 @@ class Media:
             error_message = "The content does not come from YouTube!"
             self.getLogger().error(error_message)
             raise Exception(error_message)
-        if "youtube" not in self.getValue() or "youtu.be" not in self.getValue():
+        if "youtube" not in self.getValue() and "youtu.be" not in self.getValue():
             error_message = "This application cannot retrieve content from that application!"
             status = 403
             self.getLogger().error(f"{error_message}\nStatus: {status}")

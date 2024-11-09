@@ -10,6 +10,7 @@ from mysql.connector.types import RowType
 from os import getcwd
 from typing import List, Dict, Union, Tuple
 from logging import getLogger, DEBUG
+from inspect import stack
 import inspect
 import time
 import json
@@ -100,10 +101,10 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int | None]]:
+    def getData(self) -> List[Dict[str, Union[str, int, None]]]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int | None]]) -> None:
+    def setData(self, data: List[Dict[str, Union[str, int, None]]]) -> None:
         self.__data = data
 
     def getDirectory(self) -> str:
@@ -112,16 +113,16 @@ class Crawler:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
-    def getFiles(self) -> list[str]:
+    def getFiles(self) -> List[str]:
         return self.__files
 
-    def setFiles(self, files: list[str]) -> None:
+    def setFiles(self, files: List[str]) -> None:
         self.__files = files
 
-    def getHtmlTags(self) -> list[WebElement]:
+    def getHtmlTags(self) -> List[WebElement]:
         return self.__html_tags
 
-    def setHtmlTags(self, html_tags: list[WebElement]) -> None:
+    def setHtmlTags(self, html_tags: List[WebElement]) -> None:
         self.__html_tags = html_tags
 
     def getHtmlTag(self) -> WebElement:
@@ -164,8 +165,8 @@ class Crawler:
         """
         Setting the services for the ChromeDriver.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.setService(Service(ChromeDriverManager().install()))
         self.getLogger().inform("The Crawler's Service has been installed!")
@@ -174,8 +175,8 @@ class Crawler:
         """
         Setting the options for the ChromeDriver.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.setOption(Options())
         self.getOption().add_argument('--headless')
@@ -188,29 +189,28 @@ class Crawler:
         Setting up the data to be used to be used by the web
         crawler.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        identifiers = self.getDatabaseHandler().getData(
+        identifiers: List[RowType] = self.getDatabaseHandler().getData(
             parameters=None,
             table_name="MediaFile",
             filter_condition="date_downloaded >= NOW() - INTERVAL 2 WEEK",
-            column_names="DISTINCT YouTube"
+            column_names="YouTube",
+            group_condition="YouTube"
         )
-        dataset = self.getData()
-        referrer = inspect.stack()[1][3]
-        if referrer == "__init__" and self.prepareFirstRun(identifiers) > 0:
-            self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {self.prepareFirstRun(identifiers)}\n")
+        dataset: List[Dict[str, Union[str, int, None]]] = self.getData()
+        referrer: str = stack()[1][3]
+        first_run_dataset: int = self.prepareFirstRun(identifiers)
+        second_run_dataset: int = self.prepareSecondRun(dataset)
+        if referrer == "__init__" and first_run_dataset > 0:
+            self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {first_run_dataset}\n")
             self.firstRun()
-        elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
-            self.getLogger().inform(
-                f"Latest Content to be displayed on the application.\nNew Content Amount: {self.prepareSecondRun(dataset)}"
-            )
+        elif referrer == "firstRun" and second_run_dataset > 0:
+            self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {second_run_dataset}")
             self.secondRun()
         else:
-            self.getLogger().inform(
-                f"No new data has been found for the last seven days.\nWeekly Content Downloaded Amount: {len(identifiers)}"
-            )
+            self.getLogger().inform(f"No new data has been found for the last seven days.\nWeekly Content Downloaded Amount: {len(identifiers)}")
             exit()
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:

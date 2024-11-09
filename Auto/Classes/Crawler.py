@@ -202,17 +202,16 @@ class Crawler:
         referrer: str = stack()[1][3]
         if referrer == "__init__":
             self.prepareFirstRun(identifiers)
-        elif referrer == "firstRun":
+        if referrer == "firstRun":
             self.prepareSecondRun(dataset)
         if referrer == "__init__" and len(self.getData()) > 0:
             self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
             self.firstRun()
-        elif referrer == "firstRun" and second_run_dataset > 0:
-            self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {second_run_dataset}")
+        if referrer == "firstRun" and len(self.getData()) > 0:
+            self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
             self.secondRun()
-        else:
-            self.getLogger().inform(f"No new data has been found for the last seven days.\nWeekly Content Downloaded Amount: {len(identifiers)}")
-            exit()
+        self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
+        exit()
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> None:
         """

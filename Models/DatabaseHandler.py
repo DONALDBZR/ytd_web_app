@@ -309,7 +309,7 @@ class Database_Handler:
         Returns:
             void
         """
-        query = f"UPDATE {table} SET {values}"
+        query: str = f"UPDATE {table} SET {values}"
         self.setQuery(query)
         self.setParameters(parameters)
         self._getFilter(condition)

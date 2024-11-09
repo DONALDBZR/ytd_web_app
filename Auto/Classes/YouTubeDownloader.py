@@ -261,21 +261,12 @@ class YouTube_Downloader:
         """
         Creating a record for the media with its data.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        data = (
-                self.getIdentifier(),
-                self.getLength(),
-                self.getPublishedAt(),
-                self.getAuthor(),
-                self.getTitle(),
-                self.getMediaIdentifier()
-            )
-        self.getLogger().inform(
-            f"Data to be inserted into the database server.\nIdentifier: {self.getIdentifier()}\nLength: {self.getLength()}\nPublished At: {self.getPublishedAt()}\nAuthor: {self.getAuthor()}\nTitle: {self.getTitle()}\nMedia's Identifier: {self.getMediaIdentifier()}"
-        )
-        self.getDatabaseHandler().post_data(
+        data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
+        self.getLogger().inform(f"Data to be inserted into the database server.\nIdentifier: {self.getIdentifier()}\nLength: {self.getLength()}\nPublished At: {self.getPublishedAt()}\nAuthor: {self.getAuthor()}\nTitle: {self.getTitle()}\nMedia's Identifier: {self.getMediaIdentifier()}")
+        self.getDatabaseHandler().postData(
             table="YouTube",
             columns="identifier, length, published_at, author, title, Media",
             values="%s, %s, %s, %s, %s, %s",

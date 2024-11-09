@@ -4,6 +4,7 @@ from mysql.connector.types import RowType
 from sys import path
 from os import getcwd
 from logging import getLogger
+from typing import Dict, Union, List, Tuple
 import json
 
 
@@ -112,7 +113,7 @@ class Media:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
-    def verifyPlatform(self) -> dict[str, int | dict[str, int | dict[str, str | int | None]]] | dict[str, int | str]:
+    def verifyPlatform(self) -> Union[Dict[str, Union[int, Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]], Dict[str, Union[int, str]]]:
         """
         Verifying the uniform resource locator in order to switch to
         the correct system as well as select and return the correct
@@ -121,9 +122,9 @@ class Media:
         Return:
             (object)
         """
-        response: dict[str, int | dict[str, int | dict[str, str | int | None]]] | dict[str, int | str]
-        media = self.getMedia()
+        response: Union[Dict[str, Union[int, Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]], Dict[str, Union[int, str]]]
         error_message: str
+        media = self.getMedia()
         if media["status"] == 200:
             self.setIdentifier(int(media["data"][0][0]))  # type: ignore
         else:
@@ -149,34 +150,26 @@ class Media:
             )
         return response
 
-    def getMedia(self) -> dict[str, int | str | list[RowType]]:
+    def getMedia(self) -> Dict[str, Union[int, str, List[RowType]]]:
         """
         Retrieving the Media data from the Media table.
 
-        Return:
-            (object)
+        Returns:
+            {status: int, data: [{identifier: int, value: string}], timestamp: string}
         """
-        response: dict[str, int | str | list[RowType]]
-        filter_parameters = tuple([self.getValue()])
-        media = self.getDatabaseHandler().get_data(
+        filter_parameters: Tuple[str] = (self.getValue(),)
+        media: List[RowType] = self.getDatabaseHandler().getData(
             parameters=filter_parameters,
             table_name="Media",
             filter_condition="value = %s"
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        if len(media) == 0:
-            response = {
-                'status': 404,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        else:
-            response = {
-                'status': 200,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        return response
+        status: int = 400 if len(media) == 0 else 200
+        return {
+            "status": status,
+            "data": media,
+            "timestamp": self.getTimestamp()
+        }
 
     def retrieveYouTubeIdentifier(self, identifier: str) -> str:
         """

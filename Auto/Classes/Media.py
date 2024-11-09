@@ -5,7 +5,7 @@ from sys import path
 from os import getcwd
 from logging import getLogger
 from typing import Dict, Union, List, Tuple
-import json
+from json import dumps
 
 
 path.append(getcwd())
@@ -183,44 +183,27 @@ class Media:
         else:
             return identifier
 
-    def handleYouTube(self) -> dict[str, int | dict[str, str | int | None]]:
+    def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
         Handling the data throughout the You Tube Downloader which
         will depend on the referer.
 
-        Return:
-            (object)
+        Returns:
+            {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}}
         """
-        response: dict[str, int | dict[str, str | int | None]]
-        identifier: str
-        self._YouTubeDownloader = YouTube_Downloader(
-            self.getSearch(),
-            self.getIdentifier()
-        )
-        youtube = self._YouTubeDownloader.search()
+        self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
+        youtube: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
         media = {
             "Media": {
                 "YouTube": youtube
             }
         }
-        if "youtube" in self.getSearch():
-            identifier = self.retrieveYouTubeIdentifier(
-                self.getSearch().replace(
-                    "https://www.youtube.com/watch?v=",
-                    ""
-                )
-            )
-        else:
-            identifier = self.getSearch().replace(
-                "https://youtu.be/",
-                ""
-            ).rsplit("?")[0]
-        filename = f"{self.getDirectory()}/{identifier}.json"
+        identifier: str = self.retrieveYouTubeIdentifier(self.getSearch().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getSearch() else self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
+        filename: str = f"{self.getDirectory()}/{identifier}.json"
         file = open(filename, "w")
-        file.write(json.dumps(media, indent=4))
+        file.write(dumps(media, indent=4))
         file.close()
-        response = {
+        return {
             "status": 200,
             "data": youtube
         }
-        return response

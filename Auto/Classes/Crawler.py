@@ -246,21 +246,14 @@ class Crawler:
         """
         Building the data to be displayed to the user.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        new_data: list[dict[str, str | int | None]] = []
-        data: dict[str, str | int | None]
+        new_data: List[Dict[str, Union[str, int, None]]] = []
+        data: Dict[str, Union[str, int, None]]
         for index in range(0, len(self.getData()), 1):
-            self.getLogger().inform(
-                f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}"
-            )
-            self.setMedia(
-                Media(
-                    str(self.getData()[index]["latest_content"]),
-                    "youtube"
-                )
-            )
+            self.getLogger().inform(f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}")
+            self.setMedia(Media(str(self.getData()[index]["latest_content"]), "youtube"))
             response = self.getMedia().verifyPlatform()
             data = response["data"]["data"]  # type: ignore
             new_data.append(data)

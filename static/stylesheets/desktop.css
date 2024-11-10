@@ -180,6 +180,7 @@ header nav div:nth-child(2) form button svg {
     flex-wrap: wrap;
     overflow: auto;
 }
+#Homepage::-webkit-scrollbar,
 #Homepage main .Trend div::-webkit-scrollbar,
 body[id*="Search"] main .Media .RelatedContents::-webkit-scrollbar {
     display: none;

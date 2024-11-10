@@ -347,14 +347,6 @@ class YTD {
     style() {
         this.setRelationship("stylesheet");
         this.setMimeType("text/css");
-        for (let index = 0; index < this._stylesheets.length; index++) {
-            const link = document.createElement("link");
-            link.href = `${this.getOrigin()}${this._stylesheets[index]}`;
-            link.media = this.getMediaQuery(link.href);
-            link.rel = this.getRelationship();
-            link.type = this.getMimeType();
-            this.getHead().appendChild(link);
-        }
         this.resizeApplication();
     }
 

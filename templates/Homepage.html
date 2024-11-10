@@ -12,6 +12,10 @@
         <link rel="preconnect" href="https://unpkg.com" />
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://i.ytimg.com" />
+        <link rel="preload" as="style" href="/static/stylesheets/ytd.css" onload="this.rel='stylesheet'" />
+        <link rel="preload" as="style" href="/static/stylesheets/desktop.css" media="screen and (min-width: 1024px)" onload="this.rel='stylesheet'" />
+        <link rel="preload" as="style" href="/static/stylesheets/mobile.css" media="screen and (max-width: 639px)" onload="this.rel='stylesheet'" />
+        <link rel="preload" as="style" href="/static/stylesheets/tablet.css" media="screen and (min-width: 640px) and (max-width: 1023px)" onload="this.rel='stylesheet'" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" defer="defer"></script>
         <script src="https://unpkg.com/react@18/umd/react.production.min.js" defer></script>
         <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" defer></script>

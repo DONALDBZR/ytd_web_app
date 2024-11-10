@@ -192,7 +192,7 @@ class YouTube_Downloader:
         self.setLength(int(meta_data["data"][0]["length"])) if meta_data["status"] == 200 else self.setLength(self.getVideo().length) # type: ignore
         self.setPublishedAt(str(meta_data["data"][0]["published_at"])) if meta_data["status"] == 200 else self.setPublishedAt(self.getVideo().publish_date) # type: ignore
         self.setAuthor(str(meta_data["data"][0]["author"])) if meta_data["status"] == 200 else self.setAuthor(self.getVideo().author) # type: ignore
-        self.setTitle(str(meta_data["data"][0][1])) if meta_data["status"] == 200 else self.setTitle(self.getVideo().title) # type: ignore
+        self.setTitle(str(meta_data["data"][0]["title"])) if meta_data["status"] == 200 else self.setTitle(self.getVideo().title) # type: ignore
         self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength()))) if meta_data["status"] == 200 else self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
         File_Location: Union[Dict[str, Union[str, None]], None] = self._getFileLocations(meta_data["data"]) if meta_data["status"] == 200 else None # type: ignore
         audio_file: Union[str, None] = File_Location["audio_file"] if File_Location != None else None

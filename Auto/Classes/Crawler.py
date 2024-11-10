@@ -253,8 +253,8 @@ class Crawler:
         for index in range(0, len(self.getData()), 1):
             self.getLogger().inform(f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}")
             self.setMedia(Media(str(self.getData()[index]["latest_content"]), "youtube"))
-            response = self.getMedia().verifyPlatform()
-            data = response["data"]["data"]  # type: ignore
+            response: Union[Dict[str, Union[int, Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]], Dict[str, Union[int, str]]] = self.getMedia().verifyPlatform()
+            data: Dict[str, Union[str, int, None]] = response["data"]["data"]  # type: ignore
             new_data.append(data)
         self.setData(new_data)
         self.save()

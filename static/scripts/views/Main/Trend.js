@@ -65,11 +65,13 @@ class Trend extends React.Component {
      * @return {React.Component}
      */
     renderMediaCard(content) {
+        const width = (window.innerWidth < 640) ? 179 : 1280;
+        const height = (window.innerWidth < 640) ? 101 : 720;
         return (
             <div className="card" key={content.identifier}>
                 <div>
                     <a href={content.uniform_resource_locator} target="__blank">
-                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`}  width="1280" height="720" />
+                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`}  width={width} height={height} />
                     </a>
                 </div>
                 <div>

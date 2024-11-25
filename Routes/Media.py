@@ -155,7 +155,7 @@ def retrieveMedia() -> Response:
     media: Media = Media(user_request) # type: ignore
     model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
     status: int = 201 if int(str(model_response["status"])) >= 200 and int(str(model_response["status"])) <= 299 else 503
-    return Response(dumps(model_response["data"]["data"], indent=4), status, mimetype=mime_type) # type: ignore
+    return Response(dumps(model_response["data"], indent=4), status, mimetype=mime_type) # type: ignore
 
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
 def getRelatedContents(identifier: str) -> Response:

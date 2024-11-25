@@ -193,7 +193,7 @@ class HeaderHomepage extends React.Component {
      * data.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
-     * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string | null, thumbnail: string, duration: string, audio_file: string | null, video_file: string | null}}>}
+     * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: ?string, video_file: ?string}}>}
      */
     async getSearchMedia(platform, search) {
         const response = await fetch(`/Media/Search?platform=${platform}&search=${search}`, {
@@ -201,7 +201,7 @@ class HeaderHomepage extends React.Component {
         });
         return {
             status: response.status,
-            data: await response.json().data.data,
+            data: await response.json().data,
         };
     }
 

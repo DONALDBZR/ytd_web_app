@@ -79,7 +79,7 @@ class RelatedContents extends React.Component {
     renderRelatedContents(media) {
         const identifier = media.uniform_resource_locator.replaceAll("https://www.youtube.com/watch?v=", "");
         return (
-            <div className="content" key={identifier}>
+            <div className="card" key={identifier}>
                 <div className="thumbnail">
                     <a href={media.uniform_resource_locator} target="__blank">
                         <img src={media.thumbnail} loading="lazy" alt={`Thumbnail for ${media.title}`} />

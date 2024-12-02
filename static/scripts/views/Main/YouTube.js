@@ -144,7 +144,7 @@ class YouTube extends React.Component {
                 </div>
                 <div class="data">
                     <div class="metadata">
-                        <div>{this.state.Media.YouTube.title}</div>
+                        <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
                         <div>
                             <a href={this.state.Media.YouTube.author_channel} target="__blank">{this.state.Media.YouTube.author}</a>
                         </div>

@@ -16,8 +16,7 @@ class Search extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        return [<Header />, <Main />];
-        // return [<Header />, <Main />, <Footer />];
+        return [<Header />, <Main />, <Footer />];
     }
 }
 

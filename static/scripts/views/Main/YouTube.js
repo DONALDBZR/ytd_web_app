@@ -131,6 +131,25 @@ class YouTube extends React.Component {
     }
 
     /**
+     * Retrieving the height of the component for the title.
+     * @param {string} title The title of the media content.
+     * @returns {string}
+     */
+    getTitleHeight(title) {
+        const limit = 56;
+        const component_height_coefficient = 8.8;
+        const coefficient = (title.length <= limit) ? 1 : Math.ceil(title.length / limit);
+        const height_coefficient = component_height_coefficient / coefficient;
+        if (window.outerWidth >= 1024) {
+            return "calc(var(--youtube-data-height) / 4)";
+        }
+        if (window.outerWidth >= 640 && window.outerWidth < 1024) {
+            return "calc(var(--data-height) / 4)";
+        }
+        return `calc(var(--youtube-data-height) / ${height_coefficient})`;
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */

@@ -431,6 +431,11 @@ class YouTube_Downloader:
         Returns:
             string
         """
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and "mp4a" in stream["acodec"]] # type: ignore
+        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
+        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
+        audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
+        # video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if "1920" in stream[""]]
         file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         try:
             self.getStream().download( # type: ignore
@@ -490,7 +495,7 @@ class YouTube_Downloader:
         file_path: str = f"{self.getDirectory()}/Audio/{file_name}"
         options: Dict[str, str] = {
             "format": str(self.getStream()["format_id"]),
-            "outtmpl": file_name
+            "outtmpl": file_path
         }
         self.setVideo(YoutubeDL(options))
         self.getVideo().download([self.getUniformResourceLocator()])

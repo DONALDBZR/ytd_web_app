@@ -6,7 +6,7 @@ from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 from time import strftime, gmtime
 from os.path import isfile
 import time
@@ -502,28 +502,19 @@ class YouTube_Downloader:
         Returns:
             string
         """
-        file_path = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        try:
-            self.getStream().download(  # type: ignore
-                output_path=f"{self.getDirectory()}/Audio",
-                filename=f"{self.getIdentifier()}.mp3"
-            )
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            data: tuple[str, str, str, str] = (
-                self.getMimeType(),
-                self.getTimestamp(),
-                file_path,
-                self.getIdentifier()
-            )
-            self.getDatabaseHandler().post_data(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data
-            )
-            return file_path
-        except HTTPError as error:
-            self.getLogger().error(
-                f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
-            )
-            return self.handleHttpError(error, file_path)
+        file_name: str = f"{self.getIdentifier()}.mp3"
+        file_path: str = f"{self.getDirectory()}/Audio/{file_name}"
+        options: Dict[str, str] = {
+            "format": str(self.getStream()["format_id"]),
+            "outtmpl": file_name
+        }
+        self.setVideo(YoutubeDL(options))
+        self.getVideo().download([self.getUniformResourceLocator()])
+        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
+        self.getDatabaseHandler().post_data(
+            table="MediaFile",
+            columns="type, date_downloaded, location, YouTube",
+            values="%s, %s, %s, %s",
+            parameters=data
+        )
+        return file_path

@@ -69,9 +69,9 @@ class YouTube_Downloader:
     """
     __streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]
     """
-    Interface for querying the available media streams.
+    The list of the streams
     """
-    __stream: Stream | None
+    __stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]
     """
     Container for stream manifest data.
     """
@@ -199,10 +199,10 @@ class YouTube_Downloader:
     def setStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]) -> None:
         self.__streams = streams
 
-    def getStream(self) -> Stream | None:
+    def getStream(self) -> Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]:
         return self.__stream
 
-    def setStream(self, stream: Stream | None) -> None:
+    def setStream(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> None:
         self.__stream = stream
 
     def getITAG(self) -> int:
@@ -405,23 +405,11 @@ class YouTube_Downloader:
         Return:
             (string)
         """
-        response: str
-        for index in range(0, len(self.getStreams().filter(mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")), 1):
-            self.setITAG(
-                self.getStreams().filter(
-                    mime_type="audio/mp4",
-                    abr="128kbps",
-                    audio_codec="mp4a.40.2"
-                )[index].itag
-            )
-        self.setStream(
-            self.getStreams().get_by_itag(self.getITAG())
-        )
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and "mp4a" in stream["acodec"]] # type: ignore
+        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
+        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
         self.setMimeType("audio/mp3")
-        if type(self.getStream()) is Stream:
-            response = self.__downloadAudio()
-        else:
-            response = ""
+        response: str = self.__downloadAudio() if self.getStream() != None else ""
         return response
 
     def getVideoFile(self) -> str:

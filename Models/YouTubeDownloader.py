@@ -5,6 +5,8 @@ from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
+from yt_dlp import YoutubeDL
+from typing import Dict
 import time
 import os
 import logging
@@ -18,7 +20,7 @@ class YouTube_Downloader:
     """
     The uniform resource locator to be searched.
     """
-    __video: YouTube
+    __video: YoutubeDL
     """
     Core developer interface for pytube.
     """
@@ -123,10 +125,10 @@ class YouTube_Downloader:
     def setUniformResourceLocator(self, uniform_resource_locator: str) -> None:
         self.__uniform_resource_locator = uniform_resource_locator
 
-    def getVideo(self) -> YouTube:
+    def getVideo(self) -> YoutubeDL:
         return self.__video
 
-    def setVideo(self, video: YouTube) -> None:
+    def setVideo(self, video: YoutubeDL) -> None:
         self.__video = video
 
     def getTitle(self) -> str:
@@ -242,26 +244,14 @@ class YouTube_Downloader:
         Return:
             (object)
         """
-        self.setVideo(YouTube(self.getUniformResourceLocator()))
+        options: Dict[str, bool] = {
+            "quiet": True,
+            "skip_download": True
+        }
+        self.setVideo(YoutubeDL(options))
         self.setIdentifier(self.getUniformResourceLocator())
-        if "youtube" in self.getUniformResourceLocator():
-            self.setIdentifier(
-                self.retrieveIdentifier(
-                    self.getIdentifier().replace(
-                        "https://www.youtube.com/watch?v=",
-                        ""
-                    )
-                )
-            )
-        else:
-            self.setIdentifier(
-                self.retrieveIdentifier(
-                    self.getIdentifier().replace(
-                        "https://youtu.be/",
-                        ""
-                    ).rsplit("?")[0]
-                )
-            )
+        identifier: str = self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
+        self.setIdentifier(identifier)
         response: dict[str, str | int | None]
         meta_data = self.getYouTube()
         audio_file: str | None

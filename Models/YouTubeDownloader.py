@@ -1,4 +1,3 @@
-from pytube import YouTube, StreamQuery, Stream
 from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
 from Models.Logger import Extractio_Logger
@@ -9,7 +8,6 @@ from yt_dlp import YoutubeDL
 from typing import Dict, Union, List, Tuple
 from time import strftime, gmtime
 from os.path import isfile
-import time
 import os
 import logging
 

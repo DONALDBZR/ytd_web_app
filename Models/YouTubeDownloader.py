@@ -402,8 +402,8 @@ class YouTube_Downloader:
         Retrieving the audio file and saving it on the server as
         well as adding its meta data in the database.
 
-        Return:
-            (string)
+        Returns:
+            string
         """
         audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and "mp4a" in stream["acodec"]] # type: ignore
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore

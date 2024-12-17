@@ -7,6 +7,7 @@ from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
 from typing import Dict, Union, List
+from time import strftime, gmtime
 import time
 import os
 import logging
@@ -244,7 +245,6 @@ class YouTube_Downloader:
         Returns:
             {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}
         """
-        response: Dict[str, Union[str, int, None]]
         options: Dict[str, bool] = {
             "quiet": True,
             "skip_download": True
@@ -253,47 +253,33 @@ class YouTube_Downloader:
         self.setIdentifier(self.getUniformResourceLocator())
         identifier: str = self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
         self.setIdentifier(identifier)
-        meta_data = self.getYouTube()
-        audio_file: str | None
-        video_file: str | None
-        if meta_data["status"] == 200:
-            self.setLength(int(meta_data["data"][0][4]))  # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
-            self.setAuthor(str(meta_data["data"][0][0]))  # type: ignore
-            self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
-            self.setDuration(
-                time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
-            )
-            file_locations = self._getFileLocations(
-                list(meta_data["data"])  # type: ignore
-            )
-            audio_file = file_locations["audio_file"]
-            video_file = file_locations["video_file"]
-        else:
-            self.setLength(self.getVideo().length)
-            self.setPublishedAt(self.getVideo().publish_date)
-            self.setAuthor(self.getVideo().author)
-            self.setTitle(self.getVideo().title)
-            self.setDuration(
-                time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
-            )
-            audio_file = None
-            video_file = None
+        youtube = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+        meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
+        self.setLength(int(meta_data["data"][0][4]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
+        published_date: str = youtube["upload_date"] # type: ignore
+        published_at: str = str(meta_data["data"][0][3]) if meta_data["status"] == 200 else f"{published_date[:4]}-{published_date[4:6]}-{published_date[6:]}" # type: ignore
+        self.setPublishedAt(published_at)
+        self.setAuthor(str(meta_data["data"][0][0]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
+        self.setTitle(str(meta_data["data"][0][1]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
+        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
+        file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
+        audio_file: Union[str, None] = file_locations["audio_file"] if meta_data["status"] == 200 else None
+        video_file: Union[str, None] = file_locations["video_file"] if meta_data["status"] == 200 else None
+        if meta_data["status"] != 200:
             self.postYouTube()
-        response = {
+        return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
             "identifier": self.getIdentifier(),
-            "author_channel": self.getVideo().channel_url,
-            "views": self.getVideo().views,
+            "author_channel": str(youtube["uploader_url"]),  # type: ignore
+            "views": int(youtube["view_count"]),  # type: ignore
             "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": self.getVideo().thumbnail_url,
+            "thumbnail": str(youtube["thumbnail"]),  # type: ignore
             "duration": self.getDuration(),
             "audio_file": audio_file,
             "video_file": video_file
         }
-        return response
 
     def _getFileLocations(self, result_set: list[RowType]) -> dict[str, str | None]:
         """

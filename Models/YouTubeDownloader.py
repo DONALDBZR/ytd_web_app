@@ -435,32 +435,30 @@ class YouTube_Downloader:
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
         audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
-        # video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if "1920" in stream[""]]
-        file_path = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        try:
-            self.getStream().download( # type: ignore
-                output_path=f"{self.getDirectory()}/Video",
-                filename=f"{self.getIdentifier()}.mp4"
-            )
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            data = (
-                self.getMimeType(),
-                self.getTimestamp(),
-                file_path,
-                self.getIdentifier()
-            )
-            self.getDatabaseHandler().post_data(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data
-            )
-            return file_path
-        except HTTPError as error:
-            self.getLogger().error(
-                f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
-            )
-            return self.handleHttpError(error, file_path)
+        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["vbr"] != None and stream["vbr"] != 0]
+        height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
+        width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
+        video_streams = [stream for stream in video_streams if stream["height"] == height and stream["width"] == width and "avc" in stream["vcodec"] and "filesize" in stream] # type: ignore
+        file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
+        self.setStream([stream for stream in video_streams if stream["filesize"] == file_size][0])
+        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
+        file_name: str = f"{self.getIdentifier()}.mp4"
+        file_path: str = f"{self.getDirectory()}/Video/{file_name}"
+        options: Dict[str, str] = {
+            "format": f"{video_stream['format_id']}+{audio_stream['format_id']}",
+            "merge_output_format": "mp4",
+            "outtmpl": file_path
+        }
+        self.setVideo(YoutubeDL(options))
+        self.getVideo().download([self.getUniformResourceLocator()])
+        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
+        self.getDatabaseHandler().post_data(
+            table="MediaFile",
+            columns="type, date_downloaded, location, YouTube",
+            values="%s, %s, %s, %s",
+            parameters=data
+        )
+        return file_path
 
     def handleHttpError(self, error: HTTPError, file_path: str) -> str:
         """

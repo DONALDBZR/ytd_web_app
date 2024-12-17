@@ -8,6 +8,7 @@ from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
 from typing import Dict, Union, List
 from time import strftime, gmtime
+from os.path import isfile
 import time
 import os
 import logging
@@ -66,7 +67,7 @@ class YouTube_Downloader:
     """
     The directory of the media files.
     """
-    __streams: StreamQuery
+    __streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]
     """
     Interface for querying the available media streams.
     """
@@ -192,10 +193,10 @@ class YouTube_Downloader:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
-    def getStreams(self) -> StreamQuery:
+    def getStreams(self) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
         return self.__streams
 
-    def setStreams(self, streams: StreamQuery) -> None:
+    def setStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]) -> None:
         self.__streams = streams
 
     def getStream(self) -> Stream | None:
@@ -358,40 +359,43 @@ class YouTube_Downloader:
         if not os.path.exists(f"{self.getDirectory()}/Audio"):
             os.makedirs(f"{self.getDirectory()}/Audio")
 
-    def retrievingStreams(self) -> dict[str, str | int]:
+    def retrievingStreams(self) -> Dict[str, Union[str, int, None]]:
         """
         Downloading the contents of the media from the platform to
         save on the server.
 
         Return:
-            (object)
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio: string|null, video: string|null}
         """
-        response: dict[str, str | int]
-        metadata = self.search()
+        metadata: Dict[str, Union[str, int, None]] = self.search()
         self.setIdentifier(str(metadata["identifier"]))
-        audio_file_location = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        video_file_location = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        if os.path.isfile(audio_file_location) == False and os.path.isfile(video_file_location) == False:
-            self.setVideo(YouTube(self.getUniformResourceLocator()))
+        audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+        video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+        options: Dict[str, bool] = {
+            "quiet": True,
+            "listformats": True
+        }
+        if isfile(audio_file_location) == False and isfile(video_file_location) == False:
+            self.setVideo(YoutubeDL(options))
             self.getDatabaseHandler()._execute()
-            self.setStreams(self.getVideo().streams)
+            info = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+            self.setStreams(info["formats"]) # type: ignore
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()
-        self.getLogger().inform("The media content has been downloaded!")
-        response = {
+        self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
+        return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
             "identifier": self.getIdentifier(),
-            "author_channel": self.getVideo().channel_url,
-            "views": self.getVideo().views,
+            "author_channel": str(metadata["author_channel"]),
+            "views": int(metadata["views"]),  # type: ignore
             "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": self.getVideo().thumbnail_url,
+            "thumbnail": str(metadata["thumbnail"]),  # type: ignore
             "duration": self.getDuration(),
             "audio": audio_file_location,
             "video": video_file_location
         }
-        return response
 
     def getAudioFile(self) -> str:
         """

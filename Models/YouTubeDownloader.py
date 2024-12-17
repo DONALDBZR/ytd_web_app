@@ -6,7 +6,7 @@ from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict
+from typing import Dict, Union, List
 import time
 import os
 import logging
@@ -237,13 +237,14 @@ class YouTube_Downloader:
         else:
             return identifier
 
-    def search(self) -> dict[str, str | int | None]:
+    def search(self) -> Dict[str, Union[str, int, None]]:
         """
         Searching for the video in YouTube.
 
-        Return:
-            (object)
+        Returns:
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}
         """
+        response: Dict[str, Union[str, int, None]]
         options: Dict[str, bool] = {
             "quiet": True,
             "skip_download": True
@@ -252,7 +253,6 @@ class YouTube_Downloader:
         self.setIdentifier(self.getUniformResourceLocator())
         identifier: str = self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
         self.setIdentifier(identifier)
-        response: dict[str, str | int | None]
         meta_data = self.getYouTube()
         audio_file: str | None
         video_file: str | None
@@ -319,15 +319,15 @@ class YouTube_Downloader:
             }
         return response
 
-    def getYouTube(self) -> dict[str, int | list[RowType] | str]:
+    def getYouTube(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
         Retrieving the metadata from the YouTube table.
 
         Return:
-            (object)
+            {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string|null}, timestamp: string]}
         """
         filter_parameters = tuple([self.getIdentifier()])
-        media = self.getDatabaseHandler().get_data(
+        media: List[RowType] = self.getDatabaseHandler().get_data(
             parameters=filter_parameters,
             table_name="YouTube",
             join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
@@ -337,20 +337,12 @@ class YouTube_Downloader:
             limit_condition=2
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        response: dict[str, int | list[RowType] | str]
-        if len(media) == 0:
-            response = {
-                'status': 204,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        else:
-            response = {
-                'status': 200,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        return response
+        status: int = 200 if len(media) != 0 else 204
+        return {
+            "status": status,
+            "data": media,
+            "timestamp": self.getTimestamp()
+        }
 
     def postYouTube(self) -> None:
         """

@@ -1,6 +1,7 @@
-import json
 from flask import Blueprint, Response, request, session
 from Models.SessionManagementSystem import Session_Manager
+import json
+
 
 Session_Portal = Blueprint("Session", __name__)
 """
@@ -36,7 +37,7 @@ def getSession() -> Response:
     return Response(response, status, mimetype=mime_type)
 
 
-@Session_Portal.route('/', methods=['UPDATE'])
+@Session_Portal.route('/', methods=['PUT'])
 def setSession() -> Response:
     """
     Allowing the Session Manager to update the session.

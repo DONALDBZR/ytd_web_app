@@ -453,19 +453,18 @@ class Session_Manager:
             "status": service_unavailable
         }
 
-    def handleSessionData(self, session_data: dict[str, int]) -> None:
+    def handleSessionData(self, session_data: Dict[str, int]) -> None:
         """
         Verifying that the data has not been tampered in order to
         renew the session.
 
         Parameters:
-            session_data:   (object):   Session's data
+            session_data: {status: int}: Session's data
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        # Verifying that the data has been received or created in order to verify it to renew access.
-        if session_data["status"] == 200 or session_data["status"] == 201:
+        if session_data["status"] == 200 or session_data["status"] == 201 or "status" not in session_data:
             self.renew(self.getSession())
         else:
             self.createSession()

@@ -79,7 +79,7 @@ class Session_Manager:
             request: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, port: string}: The request from the application.
             session: SessionMixin: The session of the user.
         """
-        ENV = Environment()
+        ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users/")
         self.setLogger(Extractio_Logger(__name__))
         self.setPort(str(request["port"]))

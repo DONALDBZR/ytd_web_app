@@ -3,11 +3,10 @@ from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from typing import Dict, Union, Tuple
-from json import JSONDecodeError, load
+from json import JSONDecodeError, load, dumps
 from os import remove
 from time import time
 import os
-import json
 import logging
 
 
@@ -269,7 +268,7 @@ class Session_Manager:
         Return:
             (string)
         """
-        return json.dumps(self.getSession(), indent=4)
+        return dumps(self.getSession(), indent=4)
 
     def updateSession(self, data: dict[str, dict[str, str | int]]) -> SessionMixin | None:
         """
@@ -284,7 +283,7 @@ class Session_Manager:
         self.setTimestamp(int(time()))
         self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
-        data = json.load(open(file_name))
+        data = load(open(file_name))
         if self.getIpAddress() == data['Client']['ip_address']:
             new_data: dict[str, str | int] = {
                 "ip_address": self.getIpAddress(),
@@ -469,28 +468,27 @@ class Session_Manager:
         else:
             self.createSession()
 
-    def renew(self, session_data: SessionMixin) -> (SessionMixin | None):
+    def renew(self, session_data: SessionMixin) -> Union[SessionMixin, None]:
         """
         Verifying that the IP Addresses are the same for renewing
         the access to their current data
 
         Parameters:
-            session_data:   (SessionMixin): Session Data
+            session_data: SessionMixin: Session Data
 
-        Return:
-            (SessionMixin | void)
+        Returns:
+            SessionMixin | void
         """
-        file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
-        if session_data['Client']['ip_address'] == self.getIpAddress():
+        file_path: str = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+        if "Client" in session_data and session_data['Client']['ip_address'] == self.getIpAddress():
             self.setTimestamp(int(time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
             file = open(file_path, "w")
-            file.write(json.dumps(self.getSession()))
+            file.write(dumps(self.getSession()))
             file.close()
             self.getLogger().inform("The session has been successfully renewed!")
             return self.getSession()
-        else:
-            self.getSession().clear()
-            os.remove(file_path)
-            self.createSession()
+        self.getSession().clear()
+        remove(file_path)
+        self.createSession()

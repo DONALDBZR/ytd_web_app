@@ -5,9 +5,9 @@ from Environment import Environment
 from typing import Dict, Union
 from json import JSONDecodeError, load
 from os import remove
+from time import time
 import os
 import json
-import time
 import logging
 
 
@@ -190,17 +190,13 @@ class Session_Manager:
         """
         Verifying existing sessions to remove expired ones.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        age: int
-        data: dict[str, dict[str, str | int]]
         for index in range(0, self.getLength(), 1):
-            file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
-            file = open(file_name, "r")
-            data = json.load(file)
-            age = int(time.time()) - int(data["Client"]["timestamp"])
-            file.close()
+            file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
+            data: Union[Dict[str, Union[str, int]], None] = self.getData(file_name)
+            age: int = int(time()) - int(data["Client"]["timestamp"]) if data != None else 0
             self.verifyInactiveSession(age, data, file_name)
 
     def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name: str) -> None:

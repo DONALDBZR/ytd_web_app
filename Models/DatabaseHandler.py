@@ -4,6 +4,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
+from typing import Union, Tuple, Any
 import mysql.connector
 import logging
 
@@ -30,7 +31,7 @@ class Database_Handler:
     The password that allows the required user to connect to the
     database.
     """
-    __database_handler: PooledMySQLConnection | MySQLConnection
+    __database_handler: Union[PooledMySQLConnection, MySQLConnection]
     """
     The database handler needed to execute the queries needed.
     """
@@ -44,7 +45,7 @@ class Database_Handler:
     The query to be used to be sent to the database server to
     either get, post, update or delete data.
     """
-    __parameters: tuple | None
+    __parameters: Union[Tuple[Any], None]
     """
     Parameters that the will be used to sanitize the query which
     is either  get, post, update or delete.

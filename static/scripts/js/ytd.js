@@ -397,11 +397,24 @@ class YTD {
     }
 
     /**
+     * Retrieving the identifier needed for the API and the caching
+     * mechanicsm to operate smoothly.
+     * @returns {string}
+     */
+    _getRelatedContentsIdentifier() {
+        if (this.getRequestURI().includes("Search")) {
+            return this.getRequestURI().replace("/Search/", "");
+        } else if (this.getRequestURI().includes("Download/YouTube")) {
+            return this.getRequestURI().replace("/Download/YouTube/", "");
+        }
+    }
+
+    /**
      * Setting the related contents of the related media content.
      * @returns {void}
      */
     setRelatedContents() {
-        const identifier = this.getRequestURI().replace("/Search/", "");
+        const identifier = this._getRelatedContentsIdentifier();
         const data_object = "related_content";
         const related_content = JSON.parse(localStorage.getItem(data_object));
         const route = `/Media/RelatedContents/${identifier}`;

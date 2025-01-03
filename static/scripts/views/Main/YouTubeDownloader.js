@@ -30,14 +30,14 @@ class YouTubeDownloader extends React.Component {
         };
     }
 
-    componentDidMount() {
-        this.getRoute();
-        setTimeout(() => {
-            if (window.location.pathname != "/Search/") {
-                this.getMedia();
-            }
-        }, 1);
-    }
+    // componentDidMount() {
+    //     this.getRoute();
+    //     setTimeout(() => {
+    //         if (window.location.pathname != "/Search/") {
+    //             this.getMedia();
+    //         }
+    //     }, 1);
+    // }
 
     /**
      * Checking that the location of the media file needed is in
@@ -73,8 +73,22 @@ class YouTubeDownloader extends React.Component {
     }
 
     /**
+     * Creating the file needed that is generated from the blob
+     * retrieved from the server to be downloaded.
+     * @param {Blob} data The data in the form of a blob.
+     * @param {string} file_name The name of the file.
+     * @returns {void}
+     */
+    downloadFileClient(data, file_name) {
+        const a = document.createElement("a");
+        a.href = window.URL.createObjectURL(data);
+        a.download = file_name;
+        a.click();
+    }
+
+    /**
      * Downloading the file retrieved from the server.
-     * @param {MouseEvent} event
+     * @param {MouseEvent} event The on-click event.
      * @returns {void}
      */
     getFile(event) {
@@ -82,12 +96,7 @@ class YouTubeDownloader extends React.Component {
         const file_location = button.value;
         const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
         this.downloadFileServer(file_location, file_name)
-        .then((data) => {
-            let a = document.createElement("a");
-            a.href = window.URL.createObjectURL(data);
-            a.download = file_name;
-            a.click();
-        });
+        .then((data) => this.downloadFileClient(data, file_name));
     }
 
     /**

@@ -5,8 +5,8 @@ from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
 from typing import Union, Tuple, Any
-import mysql.connector
-import logging
+from logging import getLogger
+from mysql.connector import connect, Error
 
 
 class Database_Handler:
@@ -62,28 +62,24 @@ class Database_Handler:
         """
         ENV = Environment()
         self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.getLogger().setLogger(getLogger(__name__))
         self.__setHost(ENV.getDatabaseHost())
         self.__setDatabase(ENV.getDatabaseSchema())
         self.__setUsername(ENV.getDatabaseUsername())
         self.__setPassword(ENV.getDatabasePassword())
         try:
             self.__setDatabaseHandler(
-                mysql.connector.connect(
+                connect(
                     host=self.__getHost(),
                     database=self.__getDatabase(),
                     username=self.__getUsername(),
                     password=self.__getPassword()
                 )
             )
-            self.getLogger().inform(
-                "The application has been successfully connected to the database server!"
-            )
-        except mysql.connector.Error as error:
-            print(f"Connection Failed!\nError: {str(error)}")
-            self.getLogger().error(
-                f"Connection Failed!\nError: {str(error)}"
-            )
+            self.getLogger().inform("The application has been successfully connected to the database server!")
+        except Error as error:
+            print(f"Connection Failed!\nError: {error}")
+            self.getLogger().error(f"Connection Failed!\nError: {error}")
 
     def __getHost(self) -> str:
         return self.__host

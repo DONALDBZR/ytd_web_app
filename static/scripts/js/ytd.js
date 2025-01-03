@@ -370,6 +370,8 @@ class YTD {
         this.setSession();
         if (window.location.pathname.includes("Search")) {
             this.loadDataSearchPage();
+        } else if (window.location.pathname.includes("Download/YouTube")) {
+            this.loadDataDownloadPage();
         } else {
             this.loadDataHomepage();
         }

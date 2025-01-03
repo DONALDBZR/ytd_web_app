@@ -2,6 +2,9 @@ from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
+from typing import Dict, Union
+from json import load
+from os import remove
 import os
 import json
 import time
@@ -404,38 +407,45 @@ class Session_Manager:
             }
         return response
 
-    def handleSession(self, status: int, name: str) -> dict[str, int]:
+    def handleSession(self, status: int, name: str) -> Dict[str, int]:
         """
         Handling the session based on the status retrieved from the
         system.
 
         Parameters:
-            status: (int):      HTTP Status Code
-            name:   (string):   File Name
+            status: int: HTTP Status Code
+            name: string: File Name
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
-        response = {}
-        file_path = f"{self.getDirectory()}/{name}"
-        file = open(file_path)
-        data = json.load(file)
-        if status == 200:
-            self.setSession(data)
-            response = {
+        ok: int = 200
+        accepted: int = 202
+        no_content: int = 204
+        reset_content: int = 205
+        service_unavailable: int = 503
+        file_path: str = f"{self.getDirectory()}/{name}"
+        file = open(file_path, "r")
+        data: Dict[str, Union[str, int]] = load(file)
+        file.close()
+        if status == ok:
+            self.setSession(data) # type: ignore
+            return {
                 "status": status
             }
-        elif status == 204:
-            response = {
+        if status == no_content:
+            return {
                 "status": status
             }
-        elif status == 205:
+        if status == reset_content:
             self.getSession().clear()
-            os.remove(file_path)
-            response = {
-                "status": 202
+            remove(file_path)
+            return {
+                "status": accepted
             }
-        return response
+        return {
+            "status": service_unavailable
+        }
 
     def handleSessionData(self, session_data: dict[str, int]) -> None:
         """

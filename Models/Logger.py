@@ -1,4 +1,4 @@
-from logging.__init__ import Logger
+from logging.__init__ import Logger, basicConfig, getLogger as get_logger
 from Environment import Environment
 import logging
 
@@ -19,13 +19,13 @@ class Extractio_Logger:
         that the application does.
         """
         ENV = Environment()
-        logging.basicConfig(
+        basicConfig(
             filename=f"{ENV.getDirectory()}/Logs/Extractio.log",
             encoding="utf-8",
             filemode="a",
             format="----------\nCurrent Time: %(asctime)s\nModule: %(name)s\nLogging Level: %(levelname)s\nMessage: %(message)s"
         )
-        self.setLogger(logging.getLogger(__name__))
+        self.setLogger(get_logger(__name__))
 
     def getLogger(self) -> Logger:
         return self.__logger

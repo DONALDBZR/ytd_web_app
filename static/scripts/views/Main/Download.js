@@ -11,10 +11,12 @@ class MainDownload extends React.Component {
     }
 
     /**
-     * Rendering the component
+     * Rendering the component for the download page.
      * @returns {React.Component}
      */
     render() {
-        return <YouTubeDownloader />;
+        if (window.location.pathname.includes("YouTube")) {
+            return <YouTubeDownloader />;
+        }
     }
 }

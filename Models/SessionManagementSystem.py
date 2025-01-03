@@ -353,28 +353,26 @@ class Session_Manager:
             "status": no_content
         }
 
-    def validateIpAddress(self, data) -> dict[str, int]:
+    def validateIpAddress(self, data: Union[Dict[str, Dict[str, Union[str, int]]], None]) -> Dict[str, int]:
         """
         Validating the IP Address against the one stored in the
         cache file.
 
         Parameters:
-            data:   (object):   The data in the file
+            data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null: The data in the file
 
         Return:
-            (object)
+            {status: int}
         """
-        response = {}
-        if self.getIpAddress() == str(data['Client']['ip_address']):
-            age = int(time()) - int(data['Client']['timestamp'])
-            response = {
+        no_content: int = 204
+        if data != None and self.getIpAddress() == str(data['Client']['ip_address']):
+            age: int = int(time()) - int(data['Client']['timestamp'])
+            return {
                 "status": self.handleExpiryTime(age)["status"]
             }
-        else:
-            response = {
-                "status": 204
-            }
-        return response
+        return {
+            "status": no_content
+        }
 
     def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
         """

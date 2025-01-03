@@ -428,13 +428,25 @@ class YTD {
     }
 
     /**
+     * Retrieving the route needed for the Media API route.
+     * @returns {string}
+     */
+    _getMediaApiRoute() {
+        if (this.getRequestURI().includes("Search")) {
+            return `/Media/${this.getRequestURI().replace("/Search/", "")}`;
+        } else if (this.getRequestURI().includes("Download/YouTube")) {
+            return `/Media/${this.getRequestURI().replace("/Download/YouTube/", "")}`;
+        }
+    }
+
+    /**
      * Setting the media metadata of the content.
      * @returns {void}
      */
     setMedia() {
         const data_object = "media";
         const media = JSON.parse(localStorage.getItem(data_object));
-        const route = `/Media/${this.getRequestURI().replace("/Search/", "")}`;
+        const route = this._getMediaApiRoute();
         const request_method = "GET";
         let status = 0;
         const current_time = Math.floor(Date.now() / 1000);

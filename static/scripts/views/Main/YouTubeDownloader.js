@@ -52,7 +52,7 @@ class YouTubeDownloader extends React.Component {
     }
 
     /**
-     * Rendering the component
+     * Rendering the component for the YouTube downloader.
      * @returns {HTMLDivElement}
      */
     render() {
@@ -64,7 +64,7 @@ class YouTubeDownloader extends React.Component {
                 <div>
                     <button
                         name="file_downloader"
-                        value={this.state.Media.YouTube.File.audio}
+                        value={this.state.File.audio}
                         onClick={this.getFile.bind(this)}
                     >
                         <i class="fa-solid fa-music"></i>
@@ -73,7 +73,7 @@ class YouTubeDownloader extends React.Component {
                 <div>
                     <button
                         name="file_downloader"
-                        value={this.state.Media.YouTube.File.video}
+                        value={this.state.File.video}
                         onClick={this.getFile.bind(this)}
                     >
                         <i class="fa-solid fa-video"></i>

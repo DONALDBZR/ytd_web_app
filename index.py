@@ -47,11 +47,11 @@ data = DatabaseHandler.getData(
     sort_condition="identifier ASC",
     limit_condition=1
 )
-key = str(data[0]["hash"])  # type: ignore
+key: str = str(data[0]["hash"])  # type: ignore
 """
 Encryption key of the application
 """
-ENV = Environment()
+ENV: Environment = Environment()
 """
 ENV File of the application
 """
@@ -60,8 +60,7 @@ Application.config["SESSION_TYPE"] = 'filesystem'
 Application.config["COMPRESS_ALGORITHM"] = "gzip"
 Application.config["COMPRESS_LEVEL"] = 6
 Application.config["COMPRESS_MIN_SIZE"] = 500
-Application.config["COMPRESS_MIMETYPES"] = [
-    "text/html", "text/css", "text/javascript", "application/json", "text/babel"]
+Application.config["COMPRESS_MIMETYPES"] = ["text/html", "text/css", "text/javascript", "application/json", "text/babel"]
 Application.register_blueprint(Session_Portal, url_prefix="/Session")
 Application.register_blueprint(Search_Portal, url_prefix="/Search")
 Application.register_blueprint(Media_Portal, url_prefix="/Media")
@@ -70,38 +69,6 @@ Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Compress(Application)
 CORS(Application)
-
-
-def debug(mime_type: str = None, status: int = 500, response: str = None) -> None:  # type: ignore
-    """
-    Debugging the application.
-
-    Parameters:
-        mime_type:  string|null:    The MIME type of the application.
-        status:     int:            The status of the response
-        response:   string|null:    The response data
-
-    Returns:
-        void
-    """
-    directory = ""
-    if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '591':
-        directory = "/var/www/html/ytd_web_app"
-    else:
-        directory = "/home/darkness4869/Documents/extractio"
-    log = f"{directory}/Access.log"
-    file = open(log, "a")
-    if mime_type.find("html") != -1:
-        file.write(
-            f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\n")  # type: ignore
-    else:
-        if mime_type.find("json") != -1 and request.environ.get("POST"):
-            file.write(
-                f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nRequest: {request.json}\nResponse: {response}\n")  # type: ignore
-        else:
-            file.write(
-                f"Request Method: {request.environ.get('REQUEST_METHOD')}\nRoute: {request.environ.get('REQUEST_URI')}\nMIME type: {mime_type}\nResponse Status: HTTP/{status}\nResponse: {response}\n")  # type: ignore
-    file.close()
 
 
 @Application.route('/', methods=['GET'])
@@ -113,13 +80,13 @@ def homepage() -> Response:
     Returns:
         Response
     """
-    template = render_template(
+    template: str = render_template(
         'Homepage.html',
         google_analytics_key=ENV.getGoogleAnalyticsKey()
     )
-    mime_type = "text/html"
-    status = 200
-    response = Response(template, status, mimetype=mime_type)
+    mime_type: str = "text/html"
+    status: int = 200
+    response: Response = Response(template, status, mimetype=mime_type)
     response.headers["Cache-Control"] = "public, max-age=604800"
     return response
 

@@ -4,6 +4,7 @@ from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
+from typing import Union
 import logging
 
 
@@ -33,7 +34,7 @@ class Security_Management_System:
     """
     High level class to hash passwords with sensible defaults.
     """
-    __date_created: str | int
+    __date_created: Union[str, int]
     """
     The date at which the key has been created.
     """

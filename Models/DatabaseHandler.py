@@ -223,7 +223,7 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def update_data(self, table: str, values: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
+    def updateData(self, table: str, values: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
         """
         Updating a specific table in the database.
 

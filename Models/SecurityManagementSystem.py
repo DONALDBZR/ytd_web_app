@@ -1,3 +1,13 @@
+"""
+The module that has the Security Management System that will
+assure the security of the data that will be stored across
+the application.
+
+Authors:
+    Darkness4869
+"""
+
+
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
@@ -5,7 +15,6 @@ from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
 from typing import Union
-import logging
 
 
 class Security_Management_System:

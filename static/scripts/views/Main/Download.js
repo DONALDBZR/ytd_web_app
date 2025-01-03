@@ -16,12 +16,5 @@ class MainDownload extends React.Component {
      */
     render() {
         return <YouTubeDownloader />;
-        if (this.state.System.view_route.includes("YouTube")) {
-            return (
-                <>
-                    <YouTubeDownloader />
-                </>
-            );
-        }
     }
 }

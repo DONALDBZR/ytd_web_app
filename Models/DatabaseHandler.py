@@ -11,7 +11,6 @@ from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
 from typing import Union, Tuple, Any, List
-from logging import getLogger
 from mysql.connector import connect, Error
 
 
@@ -67,8 +66,7 @@ class Database_Handler:
         database.
         """
         ENV: Environment = Environment()
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(getLogger(__name__))
+        self.setLogger(Extractio_Logger(__name__))
         self.__setHost(ENV.getDatabaseHost())
         self.__setDatabase(ENV.getDatabaseSchema())
         self.__setUsername(ENV.getDatabaseUsername())
@@ -183,7 +181,7 @@ class Database_Handler:
         self.getLogger().inform("The connection between the application and the database server will be closed!")
         return result_set
 
-    def get_data(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> List[RowType]:
+    def getData(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> List[RowType]:
         """
         Retrieving data from the database.
 

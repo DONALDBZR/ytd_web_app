@@ -270,22 +270,22 @@ class Session_Manager:
         """
         return dumps(self.getSession(), indent=4)
 
-    def updateSession(self, data: dict[str, dict[str, str | int]]) -> SessionMixin | None:
+    def updateSession(self, payload: Dict[str, Dict[str, str]]) -> SessionMixin:
         """
         Modifying the session.
 
         Parameters:
-            data:   (object):   Data from the view
+            payload: {Client: {color_scheme: string}}: Data from the view
 
-        Return:
-            (SessionMixin | void)
+        Returns:
+            SessionMixin
         """
         self.setTimestamp(int(time()))
-        self.setColorScheme(str(data["Client"]["color_scheme"]))
-        file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
-        data = load(open(file_name))
-        if self.getIpAddress() == data['Client']['ip_address']:
-            new_data: dict[str, str | int] = {
+        self.setColorScheme(str(payload["Client"]["color_scheme"]))
+        file_name: str = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_name)
+        if data != None and self.getIpAddress() == data['Client']['ip_address']:
+            new_data: Dict[str, Union[str, int]] = {
                 "ip_address": self.getIpAddress(),
                 "http_client_ip_address": self.getHttpClientIpAddress(),
                 "proxy_ip_address": self.getProxyIpAddress(),
@@ -298,6 +298,20 @@ class Session_Manager:
             file.close()
             self.getLogger().inform("The session has been successfully updated!")
             return self.getSession()
+        self.getSession().clear()
+        new_data: Dict[str, Union[str, int]] = {
+            "ip_address": self.getIpAddress(),
+            "http_client_ip_address": self.getHttpClientIpAddress(),
+            "proxy_ip_address": self.getProxyIpAddress(),
+            "timestamp": self.getTimestamp(),
+            "color_scheme": self.getColorScheme()
+        }
+        self.getSession()["Client"] = new_data
+        file = open(file_name, "w")
+        file.write(self.retrieveSession())
+        file.close()
+        self.getLogger().inform("The session has been successfully created!")
+        return self.getSession()
 
     def sessionsLoader(self, sessions: list[str]) -> dict[str, int]:
         """

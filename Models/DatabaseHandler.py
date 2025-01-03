@@ -105,16 +105,16 @@ class Database_Handler:
     def __setPassword(self, password: str) -> None:
         self.__password = password
 
-    def __getDatabaseHandler(self) -> "PooledMySQLConnection | MySQLConnection":
+    def __getDatabaseHandler(self) -> Union[PooledMySQLConnection, MySQLConnection]:
         return self.__database_handler
 
-    def __setDatabaseHandler(self, database_handler: "PooledMySQLConnection | MySQLConnection") -> None:
+    def __setDatabaseHandler(self, database_handler: Union[PooledMySQLConnection, MySQLConnection]) -> None:
         self.__database_handler = database_handler
 
-    def __getStatement(self) -> "MySQLCursor":
+    def __getStatement(self) -> MySQLCursor:
         return self.__statement
 
-    def __setStatement(self, statement: "MySQLCursor") -> None:
+    def __setStatement(self, statement: MySQLCursor) -> None:
         self.__statement = statement
 
     def getQuery(self) -> str:
@@ -123,10 +123,10 @@ class Database_Handler:
     def setQuery(self, query: str) -> None:
         self.__query = query
 
-    def getParameters(self) -> tuple | None:
+    def getParameters(self) -> Union[Tuple[Any], None]:
         return self.__parameters
 
-    def setParameters(self, parameters: tuple | None) -> None:
+    def setParameters(self, parameters: Union[Tuple[Any], None]) -> None:
         self.__parameters = parameters
 
     def getLogger(self) -> Extractio_Logger:
@@ -135,17 +135,15 @@ class Database_Handler:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__Logger = logger
 
-    def _query(self, query: str, parameters: None | tuple):
+    def _query(self, query: str, parameters: Union[Tuple[Any], None]):
         """
         Preparing the SQL query that is going to be handled by the
         database handler.
 
-        Return:
+        Returns:
             Generator[MySQLCursor, None, None] | None
         """
-        self.getLogger().debug(
-            f"Query to be executed!\nQuery: {query}\nParameters: {parameters}"
-        )
+        self.getLogger().debug(f"Query to be executed!\nQuery: {query}\nParameters: {parameters}")
         self.__setStatement(self.__getDatabaseHandler().cursor(prepared=True))
         self.__getStatement().execute(query, parameters)
 

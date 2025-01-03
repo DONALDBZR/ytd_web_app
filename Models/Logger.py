@@ -1,7 +1,6 @@
 from logging.__init__ import Logger
-from logging import basicConfig, getLogger as get_logger, DEBUG, INFO, WARNING
+from logging import basicConfig, getLogger as get_logger, DEBUG, INFO, WARNING, ERROR
 from Environment import Environment
-import logging
 
 
 class Extractio_Logger:
@@ -78,10 +77,10 @@ class Extractio_Logger:
         Logging the data for an error.
 
         Parameters:
-            message:    (string):   The action done.
+            message: string: The action done.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        self.getLogger().setLevel(logging.ERROR)
+        self.getLogger().setLevel(ERROR)
         self.getLogger().error(message)

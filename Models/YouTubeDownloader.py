@@ -9,7 +9,6 @@ from typing import Dict, Union, List, Tuple
 from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
-import logging
 
 
 class YouTube_Downloader:
@@ -95,10 +94,9 @@ class YouTube_Downloader:
             uniform_resource_locator: string: The uniform resource locator to be searched.
             media_identifier: int: The media type for the system.
         """
-        ENV = Environment()
+        ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Public")
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setLogger(Extractio_Logger(__name__))
         self.mediaDirectory()
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(

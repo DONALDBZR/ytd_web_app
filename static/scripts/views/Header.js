@@ -132,7 +132,7 @@ class Header extends React.Component {
             color_scheme = "light";
         }
         fetch("/Session/", {
-            method: "UPDATE",
+            method: "PUT",
             body: JSON.stringify({
                 Client: {
                     color_scheme: color_scheme,

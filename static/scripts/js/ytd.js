@@ -379,6 +379,15 @@ class YTD {
     }
 
     /**
+     * Loading the data specifically for the Download page.
+     * @returns {void}
+     */
+    loadDataDownloadPage() {
+        this.setMedia();
+        this.setRelatedContents();
+    }
+
+    /**
      * Loading the data specifically for the Search page.
      * @returns {void}
      */

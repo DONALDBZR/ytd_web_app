@@ -30,14 +30,15 @@ class YouTubeDownloader extends React.Component {
         };
     }
 
-    // componentDidMount() {
-    //     this.getRoute();
-    //     setTimeout(() => {
-    //         if (window.location.pathname != "/Search/") {
-    //             this.getMedia();
-    //         }
-    //     }, 1);
-    // }
+    /**
+     * Running the methods needed as soon as the component has been
+     * successfully mounted.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.setData();
+        console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Mount`);
+    }
 
     /**
      * Checking that the location of the media file needed is in

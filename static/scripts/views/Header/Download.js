@@ -4,7 +4,7 @@
  */
 class HeaderDownload extends React.Component {
     /**
-     * Constructing the header of the search page.
+     * Constructing the header of the download page.
      * @param {*} props The properties of the component
      */
     constructor(props) {

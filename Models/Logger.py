@@ -1,5 +1,5 @@
 from logging.__init__ import Logger
-from logging import basicConfig, getLogger as get_logger, DEBUG
+from logging import basicConfig, getLogger as get_logger, DEBUG, INFO
 from Environment import Environment
 import logging
 
@@ -52,12 +52,12 @@ class Extractio_Logger:
         Logging informational data.
 
         Parameters:
-            message:    (string):   The action done.
+            message: string: The action done.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        self.getLogger().setLevel(logging.INFO)
+        self.getLogger().setLevel(INFO)
         self.getLogger().info(message)
 
     def warn(self, message: str) -> None:

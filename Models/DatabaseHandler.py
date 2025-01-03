@@ -209,45 +209,19 @@ class Database_Handler:
         """
         self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
 
-    def _get_sort(self, condition: str) -> None:
-        """
-        Building the query needed to be used to sort the result set.
-
-        Parameters:
-            condition:  (string):   The ORDER BY statement that will be used.
-
-        Return:
-            (void)
-        """
-        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} ORDER BY {condition}")
-
-    def _get_limit(self, limit: int) -> None:
-        """
-        Building the query needed to be used to limit the amount of
-        data from the result set.
-
-        Parameters:
-            limit:  (int):  The ORDER BY statement that will be used.
-
-        Return:
-            (void)
-        """
-        self.setQuery(f"{self.getQuery()} LIMIT {limit}" if limit > 0 else self.getQuery())
-
     def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
         """
         Creating records to store data into the database server.
 
         Parameters:
-            table:      (string):   Table Name
-            columns:    (string):   Column names
-            values:     (string):   Data to be inserted
+            table: string: Table Name
+            columns: string: Column names
+            values: string: Data to be inserted
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        query = f"INSERT INTO {table}({columns}) VALUES ({values})"
-        self.setQuery(query)
+        self.setQuery(f"INSERT INTO {table}({columns}) VALUES ({values})")
         self.setParameters(parameters)
         self._query(self.getQuery(), self.getParameters())
         self._execute()

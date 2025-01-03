@@ -41,6 +41,32 @@ class YouTubeDownloader extends React.Component {
     }
 
     /**
+     * Setting the main state of the component.
+     * @returns {void}
+     */
+    setData() {
+        const loading_icon = document.querySelector("#loading");
+        const media = JSON.parse(localStorage.getItem("media")).data;
+        this.setState((previous) => ({
+            ...previous,
+            uniform_resource_locator: media.uniform_resource_locator,
+            author: media.author,
+            title: media.title,
+            identifier: media.identifier,
+            author_channel: media.author_channel,
+            views: media.views,
+            published_at: media.published_at,
+            thumbnail: media.thumbnail,
+            duration: media.duration,
+            File: {
+                audio: media.audio,
+                video: media.video,
+            },
+        }));
+        loading_icon.style.display = "none";
+    }
+
+    /**
      * Checking that the location of the media file needed is in
      * the state of the application.
      * @returns {string|void}

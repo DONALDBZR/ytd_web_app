@@ -92,10 +92,10 @@ class Security_Management_System:
     def setPasswordHasher(self, password_hasher: PasswordHasher) -> None:
         self.__password_hasher = password_hasher
 
-    def getDateCreated(self) -> str | int:
+    def getDateCreated(self) -> Union[str, int]:
         return self.__date_created
 
-    def setDateCreated(self, date_created: str | int) -> None:
+    def setDateCreated(self, date_created: Union[str, int]) -> None:
         self.__date_created = date_created
 
     def getLogger(self) -> Extractio_Logger:

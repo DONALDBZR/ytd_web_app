@@ -195,8 +195,8 @@ class Session_Manager:
         """
         for index in range(0, self.getLength(), 1):
             file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
-            data: Union[Dict[str, Union[str, int]], None] = self.getData(file_name)
-            age: int = int(time()) - int(data["Client"]["timestamp"]) if data != None else 0
+            data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_name)
+            age: int = int(time()) - int(data["Client"]["timestamp"]) if data != None else 0 # type: ignore
             self.verifyInactiveSession(age, data, file_name)
 
     def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name: str) -> None:
@@ -233,7 +233,7 @@ class Session_Manager:
             (SessionMixin)
         """
         self.getSession().clear()
-        self.setTimestamp(int(time.time()))
+        self.setTimestamp(int(time()))
         self.setColorScheme("light")
         data: dict[str, str | int] = {
             "ip_address": self.getIpAddress(),
@@ -284,7 +284,7 @@ class Session_Manager:
         Return:
             (SessionMixin | void)
         """
-        self.setTimestamp(int(time.time()))
+        self.setTimestamp(int(time()))
         self.setColorScheme(str(data["Client"]["color_scheme"]))
         file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         data = json.load(open(file_name))
@@ -372,7 +372,7 @@ class Session_Manager:
         """
         response = {}
         if self.getIpAddress() == str(data['Client']['ip_address']):
-            age = int(time.time()) - int(data['Client']['timestamp'])
+            age = int(time()) - int(data['Client']['timestamp'])
             response = {
                 "status": self.handleExpiryTime(age)["status"]
             }
@@ -403,7 +403,7 @@ class Session_Manager:
             }
         return response
 
-    def getData(self, file_path: str) -> Union[Dict[str, Union[str, int]], None]:
+    def getData(self, file_path: str) -> Union[Dict[str, Dict[str, Union[str, int]]], None]:
         """
         Retrieving the data that is in the file.
 
@@ -415,7 +415,7 @@ class Session_Manager:
         """
         try:
             file = open(file_path, "r")
-            data: Dict[str, Union[str, int]] = load(file)
+            data: Dict[str, Dict[str, Union[str, int]]] = load(file)
             file.close()
             self.getLogger().inform(f"The file has been successfully read.\nFile Path: {file_path}")
             return data
@@ -491,7 +491,7 @@ class Session_Manager:
         """
         file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
         if session_data['Client']['ip_address'] == self.getIpAddress():
-            self.setTimestamp(int(time.time()))
+            self.setTimestamp(int(time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
             file = open(file_path, "w")

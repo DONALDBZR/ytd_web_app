@@ -52,15 +52,14 @@ class YouTubeDownloader extends React.Component {
     }
 
     /**
-     * Downloading the file retrieved from the server.
-     * @param {MouseEvent} event
-     * @returns {void}
+     * Sending the request to the server to download the file
+     * needed.
+     * @param {string} file_location The location of the file.
+     * @param {string} file_name The name of the file.
+     * @returns {Promise<Blob>}
      */
-    getFile(event) {
-        const button = event.target.parentElement.parentElement;
-        const file_location = button.value;
-        const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
-        fetch("/Download", {
+    async downloadFileServer(file_location, file_name) {
+        const response = await fetch("/Download", {
             method: "POST",
             body: JSON.stringify({
                 file: file_location,
@@ -69,8 +68,20 @@ class YouTubeDownloader extends React.Component {
             headers: {
                 "Content-Type": "application/json",
             },
-        })
-        .then((response) => response.blob())
+        });
+        return await response.blob();
+    }
+
+    /**
+     * Downloading the file retrieved from the server.
+     * @param {MouseEvent} event
+     * @returns {void}
+     */
+    getFile(event) {
+        const button = event.target.parentElement.parentElement;
+        const file_location = button.value;
+        const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
+        this.downloadFileServer(file_location, file_name)
         .then((data) => {
             let a = document.createElement("a");
             a.href = window.URL.createObjectURL(data);

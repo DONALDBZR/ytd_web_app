@@ -2,7 +2,7 @@
  * The component to be rendered for the Download page but only
  * when it is for media from YouTube.
  */
-class YouTubeDownloader extends Main {
+class YouTubeDownloader extends React.Component {
     /**
      * Constructing the application from React's Component
      * @param {*} props The properties of the component

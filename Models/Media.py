@@ -7,7 +7,6 @@ from mysql.connector.types import RowType
 from typing import Dict, Union, List, Tuple
 from mysql.connector import Error
 from json import dumps
-import logging
 
 
 class Media:
@@ -67,10 +66,9 @@ class Media:
         Parameters:
             request: {referer: string|null, search: string, platform: string, ip_address: string, port: string}: The request from the user.
         """
-        ENV = Environment()
+        ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
             query="CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))",

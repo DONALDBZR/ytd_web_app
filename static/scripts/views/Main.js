@@ -11,14 +11,14 @@ class Main extends React.Component {
     }
 
     /**
-     * Rendering the component
+     * Rendering the component for the main.
      * @returns {React.Component}
      */
     render() {
         if (window.location.pathname.includes("Search")) {
             return <MainSearch />;
-        // } else if (window.location.pathname.includes("Download")) {
-        //     return <Download />;
+        } else if (window.location.pathname.includes("Download/YouTube")) {
+            return <MainDownload />;
         } else {
             return <MainHomepage />;
         }

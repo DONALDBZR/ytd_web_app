@@ -197,18 +197,6 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 
-    def _get_filter(self, condition: str) -> None:
-        """
-        Building the query needed for retrieving specific data.
-
-        Parameters:
-            condition: string: The WHERE statement that will be used.
-
-        Returns:
-            void
-        """
-        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
-
     def post_data(self, table: str, columns: str, values: str, parameters: Tuple[Any]) -> None:
         """
         Creating records to store data into the database server.
@@ -245,21 +233,20 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def delete_data(self, table: str, parameters: tuple | None, condition: str = "") -> None:
+    def delete_data(self, table: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
         """
         Deleting data from the database.
 
         Parameters:
-            table:      (string):   Table name
-            parameters: (array):    Data to be used for data manipulation.
-            condition:  (string):   Specification
+            table: string: Table name
+            parameters: array: Data to be used for data manipulation.
+            condition: string: Specification
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        query = f"DELETE FROM {table}"
-        self.setQuery(query)
+        self.setQuery(f"DELETE FROM {table}")
         self.setParameters(parameters)
-        self._get_filter(condition)
+        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()

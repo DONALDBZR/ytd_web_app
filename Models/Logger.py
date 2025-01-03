@@ -20,10 +20,13 @@ class Extractio_Logger:
     application.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, name: str):
         """
         Instantiating the Logger which will keep track of everything
         that the application does.
+
+        Parameters:
+            name: string: The name of the logger.
         """
         ENV = Environment()
         basicConfig(
@@ -32,7 +35,7 @@ class Extractio_Logger:
             filemode="a",
             format="----------\nCurrent Time: %(asctime)s\nModule: %(name)s\nLogging Level: %(levelname)s\nMessage: %(message)s"
         )
-        self.setLogger(get_logger(__name__))
+        self.setLogger(get_logger(name))
 
     def getLogger(self) -> Logger:
         return self.__logger

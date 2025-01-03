@@ -46,7 +46,7 @@ class YouTubeDownloader extends React.Component {
      */
     verifyFile() {
         if (this.state.File.video != null) {
-            return this.getMediaFile();
+            return (this.state.File.video.includes("extractio")) ? this.state.File.video.replace("/home/darkness4869/Documents/extractio", "") : this.state.Media.YouTube.File.video.replace("/var/www/html/ytd_web_app", "");
         }
         window.location.href = `/Search/${this.state.identifier}`;
     }

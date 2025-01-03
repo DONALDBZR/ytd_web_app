@@ -218,7 +218,7 @@ class Session_Manager:
                 table="Visitors",
                 columns="timestamp, client",
                 values="%s, %s",
-                parameters=expired_sessions
+                parameters=expired_sessions # type: ignore
             )
             remove(file_name)
 

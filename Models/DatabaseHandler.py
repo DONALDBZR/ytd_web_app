@@ -197,19 +197,6 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 
-    def _get_join(self, condition: str) -> None:
-        """
-        Building the query needed for retrieving data that is in at
-        least two tables.
-
-        Parameters:
-            condition:  (string):   The JOIN statement that is used.
-
-        Return:
-            (void)
-        """
-        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} LEFT JOIN {condition}")
-
     def _get_filter(self, condition: str) -> None:
         """
         Building the query needed for retrieving specific data.

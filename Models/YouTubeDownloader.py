@@ -312,11 +312,11 @@ class YouTube_Downloader:
         """
         Retrieving the metadata from the YouTube table.
 
-        Return:
+        Returns:
             {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string|null}, timestamp: string]}
         """
-        filter_parameters = tuple([self.getIdentifier()])
-        media: List[RowType] = self.getDatabaseHandler().get_data(
+        filter_parameters: Tuple[str] = (self.getIdentifier(),)
+        media: List[RowType] = self.getDatabaseHandler().getData(
             parameters=filter_parameters, # type: ignore
             table_name="YouTube",
             join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",

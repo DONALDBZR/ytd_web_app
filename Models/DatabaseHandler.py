@@ -209,7 +209,7 @@ class Database_Handler:
         """
         self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
 
-    def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
+    def post_data(self, table: str, columns: str, values: str, parameters: Tuple[Any]) -> None:
         """
         Creating records to store data into the database server.
 

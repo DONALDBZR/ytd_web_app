@@ -210,7 +210,7 @@ class Session_Manager:
         """
         if age > 3600 and session != None:
             expired_sessions: Tuple[int, str] = (int(session["Client"]["timestamp"]), str(session["Client"]["ip_address"]))
-            self.getDatabaseHandler().post_data(
+            self.getDatabaseHandler().postData(
                 table="Visitors",
                 columns="timestamp, client",
                 values="%s, %s",

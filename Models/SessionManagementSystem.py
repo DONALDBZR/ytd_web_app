@@ -3,7 +3,7 @@ from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from typing import Dict, Union
-from json import load
+from json import JSONDecodeError, load
 from os import remove
 import os
 import json
@@ -407,6 +407,26 @@ class Session_Manager:
             }
         return response
 
+    def getData(self, file_path: str) -> Union[Dict[str, Union[str, int]], None]:
+        """
+        Retrieving the data that is in the file.
+
+        Parameters:
+            file_path: string: The path of the file.
+
+        Returns:
+            {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null
+        """
+        try:
+            file = open(file_path, "r")
+            data: Dict[str, Union[str, int]] = load(file)
+            file.close()
+            self.getLogger().inform(f"The file has been successfully read.\nFile Path: {file_path}")
+            return data
+        except JSONDecodeError as error:
+            self.getLogger().error(f"Failed to decode the JSON file.\nFile Path: {file_path}\nError: {error}")
+            return None
+
     def handleSession(self, status: int, name: str) -> Dict[str, int]:
         """
         Handling the session based on the status retrieved from the
@@ -425,9 +445,7 @@ class Session_Manager:
         reset_content: int = 205
         service_unavailable: int = 503
         file_path: str = f"{self.getDirectory()}/{name}"
-        file = open(file_path, "r")
-        data: Dict[str, Union[str, int]] = load(file)
-        file.close()
+        data: Union[Dict[str, Union[str, int]], None] = self.getData(file_path)
         if status == ok:
             self.setSession(data) # type: ignore
             return {

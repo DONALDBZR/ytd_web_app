@@ -70,7 +70,7 @@ class Session_Manager:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, request: Dict[str, str], session: SessionMixin) -> None:
+    def __init__(self, request: Dict[str, str], session: SessionMixin):
         """
         Instantiating the session's manager which will verify the
         session of the users.
@@ -81,8 +81,7 @@ class Session_Manager:
         """
         ENV = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users/")
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setLogger(Extractio_Logger(__name__))
         self.setPort(str(request["port"]))
         self.setDatabaseHandler(Database_Handler())
         self.setIpAddress(str(request["ip_address"]))

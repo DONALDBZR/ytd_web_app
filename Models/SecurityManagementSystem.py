@@ -49,9 +49,8 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
-        ENV = Environment()
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        ENV: Environment = Environment()
+        self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setApplicationName(ENV.getApplicationName())
         self.setDatestamp(int(time()))
@@ -60,9 +59,7 @@ class Security_Management_System:
             parameters=None
         )
         self.getDatabaseHandler()._execute()
-        self.getLogger().inform(
-            "The Security Management System has been successfully been initialized!"
-        )
+        self.getLogger().inform("The Security Management System has been successfully been initialized!")
         self.hash()
 
     def getDatabaseHandler(self) -> Database_Handler:

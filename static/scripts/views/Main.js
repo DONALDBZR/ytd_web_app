@@ -17,7 +17,7 @@ class Main extends React.Component {
     render() {
         if (window.location.pathname.includes("Search")) {
             return <MainSearch />;
-        } else if (window.location.pathname.includes("Download/YouTube")) {
+        } else if (window.location.pathname.includes("Download")) {
             return <MainDownload />;
         } else {
             return <MainHomepage />;

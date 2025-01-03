@@ -172,29 +172,28 @@ class Database_Handler:
         self.getLogger().inform("The connection between the application and the database server will be closed!")
         return result_set
 
-    def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[RowType]:
+    def get_data(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> List[RowType]:
         """
         Retrieving data from the database.
 
         Parameters:
-            parameters:         (array|null):   The parameters to be passed into the query.
-            table_name:         (string):       The name of the table.
-            column_names:       (string):       The name of the columns.
-            join_condition      (string):       Joining table condition.
-            filter_condition    (string):       Items to be filtered with.
-            sort_condition      (string):       The items to be sorted.
-            limit_condition     (int):          The amount of items to be returned
+            parameters: array|null: The parameters to be passed into the query.
+            table_name: string: The name of the table.
+            column_names: string: The name of the columns.
+            join_condition: string: Joining table condition.
+            filter_condition: string: Items to be filtered with.
+            sort_condition: string: The items to be sorted.
+            limit_condition: int: The amount of items to be returned
 
-        Return:
-            (array)
+        Returns:
+            [RowType]
         """
-        query = f"SELECT {column_names} FROM {table_name}"
-        self.setQuery(query)
+        self.setQuery(f"SELECT {column_names} FROM {table_name}")
         self.setParameters(parameters)
-        self._get_join(join_condition)
-        self._get_filter(filter_condition)
-        self._get_sort(sort_condition)
-        self._get_limit(limit_condition)
+        self.setQuery(self.getQuery() if join_condition == "" else f"{self.getQuery()} LEFT JOIN {join_condition}")
+        self.setQuery(self.getQuery() if filter_condition == "" else f"{self.getQuery()} WHERE {filter_condition}")
+        self.setQuery(self.getQuery() if sort_condition == "" else f"{self.getQuery()} ORDER BY {sort_condition}")
+        self.setQuery(f"{self.getQuery()} LIMIT {limit_condition}" if limit_condition > 0 else self.getQuery())
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 
@@ -209,11 +208,7 @@ class Database_Handler:
         Return:
             (void)
         """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} LEFT JOIN {condition}"
-        self.setQuery(query)
+        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} LEFT JOIN {condition}")
 
     def _get_filter(self, condition: str) -> None:
         """
@@ -225,11 +220,7 @@ class Database_Handler:
         Return:
             (void)
         """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} WHERE {condition}"
-        self.setQuery(query)
+        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
 
     def _get_sort(self, condition: str) -> None:
         """
@@ -241,11 +232,7 @@ class Database_Handler:
         Return:
             (void)
         """
-        if condition == "":
-            query = self.getQuery()
-        else:
-            query = f"{self.getQuery()} ORDER BY {condition}"
-        self.setQuery(query)
+        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} ORDER BY {condition}")
 
     def _get_limit(self, limit: int) -> None:
         """
@@ -258,11 +245,7 @@ class Database_Handler:
         Return:
             (void)
         """
-        if limit > 0:
-            query = f"{self.getQuery()} LIMIT {limit}"
-        else:
-            query = self.getQuery()
-        self.setQuery(query)
+        self.setQuery(f"{self.getQuery()} LIMIT {limit}" if limit > 0 else self.getQuery())
 
     def post_data(self, table: str, columns: str, values: str, parameters: tuple) -> None:
         """

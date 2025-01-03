@@ -4,7 +4,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
-from typing import Union, Tuple, Any
+from typing import Union, Tuple, Any, List
 from logging import getLogger
 from mysql.connector import connect, Error
 
@@ -158,22 +158,18 @@ class Database_Handler:
         self.__getDatabaseHandler().commit()
         self.getLogger().inform("The query has been executed!")
 
-    def _resultSet(self) -> list[RowType]:
+    def _resultSet(self) -> List[RowType]:
         """
         Fetching all the data that is requested from the command
         that was sent to the database server.
 
-        Return:
-            (array)
+        Returns:
+            [RowType]
         """
-        result_set = self.__getStatement().fetchall()
-        self.getLogger().debug(
-            "The data has been successfully retrieved!"
-        )
+        result_set: List[RowType] = self.__getStatement().fetchall()
+        self.getLogger().debug("The data has been successfully retrieved!")
         self.__getStatement().close()
-        self.getLogger().inform(
-            "The connection between the application and the database server will be closed!"
-        )
+        self.getLogger().inform("The connection between the application and the database server will be closed!")
         return result_set
 
     def get_data(self, parameters: tuple | None, table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> list[RowType]:

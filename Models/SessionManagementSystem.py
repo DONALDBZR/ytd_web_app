@@ -446,7 +446,7 @@ class Session_Manager:
         service_unavailable: int = 503
         file_path: str = f"{self.getDirectory()}/{name}"
         data: Union[Dict[str, Union[str, int]], None] = self.getData(file_path)
-        if status == ok:
+        if status == ok and data != None:
             self.setSession(data) # type: ignore
             return {
                 "status": status

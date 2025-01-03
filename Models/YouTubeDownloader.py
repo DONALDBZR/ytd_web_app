@@ -261,7 +261,6 @@ class YouTube_Downloader:
         self.setIdentifier(identifier)
         youtube = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
         meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
-        print(f"{meta_data['data']=}")
         self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
         published_date: str = youtube["upload_date"] # type: ignore
         published_at: str = str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{published_date[:4]}-{published_date[4:6]}-{published_date[6:]}" # type: ignore

@@ -9,9 +9,10 @@ from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from typing import List, Dict, Union, Tuple
+from json import JSONDecodeError, load, dumps
+from os import remove
+from time import time
 import os
-import json
-import time
 import logging
 
 
@@ -189,61 +190,34 @@ class Session_Manager:
         Returns:
             void
         """
-        age: int
-        data: Union[Dict[str, Dict[str, Union[str, int]]], None]
-        content: Union[str, None]
         for index in range(0, self.getLength(), 1):
             file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
-            try:
-                file = open(file_name, "r")
-                content = file.read().strip()
-                file.close()
-            except FileNotFoundError:
-                content = None
-            if (content is not None or content != "") and len(str(content)) != 0:
-                data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self._verifyExistingSessionsGetSessionData(content)
-                age = int(time.time()) - int(data["Client"]["timestamp"]) if data is not None else int(time.time()) - 3601
-                self.verifyInactiveSession(age, data, file_name)
+            data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_name)
+            age: int = int(time()) - int(data["Client"]["timestamp"]) if data != None else 0
+            self.verifyInactiveSession(age, data, file_name)
 
-    def _verifyExistingSessionsGetSessionData(self, content: Union[str, None]) -> Union[Dict[str, Dict[str, Union[str, int]]], None]:
+    def verifyInactiveSession(self, age: int, session: Union[Dict[str, Dict[str, Union[str, int]]], None], file_name: str) -> None:
         """
         Retrieving the session data that will be used to verify
         existing sessions.
 
         Parameters:
-            content: string|null: The content of the file that is in a string form.
-
-        Returns:
-            {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}|null
-        """
-        try:
-            return json.loads(str(content))
-        except json.JSONDecodeError:
-            return None
-
-    def verifyInactiveSession(self, age: int, session: Union[Dict[str, Dict[str, Union[str, int]]], None], file_name: str) -> None:
-        """
-        Verifying that the session is inactive to remove it from the
-        document database and to store it in the relational
-        database.
-
-        Parameters:
             age: int: Age of the session.
-            session: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}|null: The data of the session.
+            session: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null: The data of the session.
             file_name: string: The name of the file.
 
         Returns:
             void
         """
-        if age > 3600 and session is not None:
+        if age > 3600 and session != None:
             expired_sessions: Tuple[int, str] = (int(session["Client"]["timestamp"]), str(session["Client"]["ip_address"]))
-            self.getDatabaseHandler().postData(
+            self.getDatabaseHandler().post_data(
                 table="Visitors",
                 columns="timestamp, client",
                 values="%s, %s",
-                parameters=expired_sessions
+                parameters=expired_sessions # type: ignore
             )
-            os.remove(file_name)
+            remove(file_name)
 
     def createSession(self) -> SessionMixin:
         """
@@ -253,7 +227,7 @@ class Session_Manager:
             SessionMixin
         """
         self.getSession().clear()
-        self.setTimestamp(int(time.time()))
+        self.setTimestamp(int(time()))
         self.setColorScheme("light")
         data: Dict[str, Union[str, int]] = {
             "ip_address": self.getIpAddress(),
@@ -292,34 +266,23 @@ class Session_Manager:
         Returns:
             string
         """
-        return json.dumps(self.getSession(), indent=4)
+        return dumps(self.getSession(), indent=4)
 
-    def updateSession(self, data: Dict[str, Dict[str, str]]) -> SessionMixin:
+    def updateSession(self, payload: Dict[str, Dict[str, str]]) -> SessionMixin:
         """
         Modifying the session.
 
         Parameters:
-            data: {Client: {color_scheme: string}}: Data from the view
+            payload: {Client: {color_scheme: string}}: Data from the view
 
         Returns:
             SessionMixin
         """
-        content: Union[str, None]
-        session_data: Union[Dict[str, Dict[str, Union[str, int]]], None]
-        self.setTimestamp(int(time.time()))
-        self.setColorScheme(str(data["Client"]["color_scheme"]))
-        file_name: str = f"{self.getDirectory()}{self.getIpAddress()}.json"
-        try:
-            file = open(file_name, "r")
-            content = file.read().strip()
-            file.close()
-        except FileNotFoundError:
-            content = None
-        try:
-            session_data = json.loads(content) if content is not None else None
-        except json.JSONDecodeError:
-            session_data = None
-        if session_data is not None and self.getIpAddress() == session_data['Client']['ip_address']:
+        self.setTimestamp(int(time()))
+        self.setColorScheme(str(payload["Client"]["color_scheme"]))
+        file_name: str = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_name)
+        if data != None and self.getIpAddress() == data['Client']['ip_address']:
             new_data: Dict[str, Union[str, int]] = {
                 "ip_address": self.getIpAddress(),
                 "http_client_ip_address": self.getHttpClientIpAddress(),
@@ -333,8 +296,20 @@ class Session_Manager:
             file.close()
             self.getLogger().inform("The session has been successfully updated!")
             return self.getSession()
-        else:
-            return self.createSession()
+        self.getSession().clear()
+        new_data: Dict[str, Union[str, int]] = {
+            "ip_address": self.getIpAddress(),
+            "http_client_ip_address": self.getHttpClientIpAddress(),
+            "proxy_ip_address": self.getProxyIpAddress(),
+            "timestamp": self.getTimestamp(),
+            "color_scheme": self.getColorScheme()
+        }
+        self.getSession()["Client"] = new_data
+        file = open(file_name, "w")
+        file.write(self.retrieveSession())
+        file.close()
+        self.getLogger().inform("The session has been successfully created!")
+        return self.getSession()
 
     def sessionsLoader(self, sessions: List[str]) -> Dict[str, int]:
         """
@@ -367,55 +342,6 @@ class Session_Manager:
                 continue
         return response
 
-    def _handleFile(self, file_name: str) -> Dict[str, int]:
-        """
-        Verifying that the file is not empty to return the correct
-        response.
-
-        Parameters:
-            file_name: string: The path of the file.
-
-        Returns:
-            {status: int}
-        """
-        file_path: str = f"{self.getDirectory()}{file_name}"
-        content: Union[str, None]
-        try:
-            file = open(file_path, "r", encoding="utf-8")
-            content = file.read().strip()
-        except FileNotFoundError:
-            content = None
-        if not content:
-            return {
-                "status": 204
-            }
-        else:
-            return self.__handleFileJsonLoad(content, file_name)
-
-    def __handleFileJsonLoad(self, content: str, file_name: str) -> Dict[str, int]:
-        """
-        Loading the session file and returning the correct status of
-        the data.
-
-        Parameters:
-            content: string: The data of the file as a string.
-            file_name: string: The name of the file.
-
-        Returns:
-            {status: int}
-        """
-        data: Union[Dict[str, Dict[str, Union[str, int]]], None]
-        try:
-            data = json.loads(content)
-            return {
-                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"] # type: ignore
-            }
-        except json.JSONDecodeError:
-            data = None
-            return {
-                "status": self.handleSession(205, file_name)["status"]
-            }
-
     def handleFile(self, file_name: str) -> Dict[str, int]:
         """
         Ensuring that the file is of type JSON in order to process
@@ -424,40 +350,40 @@ class Session_Manager:
         Parameters:
             file_name: string: File to be loaded
 
-        Return:
+        Returns:
             {status: int}
         """
-        response = {}
-        if file_name.endswith(".json") and os.path.isfile(f"{self.getDirectory()}{file_name}"):
-            response = self._handleFile(file_name)
-        else:
-            response = {
-                "status": 204
+        no_content: int = 204
+        if file_name.endswith(".json"):
+            file_path: str = f"{self.getDirectory()}/{file_name}"
+            data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_path)
+            return {
+                "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
             }
-        return response
+        return {
+            "status": no_content
+        }
 
-    def validateIpAddress(self, data: Dict[str, Dict[str, Union[str, int]]]) -> Dict[str, int]:
+    def validateIpAddress(self, data: Union[Dict[str, Dict[str, Union[str, int]]], None]) -> Dict[str, int]:
         """
         Validating the IP Address against the one stored in the
         cache file.
 
         Parameters:
-            data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: The data in the file
+            data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null: The data in the file
 
-        Returns:
+        Return:
             {status: int}
         """
-        response = {}
-        if self.getIpAddress() == str(data['Client']['ip_address']):
-            age = int(time.time()) - int(data['Client']['timestamp'])
-            response = {
+        no_content: int = 204
+        if data != None and self.getIpAddress() == str(data['Client']['ip_address']):
+            age: int = int(time()) - int(data['Client']['timestamp'])
+            return {
                 "status": self.handleExpiryTime(age)["status"]
             }
-        else:
-            response = {
-                "status": 204
-            }
-        return response
+        return {
+            "status": no_content
+        }
 
     def handleExpiryTime(self, expiry_time: int) -> Dict[str, int]:
         """
@@ -480,6 +406,26 @@ class Session_Manager:
             }
         return response
 
+    def getData(self, file_path: str) -> Union[Dict[str, Dict[str, Union[str, int]]], None]:
+        """
+        Retrieving the data that is in the file.
+
+        Parameters:
+            file_path: string: The path of the file.
+
+        Returns:
+            {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null
+        """
+        try:
+            file = open(file_path, "r")
+            data: Dict[str, Dict[str, Union[str, int]]] = load(file)
+            file.close()
+            self.getLogger().inform(f"The file has been successfully read.\nFile Path: {file_path}")
+            return data
+        except JSONDecodeError as error:
+            self.getLogger().error(f"Failed to decode the JSON file.\nFile Path: {file_path}\nError: {error}")
+            return None
+
     def handleSession(self, status: int, name: str) -> Dict[str, int]:
         """
         Handling the session based on the status retrieved from the
@@ -492,42 +438,30 @@ class Session_Manager:
         Returns:
             {status: int}
         """
-        content: Union[str, None]
-        file_path: str = f"{self.getDirectory()}{name}"
-        if not os.path.isfile(file_path):
-            return {
-                "status": 204
-            }
-        try:
-            file = open(file_path, "r")
-            content = file.read().strip()
-        except FileNotFoundError:
-            content = None
-        if status == 200 and content is not None and content != "":
-            data = json.loads(content)
-            self.setSession(data)
+        ok: int = 200
+        accepted: int = 202
+        no_content: int = 204
+        reset_content: int = 205
+        service_unavailable: int = 503
+        file_path: str = f"{self.getDirectory()}/{name}"
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_path)
+        if status == ok and data != None:
+            self.setSession(data) # type: ignore
             return {
                 "status": status
             }
-        if status == 204:
+        if status == no_content:
             return {
                 "status": status
             }
-        if status == 205:
+        if status == reset_content:
             self.getSession().clear()
-            try:
-                os.remove(file_path)
-            except FileNotFoundError:
-                pass
+            remove(file_path)
             return {
-                "status": 202
+                "status": accepted
             }
-        try:
-            os.remove(file_path)
-        except FileNotFoundError:
-            pass
         return {
-            "status": 204
+            "status": service_unavailable
         }
 
     def handleSessionData(self, session_data: Dict[str, int]) -> None:
@@ -536,12 +470,12 @@ class Session_Manager:
         renew the session.
 
         Parameters:
-            session_data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}}: Session's data
+            session_data: {status: int}: Session's data
 
         Returns:
             void
         """
-        if "status" in session_data and (session_data["status"] == 200 or session_data["status"] == 201):
+        if "status" not in session_data or (session_data["status"] == 200 or session_data["status"] == 201):
             self.renew(self.getSession())
         else:
             self.createSession()
@@ -555,19 +489,18 @@ class Session_Manager:
             session_data: SessionMixin: Session Data
 
         Returns:
-            SessionMixin|void
+            SessionMixin | void
         """
-        file_path: str = f"{self.getDirectory()}{self.getIpAddress()}.json"
-        if session_data['Client']['ip_address'] == self.getIpAddress():
-            self.setTimestamp(int(time.time()))
+        file_path: str = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+        if "Client" in session_data and session_data['Client']['ip_address'] == self.getIpAddress():
+            self.setTimestamp(int(time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
             file = open(file_path, "w")
-            file.write(json.dumps(self.getSession(), indent=4))
+            file.write(dumps(self.getSession()))
             file.close()
             self.getLogger().inform("The session has been successfully renewed!")
             return self.getSession()
-        else:
-            self.getSession().clear()
-            os.remove(file_path)
-            self.createSession()
+        self.getSession().clear()
+        remove(file_path)
+        self.createSession()

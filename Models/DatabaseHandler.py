@@ -10,7 +10,7 @@ from mysql.connector.cursor import MySQLCursor
 from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
-from typing import Union, Generator, List, Tuple
+from typing import Union, Tuple, Any, List
 from logging import getLogger
 from mysql.connector import connect, Error
 
@@ -51,7 +51,7 @@ class Database_Handler:
     The query to be used to be sent to the database server to
     either get, post, update or delete data.
     """
-    __parameters: Union[Tuple, None]
+    __parameters: Union[Tuple[Any], None]
     """
     Parameters that the will be used to sanitize the query which
     is either get, post, update or delete.
@@ -84,7 +84,8 @@ class Database_Handler:
             )
             self.getLogger().inform("The application has been successfully connected to the database server!")
         except Error as error:
-            self.getLogger().error(f"Connection Failed!\nError: {str(error)}")
+            print(f"Connection Failed!\nError: {error}")
+            self.getLogger().error(f"Connection Failed!\nError: {error}")
 
     def __getHost(self) -> str:
         return self.__host
@@ -128,10 +129,10 @@ class Database_Handler:
     def setQuery(self, query: str) -> None:
         self.__query = query
 
-    def getParameters(self) -> Union[Tuple, None]:
+    def getParameters(self) -> Union[Tuple[Any], None]:
         return self.__parameters
 
-    def setParameters(self, parameters: Union[Tuple, None]) -> None:
+    def setParameters(self, parameters: Union[Tuple[Any], None]) -> None:
         self.__parameters = parameters
 
     def getLogger(self) -> Extractio_Logger:
@@ -140,7 +141,7 @@ class Database_Handler:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__Logger = logger
 
-    def _query(self, query: str, parameters: Union[Tuple, None]) -> Union[Generator[MySQLCursor, None, None], None]:
+    def _query(self, query: str, parameters: Union[Tuple[Any], None]):
         """
         Preparing the SQL query that is going to be handled by the
         database handler.
@@ -174,7 +175,7 @@ class Database_Handler:
         that was sent to the database server.
 
         Returns:
-            array
+            [RowType]
         """
         result_set: List[RowType] = self.__getStatement().fetchall()
         self.getLogger().debug("The data has been successfully retrieved!")
@@ -182,7 +183,7 @@ class Database_Handler:
         self.getLogger().inform("The connection between the application and the database server will be closed!")
         return result_set
 
-    def getData(self, parameters: Union[Tuple, None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0, group_condition = "") -> List[RowType]:
+    def get_data(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> List[RowType]:
         """
         Retrieving data from the database.
 
@@ -194,91 +195,20 @@ class Database_Handler:
             filter_condition: string: Items to be filtered with.
             sort_condition: string: The items to be sorted.
             limit_condition: int: The amount of items to be returned
-            group_condition: string: The items to be grouped.
 
         Returns:
-            array
+            [RowType]
         """
-        query: str = f"SELECT {column_names} FROM {table_name}"
-        self.setQuery(query)
+        self.setQuery(f"SELECT {column_names} FROM {table_name}")
         self.setParameters(parameters)
-        self._getJoin(join_condition)
-        self._getFilter(filter_condition)
-        self._getGroup(group_condition)
-        self._getSort(sort_condition)
-        self._getLimit(limit_condition)
+        self.setQuery(self.getQuery() if join_condition == "" else f"{self.getQuery()} LEFT JOIN {join_condition}")
+        self.setQuery(self.getQuery() if filter_condition == "" else f"{self.getQuery()} WHERE {filter_condition}")
+        self.setQuery(self.getQuery() if sort_condition == "" else f"{self.getQuery()} ORDER BY {sort_condition}")
+        self.setQuery(f"{self.getQuery()} LIMIT {limit_condition}" if limit_condition > 0 else self.getQuery())
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 
-    def _getJoin(self, condition: str) -> None:
-        """
-        Building the query needed for retrieving data that is in at
-        least two tables.
-
-        Parameters:
-            condition: string: The JOIN statement that is used.
-
-        Returns:
-            void
-        """
-        query: str = self.getQuery() if condition == "" else f"{self.getQuery()} LEFT JOIN {condition}"
-        self.setQuery(query)
-
-    def _getGroup(self, condition: str) -> None:
-        """
-        Building the query needed for retrieving the data that
-        needed to be regrouped.
-
-        Parameters:
-            condition: string: The GROUP BY statement that is used.
-
-        Returns:
-            void
-        """
-        query: str = self.getQuery() if condition == "" else f"{self.getQuery()} GROUP BY {condition}"
-        self.setQuery(query)
-
-    def _getFilter(self, condition: str) -> None:
-        """
-        Building the query needed for retrieving specific data.
-
-        Parameters:
-            condition: string: The WHERE statement that will be used.
-
-        Returns:
-            void
-        """
-        query: str = self.getQuery() if condition == "" else  f"{self.getQuery()} WHERE {condition}"
-        self.setQuery(query)
-
-    def _getSort(self, condition: str) -> None:
-        """
-        Building the query needed to be used to sort the result set.
-
-        Parameters:
-            condition: string: The ORDER BY statement that will be used.
-
-        Returns:
-            void
-        """
-        query: str = self.getQuery() if condition == "" else f"{self.getQuery()} ORDER BY {condition}"
-        self.setQuery(query)
-
-    def _getLimit(self, limit: int) -> None:
-        """
-        Building the query needed to be used to limit the amount of
-        data from the result set.
-
-        Parameters:
-            limit: int: The LIMIT statement that will be used.
-
-        Returns:
-            void
-        """
-        query: str = f"{self.getQuery()} LIMIT {limit}" if limit > 0 else self.getQuery()
-        self.setQuery(query)
-
-    def postData(self, table: str, columns: str, values: str, parameters: Tuple) -> None:
+    def post_data(self, table: str, columns: str, values: str, parameters: Tuple[Any]) -> None:
         """
         Creating records to store data into the database server.
 
@@ -290,13 +220,12 @@ class Database_Handler:
         Returns:
             void
         """
-        query: str = f"INSERT INTO {table}({columns}) VALUES ({values})"
-        self.setQuery(query)
+        self.setQuery(f"INSERT INTO {table}({columns}) VALUES ({values})")
         self.setParameters(parameters)
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def updateData(self, table: str, values: str, parameters: Union[Tuple, None], condition: str = "") -> None:
+    def update_data(self, table: str, values: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
         """
         Updating a specific table in the database.
 
@@ -309,14 +238,13 @@ class Database_Handler:
         Returns:
             void
         """
-        query: str = f"UPDATE {table} SET {values}"
-        self.setQuery(query)
+        self.setQuery(f"UPDATE {table} SET {values}")
         self.setParameters(parameters)
-        self._getFilter(condition)
+        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def deleteData(self, table: str, parameters: Union[Tuple, None], condition: str = "") -> None:
+    def delete_data(self, table: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
         """
         Deleting data from the database.
 
@@ -328,9 +256,8 @@ class Database_Handler:
         Returns:
             void
         """
-        query: str = f"DELETE FROM {table}"
-        self.setQuery(query)
+        self.setQuery(f"DELETE FROM {table}")
         self.setParameters(parameters)
-        self._getFilter(condition)
+        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()

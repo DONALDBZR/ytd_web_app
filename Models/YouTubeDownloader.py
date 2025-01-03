@@ -1,22 +1,13 @@
-"""
-The module of the model which will interact between the
-internal relational database server of the application as
-well as with the external servers of YouTube.
-
-Authors:
-    Darkness4869
-"""
-
-from pytube import YouTube, StreamQuery, Stream
 from Models.DatabaseHandler import Database_Handler
 from datetime import datetime
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
-from typing import Dict, Tuple, Union, List
-from os.path import isfile, exists
+from yt_dlp import YoutubeDL
+from typing import Dict, Union, List, Tuple
 from time import strftime, gmtime
+from os.path import isfile, exists
 from os import makedirs
 import logging
 
@@ -29,7 +20,7 @@ class YouTube_Downloader:
     """
     The uniform resource locator to be searched.
     """
-    __video: YouTube
+    __video: YoutubeDL
     """
     Core developer interface for pytube.
     """
@@ -74,11 +65,11 @@ class YouTube_Downloader:
     """
     The directory of the media files.
     """
-    __streams: StreamQuery
+    __streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]
     """
-    Interface for querying the available media streams.
+    The list of the streams
     """
-    __stream: Union[Stream, None]
+    __stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]
     """
     Container for stream manifest data.
     """
@@ -130,10 +121,10 @@ class YouTube_Downloader:
     def setUniformResourceLocator(self, uniform_resource_locator: str) -> None:
         self.__uniform_resource_locator = uniform_resource_locator
 
-    def getVideo(self) -> YouTube:
+    def getVideo(self) -> YoutubeDL:
         return self.__video
 
-    def setVideo(self, video: YouTube) -> None:
+    def setVideo(self, video: YoutubeDL) -> None:
         self.__video = video
 
     def getTitle(self) -> str:
@@ -196,16 +187,16 @@ class YouTube_Downloader:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
-    def getStreams(self) -> StreamQuery:
+    def getStreams(self) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
         return self.__streams
 
-    def setStreams(self, streams: StreamQuery) -> None:
+    def setStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]) -> None:
         self.__streams = streams
 
-    def getStream(self) -> Union[Stream, None]:
+    def getStream(self) -> Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]:
         return self.__stream
 
-    def setStream(self, stream: Union[Stream, None]) -> None:
+    def setStream(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> None:
         self.__stream = stream
 
     def getITAG(self) -> int:
@@ -226,6 +217,22 @@ class YouTube_Downloader:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
 
+    def retrieveIdentifier(self, identifier: str) -> str:
+        """
+        Retrieving the identifier of the content in the condition
+        that it is in a playlist.
+
+        Parameters:
+            identifier: (string):   The ID of the content.
+
+        Return:
+            (string)
+        """
+        if "&" in identifier:
+            return identifier.rsplit("&", 1)[0]
+        else:
+            return identifier
+
     def sanitizeYouTubeIdentifier(self) -> None:
         """
         Sanitizing the identifier of the content from the platform
@@ -244,31 +251,39 @@ class YouTube_Downloader:
         Searching for the video in YouTube.
 
         Returns:
-            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}
         """
-        self.setVideo(YouTube(self.getUniformResourceLocator()))
+        options: Dict[str, bool] = {
+            "quiet": True,
+            "skip_download": True
+        }
+        self.setVideo(YoutubeDL(options))
         self.setIdentifier(self.getUniformResourceLocator())
-        self.sanitizeYouTubeIdentifier()
-        meta_data: Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]] = self.getYouTube()
-        file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) # type: ignore
-        self.setLength(int(meta_data["data"][0]["length"])) if int(str(meta_data["status"])) == 200 else self.setLength(self.getVideo().length) # type: ignore
-        self.setPublishedAt(str(meta_data["data"][0]["published_at"])) if int(str(meta_data["status"])) == 200 else self.setPublishedAt(self.getVideo().publish_date) # type: ignore
-        self.setAuthor(str(meta_data["data"][0]["author"])) if int(str(meta_data["status"])) == 200 else self.setAuthor(self.getVideo().author) # type: ignore
-        self.setTitle(str(meta_data["data"][0]["title"])) if int(str(meta_data["status"])) == 200 else self.setTitle(self.getVideo().title) # type: ignore
-        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength()))) if int(str(meta_data["status"])) == 200 else self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-        audio_file: Union[str, None] = file_locations["audio_file"] if int(str(meta_data["status"])) == 200 else None
-        video_file: Union[str, None] = file_locations["video_file"] if int(str(meta_data["status"])) == 200 else None
-        if int(meta_data["status"]) != 200: # type: ignore
+        identifier: str = self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
+        self.setIdentifier(identifier)
+        youtube = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+        meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
+        self.setLength(int(meta_data["data"][0][4]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
+        published_date: str = youtube["upload_date"] # type: ignore
+        published_at: str = str(meta_data["data"][0][3]) if meta_data["status"] == 200 else f"{published_date[:4]}-{published_date[4:6]}-{published_date[6:]}" # type: ignore
+        self.setPublishedAt(published_at)
+        self.setAuthor(str(meta_data["data"][0][0]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
+        self.setTitle(str(meta_data["data"][0][1]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
+        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
+        file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
+        audio_file: Union[str, None] = file_locations["audio_file"] if meta_data["status"] == 200 else None
+        video_file: Union[str, None] = file_locations["video_file"] if meta_data["status"] == 200 else None
+        if meta_data["status"] != 200:
             self.postYouTube()
         return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
             "identifier": self.getIdentifier(),
-            "author_channel": self.getVideo().channel_url,
-            "views": self.getVideo().views,
+            "author_channel": str(youtube["uploader_url"]),  # type: ignore
+            "views": int(youtube["view_count"]),  # type: ignore
             "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": self.getVideo().thumbnail_url,
+            "thumbnail": str(youtube["thumbnail"]),  # type: ignore
             "duration": self.getDuration(),
             "audio_file": audio_file,
             "video_file": video_file
@@ -295,16 +310,16 @@ class YouTube_Downloader:
             "video_file": None
         }
 
-    def getYouTube(self) -> Dict[str, Union[int, List[Dict[str, Union[str, int]]], str]]:
+    def getYouTube(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
         Retrieving the metadata from the YouTube table.
 
-        Returns:
-            {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string}], timestamp: string}
+        Return:
+            {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string|null}, timestamp: string]}
         """
-        filter_parameters: Tuple[str] = (self.getIdentifier(),)
-        media: Union[List[RowType], List[Dict[str, Union[str, int]]]] = self.getDatabaseHandler().getData(
-            parameters=filter_parameters,
+        filter_parameters = tuple([self.getIdentifier()])
+        media: List[RowType] = self.getDatabaseHandler().get_data(
+            parameters=filter_parameters, # type: ignore
             table_name="YouTube",
             join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
             filter_condition="YouTube.identifier = %s",
@@ -313,10 +328,10 @@ class YouTube_Downloader:
             limit_condition=2
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        status: int = 204 if len(media) == 0 else 200
+        status: int = 200 if len(media) != 0 else 204
         return {
             "status": status,
-            "data": media, # type: ignore
+            "data": media,
             "timestamp": self.getTimestamp()
         }
 
@@ -328,11 +343,11 @@ class YouTube_Downloader:
             void
         """
         data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
-        self.getDatabaseHandler().postData(
+        self.getDatabaseHandler().post_data(
             table="YouTube",
             columns="identifier, length, published_at, author, title, Media",
             values="%s, %s, %s, %s, %s, %s",
-            parameters=data
+            parameters=data # type: ignore
         )
 
     def mediaDirectory(self) -> None:
@@ -347,34 +362,39 @@ class YouTube_Downloader:
         if not exists(f"{self.getDirectory()}/Audio"):
             makedirs(f"{self.getDirectory()}/Audio")
 
-    def retrievingStreams(self) -> Dict[str, Union[str, int]]:
+    def retrievingStreams(self) -> Dict[str, Union[str, int, None]]:
         """
         Downloading the contents of the media from the platform to
         save on the server.
 
-        Returns:
-            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio: string, video: string}
+        Return:
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio: string|null, video: string|null}
         """
         metadata: Dict[str, Union[str, int, None]] = self.search()
         self.setIdentifier(str(metadata["identifier"]))
         audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
         video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+        options: Dict[str, bool] = {
+            "quiet": True,
+            "listformats": True
+        }
         if isfile(audio_file_location) == False and isfile(video_file_location) == False:
-            self.setVideo(YouTube(self.getUniformResourceLocator()))
+            self.setVideo(YoutubeDL(options))
             self.getDatabaseHandler()._execute()
-            self.setStreams(self.getVideo().streams)
+            info = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+            self.setStreams(info["formats"]) # type: ignore
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()
-        self.getLogger().inform("The media content has been downloaded!")
+        self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
         return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
             "identifier": self.getIdentifier(),
-            "author_channel": self.getVideo().channel_url,
-            "views": self.getVideo().views,
+            "author_channel": str(metadata["author_channel"]),
+            "views": int(metadata["views"]),  # type: ignore
             "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": self.getVideo().thumbnail_url,
+            "thumbnail": str(metadata["thumbnail"]),  # type: ignore
             "duration": self.getDuration(),
             "audio": audio_file_location,
             "video": video_file_location
@@ -388,13 +408,12 @@ class YouTube_Downloader:
         Returns:
             string
         """
-        streams: List[Stream] = [stream for stream in self.getStreams().filter(mime_type="audio/mp4", abr="128kbps", audio_codec="mp4a.40.2")]
-        if streams:
-            self.setITAG(streams[0].itag)
-            self.setStream(self.getStreams().get_by_itag(self.getITAG()))
-            self.setMimeType("audio/mp3")
-            return self.__downloadAudio()
-        return ""
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and "mp4a" in stream["acodec"]] # type: ignore
+        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
+        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
+        self.setMimeType("audio/mp3")
+        response: str = self.__downloadAudio() if self.getStream() != None else ""
+        return response
 
     def getVideoFile(self) -> str:
         """
@@ -404,13 +423,8 @@ class YouTube_Downloader:
         Returns:
             string
         """
-        streams: List[Stream] = [stream for stream in self.getStreams().filter(mime_type="video/mp4", audio_codec="mp4a.40.2", resolution="720p")]
-        if streams:
-            self.setITAG(streams[0].itag)
-            self.setStream(self.getStreams().get_by_itag(self.getITAG()))
-            self.setMimeType("video/mp4")
-            return self.__downloadVideo()
-        return ""
+        self.setMimeType("video/mp4")
+        return self.__downloadVideo()
 
     def __downloadVideo(self) -> str:
         """
@@ -420,24 +434,55 @@ class YouTube_Downloader:
         Returns:
             string
         """
-        file_path: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        try:
-            self.getStream().download( # type: ignore
-                output_path=f"{self.getDirectory()}/Video",
-                filename=f"{self.getIdentifier()}.mp4"
-            )
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-            self.getDatabaseHandler().postData(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data
-            )
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and "mp4a" in stream["acodec"]] # type: ignore
+        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
+        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
+        audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
+        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["vbr"] != None and stream["vbr"] != 0]
+        height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
+        width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
+        video_streams = [stream for stream in video_streams if stream["height"] == height and stream["width"] == width and "avc" in stream["vcodec"] and "filesize" in stream] # type: ignore
+        file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
+        self.setStream([stream for stream in video_streams if stream["filesize"] == file_size][0])
+        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
+        file_name: str = f"{self.getIdentifier()}.mp4"
+        file_path: str = f"{self.getDirectory()}/Video/{file_name}"
+        options: Dict[str, str] = {
+            "format": f"{video_stream['format_id']}+{audio_stream['format_id']}",
+            "merge_output_format": "mp4",
+            "outtmpl": file_path
+        }
+        self.setVideo(YoutubeDL(options))
+        self.getVideo().download([self.getUniformResourceLocator()])
+        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
+        self.getDatabaseHandler().post_data(
+            table="MediaFile",
+            columns="type, date_downloaded, location, YouTube",
+            values="%s, %s, %s, %s",
+            parameters=data # type: ignore
+        )
+        return file_path
+
+    def handleHttpError(self, error: HTTPError, file_path: str) -> str:
+        """
+        Handling the HTTP Errors accordingly as it must be noted
+        that HTTP/403 is being caused as the application could not
+        keep track of the file path which gets lost where the back
+        end which acts the front-end of YouTube's datacenter,
+        generates the HTTP/403 which in turn generate the HTTP/500
+        into the application's front-end.
+
+        Parameters:
+            error: HTTPError: Raised when HTTP error occurs, but also acts like non-error return
+            file_path: string: The path of the file.
+
+        Returns:
+            string
+        """
+        if "403" in str(error):
             return file_path
-        except HTTPError as error:
-            self.getLogger().error(f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}")
-            return file_path if "403" in str(error) else ""
+        else:
+            return ""
 
     def __downloadAudio(self) -> str:
         """
@@ -447,23 +492,19 @@ class YouTube_Downloader:
         Returns:
             string
         """
-        file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        try:
-            self.getStream().download(  # type: ignore
-                output_path=f"{self.getDirectory()}/Audio",
-                filename=f"{self.getIdentifier()}.mp3"
-            )
-            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-            self.getDatabaseHandler().postData(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data
-            )
-            return file_path
-        except HTTPError as error:
-            self.getLogger().error(
-                f"Error occured while the application was trying to download the media content.  The application will retry to download it.\nError: {error}"
-            )
-            return file_path if "403" in str(error) else ""
+        file_name: str = f"{self.getIdentifier()}.mp3"
+        file_path: str = f"{self.getDirectory()}/Audio/{file_name}"
+        options: Dict[str, str] = {
+            "format": str(self.getStream()["format_id"]),
+            "outtmpl": file_path
+        }
+        self.setVideo(YoutubeDL(options))
+        self.getVideo().download([self.getUniformResourceLocator()])
+        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
+        self.getDatabaseHandler().post_data(
+            table="MediaFile",
+            columns="type, date_downloaded, location, YouTube",
+            values="%s, %s, %s, %s",
+            parameters=data # type: ignore
+        )
+        return file_path

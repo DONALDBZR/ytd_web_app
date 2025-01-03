@@ -331,30 +331,27 @@ class Session_Manager:
                 continue
         return response
 
-    def handleFile(self, file_name: str) -> dict[str, int]:
+    def handleFile(self, file_name: str) -> Dict[str, int]:
         """
         Ensuring that the file is of type JSON in order to process
         it further more.
 
         Parameters:
-            file_name:  (string):   file to be loaded
+            file_name: string: File to be loaded
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
-        response = {}
+        no_content: int = 204
         if file_name.endswith(".json"):
-            file_path = f"{self.getDirectory()}/{file_name}"
-            file = open(file_path)
-            data = json.load(file)
-            response = {
+            file_path: str = f"{self.getDirectory()}/{file_name}"
+            data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_path)
+            return {
                 "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
             }
-        else:
-            response = {
-                "status": 204
-            }
-        return response
+        return {
+            "status": no_content
+        }
 
     def validateIpAddress(self, data) -> dict[str, int]:
         """

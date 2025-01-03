@@ -45,7 +45,6 @@ class YouTubeDownloader extends React.Component {
      * @returns {void}
      */
     setData() {
-        const loading_icon = document.querySelector("#loading");
         const media = JSON.parse(localStorage.getItem("media")).data;
         this.setState((previous) => ({
             ...previous,
@@ -63,7 +62,6 @@ class YouTubeDownloader extends React.Component {
                 video: media.video,
             },
         }));
-        loading_icon.style.display = "none";
     }
 
     /**

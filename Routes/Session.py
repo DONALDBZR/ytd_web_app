@@ -3,7 +3,7 @@ from Models.SessionManagementSystem import Session_Manager
 import json
 
 
-Session_Portal = Blueprint("Session", __name__)
+Session_Portal: Blueprint = Blueprint("Session", __name__)
 """
 The Routing for all the Sessions.
 

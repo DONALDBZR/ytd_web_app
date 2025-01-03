@@ -14,7 +14,7 @@ from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
-from typing import Union
+from typing import Union, Tuple
 
 
 class Security_Management_System:
@@ -122,22 +122,15 @@ class Security_Management_System:
             void
         """
         self.setPasswordHasher(PasswordHasher())
-        self.setApplicationName(
-            f"{self.getApplicationName()}{str(self.getDatestamp())}"
-        )
+        self.setApplicationName(f"{self.getApplicationName()}{str(self.getDatestamp())}")
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
-        self.setDateCreated(
-            datetime.fromtimestamp(self.getDatestamp()).strftime("%Y-%m-%d")
-        )
-        data: tuple[str, str] = (
-            self.getHash(),
-            str(self.getDateCreated())
-        )
+        self.setDateCreated(datetime.fromtimestamp(self.getDatestamp()).strftime("%Y-%m-%d"))
+        data: Tuple[str, str] = (self.getHash(), str(self.getDateCreated()))
         self.getDatabaseHandler().postData(
             table="Session",
             columns="hash, date_created",
             values="%s, %s",
-            parameters=data
+            parameters=data # type: ignore
         )
         self.getLogger().inform("The key has been created!")
         self.getDatabaseHandler().deleteData(

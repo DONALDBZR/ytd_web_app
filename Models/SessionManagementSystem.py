@@ -2,9 +2,11 @@ from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
+from typing import Dict, Union, Tuple
+from json import JSONDecodeError, load, dumps
+from os import remove
+from time import time
 import os
-import json
-import time
 import logging
 
 
@@ -187,44 +189,37 @@ class Session_Manager:
         """
         Verifying existing sessions to remove expired ones.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        age: int
-        data: dict[str, dict[str, str | int]]
         for index in range(0, self.getLength(), 1):
-            file_name = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
-            file = open(file_name, "r")
-            data = json.load(file)
-            age = int(time.time()) - int(data["Client"]["timestamp"])
-            file.close()
+            file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
+            data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_name)
+            age: int = int(time()) - int(data["Client"]["timestamp"]) if data != None else 0
             self.verifyInactiveSession(age, data, file_name)
 
-    def verifyInactiveSession(self, age: int, session: dict[str, dict[str, str | int]], file_name: str) -> None:
+    def verifyInactiveSession(self, age: int, session: Union[Dict[str, Dict[str, Union[str, int]]], None], file_name: str) -> None:
         """
         Verifying that the session is inactive to remove it from the
         document database and to store it in the relational database.
 
         Parameters:
-            age:        (int):      Age of the session.
-            session:    (object):   The data of the session.
-            file_name:  (string):   The name of the file.
+            age: int: Age of the session.
+            session: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null: The data of the session.
+            file_name: string: The name of the file.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        if age > 3600:
-            expired_sessions = (
-                int(session["Client"]["timestamp"]),
-                str(session["Client"]["ip_address"])
-            )
+        if age > 3600 and session != None:
+            expired_sessions: Tuple[int, str] = (int(session["Client"]["timestamp"]), str(session["Client"]["ip_address"]))
             self.getDatabaseHandler().post_data(
                 table="Visitors",
                 columns="timestamp, client",
                 values="%s, %s",
-                parameters=expired_sessions
+                parameters=expired_sessions # type: ignore
             )
-            os.remove(file_name)
+            remove(file_name)
 
     def createSession(self) -> SessionMixin:
         """
@@ -234,7 +229,7 @@ class Session_Manager:
             (SessionMixin)
         """
         self.getSession().clear()
-        self.setTimestamp(int(time.time()))
+        self.setTimestamp(int(time()))
         self.setColorScheme("light")
         data: dict[str, str | int] = {
             "ip_address": self.getIpAddress(),
@@ -273,24 +268,24 @@ class Session_Manager:
         Return:
             (string)
         """
-        return json.dumps(self.getSession(), indent=4)
+        return dumps(self.getSession(), indent=4)
 
-    def updateSession(self, data: dict[str, dict[str, str | int]]) -> SessionMixin | None:
+    def updateSession(self, payload: Dict[str, Dict[str, str]]) -> SessionMixin:
         """
         Modifying the session.
 
         Parameters:
-            data:   (object):   Data from the view
+            payload: {Client: {color_scheme: string}}: Data from the view
 
-        Return:
-            (SessionMixin | void)
+        Returns:
+            SessionMixin
         """
-        self.setTimestamp(int(time.time()))
-        self.setColorScheme(str(data["Client"]["color_scheme"]))
-        file_name = f"{self.getDirectory()}/{self.getIpAddress()}.json"
-        data = json.load(open(file_name))
-        if self.getIpAddress() == data['Client']['ip_address']:
-            new_data: dict[str, str | int] = {
+        self.setTimestamp(int(time()))
+        self.setColorScheme(str(payload["Client"]["color_scheme"]))
+        file_name: str = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_name)
+        if data != None and self.getIpAddress() == data['Client']['ip_address']:
+            new_data: Dict[str, Union[str, int]] = {
                 "ip_address": self.getIpAddress(),
                 "http_client_ip_address": self.getHttpClientIpAddress(),
                 "proxy_ip_address": self.getProxyIpAddress(),
@@ -303,6 +298,20 @@ class Session_Manager:
             file.close()
             self.getLogger().inform("The session has been successfully updated!")
             return self.getSession()
+        self.getSession().clear()
+        new_data: Dict[str, Union[str, int]] = {
+            "ip_address": self.getIpAddress(),
+            "http_client_ip_address": self.getHttpClientIpAddress(),
+            "proxy_ip_address": self.getProxyIpAddress(),
+            "timestamp": self.getTimestamp(),
+            "color_scheme": self.getColorScheme()
+        }
+        self.getSession()["Client"] = new_data
+        file = open(file_name, "w")
+        file.write(self.retrieveSession())
+        file.close()
+        self.getLogger().inform("The session has been successfully created!")
+        return self.getSession()
 
     def sessionsLoader(self, sessions: list[str]) -> dict[str, int]:
         """
@@ -335,53 +344,48 @@ class Session_Manager:
                 continue
         return response
 
-    def handleFile(self, file_name: str) -> dict[str, int]:
+    def handleFile(self, file_name: str) -> Dict[str, int]:
         """
         Ensuring that the file is of type JSON in order to process
         it further more.
 
         Parameters:
-            file_name:  (string):   file to be loaded
+            file_name: string: File to be loaded
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
-        response = {}
+        no_content: int = 204
         if file_name.endswith(".json"):
-            file_path = f"{self.getDirectory()}/{file_name}"
-            file = open(file_path)
-            data = json.load(file)
-            response = {
+            file_path: str = f"{self.getDirectory()}/{file_name}"
+            data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_path)
+            return {
                 "status": self.handleSession(self.validateIpAddress(data)["status"], file_name)["status"]
             }
-        else:
-            response = {
-                "status": 204
-            }
-        return response
+        return {
+            "status": no_content
+        }
 
-    def validateIpAddress(self, data) -> dict[str, int]:
+    def validateIpAddress(self, data: Union[Dict[str, Dict[str, Union[str, int]]], None]) -> Dict[str, int]:
         """
         Validating the IP Address against the one stored in the
         cache file.
 
         Parameters:
-            data:   (object):   The data in the file
+            data: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null: The data in the file
 
         Return:
-            (object)
+            {status: int}
         """
-        response = {}
-        if self.getIpAddress() == str(data['Client']['ip_address']):
-            age = int(time.time()) - int(data['Client']['timestamp'])
-            response = {
+        no_content: int = 204
+        if data != None and self.getIpAddress() == str(data['Client']['ip_address']):
+            age: int = int(time()) - int(data['Client']['timestamp'])
+            return {
                 "status": self.handleExpiryTime(age)["status"]
             }
-        else:
-            response = {
-                "status": 204
-            }
-        return response
+        return {
+            "status": no_content
+        }
 
     def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
         """
@@ -404,78 +408,101 @@ class Session_Manager:
             }
         return response
 
-    def handleSession(self, status: int, name: str) -> dict[str, int]:
+    def getData(self, file_path: str) -> Union[Dict[str, Dict[str, Union[str, int]]], None]:
+        """
+        Retrieving the data that is in the file.
+
+        Parameters:
+            file_path: string: The path of the file.
+
+        Returns:
+            {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null
+        """
+        try:
+            file = open(file_path, "r")
+            data: Dict[str, Dict[str, Union[str, int]]] = load(file)
+            file.close()
+            self.getLogger().inform(f"The file has been successfully read.\nFile Path: {file_path}")
+            return data
+        except JSONDecodeError as error:
+            self.getLogger().error(f"Failed to decode the JSON file.\nFile Path: {file_path}\nError: {error}")
+            return None
+
+    def handleSession(self, status: int, name: str) -> Dict[str, int]:
         """
         Handling the session based on the status retrieved from the
         system.
 
         Parameters:
-            status: (int):      HTTP Status Code
-            name:   (string):   File Name
+            status: int: HTTP Status Code
+            name: string: File Name
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
-        response = {}
-        file_path = f"{self.getDirectory()}/{name}"
-        file = open(file_path)
-        data = json.load(file)
-        if status == 200:
-            self.setSession(data)
-            response = {
+        ok: int = 200
+        accepted: int = 202
+        no_content: int = 204
+        reset_content: int = 205
+        service_unavailable: int = 503
+        file_path: str = f"{self.getDirectory()}/{name}"
+        data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_path)
+        if status == ok and data != None:
+            self.setSession(data) # type: ignore
+            return {
                 "status": status
             }
-        elif status == 204:
-            response = {
+        if status == no_content:
+            return {
                 "status": status
             }
-        elif status == 205:
+        if status == reset_content:
             self.getSession().clear()
-            os.remove(file_path)
-            response = {
-                "status": 202
+            remove(file_path)
+            return {
+                "status": accepted
             }
-        return response
+        return {
+            "status": service_unavailable
+        }
 
-    def handleSessionData(self, session_data: dict[str, int]) -> None:
+    def handleSessionData(self, session_data: Dict[str, int]) -> None:
         """
         Verifying that the data has not been tampered in order to
         renew the session.
 
         Parameters:
-            session_data:   (object):   Session's data
+            session_data: {status: int}: Session's data
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        # Verifying that the data has been received or created in order to verify it to renew access.
-        if session_data["status"] == 200 or session_data["status"] == 201:
+        if "status" not in session_data or (session_data["status"] == 200 or session_data["status"] == 201):
             self.renew(self.getSession())
         else:
             self.createSession()
 
-    def renew(self, session_data: SessionMixin) -> (SessionMixin | None):
+    def renew(self, session_data: SessionMixin) -> Union[SessionMixin, None]:
         """
         Verifying that the IP Addresses are the same for renewing
         the access to their current data
 
         Parameters:
-            session_data:   (SessionMixin): Session Data
+            session_data: SessionMixin: Session Data
 
-        Return:
-            (SessionMixin | void)
+        Returns:
+            SessionMixin | void
         """
-        file_path = f"{self.getDirectory()}/{self.getIpAddress()}.json"
-        if session_data['Client']['ip_address'] == self.getIpAddress():
-            self.setTimestamp(int(time.time()))
+        file_path: str = f"{self.getDirectory()}/{self.getIpAddress()}.json"
+        if "Client" in session_data and session_data['Client']['ip_address'] == self.getIpAddress():
+            self.setTimestamp(int(time()))
             session_data['Client']['timestamp'] = self.getTimestamp()
             self.setSession(session_data)
             file = open(file_path, "w")
-            file.write(json.dumps(self.getSession()))
+            file.write(dumps(self.getSession()))
             file.close()
             self.getLogger().inform("The session has been successfully renewed!")
             return self.getSession()
-        else:
-            self.getSession().clear()
-            os.remove(file_path)
-            self.createSession()
+        self.getSession().clear()
+        remove(file_path)
+        self.createSession()

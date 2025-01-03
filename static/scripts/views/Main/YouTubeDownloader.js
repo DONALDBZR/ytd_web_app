@@ -9,6 +9,25 @@ class YouTubeDownloader extends React.Component {
      */
     constructor(props) {
         super(props);
+        /**
+         * The states of the component.
+         * @type {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, File: {audio: string, video: string}}}
+         */
+        this.state = {
+            uniform_resource_locator: "",
+            author: "",
+            title: "",
+            identifier: "",
+            author_channel: "",
+            views: "",
+            published_at: "",
+            thumbnail: "",
+            duration: "",
+            File: {
+                audio: "",
+                video: "",
+            }
+        };
     }
 
     componentDidMount() {

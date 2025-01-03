@@ -57,15 +57,7 @@ class YouTubeDownloader extends React.Component {
      * @returns {void}
      */
     getFile(event) {
-        /**
-         * Button that was clicked
-         * @type {HTMLButtonElement}
-         */
         const button = event.target.parentElement.parentElement;
-        /**
-         * Uniform resource locator of the file needed.
-         * @type {string}
-         */
         const file_location = button.value;
         const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
         fetch("/Download", {

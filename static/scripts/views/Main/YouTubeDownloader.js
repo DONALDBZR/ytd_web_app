@@ -40,6 +40,18 @@ class YouTubeDownloader extends React.Component {
     }
 
     /**
+     * Checking that the location of the media file needed is in
+     * the state of the application.
+     * @returns {string|void}
+     */
+    verifyFile() {
+        if (this.state.File.video != null) {
+            return this.getMediaFile();
+        }
+        window.location.href = `/Search/${this.state.identifier}`;
+    }
+
+    /**
      * Rendering the component
      * @returns {HTMLDivElement}
      */

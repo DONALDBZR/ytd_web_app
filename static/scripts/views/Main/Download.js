@@ -23,8 +23,5 @@ class MainDownload extends React.Component {
                 <Downloader />
             </main>
         );
-        if (window.location.pathname.includes("YouTube")) {
-            return <YouTubeDownloader />;
-        }
     }
 }

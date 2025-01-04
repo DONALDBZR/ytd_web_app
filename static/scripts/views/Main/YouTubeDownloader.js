@@ -45,6 +45,7 @@ class YouTubeDownloader extends React.Component {
      * @returns {void}
      */
     setData() {
+        const loading_icon = document.querySelector("#loading");
         const media = JSON.parse(localStorage.getItem("media")).data;
         this.setState((previous) => ({
             ...previous,
@@ -62,6 +63,7 @@ class YouTubeDownloader extends React.Component {
                 video: media.video,
             },
         }));
+        loading_icon.style.display = "none";
     }
 
     /**
@@ -70,9 +72,7 @@ class YouTubeDownloader extends React.Component {
      * @returns {string|void}
      */
     verifyFile() {
-        const loading_icon = document.querySelector("div#loading");
         if (this.state.File.video != null) {
-            loading_icon.style.display = "none";
             return (this.state.File.video.includes("extractio")) ? this.state.File.video.replace("/home/darkness4869/Documents/extractio", "") : this.state.File.video.replace("/var/www/html/ytd_web_app", "");
         }
         window.location.href = `/Search/${this.state.identifier}`;

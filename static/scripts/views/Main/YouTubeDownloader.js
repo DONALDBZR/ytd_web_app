@@ -130,7 +130,7 @@ class YouTubeDownloader extends React.Component {
      */
     render() {
         return (
-            <main>
+            <div class="YouTube">
                 <div>
                     <video src={this.verifyFile()} controls autoplay></video>
                 </div>
@@ -152,7 +152,7 @@ class YouTubeDownloader extends React.Component {
                         <i class="fa-solid fa-video"></i>
                     </button>
                 </div>
-            </main>
+            </div>
         );
     }
 }

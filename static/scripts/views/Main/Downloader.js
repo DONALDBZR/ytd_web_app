@@ -11,18 +11,10 @@ class Downloader extends React.Component {
     }
 
     /**
-     * Rendering the component for the download page.
+     * Rendering the component for the download portal.
      * @returns {React.Component}
      */
     render() {
-        return (
-            <main>
-                <div id="loading">
-                    <i class="fa-solid fa-spinner fa-spin"></i>
-                </div>
-                <Downloader />
-            </main>
-        );
         if (window.location.pathname.includes("YouTube")) {
             return <YouTubeDownloader />;
         }

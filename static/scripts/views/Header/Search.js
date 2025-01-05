@@ -198,9 +198,10 @@ class HeaderSearch extends React.Component {
         const response = await fetch(`/Media/Search?platform=${platform}&search=${search}`, {
             method: "GET",
         });
+        const data = await response.json();
         return {
             status: response.status,
-            data: await response.json().data.data,
+            data: data.data,
         };
     }
 

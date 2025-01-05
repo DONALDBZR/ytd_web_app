@@ -483,3 +483,6 @@ body[id*="Search"] main .Media .YouTube .data div button {
 body[id*="Search"] header nav .active input {
     border-bottom: var(--color3) solid calc(var(--search-bar-height) / 58.2);
 }
+main #loading {
+    background-color: var(--color5);
+}

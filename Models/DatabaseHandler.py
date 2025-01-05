@@ -181,7 +181,7 @@ class Database_Handler:
         self.getLogger().inform("The connection between the application and the database server will be closed!")
         return result_set
 
-    def getData(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0) -> List[RowType]:
+    def getData(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0, group_condition: str = "") -> List[RowType]:
         """
         Retrieving data from the database.
 
@@ -193,6 +193,7 @@ class Database_Handler:
             filter_condition: string: Items to be filtered with.
             sort_condition: string: The items to be sorted.
             limit_condition: int: The amount of items to be returned
+            group_condition: string: The items to be grouped by.
 
         Returns:
             [RowType]
@@ -201,6 +202,7 @@ class Database_Handler:
         self.setParameters(parameters)
         self.setQuery(self.getQuery() if join_condition == "" else f"{self.getQuery()} LEFT JOIN {join_condition}")
         self.setQuery(self.getQuery() if filter_condition == "" else f"{self.getQuery()} WHERE {filter_condition}")
+        self.setQuery(self.getQuery() if group_condition == "" else f"{self.getQuery()} GROUP BY {sort_condition}")
         self.setQuery(self.getQuery() if sort_condition == "" else f"{self.getQuery()} ORDER BY {sort_condition}")
         self.setQuery(f"{self.getQuery()} LIMIT {limit_condition}" if limit_condition > 0 else self.getQuery())
         self._query(self.getQuery(), self.getParameters())

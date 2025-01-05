@@ -1,5 +1,5 @@
 from flask import Blueprint, Response, render_template, request, send_file
-from typing import Dict, Generator, Any
+from typing import Dict
 from Environment import Environment
 
 Download_Portal = Blueprint("Download", __name__)
@@ -47,13 +47,9 @@ def downloadFile() -> Response:
     file_name: str = request_json['file_name']
     mime_type: str = "audio/mp3" if "Audio" in file_path else ""
     mime_type = "video/mp4" if "Video" in file_path else mime_type
-    headers: Dict[str, str] = {
-        "Content-Disposition": f"attachment: filename={file_name}"
-    }
-
-    def generateFile() -> Generator[bytes, Any, None]:
-        with open(file_path, "rb") as file:
-            while chunk := file.read(8192):
-                yield chunk
-
-    return Response(generateFile(), mimetype=mime_type, headers=headers)
+    return send_file(
+        path_or_file=file_path,
+        mimetype=mime_type,
+        as_attachment=True,
+        download_name=file_name
+    )

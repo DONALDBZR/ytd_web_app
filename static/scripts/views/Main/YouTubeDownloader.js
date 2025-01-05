@@ -101,23 +101,16 @@ class YouTubeDownloader extends React.Component {
                 throw new Error(`Failed to download file: ${response.statusText}`);
             }
             const reader = response.body.getReader();
-            const stream = new ReadableStream({
-                start(controller) {
-                    let push = () => {
-                        reader.read()
-                            .then(({done, value}) => {
-                                if (done) {
-                                    controller.close();
-                                    return;
-                                }
-                                controller.enqueue(value);
-                                push();
-                            });
-                    };
-                    push();
+            const chunks = [];
+            let done = false;
+            while (!done) {
+                const {value, done: is_done} = await reader.read();
+                done = is_done;
+                if (value) {
+                    chunks.push(value);
                 }
-            });
-            const blob = await new Response(stream).blob();
+            }
+            const blob = new Blob(chunks);
             return blob;
         } catch (error) {
             console.error("Fetch Error: ", error);

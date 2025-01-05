@@ -9,7 +9,7 @@ from Classes.Media import Media
 from mysql.connector.types import RowType
 from os import getcwd
 from typing import List, Dict, Union, Tuple, cast
-from logging import getLogger, DEBUG
+from logging import DEBUG
 from inspect import stack
 from time import time, sleep
 from json import dumps
@@ -83,9 +83,7 @@ class Crawler:
         Initializing the crawler to scrape the data needed.
         """
         ENV: Environment = Environment()
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(getLogger(__name__))
-        self.getLogger().getLogger().setLevel(DEBUG)
+        self.setLogger(Extractio_Logger(__name__))
         self.__setServices()
         self.__setOptions()
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))

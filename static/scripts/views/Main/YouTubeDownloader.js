@@ -86,20 +86,25 @@ class YouTubeDownloader extends React.Component {
      * @returns {Promise<Blob>}
      */
     async downloadFileServer(file_location, file_name) {
-        const response = await fetch("/Download/", {
-            method: "POST",
-            body: JSON.stringify({
-                file: file_location,
-                file_name: file_name,
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        if (!response.ok) {
-            throw new Error(`Failed to download file: ${response.statusText}`);
+        try {
+            const response = await fetch("/Download/", {
+                method: "POST",
+                body: JSON.stringify({
+                    file: file_location,
+                    file_name: file_name,
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (!response.ok) {
+                throw new Error(`Failed to download file: ${response.statusText}`);
+            }
+            return await response.blob();
+        } catch (error) {
+            console.error("Fetch Error: ", error);
+            throw error;
         }
-        return await response.blob();
     }
 
     /**

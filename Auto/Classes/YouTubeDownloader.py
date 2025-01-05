@@ -268,5 +268,5 @@ class YouTube_Downloader:
             table="YouTube",
             columns="identifier, length, published_at, author, title, Media",
             values="%s, %s, %s, %s, %s, %s",
-            parameters=data
+            parameters=data # type: ignore
         )

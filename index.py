@@ -163,6 +163,6 @@ def serveStylesheets(file: str) -> Response:
     """
     response = send_from_directory('static/stylesheets', file)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False
+    response.cache_control.no_cache = False # type: ignore
     response.cache_control.public = True
     return response

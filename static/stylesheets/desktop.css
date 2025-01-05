@@ -33,35 +33,7 @@ footer div {
     width: calc(var(--width) / 10);
     height: inherit;
 }
-body[id*="Download"] main .YouTube {
-    display: flex;
-    flex-wrap: wrap;
-    height: var(--component-height);
-}
-body[id*="Download"] main .YouTube div {
-    height: calc(var(--component-height) / 10);
-    width: calc(var(--width) / 2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-body[id*="Download"] main .YouTube div:nth-child(1) {
-    width: var(--width);
-    height: calc(var(--component-height) * 0.9);
-}
-body[id*="Download"] main .YouTube div a,
-body[id*="Download"] main .YouTube div button {
-    font-size: calc(var(--textSize) * 2.36196);
-}
-body[id*="Download"] main .YouTube div button {
-    border: none;
-}
-body[id*="Download"] main .YouTube div video {
-    height: inherit;
-    width: auto;
-}
-#Homepage main #loading,
-body[id*="Search"] main #loading {
+main #loading {
     position: fixed;
     z-index: 1;
     left: calc(var(--width) * 0);
@@ -247,7 +219,7 @@ body[id*="Search"] main .Media .RelatedContents::-webkit-scrollbar {
     width: auto;
     height: inherit;
 }
-body[id*="Search"] main #loading {
+main #loading {
     display: flex;
 }
 body[id*="Search"] main .Media {
@@ -530,4 +502,93 @@ body[id*="Search"]
     svg {
     width: auto;
     height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
+}
+body[id*="Download"] main .YouTube {
+    --youtube-height: var(--component-height);
+    --youtube-width: var(--component-width);
+    height: var(--youtube-height);
+    width: var(--youtube-width);
+}
+body[id*="Download"] main .YouTube #video {
+    --video-height: calc(var(--youtube-height) * (4 / 5));
+    --video-width: var(--youtube-width);
+    width: var(--video-width);
+    height: var(--video-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body[id*="Download"] main .YouTube #video video {
+    height: var(--video-height);
+    width: auto;
+}
+body[id*="Download"] main .YouTube #data {
+    --data-height: calc(var(--youtube-height) * / 5);
+    --data-width: var(--youtube-width);
+    width: var(--data-width);
+    height: var(--data-height);
+}
+body[id*="Download"] main .YouTube #data #title,
+body[id*="Download"] main .YouTube #data #author {
+    height: calc(var(--data-height) / 4);
+    width: calc(var(--data-width) * 0.99);
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-left: calc(var(--data-width) / 100);
+}
+body[id*="Download"] main .YouTube #data #title a {
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: var(--textSize);
+}
+body[id*="Download"] main .YouTube #data #author a {
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: calc(var(--textSize) * 0.9);
+}
+body[id*="Download"] main .YouTube #data #actions {
+    --actions-height: calc(var(--data-height) / 2);
+    --actions-width: calc(var(--data-width) * 0.99);
+    height: var(--actions-height);
+    width: var(--actions-width);
+    display: flex;
+    margin-left: calc(var(--data-width) / 100);
+}
+body[id*="Download"] main .YouTube #data #actions #metrics {
+    --metrics-width: calc(var(--actions-width) / 8);
+    --metrics-height: var(--actions-height);
+    width: var(--metrics-width);
+    height: var(--metrics-height);
+}
+body[id*="Download"] main .YouTube #data #actions #metrics #duration,
+body[id*="Download"] main .YouTube #data #actions #metrics #views {
+    display: flex;
+    width: var(--metrics-width);
+    height: calc(var(--metrics-height) / 2);
+}
+body[id*="Download"] main .YouTube #data #actions #metrics #duration div,
+body[id*="Download"] main .YouTube #data #actions #metrics #views div {
+    width: calc(var(--metrics-width) / 2);
+    letter-spacing: calc(var(--width) / 2000);
+}
+body[id*="Download"] main .YouTube #data #actions #buttons {
+    --buttons-width: calc(var(--actions-width) * (7 / 8));
+    --buttons-height: var(--actions-height);
+    width: var(--buttons-width);
+    height: var(--buttons-height);
+    display: flex;
+}
+body[id*="Download"] main .YouTube #data #actions #buttons .button {
+    height: var(--buttons-height);
+    width: calc(var(--buttons-width) / 8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body[id*="Download"] main .YouTube #data #actions #buttons .button button {
+    border: none;
+    padding: calc(var(--buttons-height) * 0) calc(var(--buttons-width) * 0);
+}
+body[id*="Download"] main .YouTube #data #actions #buttons .button button svg {
+    width: auto;
+    height: calc(var(--component-height) / 11.34);
 }

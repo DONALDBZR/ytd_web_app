@@ -49,7 +49,7 @@ class YouTube extends React.Component {
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
-        const media = JSON.parse(localStorage.getItem("media")).data;
+        const media = (localStorage.getItem("media") != null) ? JSON.parse(localStorage.getItem("media")).data : null;
         this.setState((previous) => ({
             ...previous,
             Media: {
@@ -57,9 +57,6 @@ class YouTube extends React.Component {
                 YouTube: (media) ? media : this.state.Media.YouTube,
             },
         }));
-        if (this.state.Media.YouTube.identifier == "") {
-            window.location.reload();
-        }
         loading_icon.style.display = "none";
     }
 

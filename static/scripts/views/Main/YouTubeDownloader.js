@@ -86,7 +86,7 @@ class YouTubeDownloader extends React.Component {
      * @returns {Promise<Blob>}
      */
     async downloadFileServer(file_location, file_name) {
-        const response = await fetch("/Download", {
+        const response = await fetch("/Download/", {
             method: "POST",
             body: JSON.stringify({
                 file: file_location,

@@ -61,6 +61,7 @@ Application.config["COMPRESS_ALGORITHM"] = "gzip"
 Application.config["COMPRESS_LEVEL"] = 6
 Application.config["COMPRESS_MIN_SIZE"] = 500
 Application.config["COMPRESS_MIMETYPES"] = ["text/html", "text/css", "text/javascript", "application/json", "text/babel"]
+Application.config["MAX_CONTENT_LENGTH"] = 256 * 1024 * 1024
 Application.register_blueprint(Session_Portal, url_prefix="/Session")
 Application.register_blueprint(Search_Portal, url_prefix="/Search")
 Application.register_blueprint(Media_Portal, url_prefix="/Media")

@@ -110,10 +110,12 @@ class YouTubeDownloader extends React.Component {
      * @returns {void}
      */
     downloadFileClient(data, file_name) {
+        const uniform_resource_locator = URL.createObjectURL(data);
         const a = document.createElement("a");
-        a.href = window.URL.createObjectURL(data);
+        a.href = uniform_resource_locator;
         a.download = file_name;
         a.click();
+        URL.revokeObjectURL(uniform_resource_locator);
     }
 
     /**

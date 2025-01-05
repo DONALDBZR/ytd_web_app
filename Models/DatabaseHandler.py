@@ -202,7 +202,7 @@ class Database_Handler:
         self.setParameters(parameters)
         self.setQuery(self.getQuery() if join_condition == "" else f"{self.getQuery()} LEFT JOIN {join_condition}")
         self.setQuery(self.getQuery() if filter_condition == "" else f"{self.getQuery()} WHERE {filter_condition}")
-        self.setQuery(self.getQuery() if group_condition == "" else f"{self.getQuery()} GROUP BY {sort_condition}")
+        self.setQuery(self.getQuery() if group_condition == "" else f"{self.getQuery()} GROUP BY {group_condition}")
         self.setQuery(self.getQuery() if sort_condition == "" else f"{self.getQuery()} ORDER BY {sort_condition}")
         self.setQuery(f"{self.getQuery()} LIMIT {limit_condition}" if limit_condition > 0 else self.getQuery())
         self._query(self.getQuery(), self.getParameters())

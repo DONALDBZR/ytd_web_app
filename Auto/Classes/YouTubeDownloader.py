@@ -3,7 +3,6 @@ from datetime import datetime
 from mysql.connector.types import RowType
 from typing import Dict, List, Tuple, Union
 from time import strftime, gmtime
-import logging
 import sys
 import os
 
@@ -80,8 +79,7 @@ class YouTube_Downloader:
             uniform_resource_locator:   (string):   The uniform resource locator to be searched.
             media_identifier:           (int):      The media type for the system.
         """
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)

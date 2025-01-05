@@ -252,20 +252,11 @@ footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
-body[id*="Download"] main .YouTube div button:hover,
-body[id*="Search"]
-    main
-    .Media
-    .RelatedContents
-    .card
-    div:nth-child(2)
-    div:nth-child(4)
-    a
-    svg:hover {
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg:hover,
+main #loading {
     color: var(--color3);
 }
 footer div,
-body[id*="Download"] main .YouTube div button,
 body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
 body[id*="Search"]
     main
@@ -283,25 +274,20 @@ body[id*="Search"]
     div:nth-child(2)
     div:nth-child(4)
     a
-    svg {
+    svg,
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button svg {
     color: var(--color2);
-}
-body[id*="Download"] main .YouTube div button {
-    background: none;
-    cursor: pointer;
-}
-body[id*="Download"] main .YouTube div a {
-    color: var(--color4);
-}
-body[id*="Download"] main .YouTube div a:hover {
-    opacity: calc(var(--percentage) / 2);
 }
 header nav div a {
     font-family: var(--pacifico);
     color: var(--color2);
     text-decoration: none;
 }
-header nav div a:hover {
+header nav div a:hover,
+body[id*="Download"] main .YouTube #data #title a:hover,
+body[id*="Download"] main .YouTube #data #author a:hover {
     text-decoration: underline;
     color: var(--color3);
 }
@@ -310,11 +296,13 @@ header nav div div button:hover svg,
 header nav div form button:hover svg,
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg,
 body[id*="Search"] main .Media .YouTube .data div button:hover,
-header nav .active button svg {
+header nav .active button svg,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button svg:hover {
     color: var(--color3);
 }
 header nav div div button,
-header nav div form button {
+header nav div form button,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button {
     background: transparent;
     cursor: pointer;
 }
@@ -361,7 +349,11 @@ body[id*="Search"]
     div:nth-child(1)
     div:nth-child(3)
     div:nth-child(2),
-body[id*="Search"] main .Media .YouTube .data .metadata div {
+body[id*="Search"] main .Media .YouTube .data .metadata div,
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a,
+body[id*="Download"] main .YouTube #data #actions #metrics #duration div,
+body[id*="Download"] main .YouTube #data #actions #metrics #views div {
     font-family: var(--proximaNova);
 }
 #Homepage main div div svg {
@@ -392,7 +384,11 @@ body[id*="Search"]
     .RelatedContents
     .card
     div:nth-child(2)
-    div:nth-child(1) {
+    div:nth-child(1),
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a,
+body[id*="Download"] main .YouTube #data #actions #metrics #duration .label,
+body[id*="Download"] main .YouTube #data #actions #metrics #views .label {
     font-weight: 600;
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
@@ -404,7 +400,9 @@ body[id*="Search"]
     .card
     div:nth-child(2)
     div:nth-child(2)
-    a {
+    a,
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a {
     text-decoration: none;
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover,

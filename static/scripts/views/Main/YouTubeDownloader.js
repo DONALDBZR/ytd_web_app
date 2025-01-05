@@ -136,7 +136,7 @@ class YouTubeDownloader extends React.Component {
                 <div id="video">
                     <video src={this.verifyFile()} controls autoplay></video>
                 </div>
-                <div>
+                <div id="data">
                     <div id="title">
                         <a href={this.state.uniform_resource_locator} target="__blank">{this.state.title}</a>
                     </div>

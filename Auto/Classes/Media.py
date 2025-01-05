@@ -53,7 +53,7 @@ class Media:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, search: str, value: str) -> None:
+    def __init__(self, search: str, value: str):
         """
         Instantiating the media's manager which will interact with
         the media's dataset and do the required processing.
@@ -64,8 +64,7 @@ class Media:
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(getLogger(__name__))
+        self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setSearch(search)
         self.setValue(value)

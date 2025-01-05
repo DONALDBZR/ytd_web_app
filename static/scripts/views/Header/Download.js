@@ -200,7 +200,7 @@ class HeaderDownload extends React.Component {
         });
         return {
             status: response.status,
-            data: await response.json().data.data,
+            data: await response.json().data,
         };
     }
 

@@ -96,6 +96,9 @@ class YouTubeDownloader extends React.Component {
                 "Content-Type": "application/json",
             },
         });
+        if (!response.ok) {
+            throw new Error(`Failed to download file: ${response.statusText}`);
+        }
         return await response.blob();
     }
 

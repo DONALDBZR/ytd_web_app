@@ -68,6 +68,7 @@ class Video:
         self.setDatabaseHandler(Database_Handler())
         self.setDirectory(f"{ENV.getDirectory()}/Public/Video")
         self.setTableName("MediaFile")
+        self.setIdentifier(identifier)
         self.getLogger().inform("The Video Management System has been successfully initialized!")
 
     def getTableName(self) -> str:

@@ -184,13 +184,13 @@ class YouTubeDownloader extends React.Component {
 
     /**
      * Rendering the component for the YouTube downloader.
-     * @returns {Promise<React.Component>}
+     * @returns {React.Component}
      */
-    async render() {
+    render() {
         return (
             <div class="YouTube">
                 <div id="video">
-                    <video src={await this.verifyFile()} controls autoplay></video>
+                    <video src={this.verifyFile()} controls autoplay></video>
                 </div>
                 <div id="data">
                     <div id="title">

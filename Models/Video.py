@@ -6,7 +6,9 @@ Authors:
 """
 from Environment import Environment
 from Models.Logger import Extractio_Logger
-from Models.DatabaseHandler import Database_Handler
+from Models.DatabaseHandler import Database_Handler, Error as Relational_Database_Error
+from os.path import exists
+from typing import Tuple
 
 
 class Video:
@@ -80,3 +82,33 @@ class Video:
 
     def setIdentifier(self, identifier: str) -> None:
         self.__identifier = identifier
+
+    def serveFile(self) -> int:
+        """
+        Serving the file needed by the user-interface.
+
+        Returns:
+            int
+        """
+        ok: int = 200
+        accepted: int = 202
+        not_found: int = 404
+        service_unavailable: int = 503
+        status: int = ok if exists(f"{self.getDirectory()}/{self.getIdentifier()}.mp4") else not_found
+        if status != ok:
+            self.getLogger().error(f"The file {self.getIdentifier()}.mp4 does not exist!")
+            parameters: Tuple[str] = (self.getIdentifier(),)
+            try:
+                self.getDatabaseHandler().deleteData(
+                    table=self.getTableName(),
+                    parameters=parameters,
+                    condition="YouTube = %s"
+                )
+                self.getLogger().inform(f"The files related have been deleted from the relational database server.\nIdentifier: {self.getIdentifier()}\nStatus: {accepted}")
+                return accepted
+            except Relational_Database_Error as error:
+                self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}\nStatus: {service_unavailable}")
+                return service_unavailable
+            return status
+        self.getLogger().inform(f"The file {self.getIdentifier()}.mp4 has been served!\nStatus: {status}")
+        return status

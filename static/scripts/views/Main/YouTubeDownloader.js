@@ -70,6 +70,7 @@ class YouTubeDownloader extends React.Component {
                 window.location.reload();
             }, 2000);
         }
+        this.verifyFile();
         loading_icon.style.display = "none";
     }
 
@@ -91,7 +92,7 @@ class YouTubeDownloader extends React.Component {
      */
     async handleVideoStatus(status) {
         if (status != 200) {
-            // window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
+            window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
             return "";
         }
         return (this.state.File.video.includes("extractio")) ? this.state.File.video.replace("/home/darkness4869/Documents/extractio", "") : this.state.File.video.replace("/var/www/html/ytd_web_app", "");

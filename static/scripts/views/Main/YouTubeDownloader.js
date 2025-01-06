@@ -38,11 +38,6 @@ class YouTubeDownloader extends React.Component {
     componentDidMount() {
         this.setData();
         console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Mount`);
-        if (this.state.identifier != window.location.pathname.replace("/Download/YouTube/", "")) {
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
-        }
     }
 
     /**
@@ -68,6 +63,12 @@ class YouTubeDownloader extends React.Component {
                 video: (media) ? media.video : this.state.File.video,
             },
         }));
+        console.log(`Identifier: ${media.identifier}\nIdentifier (URL): ${window.location.pathname.replace("/Download/YouTube/", "")}`);
+        if (this.state.identifier != window.location.pathname.replace("/Download/YouTube/", "")) {
+            setTimeout(() => {
+                window.location.reload();
+            }, 10000);
+        }
         loading_icon.style.display = "none";
     }
 

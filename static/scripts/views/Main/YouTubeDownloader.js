@@ -77,10 +77,14 @@ class YouTubeDownloader extends React.Component {
      * @returns {string|void}
      */
     verifyFile() {
-        if (this.state.File.video != "") {
+        fetch(`/Public/Video/${window.location.pathname.replace("/Download/YouTube/", "")}.mp4`)
+        .then((response) => response.status)
+        .then((status) => {
+            if (status != 200) {
+                window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
+            }
             return (this.state.File.video.includes("extractio")) ? this.state.File.video.replace("/home/darkness4869/Documents/extractio", "") : this.state.File.video.replace("/var/www/html/ytd_web_app", "");
-        }
-        window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
+        });
     }
 
     /**

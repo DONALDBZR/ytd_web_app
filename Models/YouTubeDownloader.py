@@ -433,25 +433,25 @@ class YouTube_Downloader:
             string
         """
         response: str = ""
-        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("abr", 0.00) != 0.00 and "mp4a" in str(stream.get("acodec", ""))]
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and "mp4a" in str(stream.get("acodec"))]
         if not audio_streams:
             self.getLogger().error(f"There is not valid audio stream available.\nStatus: 503")
             return response
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
         audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
-        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("vbr", 0.00) != 0.00]
+        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("vbr") is not None and stream.get("vbr") != 0.00]
         if not video_streams:
             self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")
             return response
         height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
         width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
-        video_streams = [stream for stream in video_streams if stream.get("height", 0) == height and stream.get("width", 0) == width and "avc" in str(stream.get("vcodec", "")) and "filesize" in stream]
+        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and "avc" in str(stream.get("vcodec")) and "filesize" in stream]
         if not video_streams:
             self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")
             return response
         file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
-        self.setStream([stream for stream in video_streams if stream.get("filesize", 0) == file_size][0])
+        self.setStream([stream for stream in video_streams if stream.get("filesize") == file_size][0])
         video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
         file_name: str = f"{self.getIdentifier()}.mp4"
         file_path: str = f"{self.getDirectory()}/Video/{file_name}"

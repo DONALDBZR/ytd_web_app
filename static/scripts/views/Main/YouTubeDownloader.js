@@ -214,7 +214,7 @@ class YouTubeDownloader extends React.Component {
                             </div>
                             <div id="views">
                                 <div class="label">Views:</div>
-                                <div class="data">{this.state.views}</div>
+                                <div class="data">{this.state.views.toLocaleString("en-US")}</div>
                             </div>
                         </div>
                         <div id="buttons">

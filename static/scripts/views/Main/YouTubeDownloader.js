@@ -46,21 +46,21 @@ class YouTubeDownloader extends React.Component {
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
-        const media = JSON.parse(localStorage.getItem("media")).data;
+        const media = (localStorage.getItem("media") != null) ? JSON.parse(localStorage.getItem("media")).data : null;
         this.setState((previous) => ({
             ...previous,
-            uniform_resource_locator: media.uniform_resource_locator,
-            author: media.author,
-            title: media.title,
-            identifier: media.identifier,
-            author_channel: media.author_channel,
-            views: media.views,
-            published_at: media.published_at,
-            thumbnail: media.thumbnail,
-            duration: media.duration,
+            uniform_resource_locator: (media) ? media.uniform_resource_locator : this.state.uniform_resource_locator,
+            author: (media) ? media.author : this.state.author,
+            title: (media) ? media.title : this.state.title,
+            identifier: (media) ? media.identifier : this.state.identifier,
+            author_channel: (media) ? media.author_channel : this.state.author_channel,
+            views: (media) ? media.views : this.state.views,
+            published_at: (media) ? media.published_at : this.state.published_at,
+            thumbnail: (media) ? media.thumbnail : this.state.thumbnail,
+            duration: (media) ? media.duration : this.state.duration,
             File: {
-                audio: media.audio,
-                video: media.video,
+                audio: (media) ? media.audio : this.state.File.audio,
+                video: (media) ? media.video : this.state.File.video,
             },
         }));
         loading_icon.style.display = "none";

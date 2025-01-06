@@ -89,7 +89,7 @@ class YouTubeDownloader extends React.Component {
      */
     async handleVideoStatus(status) {
         if (status != 200) {
-            window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
+            // window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
             return "";
         }
         return (this.state.File.video.includes("extractio")) ? this.state.File.video.replace("/home/darkness4869/Documents/extractio", "") : this.state.File.video.replace("/var/www/html/ytd_web_app", "");
@@ -98,11 +98,14 @@ class YouTubeDownloader extends React.Component {
     /**
      * Checking that the location of the media file needed is in
      * the state of the application.
-     * @returns {Promise<string>}
+     * @returns {string}
      */
-    async verifyFile() {
-        const status = await this.checkVideoStatus(window.location.pathname.replace("/Download/YouTube/", ""));
-        return await this.handleVideoStatus(status);
+    verifyFile() {
+        this.checkVideoStatus(window.location.pathname.replace("/Download/YouTube/", ""))
+        .then((status) => this.handleVideoStatus(status))
+        .then((uniform_resource_locator) => {
+            return uniform_resource_locator
+        });
     }
 
     /**

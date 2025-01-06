@@ -110,7 +110,8 @@ class Video:
         if status != self.ok:
             self.getLogger().error(f"The file {self.getIdentifier()}.mp4 does not exist!  It will be removed from the relational database server.\nIdentifier: {self.getIdentifier()}")
             relational_database_status: int = self.removeIdentifierRelationalDatabaseServer()
-            status = self.not_found if relational_database_status == self.accepted else self.service_unavailable
+            file_server_status: int = self.removeDataFileServer()
+            status = self.not_found if relational_database_status == self.accepted and file_server_status == self.accepted else self.service_unavailable
             return status
         self.getLogger().inform(f"The file {self.getIdentifier()}.mp4 has been served!\nStatus: {status}")
         return status

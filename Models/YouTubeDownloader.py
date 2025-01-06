@@ -432,6 +432,8 @@ class YouTube_Downloader:
         Returns:
             string
         """
+        maximum_height: int = 1080
+        maximum_width: int = 1920
         response: str = ""
         audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and "mp4a" in str(stream.get("acodec"))]
         if len(audio_streams) == 0:
@@ -446,6 +448,8 @@ class YouTube_Downloader:
             return response
         height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
         width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
+        height = maximum_height if height >= maximum_height else height
+        width = maximum_width if width >= maximum_width else width
         video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and "avc" in str(stream.get("vcodec")) and "filesize" in stream]
         if not video_streams:
             self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")

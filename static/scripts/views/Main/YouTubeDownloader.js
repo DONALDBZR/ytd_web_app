@@ -85,9 +85,9 @@ class YouTubeDownloader extends React.Component {
      * Handling the status of the video that is returned by the
      * server.
      * @param {number} status The status of the video
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    handleVideoStatus(status) {
+    async handleVideoStatus(status) {
         if (status != 200) {
             window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
             return "";

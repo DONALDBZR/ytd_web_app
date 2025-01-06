@@ -63,11 +63,10 @@ class YouTubeDownloader extends React.Component {
                 video: (media) ? media.video : this.state.File.video,
             },
         }));
-        console.log(`Identifier: ${media.identifier}\nIdentifier (URL): ${window.location.pathname.replace("/Download/YouTube/", "")}`);
-        if (this.state.identifier != window.location.pathname.replace("/Download/YouTube/", "")) {
+        if (!media) {
             setTimeout(() => {
                 window.location.reload();
-            }, 10000);
+            }, 2000);
         }
         loading_icon.style.display = "none";
     }

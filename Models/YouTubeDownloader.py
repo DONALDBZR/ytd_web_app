@@ -434,14 +434,14 @@ class YouTube_Downloader:
         """
         response: str = ""
         audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and "mp4a" in str(stream.get("acodec"))]
-        if not audio_streams:
+        if len(audio_streams) == 0:
             self.getLogger().error(f"There is not valid audio stream available.\nStatus: 503")
             return response
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
         audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
         video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("vbr") is not None and stream.get("vbr") != 0.00]
-        if not video_streams:
+        if len(video_streams) == 0:
             self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")
             return response
         height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore

@@ -38,6 +38,11 @@ class YouTubeDownloader extends React.Component {
     componentDidMount() {
         this.setData();
         console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Mount`);
+        if (this.state.identifier == "") {
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
     }
 
     /**

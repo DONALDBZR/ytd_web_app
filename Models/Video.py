@@ -9,6 +9,7 @@ from Models.Logger import Extractio_Logger
 from Models.DatabaseHandler import Database_Handler, Error as Relational_Database_Error
 from os.path import exists
 from typing import Tuple
+from os import remove
 
 
 class Video:
@@ -115,6 +116,25 @@ class Video:
             return status
         self.getLogger().inform(f"The file {self.getIdentifier()}.mp4 has been served!\nStatus: {status}")
         return status
+
+    def removeDataFileServer(self) -> int:
+        """
+        Removing all of the data from the file servers which are
+        linked to a specific identifier.
+
+        Returns:
+            int
+        """
+        try:
+            audio_file: str = f"{self.getDirectory()}/../Audio/{self.getIdentifier()}.mp3"
+            cache_file: str = f"{self.getDirectory()}/../../Cache/Media/{self.getIdentifier()}.json"
+            remove(audio_file)
+            remove(cache_file)
+            self.getLogger().inform(f"The files related have been deleted from the file servers.\nIdentifier: {self.getIdentifier()}\nStatus: {self.accepted}")
+            return self.accepted
+        except Exception as error:
+            self.getLogger().error(f"There is an error between the model and the file servers.\nError: {error}\nStatus: {self.service_unavailable}")
+            return self.service_unavailable
 
     def removeIdentifierRelationalDatabaseServer(self) -> int:
         """

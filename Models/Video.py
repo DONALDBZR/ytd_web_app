@@ -37,6 +37,22 @@ class Video:
     """
     The table to be affected by the management system.
     """
+    ok: int = 200
+    """
+    The status of a success read
+    """
+    accepted: int = 202
+    """
+    The status of a success write
+    """
+    not_found: int = 404
+    """
+    The status for not-found
+    """
+    service_unavailable: int = 503
+    """
+    The status of a service that is unavailable
+    """
 
     def __init__(self, identifier: str):
         """
@@ -90,25 +106,32 @@ class Video:
         Returns:
             int
         """
-        ok: int = 200
-        accepted: int = 202
-        not_found: int = 404
-        service_unavailable: int = 503
-        status: int = ok if exists(f"{self.getDirectory()}/{self.getIdentifier()}.mp4") else not_found
-        if status != ok:
-            self.getLogger().error(f"The file {self.getIdentifier()}.mp4 does not exist!")
-            parameters: Tuple[str] = (self.getIdentifier(),)
-            try:
-                self.getDatabaseHandler().deleteData(
-                    table=self.getTableName(),
-                    parameters=parameters,
-                    condition="YouTube = %s"
-                )
-                self.getLogger().inform(f"The files related have been deleted from the relational database server.\nIdentifier: {self.getIdentifier()}\nStatus: {accepted}")
-                return accepted
-            except Relational_Database_Error as error:
-                self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}\nStatus: {service_unavailable}")
-                return service_unavailable
+        status: int = self.ok if exists(f"{self.getDirectory()}/{self.getIdentifier()}.mp4") else self.not_found
+        if status != self.ok:
+            self.getLogger().error(f"The file {self.getIdentifier()}.mp4 does not exist!  It will be removed from the relational database server.\nIdentifier: {self.getIdentifier()}")
+            relational_database_status: int = self.removeIdentifierRelationalDatabaseServer()
+            status = self.not_found if relational_database_status == self.accepted else self.service_unavailable
             return status
         self.getLogger().inform(f"The file {self.getIdentifier()}.mp4 has been served!\nStatus: {status}")
         return status
+
+    def removeIdentifierRelationalDatabaseServer(self) -> int:
+        """
+        Removing all of the entries of the identifier from the
+        relational database server.
+
+        Returns:
+            int
+        """
+        parameters: Tuple[str] = (self.getIdentifier(),)
+        try:
+            self.getDatabaseHandler().deleteData(
+                table=self.getTableName(),
+                parameters=parameters,
+                condition="YouTube = %s"
+            )
+            self.getLogger().inform(f"The files related have been deleted from the relational database server.\nIdentifier: {self.getIdentifier()}\nStatus: {self.accepted}")
+            return self.accepted
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}\nStatus: {self.service_unavailable}")
+            return self.service_unavailable

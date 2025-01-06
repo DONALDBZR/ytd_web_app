@@ -98,6 +98,7 @@ class YouTubeDownloader extends React.Component {
     /**
      * Checking that the location of the media file needed is in
      * the state of the application.
+     * @returns {Promise<string>}
      */
     async verifyFile() {
         const status = await this.checkVideoStatus(window.location.pathname.replace("/Download/YouTube/", ""));

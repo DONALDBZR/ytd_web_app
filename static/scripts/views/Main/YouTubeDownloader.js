@@ -11,7 +11,7 @@ class YouTubeDownloader extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, File: {audio: string, video: string}}}
+         * @type {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, File: {audio: string, video: string, uniform_resource_locator: string}}}
          */
         this.state = {
             uniform_resource_locator: "",
@@ -26,6 +26,7 @@ class YouTubeDownloader extends React.Component {
             File: {
                 audio: "",
                 video: "",
+                uniform_resource_locator: "",
             }
         };
     }
@@ -59,6 +60,7 @@ class YouTubeDownloader extends React.Component {
             thumbnail: (media) ? media.thumbnail : this.state.thumbnail,
             duration: (media) ? media.duration : this.state.duration,
             File: {
+                ...previous.File,
                 audio: (media) ? media.audio : this.state.File.audio,
                 video: (media) ? media.video : this.state.File.video,
             },
@@ -103,9 +105,13 @@ class YouTubeDownloader extends React.Component {
     verifyFile() {
         this.checkVideoStatus(window.location.pathname.replace("/Download/YouTube/", ""))
         .then((status) => this.handleVideoStatus(status))
-        .then((uniform_resource_locator) => {
-            return uniform_resource_locator
-        });
+        .then((uniform_resource_locator) => this.setState((previous) => ({
+            ...previous,
+            File: {
+                ...previous.File,
+                uniform_resource_locator: uniform_resource_locator,
+            },
+        })));
     }
 
     /**

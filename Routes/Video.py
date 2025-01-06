@@ -1,10 +1,9 @@
 from flask import Blueprint, Response
 
-Video_Portal = Blueprint("Video", __name__, "../Public/Video/")
+
+Video_Portal: Blueprint = Blueprint("Video", __name__, "../Public/Video/")
 """
 The Routing for all the videos.
-
-Type: Blueprint
 """
 
 

@@ -284,6 +284,7 @@ class YTD {
      * @returns {void}
      */
     addDescription() {
+        let local_storage_data;
         let media;
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
@@ -292,13 +293,15 @@ class YTD {
         } else if (this.getRequestURI() == "/Search/") {
             this.getMeta().content = "The content needed can be searched, here.";
         } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
-            media = JSON.parse(localStorage.getItem("media")).data;
-            const platform = new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "");
-            this.getMeta().content = `Metadata for the content from ${media.author} on ${platform} entitled ${media.title}`;
+            local_storage_data = localStorage.getItem("media");
+            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
+            const platform = (media) ? new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "") : "";
+            this.getMeta().content = (media) ? `Metadata for the content from ${media.author} on ${platform} entitled ${media.title}` : "The content needed can be searched, here.";
         } else if (this.getRequestURI().includes("/Download/")) {
-            media = JSON.parse(localStorage.getItem("media")).data;
-            const platform = new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "");
-            this.getMeta().content = `Content from ${media.author} on ${platform} entitled ${media.title}`;
+            local_storage_data = localStorage.getItem("media");
+            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
+            const platform = (media) ? new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "") : "";
+            this.getMeta().content = (media) ? `Content from ${media.author} on ${platform} entitled ${media.title}` : "The content needed can be searched, here.";
         }
         this.getHead().appendChild(this.getMeta());
         setTimeout(() => this.configureRobot(), 2000);

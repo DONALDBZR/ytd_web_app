@@ -34,11 +34,15 @@ class Trend extends React.Component {
      * @returns {void}
      */
     setData() {
-        const trend = JSON.parse(localStorage.getItem("trend")).data;
+        const loading_icon = document.querySelector("#loading");
+        const trend = (localStorage.getItem("trend") != null) ? JSON.parse(localStorage.getItem("trend")).data : null;
         this.setState((previous) => ({
             ...previous,
-            Trend: trend,
+            Trend: (trend) ? trend : this.state.Trend,
         }));
+        if (trend) {
+            loading_icon.style.display = "none";
+        }
     }
 
     /**

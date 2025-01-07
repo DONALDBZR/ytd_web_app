@@ -48,7 +48,9 @@ class YouTubeDownloader extends React.Component {
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
-        const media = (localStorage.getItem("media") != null) ? JSON.parse(localStorage.getItem("media")).data : null;
+        const local_storage_data = localStorage.getItem("media");
+        const media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
+        const data_loaded = (media != null);
         this.setState((previous) => ({
             ...previous,
             uniform_resource_locator: (media) ? media.uniform_resource_locator : this.state.uniform_resource_locator,
@@ -65,8 +67,9 @@ class YouTubeDownloader extends React.Component {
                 audio: (media) ? media.audio : this.state.File.audio,
                 video: (media) ? media.video : this.state.File.video,
             },
+            data_loaded: data_loaded,
         }));
-        if (media) {
+        if (data_loaded) {
             loading_icon.style.display = "none";
         }
         this.verifyFile();

@@ -65,13 +65,10 @@ class YouTubeDownloader extends React.Component {
                 video: (media) ? media.video : this.state.File.video,
             },
         }));
-        if (!media) {
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
+        if (media) {
+            loading_icon.style.display = "none";
         }
         this.verifyFile();
-        loading_icon.style.display = "none";
     }
 
     /**

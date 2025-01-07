@@ -261,17 +261,20 @@ class YTD {
      */
     addTitle() {
         let media;
+        let local_storage_data;
         this.setTitle(document.createElement("title"));
         if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
             this.getTitle().text = "Extractio";
         } else if (this.getRequestURI() == "/Search/") {
             this.getTitle().text = "Extractio: Search";
         } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
-            media = JSON.parse(localStorage.getItem("media")).data;
-            this.getTitle().text = `Extractio Data: ${media.title}`;
+            local_storage_data = localStorage.getItem("media");
+            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
+            this.getTitle().text = (media) ? `Extractio Data: ${media.title}` : "Extractio: Search";
         } else if (this.getRequestURI().includes("/Download/")) {
-            media = JSON.parse(localStorage.getItem("media")).data;
-            this.getTitle().text = `Extractio: ${media.title}`;
+            local_storage_data = localStorage.getItem("media");
+            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
+            this.getTitle().text = (media) ? `Extractio: ${media.title}` : "Extractio";
         }
         this.getHead().appendChild(this.getTitle());
     }

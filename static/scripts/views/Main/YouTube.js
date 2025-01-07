@@ -57,10 +57,9 @@ class YouTube extends React.Component {
                 YouTube: (media) ? media : this.state.Media.YouTube,
             },
         }));
-        if (!media) {
-            window.location.reload();
+        if (media) {
+            loading_icon.style.display = "none";
         }
-        loading_icon.style.display = "none";
     }
 
     /**

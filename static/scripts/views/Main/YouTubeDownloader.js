@@ -195,44 +195,46 @@ class YouTubeDownloader extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        return (
-            <div class="YouTube">
-                <div id="video">
-                    <video src={this.state.File.uniform_resource_locator} controls autoplay></video>
-                </div>
-                <div id="data">
-                    <div id="title">
-                        <a href={this.state.uniform_resource_locator} target="__blank">{this.state.title}</a>
+        if (this.state.data_loaded) {
+            return (
+                <div class="YouTube">
+                    <div id="video">
+                        <video src={this.state.File.uniform_resource_locator} controls autoplay></video>
                     </div>
-                    <div id="author">
-                        <a href={this.state.author_channel} target="__blank">{this.state.author}</a>
-                    </div>
-                    <div id="actions">
-                        <div id="metrics">
-                            <div id="duration">
-                                <div class="label">Duration:</div>
-                                <div class="data">{this.state.duration}</div>
+                    <div id="data">
+                        <div id="title">
+                            <a href={this.state.uniform_resource_locator} target="__blank">{this.state.title}</a>
+                        </div>
+                        <div id="author">
+                            <a href={this.state.author_channel} target="__blank">{this.state.author}</a>
+                        </div>
+                        <div id="actions">
+                            <div id="metrics">
+                                <div id="duration">
+                                    <div class="label">Duration:</div>
+                                    <div class="data">{this.state.duration}</div>
+                                </div>
+                                <div id="views">
+                                    <div class="label">Views:</div>
+                                    <div class="data">{this.state.views.toLocaleString("en-US")}</div>
+                                </div>
                             </div>
-                            <div id="views">
-                                <div class="label">Views:</div>
-                                <div class="data">{this.state.views.toLocaleString("en-US")}</div>
+                            <div id="buttons">
+                                <div class="button">
+                                    <button name="file_downloader" value={this.state.File.audio} onClick={this.getFile.bind(this)}>
+                                        <i class="fa-solid fa-music"></i>
+                                    </button>
+                                </div>
+                                <div class="button">
+                                    <button name="file_downloader" value={this.state.File.video} onClick={this.getFile.bind(this)}>
+                                        <i class="fa-solid fa-video"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        <div id="buttons">
-                            <div class="button">
-                                <button name="file_downloader" value={this.state.File.audio} onClick={this.getFile.bind(this)}>
-                                    <i class="fa-solid fa-music"></i>
-                                </button>
-                            </div>
-                            <div class="button">
-                                <button name="file_downloader" value={this.state.File.video} onClick={this.getFile.bind(this)}>
-                                    <i class="fa-solid fa-video"></i>
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 }

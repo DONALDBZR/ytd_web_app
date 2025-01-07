@@ -47,6 +47,20 @@ class YouTube extends React.Component {
     }
 
     /**
+     * The methods to be executed when the component has been
+     * updated.
+     * @returns {void}
+     */
+    componentDidUpdate() {
+        if (!this.state.System.data_loaded) {
+            setTimeout(() => {
+                this.setData();
+                console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update`);
+            }, 2000);
+        }
+    }
+
+    /**
      * Setting the main state of the component.
      * @returns {void}
      */

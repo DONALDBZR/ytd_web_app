@@ -178,37 +178,39 @@ class YouTube extends React.Component {
      * @returns {React.Component}
      */
     render() {
-        return (
-            <div className="YouTube">
-                <div>
-                    <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank">
-                        <img src={this.state.Media.YouTube.thumbnail} />
-                    </a>
-                </div>
-                <div class="data">
-                    <div class="metadata">
-                        <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
-                        <div>
-                            <a href={this.state.Media.YouTube.author_channel} target="__blank">{this.state.Media.YouTube.author}</a>
-                        </div>
-                        <div>
-                            <div id="duration">
-                                <div>Duration:</div>
-                                <div>{this.state.Media.YouTube.duration}</div>
-                            </div>
-                            <div id="views">
-                                <div>Views:</div>
-                                <div>{this.state.Media.YouTube.views.toLocaleString("en-US")}</div>
-                            </div>
-                        </div>
-                    </div>
+        if (this.state.System.data_loaded) {
+            return (
+                <div className="YouTube">
                     <div>
-                        <button name="mediaDownloader" value={this.state.Media.YouTube.uniform_resource_locator} onClick={this.retrieveMedia.bind(this)}>
-                            <i class="fa-solid fa-download"></i>
-                        </button>
+                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank">
+                            <img src={this.state.Media.YouTube.thumbnail} />
+                        </a>
+                    </div>
+                    <div class="data">
+                        <div class="metadata">
+                            <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
+                            <div>
+                                <a href={this.state.Media.YouTube.author_channel} target="__blank">{this.state.Media.YouTube.author}</a>
+                            </div>
+                            <div>
+                                <div id="duration">
+                                    <div>Duration:</div>
+                                    <div>{this.state.Media.YouTube.duration}</div>
+                                </div>
+                                <div id="views">
+                                    <div>Views:</div>
+                                    <div>{this.state.Media.YouTube.views.toLocaleString("en-US")}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <button name="mediaDownloader" value={this.state.Media.YouTube.uniform_resource_locator} onClick={this.retrieveMedia.bind(this)}>
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 }

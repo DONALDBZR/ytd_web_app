@@ -1,80 +1,115 @@
+"""
+The Endpoint for the Media Management System.
+
+Authors:
+    Darkness4869
+"""
+
 from flask import Blueprint, Response, request
 from Models.Media import Media
-from io import TextIOWrapper
-import json
-import os
+from typing import Dict, Union, List
+from json import dumps, loads, JSONDecodeError
+from os.path import isfile
+from Environment import Environment
 
-Media_Portal = Blueprint("Media", __name__)
+
+Media_Portal: Blueprint = Blueprint("Media", __name__)
 """
 The Routing for all the Media.
-
-Type: Blueprint
 """
 
-
-def getDirectory() -> str:
+def readFile(file_name: str) -> Union[str, None]:
     """
-    Retrieving the directory of the application which depends on
-    the server that is used.
+    Reading the file needed.
+
+    Parameters:
+        file_name:  string: Name of the file.
 
     Returns:
-        string
+        string|null
     """
-    if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591':
-        return "/var/www/html/ytd_web_app"
-    else:
-        return "/home/darkness4869/Documents/extractio"
+    try:
+        file = open(file_name, "r")
+        return file.read().strip()
+    except FileNotFoundError:
+        return None
 
+def loadData(contents: Union[str, None]) -> Union[Dict, List, None]:
+    """
+    Loading the data from the contents.
 
-def getMetaData(file_name: str) -> TextIOWrapper:
+    Parameters:
+        contents:  string|null: Contents to be loaded.
+
+    Returns:
+        object|array|null
+    """
+    if contents is None:
+        return None
+    try:
+        return loads(contents)
+    except JSONDecodeError:
+        return None
+
+def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
     """
     Retrieving the metadata.
 
     Parameters:
         file_name:  string: Name of the file.
 
-    Returns: TextIOWrapper
+    Returns:
+        {status: int, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}}
     """
-    if os.path.isfile(file_name):
-        return open(file_name)
-    else:
-        directory = getDirectory()
-        identifier = file_name.replace(
-            f"{directory}/Cache/Media/", "").replace(".json", "")
-        user_request = {
-            "referer": None,
-            "search": f"https://www.youtube.com/watch?v={identifier}",
-            "platform": "youtube",
-            "ip_address": str(request.environ.get("REMOTE_ADDR")),
-            "port": str(request.environ.get("SERVER_PORT"))
+    data: Dict[str, Union[str, int, None]]
+    if isfile(file_name):
+        file_data: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = loadData(readFile(file_name)) # type: ignore
+        status: int = 200 if file_data is not None else 503
+        data = file_data["Media"]["YouTube"] if status == 200 else {}
+        return {
+            "status": status,
+            "data": data
         }
-        media = Media(user_request)
-        response = json.dumps(media.verifyPlatform(), indent=4)
-        return open(file_name)
+    ENV: Environment = Environment()
+    ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
+    identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
+    user_request: Dict[str, Union[None, str]] = {
+        "referer": None,
+        "search": f"https://www.youtube.com/watch?v={identifier}",
+        "platform": "youtube",
+        "ip_address": str(request.environ.get("REMOTE_ADDR")),
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    media: Media = Media(user_request)
+    model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
+    return {
+        "status": 200 if int(str(model_response["status"])) >= 200 and int(str(model_response["status"])) <= 299 else 503,
+        "data": model_response["data"]
+    }
 
-
-@Media_Portal.route("/Search", methods=["POST"])
+@Media_Portal.route("/Search", methods=["GET"])
 def search() -> Response:
     """
-    Searching for the media by the uniform resouce locator that
+    Searching for the media by the uniform resource locator that
     has been retrieved from the client.
 
-    Returns: Response
+    Returns:
+        Response
     """
-    payload = request.json
-    user_request = {
+    platform: str = str(request.args.get("platform"))
+    search: str = str(request.args.get("search"))
+    mime_type: str = "application/json"
+    user_request: Dict[str, Union[None, str]] = {
         "referer": None,
-        "search": str(payload["Media"]["search"]),  # type: ignore
-        "platform": str(payload["Media"]["platform"]),  # type: ignore
+        "search": search,
+        "platform": platform,
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
-        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))
     }
-    media = Media(user_request)
-    response = media.verifyPlatform()
-    status = int(response["data"]["status"])  # type: ignore
-    mime_type = "application/json"
-    return Response(json.dumps(response, indent=4), status, mimetype=mime_type)
-
+    media: Media = Media(user_request)
+    response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
+    status: int = int(response["status"])  # type: ignore
+    return Response(dumps(response, indent=4), status, mimetype=mime_type)
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
 def getMedia(identifier: str) -> Response:
@@ -85,24 +120,15 @@ def getMedia(identifier: str) -> Response:
     Parameters:
         identifier: string: Identifier of the content.
 
-    Returns: Response
+    Returns:
+        Response
     """
-    directory = getDirectory()
-    system_request: dict[str, str | None] = {
-        "referer": None,
-        "search": "",
-        "platform": "",
-        "ip_address": "127.0.0.1",
-        "port": str(request.environ.get("SERVER_PORT"))
-    }
-    media = Media(system_request)
-    file_name = f"{directory}/Cache/Media/{identifier}.json"
-    file = getMetaData(file_name)
-    response = file.read()
-    mime_type = "application/json"
-    status = 200
-    return Response(response, status, mimetype=mime_type)
-
+    ENV: Environment = Environment()
+    ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
+    mime_type: str = "application/json"
+    file_name: str = f"{ENV.getDirectory()}/Cache/Media/{identifier}.json"
+    response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = getMetaData(file_name)
+    return Response(dumps(response["data"], indent=4), int(str(response["status"])), mimetype=mime_type)
 
 @Media_Portal.route('/Download', methods=['POST'])
 def retrieveMedia() -> Response:
@@ -111,23 +137,46 @@ def retrieveMedia() -> Response:
     locator and stores it in the server while allowing the user
     to download it.
 
-    Returns: string
+    Returns:
+        Response
     """
-    payload = request.json
-    data = payload["Media"]  # type: ignore
-    user_request = {
+    mime_type: str = "application/json"
+    if "Search" not in request.referrer:
+        return Response(dumps({}, indent=4), 403, mimetype=mime_type)
+    payload: Dict[str, Dict[str, str]] = request.json  # type: ignore
+    data: Dict[str, str] = payload["Media"]
+    user_request: Dict[str, str] = {
         "referer": request.referrer,
-        "search": str(data["uniform_resource_locator"]),  # type: ignore
-        "platform": str(data["platform"]),  # type: ignore
+        "search": data["uniform_resource_locator"],
+        "platform": data["platform"],
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
-        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))
     }
-    response: dict[str, int | dict[str, str | int | None]] | str
-    # Ensuring that the payload is from the search page
-    if "Search" in request.referrer:
-        media = Media(user_request)  # type: ignore
-        response = media.verifyPlatform() # type: ignore
-    mime_type = "application/json"
-    status = int(response["data"]["status"])  # type: ignore
-    response = json.dumps(response, indent=4)  # type: ignore
-    return Response(response, status, mimetype=mime_type)
+    media: Media = Media(user_request) # type: ignore
+    model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
+    status: int = 201 if int(str(model_response["status"])) >= 200 and int(str(model_response["status"])) <= 299 else 503
+    return Response(dumps(model_response["data"], indent=4), status, mimetype=mime_type) # type: ignore
+
+@Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
+def getRelatedContents(identifier: str) -> Response:
+    """
+    Retrieving the related contents of the media content that
+    has been downloaded from the application.
+
+    Parameters:
+        identifier: string: The identifier of the content
+
+    Returns:
+        Response
+    """
+    mime_type: str = "application/json"
+    system_request: Dict[str, Union[str, None]] = {
+        "referer": None,
+        "search": "",
+        "platform": "",
+        "ip_address": "127.0.0.1",
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    media: Media = Media(system_request)
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
+    return Response(dumps(model_response["data"], indent=4), int(str(model_response["status"])), mimetype=mime_type)

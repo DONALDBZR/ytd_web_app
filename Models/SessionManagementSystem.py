@@ -1,8 +1,14 @@
+"""
+The module which has the Session Management System of the
+application.
+"""
+
+
 from flask.sessions import SessionMixin
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
-from typing import Dict, Union, Tuple
+from typing import List, Dict, Union, Tuple
 from json import JSONDecodeError, load, dumps
 from os import remove
 from time import time
@@ -34,7 +40,7 @@ class Session_Manager:
     """
     The timestamp at which the session has been created.
     """
-    __session_files: list[str]
+    __session_files: List[str]
     """
     The files containing the session of the users.
     """
@@ -64,35 +70,26 @@ class Session_Manager:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, request: dict[str, str], session: SessionMixin) -> None:
+    def __init__(self, request: Dict[str, str], session: SessionMixin):
         """
         Instantiating the session's manager which will verify the
         session of the users.
 
         Parameters:
-            request:    (object):       The request from the application.
-            session:    (SessionMixin): The session of the user.
+            request: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, port: string}: The request from the application.
+            session: SessionMixin: The session of the user.
         """
-        ENV = Environment()
-        self.setDirectory(
-            f"{ENV.getDirectory()}/Cache/Session/Users/"
-        )
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        ENV: Environment = Environment()
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users/")
+        self.setLogger(Extractio_Logger(__name__))
         self.setPort(str(request["port"]))
         self.setDatabaseHandler(Database_Handler())
         self.setIpAddress(str(request["ip_address"]))
-        self.setHttpClientIpAddress(
-            str(request["http_client_ip_address"])
-        )
-        self.setProxyIpAddress(
-            str(request["proxy_ip_address"])
-        )
+        self.setHttpClientIpAddress(str(request["http_client_ip_address"]))
+        self.setProxyIpAddress(str(request["proxy_ip_address"]))
         self.__maintain()
         self.setSession(session)
-        self.getLogger().inform(
-            "The Session Management System has been successfully been initialized!"
-        )
+        self.getLogger().inform("The Session Management System has been successfully been initialized!")
         self.verifySession()
 
     def getDirectory(self) -> str:
@@ -125,10 +122,10 @@ class Session_Manager:
     def setTimestamp(self, timestamp: int) -> None:
         self.__timestamp = timestamp
 
-    def getSessionFiles(self) -> list[str]:
+    def getSessionFiles(self) -> List[str]:
         return self.__session_files
 
-    def setSessionFiles(self, session_files: list[str]) -> None:
+    def setSessionFiles(self, session_files: List[str]) -> None:
         self.__session_files = session_files
 
     def getColorScheme(self) -> str:
@@ -173,8 +170,8 @@ class Session_Manager:
         doing regular checks to keep only the active sessions and
         store inactive sessions in the database.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.getDatabaseHandler()._query(
             query="CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))",
@@ -200,8 +197,8 @@ class Session_Manager:
 
     def verifyInactiveSession(self, age: int, session: Union[Dict[str, Dict[str, Union[str, int]]], None], file_name: str) -> None:
         """
-        Verifying that the session is inactive to remove it from the
-        document database and to store it in the relational database.
+        Retrieving the session data that will be used to verify
+        existing sessions.
 
         Parameters:
             age: int: Age of the session.
@@ -213,7 +210,7 @@ class Session_Manager:
         """
         if age > 3600 and session != None:
             expired_sessions: Tuple[int, str] = (int(session["Client"]["timestamp"]), str(session["Client"]["ip_address"]))
-            self.getDatabaseHandler().post_data(
+            self.getDatabaseHandler().postData(
                 table="Visitors",
                 columns="timestamp, client",
                 values="%s, %s",
@@ -225,13 +222,13 @@ class Session_Manager:
         """
         Creating the session.
 
-        Return:
-            (SessionMixin)
+        Returns:
+            SessionMixin
         """
         self.getSession().clear()
         self.setTimestamp(int(time()))
         self.setColorScheme("light")
-        data: dict[str, str | int] = {
+        data: Dict[str, Union[str, int]] = {
             "ip_address": self.getIpAddress(),
             "http_client_ip_address": self.getHttpClientIpAddress(),
             "proxy_ip_address": self.getProxyIpAddress(),
@@ -251,8 +248,8 @@ class Session_Manager:
         """
         Verifying that the session is not hijacked
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
@@ -265,8 +262,8 @@ class Session_Manager:
         """
         Returning a stringified form of the session
 
-        Return:
-            (string)
+        Returns:
+            string
         """
         return dumps(self.getSession(), indent=4)
 
@@ -313,16 +310,16 @@ class Session_Manager:
         self.getLogger().inform("The session has been successfully created!")
         return self.getSession()
 
-    def sessionsLoader(self, sessions: list[str]) -> dict[str, int]:
+    def sessionsLoader(self, sessions: List[str]) -> Dict[str, int]:
         """
         Iterating throughout the session files to process them
         depending on the response from the system.
 
         Parameters:
-            sessions:   (array):  List of session files
+            sessions: [string]: List of session files
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
         response = {}
         for index in range(0, len(sessions), 1):
@@ -387,15 +384,15 @@ class Session_Manager:
             "status": no_content
         }
 
-    def handleExpiryTime(self, expiry_time: int) -> dict[str, int]:
+    def handleExpiryTime(self, expiry_time: int) -> Dict[str, int]:
         """
         Handling the expiry time of the session.
 
         Parameters:
-            expiry_time:    (int):  The expiry time of the session
+            expiry_time: int: The expiry time of the session
 
-        Return:
-            (object)
+        Returns:
+            {status: int}
         """
         response = {}
         if expiry_time < 3600:

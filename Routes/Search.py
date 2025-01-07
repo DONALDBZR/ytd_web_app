@@ -13,6 +13,7 @@ ENV = Environment()
 ENV File of the application
 """
 
+
 @Search_Portal.route('/', methods=['GET'])
 def searchPage() -> Response:
     """
@@ -21,7 +22,10 @@ def searchPage() -> Response:
 
     Returns: Response
     """
-    template = render_template('page.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
+    template = render_template(
+        'Search.html',
+        google_analytics_key=ENV.getGoogleAnalyticsKey()
+    )
     mime_type = "text/html"
     status = 200
     return Response(template, status, mimetype=mime_type)
@@ -38,7 +42,10 @@ def searchPageWithMedia(identifier: str) -> Response:
 
     Returns: Response
     """
-    template = render_template('page.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
+    template = render_template(
+        'Search.html',
+        google_analytics_key=ENV.getGoogleAnalyticsKey()
+    )
     mime_type = "text/html"
     status = 200
     return Response(template, status, mimetype=mime_type)

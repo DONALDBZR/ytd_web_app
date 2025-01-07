@@ -1,4 +1,5 @@
 from flask import Blueprint, Response, render_template, request, send_file
+from typing import Dict
 from Environment import Environment
 
 Download_Portal = Blueprint("Download", __name__)
@@ -23,9 +24,12 @@ def downloadPage(identifier: str) -> Response:
 
     Returns: Response
     """
-    template = render_template('page.html', google_analytics_key=ENV.getGoogleAnalyticsKey())
-    mime_type = "text/html"
-    status = 200
+    template: str = render_template(
+        'Download.html',
+        google_analytics_key=ENV.getGoogleAnalyticsKey()
+    )
+    mime_type: str = "text/html"
+    status: int = 200
     return Response(template, status, mimetype=mime_type)
 
 
@@ -35,14 +39,17 @@ def downloadFile() -> Response:
     Downloading the file from the file location that is sent
     from the view.
 
-    Returns: Response
+    Returns:
+        Response
     """
-    request_json = request.json
-    file_path = request_json['file']  # type: ignore
-    file_name = request_json['file_name']  # type: ignore
-    mime_type = ""
-    if "Audio" in file_path:
-        mime_type = "audio/mp3"
-    elif "Video" in file_path:
-        mime_type = "video/mp4"
-    return send_file(path_or_file=file_path, mimetype=mime_type, as_attachment=True, download_name=file_name)
+    request_json: Dict[str, str] = request.json # type: ignore
+    file_path: str = request_json['file']
+    file_name: str = request_json['file_name']
+    mime_type: str = "audio/mp3" if "Audio" in file_path else ""
+    mime_type = "video/mp4" if "Video" in file_path else mime_type
+    return send_file(
+        path_or_file=file_path,
+        mimetype=mime_type,
+        as_attachment=True,
+        download_name=file_name
+    )

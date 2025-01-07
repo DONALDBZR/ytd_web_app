@@ -243,141 +243,129 @@
         calc(var(--percentage) * 0)
     );
 }
-body,
-body[id*="Search"] main form input,
-body[id*="Search"] main form button,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button {
+body {
     font-family: sans-serif;
     background-color: var(--color1);
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(1),
-body[id*="Search"] header nav div:nth-child(1),
-body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
-body[id*="Download"] header nav div:nth-child(1),
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
-    font-family: var(--sourceCodePro);
-}
-#Homepage header nav div:nth-child(1) a,
-#Homepage footer div,
-body[id*="Search"] header nav div:nth-child(1) a,
-body[id*="Search"] footer div,
-body[id*="Download"] header nav div:nth-child(1) a,
-body[id*="Download"] footer div {
+footer div {
     text-decoration: none;
     font-family: var(--pacifico);
 }
-#Homepage header nav div a:hover,
-#Homepage header nav .active a,
-#Homepage header nav div:nth-child(2) div:nth-child(1) a:hover,
-#Homepage header nav div:nth-child(2) div:nth-child(2) button:hover,
-body[id*="Search"] header nav div:nth-child(1) a:hover,
-body[id*="Search"] header nav .active a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(1) a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button:hover,
-body[id*="Search"] main form button:hover,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button:hover,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
-body[id*="Download"] header nav div:nth-child(1) a:hover,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button:hover,
-body[id*="Download"] main .YouTube div button:hover,
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a:hover,
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a:hover {
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg:hover,
+main #loading {
     color: var(--color3);
 }
-#Homepage header nav div:nth-child(1) a:hover,
-body[id*="Search"] header nav div:nth-child(1) a:hover,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a:hover,
-body[id*="Download"] header nav div:nth-child(1) a:hover,
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a:hover {
-    text-decoration: underline;
-}
-#Homepage header nav div:nth-child(2) div:nth-child(1) a,
-#Homepage header nav div:nth-child(2) div:nth-child(2) button,
-#Homepage footer div,
-body[id*="Search"] header nav div:nth-child(1) a,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] footer div,
-body[id*="Search"] main form input::placeholder,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
-body[id*="Download"] header nav div:nth-child(1) a,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Download"] main .YouTube div button,
-#Homepage main .Trend .card div:nth-child(2) div,
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a,
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a {
+footer div,
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg,
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button svg {
     color: var(--color2);
 }
-#Homepage header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Search"] main .Media .YouTube .data div:nth-child(4) button,
-body[id*="Download"] header nav div:nth-child(2) div:nth-child(2) button,
-body[id*="Download"] main .YouTube div button {
-    background: none;
-    cursor: pointer;
-}
-#Homepage main p,
-#Homepage main .Trend .card div:nth-child(2) div {
-    font-family: var(--proximaNova);
-}
-#Homepage main div div:nth-child(1),
-body[id*="Download"] main .YouTube div a {
-    color: var(--color4);
-}
-body[id*="Search"] main form input::placeholder {
-    opacity: calc(var(--percentage) / 2);
-}
-body[id*="Search"] main form button {
-    cursor: pointer;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(1),
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #duration
-    div:nth-child(1),
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #views
-    div:nth-child(1),
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(1) {
-    font-weight: bold;
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) a,
-#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
+header nav div a {
+    font-family: var(--pacifico);
+    color: var(--color2);
     text-decoration: none;
 }
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #duration
-    div:nth-child(2),
-body[id*="Search"]
-    main
-    .Media
-    .YouTube
-    .data
-    div:nth-child(3)
-    #views
-    div:nth-child(2) {
-    font-weight: normal;
+header nav div a:hover,
+body[id*="Download"] main .YouTube #data #title a:hover,
+body[id*="Download"] main .YouTube #data #author a:hover {
+    text-decoration: underline;
+    color: var(--color3);
 }
-body[id*="Download"] main .YouTube div a:hover,
-#Homepage main .Trend .card div:nth-child(1) a:hover img {
+header nav .active a,
+header nav div div button:hover svg,
+header nav div form button:hover svg,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg,
+body[id*="Search"] main .Media .YouTube .data div button:hover,
+header nav .active button svg,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button svg:hover {
+    color: var(--color3);
+}
+header nav div div button,
+header nav div form button,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button {
+    background: transparent;
+    cursor: pointer;
+}
+header nav div div button svg,
+header nav div form button svg,
+header nav div form input,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a svg {
+    color: var(--color2);
+}
+header nav div form input {
+    background: transparent;
+}
+header nav div form input::placeholder {
+    opacity: calc(var(--percentage) / 2);
+    color: var(--color2);
+}
+#Homepage main p,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(1),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(1),
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(3) div:nth-child(2),
+body[id*="Search"] main .Media .YouTube .data .metadata div,
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a,
+body[id*="Download"] main .YouTube #data #actions #metrics #duration div,
+body[id*="Download"] main .YouTube #data #actions #metrics #views div {
+    font-family: var(--proximaNova);
+}
+#Homepage main div div svg {
+    color: var(--color4);
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(1),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) div:nth-child(1),
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(1),
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1),
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a,
+body[id*="Download"] main .YouTube #data #actions #metrics #duration .label,
+body[id*="Download"] main .YouTube #data #actions #metrics #views .label {
+    font-weight: 600;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a,
+body[id*="Download"] main .YouTube #data #title a,
+body[id*="Download"] main .YouTube #data #author a {
+    text-decoration: none;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover,
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a:hover,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a:hover {
+    text-decoration: underline;
+}
+#Homepage main .Trend div .card div:nth-child(1) a:hover img,
+body[id*="Search"] main .Media .YouTube div a:hover,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a:hover img {
     opacity: calc(var(--percentage) / 2);
 }
-body[id*="Search"] main #loading {
-    color: var(--color3);
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a:hover {
+    opacity: var(--percentage);
+}
+body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) div div:nth-child(2),
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(2) a,
+body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(3) div:nth-child(2) {
+    font-weight: 400;
+}
+body[id*="Search"] main .Media .YouTube .data div button {
+    color: var(--color2);
+    background-color: var(--color1);
+    cursor: pointer;
+}
+body[id*="Search"] header nav .active input {
+    border-bottom: var(--color3) solid calc(var(--search-bar-height) / 58.2);
+}
+main #loading {
     background-color: var(--color5);
 }

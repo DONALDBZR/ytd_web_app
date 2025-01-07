@@ -1,10 +1,20 @@
+"""
+The module that has the Security Management System that will
+assure the security of the data that will be stored across
+the application.
+
+Authors:
+    Darkness4869
+"""
+
+
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
-import logging
+from typing import Union, Tuple
 
 
 class Security_Management_System:
@@ -33,7 +43,7 @@ class Security_Management_System:
     """
     High level class to hash passwords with sensible defaults.
     """
-    __date_created: str | int
+    __date_created: Union[str, int]
     """
     The date at which the key has been created.
     """
@@ -48,9 +58,8 @@ class Security_Management_System:
         encrypt and decrypt the data that moves around in the
         application.
         """
-        ENV = Environment()
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        ENV: Environment = Environment()
+        self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setApplicationName(ENV.getApplicationName())
         self.setDatestamp(int(time()))
@@ -59,9 +68,7 @@ class Security_Management_System:
             parameters=None
         )
         self.getDatabaseHandler()._execute()
-        self.getLogger().inform(
-            "The Security Management System has been successfully been initialized!"
-        )
+        self.getLogger().inform("The Security Management System has been successfully been initialized!")
         self.hash()
 
     def getDatabaseHandler(self) -> Database_Handler:
@@ -94,10 +101,10 @@ class Security_Management_System:
     def setPasswordHasher(self, password_hasher: PasswordHasher) -> None:
         self.__password_hasher = password_hasher
 
-    def getDateCreated(self) -> str | int:
+    def getDateCreated(self) -> Union[str, int]:
         return self.__date_created
 
-    def setDateCreated(self, date_created: str | int) -> None:
+    def setDateCreated(self, date_created: Union[str, int]) -> None:
         self.__date_created = date_created
 
     def getLogger(self) -> Extractio_Logger:
@@ -111,29 +118,22 @@ class Security_Management_System:
         It is a one-way encryption function that will generate a
         hash based on the Argon 2 hashing algorithm.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.setPasswordHasher(PasswordHasher())
-        self.setApplicationName(
-            f"{self.getApplicationName()}{str(self.getDatestamp())}"
-        )
+        self.setApplicationName(f"{self.getApplicationName()}{str(self.getDatestamp())}")
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
-        self.setDateCreated(
-            datetime.fromtimestamp(self.getDatestamp()).strftime("%Y-%m-%d")
-        )
-        data: tuple[str, str] = (
-            self.getHash(),
-            str(self.getDateCreated())
-        )
-        self.getDatabaseHandler().post_data(
+        self.setDateCreated(datetime.fromtimestamp(self.getDatestamp()).strftime("%Y-%m-%d"))
+        data: Tuple[str, str] = (self.getHash(), str(self.getDateCreated()))
+        self.getDatabaseHandler().postData(
             table="Session",
             columns="hash, date_created",
             values="%s, %s",
-            parameters=data
+            parameters=data # type: ignore
         )
         self.getLogger().inform("The key has been created!")
-        self.getDatabaseHandler().delete_data(
+        self.getDatabaseHandler().deleteData(
             table="Session",
             parameters=None,
             condition="date_created < CURDATE()"

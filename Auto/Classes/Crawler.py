@@ -7,16 +7,16 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from Classes.Media import Media
 from mysql.connector.types import RowType
-import inspect
-import time
-import json
-import logging
-import datetime
-import sys
-import os
+from os import getcwd
+from typing import List, Dict, Union, Tuple, cast
+from logging import DEBUG
+from inspect import stack
+from time import time, sleep
+from json import dumps
+from sys import path
 
 
-sys.path.append(os.getcwd())
+path.append(getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
@@ -32,7 +32,7 @@ class Crawler:
     Controls the ChromeDriver and allows you to drive the
     browser.
     """
-    __data: list[dict[str, str | int | None]]
+    __data: List[Dict[str, Union[str, int, None]]]
     """
     The data from the cache data.
     """
@@ -40,11 +40,11 @@ class Crawler:
     """
     The directory of the metadata files.
     """
-    __files: list[str]
+    __files: List[str]
     """
     The files that are inside of the directory.
     """
-    __html_tags: list[WebElement]
+    __html_tags: List[WebElement]
     """
     A list of HTML tags which are pieces of markup language
     used to indicate the beginning and end of an HTML element in
@@ -82,16 +82,12 @@ class Crawler:
         """
         Initializing the crawler to scrape the data needed.
         """
-        ENV = Environment()
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
-        self.getLogger().getLogger().setLevel(logging.DEBUG)
+        ENV: Environment = Environment()
+        self.setLogger(Extractio_Logger(__name__))
         self.__setServices()
         self.__setOptions()
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
-        self.setDirectory(
-            f"{ENV.getDirectory()}/Cache/Trend/"
-        )
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Trend/")
         self.setDatabaseHandler(Database_Handler())
         self.setData([])
         self.setUpData()
@@ -102,10 +98,10 @@ class Crawler:
     def setDriver(self, driver: WebDriver) -> None:
         self.__driver = driver
 
-    def getData(self) -> list[dict[str, str | int | None]]:
+    def getData(self) -> List[Dict[str, Union[str, int, None]]]:
         return self.__data
 
-    def setData(self, data: list[dict[str, str | int | None]]) -> None:
+    def setData(self, data: List[Dict[str, Union[str, int, None]]]) -> None:
         self.__data = data
 
     def getDirectory(self) -> str:
@@ -114,16 +110,16 @@ class Crawler:
     def setDirectory(self, directory: str) -> None:
         self.__directory = directory
 
-    def getFiles(self) -> list[str]:
+    def getFiles(self) -> List[str]:
         return self.__files
 
-    def setFiles(self, files: list[str]) -> None:
+    def setFiles(self, files: List[str]) -> None:
         self.__files = files
 
-    def getHtmlTags(self) -> list[WebElement]:
+    def getHtmlTags(self) -> List[WebElement]:
         return self.__html_tags
 
-    def setHtmlTags(self, html_tags: list[WebElement]) -> None:
+    def setHtmlTags(self, html_tags: List[WebElement]) -> None:
         self.__html_tags = html_tags
 
     def getHtmlTag(self) -> WebElement:
@@ -166,8 +162,8 @@ class Crawler:
         """
         Setting the services for the ChromeDriver.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.setService(Service(ChromeDriverManager().install()))
         self.getLogger().inform("The Crawler's Service has been installed!")
@@ -176,8 +172,8 @@ class Crawler:
         """
         Setting the options for the ChromeDriver.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
         self.setOption(Options())
         self.getOption().add_argument('--headless')
@@ -190,100 +186,73 @@ class Crawler:
         Setting up the data to be used to be used by the web
         crawler.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        identifiers = self.getDatabaseHandler().get_data(
+        identifiers: List[RowType] = self.getDatabaseHandler().getData(
             parameters=None,
             table_name="MediaFile",
-            filter_condition="date_downloaded >= NOW() - INTERVAL 1 WEEK",
-            column_names="DISTINCT YouTube"
+            filter_condition="date_downloaded >= NOW() - INTERVAL 2 WEEK",
+            column_names="YouTube",
+            group_condition="YouTube"
         )
-        dataset = self.getData()
-        referrer = inspect.stack()[1][3]
-        if referrer == "__init__" and self.prepareFirstRun(identifiers) > 0:
-            self.getLogger().inform(
-                f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {self.prepareFirstRun(identifiers)}\n"
-            )
+        dataset: List[Dict[str, Union[str, int, None]]] = self.getData()
+        referrer: str = stack()[1][3]
+        if referrer == "__init__":
+            self.prepareFirstRun(identifiers)
+        if referrer == "firstRun":
+            self.prepareSecondRun(dataset)
+        if referrer == "__init__" and len(self.getData()) > 0:
+            self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
             self.firstRun()
-        elif referrer == "firstRun" and self.prepareSecondRun(dataset) > 0:
-            self.getLogger().inform(
-                f"Latest Content to be displayed on the application.\nNew Content Amount: {self.prepareSecondRun(dataset)}"
-            )
+        if referrer == "firstRun" and len(self.getData()) > 0:
+            self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
             self.secondRun()
-        else:
-            self.getLogger().inform(
-                f"No new data has been found for the last seven days.\nWeekly Content Downloaded Amount: {len(identifiers)}"
-            )
-            exit()
+        self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
+        exit()
 
-    def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> int:
+    def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> None:
         """
         Preparing for the second run of crawling based on the data
         in the cache.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        new_dataset: list[str] = []
-        data: dict[str, str | None] = {}
-        self.setData([])
-        for index in range(0, len(dataset), 1):
-            new_dataset.append(str(dataset[index]["author_channel"]))
-        new_dataset = list(set(new_dataset))
-        for index in range(0, len(new_dataset), 1):
-            data = {
-                "author_channel": new_dataset[index],
-                "latest_content": None
-            }
-            self.getData().append(data)  # type: ignore
-        return len(self.getData())
+        new_dataset: List[Dict[str, Union[str, None]]] = [{"author_channel": author_channel, "latest_content": None} for author_channel in list(set([str(media_metadata["author_channel"]) for media_metadata in dataset]))]
+        self.setData(cast(List[Dict[str, Union[str, int, None]]], new_dataset))
 
     def secondRun(self):
         """
         The second run for the web-crawler to seek for the data
         needed from the targets.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        delay: float = 0.0
         total: int = 0
         for index in range(0, len(self.getData()), 1):
             total += len(str(self.getData()[index]["author_channel"]))
-        delay = ((total / len(self.getData())) / (40 * 5)) * 60
-        self.getLogger().debug(
-            f"The delay has been calculated!\nDelay: {delay} s"
-        )
+        delay: float = ((total / len(self.getData())) / 200) * 60
+        self.getLogger().debug(f"The delay has been calculated!\nDelay: {delay} s")
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(
-                str(self.getData()[index]["author_channel"]),
-                delay,
-                index
-            )
+            self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
 
     def buildData(self) -> None:
         """
         Building the data to be displayed to the user.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        new_data: list[dict[str, str | int | None]] = []
-        data: dict[str, str | int | None]
+        new_data: List[Dict[str, Union[str, int, None]]] = []
+        data: Dict[str, Union[str, int, None]]
         for index in range(0, len(self.getData()), 1):
-            self.getLogger().inform(
-                f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}"
-            )
-            self.setMedia(
-                Media(
-                    str(self.getData()[index]["latest_content"]),
-                    "youtube"
-                )
-            )
-            response = self.getMedia().verifyPlatform()
-            data = response["data"]["data"]  # type: ignore
+            self.getLogger().inform(f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}")
+            self.setMedia(Media(str(self.getData()[index]["latest_content"]), "youtube"))
+            response: Union[Dict[str, Union[int, Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]], Dict[str, Union[int, str]]] = self.getMedia().verifyPlatform()
+            data: Dict[str, Union[str, int, None]] = response["data"]["data"]  # type: ignore
             new_data.append(data)
         self.setData(new_data)
         self.save()
@@ -292,90 +261,62 @@ class Crawler:
         """
         Saving the data.
 
-        Return:
+        Returns:
             void
         """
-        timestamp = int(time.time())
-        file_name = f"{self.getDirectory()}{timestamp}.json"
+        timestamp: int = int(time())
+        file_name: str = f"{self.getDirectory()}{timestamp}.json"
         file = open(file_name, "w")
-        file.write(json.dumps(self.getData(), indent=4))
+        file.write(dumps(self.getData(), indent=4))
         file.close()
-        self.getLogger().inform(
-            f"The latest content has been saved!\nFile Name: {file_name}"
-        )
+        self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
         self.getDriver().quit()
 
-    def prepareFirstRun(self, identifiers: list[RowType]) -> int:
+    def prepareFirstRun(self, identifiers: Union[List[RowType], List[Dict[str, str]]]) -> None:
         """
         Setting up the data for the first run.
 
         Parameters:
-            identifiers:    (array):    The result set of the identifiers for the last weeks.
+            identifiers: [{YouTube: string}]: The result set of the identifiers for the last weeks.
 
-        Return:
-            (int)
+        Returns:
+            void
         """
-        self.setData([])
+        dataset: List[Dict[str, Union[str, int, None]]] = []
         for index in range(0, len(identifiers), 1):
-            data = self.getDatabaseHandler().get_data(
-                parameters=identifiers[index],
+            parameters: Tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
+            data: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
+                parameters=parameters,
                 table_name="YouTube",
                 join_condition="Media ON YouTube.Media = Media.identifier",
                 filter_condition="YouTube.identifier = %s",
                 column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform"
             )[0]
-            uniform_resource_locator = self.verifyPlatform(data)
-            metadata: dict[str, str | int | None] = {
-                "identifier": str(data[0]),
-                "author": str(data[1]),
+            uniform_resource_locator: str = f"https://www.youtube.com/watch?v={data['identifier']}" if str(data["platform"]) == "youtube" or str(data["platform"]) == "youtu.be" else "" # type: ignore
+            metadata: Dict[str, Union[str, int, None]] = {
+                "identifier": str(data["identifier"]), # type: ignore
+                "author": str(data["author"]), # type: ignore
                 "uniform_resource_locator": uniform_resource_locator,
                 "author_channel": None
             }
-            self.getData().append(metadata)
-        return len(self.getData())
-
-    def verifyPlatform(self, data: RowType) -> str:
-        """
-        Veryfing the platform of the metadata to be able to generate
-        its correct uniform resource locator.
-
-        Parameters:
-            data:   (array):    The record of a metadata.
-
-        Return:
-            (string)
-        """
-        response: str
-        if data[2] == "youtube" or data[2] == "youtu.be":
-            response = f"https://www.youtube.com/watch?v={data[0]}"
-        else:
-            response = ""
-        return response
+            dataset.append(metadata)
+        self.setData(dataset)
 
     def firstRun(self) -> None:
         """
         Preparing for the first run of crawling based on the data in
         the cache.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        delay: float = 0.0
         total: int = 0
         for index in range(0, len(self.getData()), 1):
-            total += len(
-                str(self.getData()[index]["uniform_resource_locator"])
-            )
-        delay = ((total / len(self.getData())) / (40 * 5)) * 60
-        self.getLogger().inform(
-            f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s"
-        )
+            total += len(str(self.getData()[index]["uniform_resource_locator"]))
+        delay: float = ((total / len(self.getData())) / 200) * 60
+        self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s")
         for index in range(0, len(self.getData()), 1):
-            self.enterTarget(
-                str(self.getData()[index]["uniform_resource_locator"]),
-                delay,
-                index
-            )
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
@@ -383,26 +324,22 @@ class Crawler:
         Entering the targeted page.
 
         Parameters:
-            target: (string):   The uniform resource locator of the targeted page.
-            delay:  (float):    The amount of time that the Crawler will wait which is based on the average typing speed of a person
-            index:  (int):      The identifier of the data.
+            target: string: The uniform resource locator of the targeted page.
+            delay: float: The amount of time that the Crawler will wait which is based on the average typing speed of a person
+            index: int: The identifier of the data.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        referrer = inspect.stack()[1][3]
+        referrer: str = stack()[1][3]
         if referrer == "firstRun":
-            self.getLogger().inform(
-                f"Entering the target!\nTarget: {target}"
-            )
+            self.getLogger().inform(f"Entering the target!\nTarget: {target}")
             self.getDriver().get(target)
-            time.sleep(delay)
+            sleep(delay)
         elif referrer == "secondRun":
-            self.getLogger().inform(
-                f"Entering the target!\nTarget: {target}/videos"
-            )
+            self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
             self.getDriver().get(f"{target}/videos")
-            time.sleep(delay)
+            sleep(delay)
         self.retrieveData(referrer, index)
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:
@@ -410,23 +347,14 @@ class Crawler:
         Retrieving the data needed from the target page.
 
         Parameters:
-            referrer:   (string):   Referrer of the function.
-            index:      (int):      The identifier of the data.
+            referrer: string: Referrer of the function.
+            index: int: The identifier of the data.
 
-        Return:
-            (void )
+        Returns:
+            void
         """
         if referrer == "firstRun":
-            self.getData()[index]["author_channel"] = self.getDriver().find_element(
-                By.XPATH,
-                '//*[@id="text"]/a').get_attribute("href")
+            self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href")
         elif referrer == "secondRun":
-            self.setHtmlTags(
-                self.getDriver().find_elements(
-                    By.XPATH,
-                    '//a[@id="thumbnail"]'
-                )
-            )
-            self.getData()[index]["latest_content"] = str(
-                self.getHtmlTags()[2].get_attribute("href")
-            )
+            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
+            self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))

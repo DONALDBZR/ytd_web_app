@@ -11,4 +11,15 @@
 /Access.log
 /Logs
 /Auto/Classes/__pycache__/
-/*xml
+/static/Sitemap.xml
+/SQL/
+/static/images/
+/node_modules/
+/package.json
+/package-lock.json
+/.babelrc
+/webpack.config.js
+/static/scripts/views/index.js
+/static/scripts/dist/
+/extractio-v2/
+/static/build/

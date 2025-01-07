@@ -1,8 +1,8 @@
 from pytube import YouTube
 from datetime import datetime
 from mysql.connector.types import RowType
-import time
-import logging
+from typing import Dict, List, Tuple, Union
+from time import strftime, gmtime
 import sys
 import os
 
@@ -41,7 +41,7 @@ class YouTube_Downloader:
     """
     The duration of the video in the format of HH:mm:ss.
     """
-    __published_at: str | datetime | None
+    __published_at: Union[str, datetime, None]
     """
     The date at which the video has been published.
     """
@@ -79,8 +79,7 @@ class YouTube_Downloader:
             uniform_resource_locator:   (string):   The uniform resource locator to be searched.
             media_identifier:           (int):      The media type for the system.
         """
-        self.setLogger(Extractio_Logger())
-        self.getLogger().setLogger(logging.getLogger(__name__))
+        self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setUniformResourceLocator(uniform_resource_locator)
         self.setMediaIdentifier(media_identifier)
@@ -122,10 +121,10 @@ class YouTube_Downloader:
     def setDuration(self, duration: str) -> None:
         self.__duration = duration
 
-    def getPublishedAt(self) -> str | datetime | None:
+    def getPublishedAt(self) -> Union[str, datetime, None]:
         return self.__published_at
 
-    def setPublishedAt(self, published_at: str | datetime | None) -> None:
+    def setPublishedAt(self, published_at: Union[str, datetime, None]) -> None:
         self.__published_at = str(published_at)
 
     def getDatabaseHandler(self) -> Database_Handler:
@@ -170,68 +169,35 @@ class YouTube_Downloader:
         that it is in a playlist.
 
         Parameters:
-            identifier: (string):   The ID of the content.
+            identifier: string: The ID of the content.
 
-        Return:
-            (string)
+        Returns:
+            string
         """
-        if "&" in identifier:
-            return identifier.rsplit("&", 1)[0]
-        else:
-            return identifier
+        return identifier.rsplit("&", 1)[0] if "&" in identifier else identifier
 
-    def search(self) -> dict[str, str | int | None]:
+    def search(self) -> Dict[str, Union[str, int, None]]:
         """
         Searching for the video in YouTube.
 
-        Return:
-            (object)
+        Returns:
+            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}
         """
-        response: dict[str, str | int | None]
-        audio_file: str | None
-        video_file: str | None
         self.setVideo(YouTube(self.getUniformResourceLocator()))
         self.setIdentifier(self.getUniformResourceLocator())
-        if "youtube" in self.getUniformResourceLocator():
-            self.setIdentifier(
-                self.retrieveIdentifier(
-                    self.getIdentifier().replace(
-                        "https://www.youtube.com/watch?v=",
-                        ""
-                    )
-                )
-            )
-        else:
-            self.setIdentifier(
-                self.getIdentifier().replace(
-                    "https://youtu.be/",
-                    ""
-                ).rsplit("?")[0]
-            )
-        meta_data = self.getYouTube()
-        if meta_data["status"] == 200:
-            self.setLength(int(meta_data["data"][0][4]))  # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0][3]))  # type: ignore
-            self.setAuthor(str(meta_data["data"][0][0]))  # type: ignore
-            self.setTitle(str(meta_data["data"][0][1]))  # type: ignore
-            self.setDuration(
-                time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
-            )
-            File_Location = self._getFileLocations(meta_data["data"]) # type: ignore
-            audio_file = File_Location["audio_file"]
-            video_file = File_Location["video_file"]
-        else:
-            self.setLength(self.getVideo().length)
-            self.setPublishedAt(self.getVideo().publish_date)
-            self.setAuthor(self.getVideo().author)
-            self.setTitle(self.getVideo().title)
-            self.setDuration(
-                time.strftime("%H:%M:%S", time.gmtime(self.getLength()))
-            )
-            audio_file = None
-            video_file = None
+        self.setIdentifier(self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))) if "youtube" in self.getUniformResourceLocator() else self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
+        meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
+        self.setLength(int(meta_data["data"][0]["length"])) if meta_data["status"] == 200 else self.setLength(self.getVideo().length) # type: ignore
+        self.setPublishedAt(str(meta_data["data"][0]["published_at"])) if meta_data["status"] == 200 else self.setPublishedAt(self.getVideo().publish_date) # type: ignore
+        self.setAuthor(str(meta_data["data"][0]["author"])) if meta_data["status"] == 200 else self.setAuthor(self.getVideo().author) # type: ignore
+        self.setTitle(str(meta_data["data"][0]["title"])) if meta_data["status"] == 200 else self.setTitle(self.getVideo().title) # type: ignore
+        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength()))) if meta_data["status"] == 200 else self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
+        File_Location: Union[Dict[str, Union[str, None]], None] = self._getFileLocations(meta_data["data"]) if meta_data["status"] == 200 else None # type: ignore
+        audio_file: Union[str, None] = File_Location["audio_file"] if File_Location != None else None
+        video_file: Union[str, None] = File_Location["audio_file"] if File_Location != None else None
+        if meta_data["status"] != 200:
             self.postYouTube()
-        response = {
+        return {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
@@ -244,41 +210,34 @@ class YouTube_Downloader:
             "audio_file": audio_file,
             "video_file": video_file
         }
-        return response
 
-    def _getFileLocations(self, result_set: list[RowType]) -> dict[str, str | None]:
+    def _getFileLocations(self, result_set: List[RowType]) -> Dict[str, Union[str, None]]:
         """
-        Extracting the file locations on the application's directory.
+        Extracting the file locations on the application's
+        directory.
 
         Parameters:
-            result_set: (array):    The data from the database server.
+            result_set: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string}]: The data from the database server.
 
-        Return:
-            (string)
+        Returns:
+            {audio_file: string|null, video_file: string|null}
         """
-        response: dict[str, str | None]
-        if len(list(result_set)) == 2:
-            response = {
-                "audio_file": str(result_set[0][5]),
-                "video_file": str(result_set[1][5])
-            }
-        else:
-            response = {
-                "audio_file": None,
-                "video_file": None
-            }
-        return response
+        audio_file: Union[str, None] = str(result_set[0]["location"]) if len(result_set) == 2 else None # type: ignore
+        video_file: Union[str, None] = str(result_set[1]["location"]) if len(result_set) == 2 else None # type: ignore
+        return {
+            "audio_file": audio_file,
+            "video_file": video_file
+        }
 
-    def getYouTube(self) -> dict[str, int | list[RowType] | str]:
+    def getYouTube(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
         Retrieving the metadata from the YouTube table.
 
-        Return:
-            (object)
+        Returns:
+            {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string}], timestamp: string}
         """
-        response: dict[str, int | list[RowType] | str]
-        filter_parameters = tuple([self.getIdentifier()])
-        media = self.getDatabaseHandler().get_data(
+        filter_parameters: Tuple[str] = (self.getIdentifier(),)
+        media: List[RowType] = self.getDatabaseHandler().getData(
             parameters=filter_parameters,
             table_name="YouTube",
             join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
@@ -288,44 +247,26 @@ class YouTube_Downloader:
             limit_condition=2
         )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        self.getLogger().inform(
-            f"The media content has been retrieved from the database server!\nContent Amount: {len(media)}\nCurrent Media: {media}"
-        )
-        if len(media) == 0:
-            response = {
-                'status': 404,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        else:
-            response = {
-                'status': 200,
-                'data': media,
-                'timestamp': self.getTimestamp()
-            }
-        return response
+        self.getLogger().inform(f"The media content has been retrieved from the database server!\nContent Amount: {len(media)}\nCurrent Media: {media}")
+        status: int = 404 if len(media) == 0 else 200
+        return {
+            "status": status,
+            "data": media,
+            "timestamp": self.getTimestamp()
+        }
 
     def postYouTube(self) -> None:
         """
         Creating a record for the media with its data.
 
-        Return:
-            (void)
+        Returns:
+            void
         """
-        data = (
-                self.getIdentifier(),
-                self.getLength(),
-                self.getPublishedAt(),
-                self.getAuthor(),
-                self.getTitle(),
-                self.getMediaIdentifier()
-            )
-        self.getLogger().inform(
-            f"Data to be inserted into the database server.\nIdentifier: {self.getIdentifier()}\nLength: {self.getLength()}\nPublished At: {self.getPublishedAt()}\nAuthor: {self.getAuthor()}\nTitle: {self.getTitle()}\nMedia's Identifier: {self.getMediaIdentifier()}"
-        )
-        self.getDatabaseHandler().post_data(
+        data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
+        self.getLogger().inform(f"Data to be inserted into the database server.\nIdentifier: {self.getIdentifier()}\nLength: {self.getLength()}\nPublished At: {self.getPublishedAt()}\nAuthor: {self.getAuthor()}\nTitle: {self.getTitle()}\nMedia's Identifier: {self.getMediaIdentifier()}")
+        self.getDatabaseHandler().postData(
             table="YouTube",
             columns="identifier, length, published_at, author, title, Media",
             values="%s, %s, %s, %s, %s, %s",
-            parameters=data
+            parameters=data # type: ignore
         )

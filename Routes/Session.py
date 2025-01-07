@@ -7,8 +7,6 @@ from json import dumps
 Session_Portal: Blueprint = Blueprint("Session", __name__)
 """
 The Routing for all the Sessions.
-
-Type: Blueprint
 """
 
 
@@ -54,7 +52,7 @@ def setSession() -> Response:
         "ip_address": str(request.environ.get('REMOTE_ADDR')),
         "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
         "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR")),
-        "port": str(request.environ.get("SERVER_PORT"))  # type: ignore
+        "port": str(request.environ.get("SERVER_PORT"))
     }
     SessionManager: Session_Manager = Session_Manager(user_request, session)
     SessionManager.updateSession(payload)  # type: ignore

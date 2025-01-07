@@ -85,8 +85,8 @@ class YouTubeDownloader extends React.Component {
         }));
         if (data_loaded) {
             loading_icon.style.display = "none";
+            this.verifyFile();
         }
-        this.verifyFile();
     }
 
     /**

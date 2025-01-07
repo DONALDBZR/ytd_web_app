@@ -48,7 +48,7 @@ class YouTubeDownloader extends React.Component {
      * @returns {void}
      */
     componentDidUpdate() {
-        if (!this.state.System.data_loaded) {
+        if (!this.state.data_loaded) {
             setTimeout(() => {
                 this.setData();
                 console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Update`);

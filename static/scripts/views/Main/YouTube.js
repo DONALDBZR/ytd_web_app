@@ -12,7 +12,7 @@ class YouTube extends React.Component {
         super(props);
         /**
          * The data for the properties of the Search component.
-         * @type {{Media: {YouTube: {uniform_resource_locator: string, author: string, title: string,identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string,audio_file: string, video_file: string}}}}
+         * @type {{Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}}, System: {data_loaded: boolean}}}
          */
         this.state = {
             Media: {
@@ -29,6 +29,9 @@ class YouTube extends React.Component {
                     audio_file: "",
                     video_file: ""
                 },
+            },
+            System: {
+                data_loaded: false,
             },
         };
     }

@@ -11,7 +11,7 @@ class YouTubeDownloader extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, File: {audio: string, video: string, uniform_resource_locator: string}}}
+         * @type {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, File: {audio: string, video: string, uniform_resource_locator: string}, data_loaded: boolean}}
          */
         this.state = {
             uniform_resource_locator: "",
@@ -27,7 +27,8 @@ class YouTubeDownloader extends React.Component {
                 audio: "",
                 video: "",
                 uniform_resource_locator: "",
-            }
+            },
+            data_loaded: false,
         };
     }
 

@@ -181,7 +181,6 @@ class YouTube extends React.Component {
     getTitleFontSize(title) {
         const limit = 51;
         const coefficient = (title.length <= limit) ? 1 : 0.9 - (((title.length - limit) / limit) * 0.1);
-        console.log(`Coefficient: ${coefficient}\nTitle's Length: ${title.length}`);
         return `calc(var(--textSize) * ${coefficient})`;
     }
 

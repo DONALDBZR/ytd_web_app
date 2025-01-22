@@ -174,6 +174,18 @@ class YouTube extends React.Component {
     }
 
     /**
+     * Retrieving the font size of the title.
+     * @param {string} title The title of the media content.
+     * @returns {string}
+     */
+    getTitleFontSize(title) {
+        const limit = 51;
+        const coefficient = (title.length <= limit) ? 1 : 0.9 - (((title.length - limit) / limit) * 0.1);
+        console.log(`Coefficient: ${coefficient}\nTitle's Length: ${title.length}`);
+        return `calc(var(--textSize) * ${coefficient})`;
+    }
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */
@@ -188,7 +200,7 @@ class YouTube extends React.Component {
                     </div>
                     <div class="data">
                         <div class="metadata">
-                            <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title), fontSize: this.getTitleFontSize(title)}}>{this.state.Media.YouTube.title}</div>
+                            <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title), fontSize: this.getTitleFontSize(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
                             <div>
                                 <a href={this.state.Media.YouTube.author_channel} target="__blank">{this.state.Media.YouTube.author}</a>
                             </div>

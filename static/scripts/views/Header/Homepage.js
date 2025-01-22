@@ -95,6 +95,7 @@ class HeaderHomepage extends React.Component {
         const uniform_resource_locator = new URL(this.state.Media.search);
         const platform = uniform_resource_locator.host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
+        loading_icon.style.height = "-webkit-fill-available";
         event.preventDefault();
         this.searchMediaMetadata(platform, this.state.Media.search, delay);
     }

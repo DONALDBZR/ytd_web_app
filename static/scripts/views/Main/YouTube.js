@@ -165,7 +165,8 @@ class YouTube extends React.Component {
         const coefficient = (title.length <= limit) ? 1 : Math.ceil(title.length / limit);
         const height_coefficient = component_height_coefficient / coefficient;
         if (window.outerWidth >= 1024) {
-            return "calc(var(--youtube-data-height) / 4)";
+            return this.getTitleHeightDesktop(title);
+            // return "calc(var(--youtube-data-height) / 4)";
         }
         if (window.outerWidth >= 640 && window.outerWidth < 1024) {
             return "calc(var(--data-height) / 4)";

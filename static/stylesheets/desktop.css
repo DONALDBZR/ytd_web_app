@@ -592,3 +592,6 @@ body[id*="Download"] main .YouTube #data #actions #buttons .button button svg {
     width: auto;
     height: calc(var(--component-height) / 11.34);
 }
+#Homepage main #loading {
+    height: var(--height);
+}

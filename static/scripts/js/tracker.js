@@ -65,12 +65,16 @@ class Tracker {
      */
     resolveLoadingTime(resolve) {
         const navigation_entries = performance.getEntriesByType("navigation");
-        if (navigation_entries.length === 0) {
+        if (navigation_entries.length > 0) {
+            const navigation_timing = navigation_entries[0];
+            const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
+            return resolve(loading_time);
+        }
+        if (!("performance" in window && performance.timing)) {
             return resolve(null);
         }
-        const navigation_timing = navigation_entries[0];
-        const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
-        return resolve(loading_time);
+        const loading_time_fallback = performance.timing.loadEventEnd - performance.timing.navigationStart;
+        return resolve(loading_time_fallback);
     }
 
     /**

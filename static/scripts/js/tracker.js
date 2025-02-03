@@ -43,10 +43,13 @@ class Tracker {
         const current_time = new Date();
         const current_month = (current_time.getMonth() + 1 < 10) ? `0${current_time.getMonth() + 1}` : current_time.getMonth() + 1;
         const current_date = (current_time.getDate() < 10) ? `0${current_time.getDate()}` : current_time.getDate();
+        const current_hour = (current_time.getHours() < 10) ? `0${current_time.getHours()}` : current_time.getHours();
+        const current_minute = (current_time.getMinutes() < 10) ? `0${current_time.getMinutes()}` : current_time.getMinutes();
+        const current_second = (current_time.getSeconds() < 10) ? `0${current_time.getSeconds()}` : current_time.getSeconds();
         const event_data = {
             event: event_name,
             page: window.location.pathname,
-            timestamp: `${current_time.getFullYear()}/${current_month}/${current_date} ${current_time.getHours()}:${current_time.getMinutes()}:${current_time.getSeconds()}`,
+            timestamp: `${current_time.getFullYear()}/${current_month}/${current_date} ${current_hour}:${current_minute}:${current_second}`,
             user_agent: navigator.userAgent,
             ...additional_data
         };

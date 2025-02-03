@@ -53,7 +53,7 @@ class Tracker {
             }
             const navigation_timing = navigation_entries[0];
             if (document.readyState === "complete") {
-                const loading_time = navigation_timing.loadEventEnd - navigation_timing.startTime;
+                const loading_time = navigation_timing.domComplete - navigation_timing.startTime;
                 resolve(loading_time);
                 return;
             }
@@ -70,12 +70,12 @@ class Tracker {
         const navigation_entries = performance.getEntriesByType("navigation");
         if (navigation_entries.length > 0) {
             const navigation_timing = navigation_entries[0];
-            const loading_time = navigation_timing.loadEventEnd - navigation_timing.startTime;
+            const loading_time = navigation_timing.domComplete - navigation_timing.startTime;
             resolve(loading_time);
             return;
         }
         if ("performance" in window && performance.timing) {
-            const loading_time_fallback = performance.timing.loadEventEnd - performance.timing.startTime;
+            const loading_time_fallback = performance.timing.domComplete - performance.timing.startTime;
             resolve(loading_time_fallback);
             return;
         }

@@ -37,6 +37,40 @@ class Tracker {
     }
 
     /**
+     * Retrieving the loading time of a page.
+     * @returns {Promise<number | null>}
+     */
+    async getLoadingTime() {
+        return new Promise((resolve) => {
+            if ("performance" in window && "PerformanceNavigationTiming" in window) {
+                const navigation_entries = performance.getEntriesByType("navigation");
+                if (navigation_entries.length > 0) {
+                    const navigation_timing = navigation_entries[0];
+                    if (document.readyState === "complete") {
+                        const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
+                        resolve(loading_time);
+                    } else {
+                        window.addEventListener("load", () => {
+                            const navigation_entries_after_load = performance.getEntriesByType("navigation");
+                            if (navigation_entries_after_load.length > 0) {
+                                const navigation_timing_after_load = navigation_entries_after_load[0];
+                                const loading_time = navigation_timing_after_load.loadEventEnd - navigation_timing_after_load.navigationStart;
+                                resolve(loading_time);
+                            } else {
+                                resolve(null);
+                            }
+                        });
+                    }
+                } else {
+                    resolve(null);
+                }
+            } else {
+                resolve(null);
+            }
+        });
+    }
+
+    /**
      * Sending the event to the API for further processing.
      * @param {string} event_name The name of the event. 
      * @param {*} additional_data Additional data to be sent with the event.

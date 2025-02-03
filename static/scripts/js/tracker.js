@@ -20,4 +20,13 @@ class Tracker {
         window.addEventListener("load", () => this.trackPageView());
         console.log("Tracker initialized");
     }
+
+    /**
+     * Tracking the page view event.
+     */
+    trackPageView() {
+        this.sendEvent("page_view", {
+            referrer: document.referrer,
+        });
+    }
 }

@@ -28,8 +28,10 @@ class Tracker {
      * Tracking the page view event.
      */
     trackPageView() {
+        const loading_time = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
         this.sendEvent("page_view", {
             referrer: document.referrer,
+            loading_time: loading_time,
         });
     }
 

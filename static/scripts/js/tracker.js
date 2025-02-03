@@ -53,18 +53,17 @@ class Tracker {
             if (document.readyState === "complete") {
                 const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
                 resolve(loading_time);
-            } else {
-                window.addEventListener("load", () => {
-                    const navigation_entries_after_load = performance.getEntriesByType("navigation");
-                    if (navigation_entries_after_load.length > 0) {
-                        const navigation_timing_after_load = navigation_entries_after_load[0];
-                        const loading_time = navigation_timing_after_load.loadEventEnd - navigation_timing_after_load.navigationStart;
-                        resolve(loading_time);
-                    } else {
-                        resolve(null);
-                    }
-                });
             }
+            window.addEventListener("load", () => {
+                const navigation_entries_after_load = performance.getEntriesByType("navigation");
+                if (navigation_entries_after_load.length > 0) {
+                    const navigation_timing_after_load = navigation_entries_after_load[0];
+                    const loading_time = navigation_timing_after_load.loadEventEnd - navigation_timing_after_load.navigationStart;
+                    resolve(loading_time);
+                } else {
+                    resolve(null);
+                }
+            });
         });
     }
 

@@ -52,7 +52,7 @@ class Tracker {
             const navigation_timing = navigation_entries[0];
             if (document.readyState === "complete") {
                 const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
-                resolve(loading_time);
+                return resolve(loading_time);
             }
             window.addEventListener("load", () => {
                 const navigation_entries_after_load = performance.getEntriesByType("navigation");

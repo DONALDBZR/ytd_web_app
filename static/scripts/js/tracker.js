@@ -9,6 +9,9 @@ class Tracker {
     constructor() {
         this.endpoint = "/track";
         this.request_method = "POST";
+        this.headers = {
+            "Content-Type": "application/json",
+        };
         this.init();
     }
 
@@ -28,5 +31,34 @@ class Tracker {
         this.sendEvent("page_view", {
             referrer: document.referrer,
         });
+    }
+
+    /**
+     * Sending the event to the API for further processing.
+     * @param {string} event_name The name of the event. 
+     * @param {*} additional_data Additional data to be sent with the event.
+     * @returns {Promise<void>}
+     */
+    async sendEvent(event_name, additional_data = {}) {
+        const current_time = new Date();
+        const current_month = (current_time.getMonth() + 1 < 10) ? `0${current_time.getMonth() + 1}` : current_time.getMonth() + 1;
+        const current_date = (current_time.getDate() < 10) ? `0${current_time.getDate()}` : current_time.getDate();
+        const event_data = {
+            event: event_name,
+            page: window.location.pathname,
+            timestamp: `${current_time.getFullYear()}/${current_month}/${current_date} ${current_time.getHours()}:${current_time.getMinutes()}:${current_time.getSeconds()}`,
+            user_agent: navigator.userAgent,
+            ...additional_data
+        };
+        try {
+            const response = await fetch(this.endpoint, {
+                method: this.request_method,
+                headers: this.headers,
+                body: JSON.stringify(event_data),
+            });
+            console.log(`Event Successfully Tracked!\nStatus: ${response.status}`);
+        } catch (error) {
+            console.error(`Error Tracking Event: ${error}`);
+        }
     }
 }

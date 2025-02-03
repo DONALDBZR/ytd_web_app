@@ -30,7 +30,6 @@ class Tracker {
      */
     async trackPageView() {
         const loading_time = await this.getLoadingTime();
-        console.log(`Page Loading Time: ${loading_time}`);
         this.sendEvent("page_view", {
             referrer: document.referrer,
             loading_time: loading_time,

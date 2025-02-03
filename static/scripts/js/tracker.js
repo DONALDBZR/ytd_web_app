@@ -47,7 +47,7 @@ class Tracker {
         const current_minute = (current_time.getMinutes() < 10) ? `0${current_time.getMinutes()}` : current_time.getMinutes();
         const current_second = (current_time.getSeconds() < 10) ? `0${current_time.getSeconds()}` : current_time.getSeconds();
         const event_data = {
-            event: event_name,
+            event_name: event_name,
             page: window.location.pathname,
             timestamp: `${current_time.getFullYear()}/${current_month}/${current_date} ${current_hour}:${current_minute}:${current_second}`,
             user_agent: navigator.userAgent,

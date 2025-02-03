@@ -51,6 +51,7 @@ class Tracker {
             page_url: window.location.pathname,
             timestamp: `${current_time.getFullYear()}/${current_month}/${current_date} ${current_hour}:${current_minute}:${current_second}`,
             user_agent: navigator.userAgent,
+            screen_resolution: `${window.screen.width}x${window.screen.height}`,
             ...additional_data
         };
         try {

@@ -64,20 +64,22 @@ class Tracker {
     /**
      * Retrieving the loading time after the DOM has been loaded.
      * @param {Function} resolve The resolve function of the promise.
-     * @returns {number | null}
+     * @returns {void}
      */
     resolveLoadingTime(resolve) {
         const navigation_entries = performance.getEntriesByType("navigation");
         if (navigation_entries.length > 0) {
             const navigation_timing = navigation_entries[0];
             const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
-            return resolve(loading_time);
+            resolve(loading_time);
+            return;
         }
-        if (!("performance" in window && performance.timing)) {
-            return resolve(null);
+        if ("performance" in window && performance.timing) {
+            const loading_time_fallback = performance.timing.loadEventEnd - performance.timing.navigationStart;
+            resolve(loading_time_fallback);
+            return;
         }
-        const loading_time_fallback = performance.timing.loadEventEnd - performance.timing.navigationStart;
-        return resolve(loading_time_fallback);
+        resolve(null);
     }
 
     /**

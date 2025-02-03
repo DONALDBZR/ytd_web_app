@@ -26,9 +26,10 @@ class Tracker {
 
     /**
      * Tracking the page view event.
+     * @returns {Promise<void>}
      */
-    trackPageView() {
-        const loading_time = window.performance.timing.domContentLoadedEventEnd - window.performance.timing.navigationStart;
+    async trackPageView() {
+        const loading_time = this.getLoadingTime();
         this.sendEvent("page_view", {
             referrer: document.referrer,
             loading_time: loading_time,

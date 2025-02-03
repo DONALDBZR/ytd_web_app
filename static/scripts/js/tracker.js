@@ -62,3 +62,5 @@ class Tracker {
         }
     }
 }
+
+window.Tracker = new Tracker();

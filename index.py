@@ -18,6 +18,7 @@ from Routes.Media import Media_Portal
 from Routes.Download import Download_Portal
 from Routes.Video import Video_Portal
 from Routes.Trend import Trend_Portal
+from Routes.Track import Track_Portal
 from Environment import Environment
 
 
@@ -68,6 +69,7 @@ Application.register_blueprint(Media_Portal, url_prefix="/Media")
 Application.register_blueprint(Download_Portal, url_prefix="/Download")
 Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
+Application.register_blueprint(Track_Portal, url_prefix="/Track")
 Compress(Application)
 CORS(Application)
 

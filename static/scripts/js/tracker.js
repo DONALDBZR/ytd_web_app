@@ -3,11 +3,12 @@
  * the application.
  */
 class Tracker {
-    // /**
-    //  * Initializing the class.
-    //  */
-    // constructor() {
-    //     this.endpoint = "/track";
-    //     this.request_method = "POST";
-    // }
+    /**
+     * Initializing the class.
+     */
+    constructor() {
+        this.endpoint = "/track";
+        this.request_method = "POST";
+        this.init();
+    }
 }

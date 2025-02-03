@@ -43,16 +43,19 @@ class Tracker {
     async getLoadingTime() {
         return new Promise((resolve) => {
             if (!("performance" in window && "PerformanceNavigationTiming" in window)) {
-                return resolve(null);
+                resolve(null);
+                return;
             }
             const navigation_entries = performance.getEntriesByType("navigation");
             if (navigation_entries.length === 0) {
-                return resolve(null);
+                resolve(null);
+                return;
             }
             const navigation_timing = navigation_entries[0];
             if (document.readyState === "complete") {
                 const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
-                return resolve(loading_time);
+                resolve(loading_time);
+                return;
             }
             window.addEventListener("load", () => this.resolveLoadingTime.bind(this, resolve));
         });

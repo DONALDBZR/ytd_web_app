@@ -61,16 +61,16 @@ class Tracker {
     /**
      * Retrieving the loading time after the DOM has been loaded.
      * @param {Function} resolve The resolve function of the promise.
+     * @returns {number | null}
      */
     resolveLoadingTime(resolve) {
         const navigation_entries = performance.getEntriesByType("navigation");
-        if (navigation_entries.length > 0) {
-            const navigation_timing = navigation_entries[0];
-            const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
-            resolve(loading_time);
-        } else {
-            resolve(null);
+        if (navigation_entries.length === 0) {
+            return resolve(null);
         }
+        const navigation_timing = navigation_entries[0];
+        const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
+        return resolve(loading_time);
     }
 
     /**

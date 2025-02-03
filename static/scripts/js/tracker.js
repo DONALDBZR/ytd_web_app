@@ -54,7 +54,7 @@ class Tracker {
                 const loading_time = navigation_timing.loadEventEnd - navigation_timing.navigationStart;
                 return resolve(loading_time);
             }
-            window.addEventListener("load", () => this.resolveLoadingTime(resolve));
+            window.addEventListener("load", () => this.resolveLoadingTime.bind(this, resolve));
         });
     }
 

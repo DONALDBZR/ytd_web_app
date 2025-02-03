@@ -11,4 +11,13 @@ class Tracker {
         this.request_method = "POST";
         this.init();
     }
+
+    /**
+     * Initializing the tracker by firstly tracking the page view.
+     * @returns {void}
+     */
+    init() {
+        window.addEventListener("load", () => this.trackPageView());
+        console.log("Tracker initialized");
+    }
 }

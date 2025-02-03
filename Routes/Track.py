@@ -2,7 +2,8 @@
 The module that has the routing for the analytics.
 """
 from flask import Blueprint, Response, request
-import os
+from typing import Dict
+
 
 Track_Portal = Blueprint("Track", __name__)
 """
@@ -11,32 +12,18 @@ The Routing for all the analytics.
 Type: Blueprint
 """
 
-
-def getDirectory() -> str:
+@Track_Portal.route('/', methods=['POST'])
+def postEvent():
     """
-    Retrieving the directory of the application which depends on
-    the server that is used.
+    Processing the event and sending it to the relational
+    database server.
 
-    Returns: string
+    Returns:
+        Response
     """
-    # Verifying that the port is for either Apache HTTPD or Werkzeug
-    if request.environ.get("SERVER_PORT") == '80' or request.environ.get("SERVER_PORT") == '443' or request.environ.get("SERVER_PORT") == '591':
-        return "/var/www/html/ytd_web_app"
-    else:
-        return "/home/darkness4869/Documents/extractio"
-
-
-@Trend_Portal.route('/', methods=['GET'])
-def getTrend():
-    """
-    Sending the current trend in the form of JSON.
-
-    Returns: Response
-    """
-    files = os.listdir(Trend_Portal.static_folder)
-    file_name = f"{getDirectory()}/Cache/Trend/{max(files)}"
-    file = open(file_name, "r")
-    response = file.read()
-    mime_type = "application/json"
-    status = 200
+    mime_type: str = "application/json"
+    status: int = 503
+    response: Dict[str, str] = {
+        "message": "Service Unavailable"
+    }
     return Response(response, status, mimetype=mime_type)

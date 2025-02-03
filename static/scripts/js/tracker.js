@@ -7,7 +7,7 @@ class Tracker {
      * Initializing the class.
      */
     constructor() {
-        this.endpoint = "/track";
+        this.endpoint = "/Track/";
         this.request_method = "POST";
         this.headers = {
             "Content-Type": "application/json",

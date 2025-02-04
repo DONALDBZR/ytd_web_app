@@ -235,9 +235,32 @@ class AnalyticalManagementSystem:
         self.setIpAddress(str(data["ip_address"]) if data["ip_address"] != "127.0.0.1" else "omnitechbros.ddns.net")
         status: int = self.getUserAgentData()
         status = self.getScreenResolutionData() if status == self.ok else status
+        status = self.setDeviceType() if status == self.ok else status
         status = 418
         print(f"{self.__dict__=}")
         return status
+
+    def setDeviceType(self) -> int:
+        """
+        Setting the device type.
+
+        Returns:
+            int
+        """
+        if self.getDevice() != "Other":
+            self.getLogger().inform("The Analytical Management System has determined the device type earlier.")
+            return self.ok
+        if self.getWidth() >= 1024:
+            self.setDevice("Desktop")
+            self.getLogger().inform("The Analytical Management System has determined the device type.")
+            return self.ok
+        if self.getWidth() >= 640 and self.getWidth() < 1024:
+            self.setDevice("Tablet")
+            self.getLogger().inform("The Analytical Management System has determined the device type.")
+            return self.ok
+        self.setDevice("Mobile")
+        self.getLogger().inform("The Analytical Management System has determined the device type.")
+        return self.ok
 
     def getScreenResolutionData(self) -> int:
         """

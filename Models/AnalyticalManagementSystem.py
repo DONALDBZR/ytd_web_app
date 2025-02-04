@@ -254,6 +254,23 @@ class AnalyticalManagementSystem:
         print(f"{self.__dict__=}")
         return status
 
+    def sanitizeRealIpAddress(self) -> int:
+        """
+        Sanitizing the IP Address by checking it is an IP Address or
+        a hostname.
+
+        Returns:
+            int
+        """
+        try:
+            real_ip_address: Union[IPv4Address, IPv6Address] = ip_address(self.getIpAddress())
+            self.setIpAddress(str(real_ip_address))
+            self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
+            return self.ok
+        except ValueError as error:
+            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
+            return self.service_unavailable
+
     def sanitizeIpAddress(self) -> int:
         """
         Sanitizing the IP Address by checking it is an IP Address.
@@ -264,29 +281,19 @@ class AnalyticalManagementSystem:
         if not self.getIpAddress():
             self.getLogger().error("The Analytical Management System cannot retrieve the IP Address.")
             return self.service_unavailable
+        if self.sanitizeRealIpAddress() == self.ok:
+            return self.ok
         try:
-            real_ip_address: Union[IPv4Address, IPv6Address] = ip_address(self.getIpAddress())
-            if real_ip_address.version == 4:
-                self.setIpAddress(str(real_ip_address))
-                self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
-                return self.ok
-            if real_ip_address.version == 6:
-                self.setIpAddress(str(real_ip_address))
-                self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
-                return self.ok
-        except ValueError as error:
-            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
-            try:
-                self.setHostname(self.getIpAddress())
-                self.setIpAddress(gethostbyname(str(self.getHostname())))
-                if self.getIpAddress() == "127.0.0.1":
-                    result: CompletedProcess[str] = run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True)
-                    self.setIpAddress(result.stdout.strip())
-                self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
-                return self.ok
-            except gaierror as error:
-                self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is neither an IP Address nor a host name.\nError: {error}")
-                return self.service_unavailable
+            self.setHostname(self.getIpAddress())
+            self.setIpAddress(gethostbyname(str(self.getHostname())))
+            if self.getIpAddress() == "127.0.0.1":
+                result: CompletedProcess[str] = run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True)
+                self.setIpAddress(result.stdout.strip())
+            self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
+            return self.ok
+        except gaierror as error:
+            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is neither an IP Address nor a host name.\nError: {error}")
+            return self.service_unavailable
 
     def setDeviceType(self) -> int:
         """

@@ -8,6 +8,8 @@ from datetime import datetime
 from user_agents import parse
 from user_agents.parsers import UserAgent
 from re import match
+from ipaddress import IPv4Address, IPv6Address, ip_address
+from socket import gethostbyname, gaierror
 
 
 class AnalyticalManagementSystem:
@@ -45,7 +47,7 @@ class AnalyticalManagementSystem:
     """
     __ip_address: str
     """
-    The IP Address of the user.
+    The IP Address or hostname of the user.
     """
     __logger: Extractio_Logger
     """
@@ -94,7 +96,11 @@ class AnalyticalManagementSystem:
     """
     __aspect_ratio: Union[float, None]
     """
-    The aspect ration of the screen resolution.
+    The aspect ratio of the screen resolution.
+    """
+    __hostname: Union[str, None]
+    """
+    The host name of the IP Address.
     """
 
     def __init__(self):
@@ -105,6 +111,12 @@ class AnalyticalManagementSystem:
         self.setDatabaseHandler(Database_Handler())
         self.setLogger(Extractio_Logger(__name__))
         self.getLogger().inform("Analytical Management System has been initialized.")
+
+    def getHostname(self) -> Union[str, None]:
+        return self.__hostname
+
+    def setHostname(self, hostname: Union[str, None]) -> None:
+        self.__hostname = hostname
 
     def getAspectRatio(self) -> Union[float, None]:
         return self.__aspect_ratio
@@ -236,9 +248,41 @@ class AnalyticalManagementSystem:
         status: int = self.getUserAgentData()
         status = self.getScreenResolutionData() if status == self.ok else status
         status = self.setDeviceType() if status == self.ok else status
+        status = self.sanitizeIpAddress() if status == self.ok else status
         status = 418
         print(f"{self.__dict__=}")
         return status
+
+    def sanitizeIpAddress(self) -> int:
+        """
+        Sanitizing the IP Address by checking it is an IP Address.
+
+        Returns:
+            int
+        """
+        if not self.getIpAddress():
+            self.getLogger().error("The Analytical Management System cannot retrieve the IP Address.")
+            return self.service_unavailable
+        try:
+            real_ip_address: Union[IPv4Address, IPv6Address] = ip_address(self.getIpAddress())
+            if real_ip_address.version == 4:
+                self.setIpAddress(str(real_ip_address))
+                self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
+                return self.ok
+            if real_ip_address.version == 6:
+                self.setIpAddress(str(real_ip_address))
+                self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
+                return self.ok
+        except ValueError as error:
+            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
+            try:
+                self.setHostname(self.getIpAddress())
+                self.setIpAddress(gethostbyname(str(self.getHostname())))
+                self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
+                return self.ok
+            except gaierror as error:
+                self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is neither an IP Address nor a host name.\nError: {error}")
+                return self.service_unavailable
 
     def setDeviceType(self) -> int:
         """

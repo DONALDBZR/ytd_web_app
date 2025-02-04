@@ -2,7 +2,7 @@
 The module that has the routing for the analytics.
 """
 from flask import Blueprint, Response, request
-from typing import Dict
+from typing import Dict, Union
 from Models.AnalyticalManagementSystem import AnalyticalManagementSystem
 
 
@@ -23,7 +23,7 @@ def postEvent():
         Response
     """
     mime_type: str = "application/json"
-    data: Dict[str, str] = request.get_json()
+    data: Dict[str, Union[str, float]] = request.get_json()
     data["ip_address"] = request.environ.get('REMOTE_ADDR', request.remote_addr)
     system: AnalyticalManagementSystem = AnalyticalManagementSystem()
     status: int = system.processEvent(data)

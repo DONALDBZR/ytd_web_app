@@ -1,7 +1,8 @@
 """
 The module that has the Analytical Management System.
 """
-from typing import Union
+from typing import Union, Dict
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger
 
 
 class AnalyticalManagementSystem:
@@ -41,6 +42,36 @@ class AnalyticalManagementSystem:
     """
     The IP Address of the user.
     """
+    __logger: Extractio_Logger
+    """
+    The logger that will all the action of the application.
+    """
+    __database_handler: Database_Handler
+    """
+    The database handler that will communicate with the database
+    server.
+    """
+
+    def __init__(self):
+        """
+        Initializing the management system and injecting any
+        dependency needed.
+        """
+        self.setDatabaseHandler(Database_Handler())
+        self.setLogger(Extractio_Logger(__name__))
+        self.getLogger().inform("Analytical Management System has been initialized.")
+
+    def getDatabaseHandler(self) -> Database_Handler:
+        return self.__database_handler
+
+    def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
+        self.__database_handler = database_handler
+
+    def getLogger(self) -> Extractio_Logger:
+        return self.__logger
+
+    def setLogger(self, logger: Extractio_Logger) -> None:
+        self.__logger = logger
 
     def getEventName(self) -> str:
         return self.__event_name
@@ -90,22 +121,16 @@ class AnalyticalManagementSystem:
     def setIpAddress(self, ip_address: str) -> None:
         self.__ip_address = ip_address
 
-    # def __init__(self):
-    #     """
-    #     Initializing the management system and injecting any
-    #     dependency needed.
-    #     """
-    #     pass
+    def processEvent(self, data: Dict[str, str]) -> int:
+        """
+        Processing the event and sending it to the relational
+        database server.
 
-    # def processEvent(self, data: Dict[str, str]) -> None:
-    #     """
-    #     Processing the event and sending it to the relational
-    #     database server.
+        Args:
+            data (Dict[str, str]): The data that will be processed.
 
-    #     Args:
-    #         data (Dict[str, str]): The data that will be processed.
-
-    #     Returns:
-    #         None
-    #     """
-    #     pass
+        Returns:
+            None
+        """
+        print(f"{data=}")
+        return 503

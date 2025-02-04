@@ -286,9 +286,7 @@ class AnalyticalManagementSystem:
         try:
             self.setHostname(self.getIpAddress())
             self.setIpAddress(gethostbyname(str(self.getHostname())))
-            if self.getIpAddress() == "127.0.0.1":
-                result: CompletedProcess[str] = run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True)
-                self.setIpAddress(result.stdout.strip())
+            self.setIpAddress(run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True).stdout.strip() if self.getIpAddress() == "127.0.0.1" else self.getIpAddress())
             self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
             return self.ok
         except gaierror as error:

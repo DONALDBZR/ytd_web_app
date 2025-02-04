@@ -1,7 +1,7 @@
 """
 The module that has the Analytical Management System.
 """
-from typing import Union, Dict
+from typing import Union, Dict, Any
 from Models.DatabaseHandler import Database_Handler, Extractio_Logger
 from time import mktime
 from datetime import datetime
@@ -10,7 +10,10 @@ from user_agents.parsers import UserAgent
 from re import match
 from ipaddress import IPv4Address, IPv6Address, ip_address
 from socket import gethostbyname, gaierror
-from subprocess import run, CompletedProcess
+from subprocess import run
+from requests import get, Response
+from requests.exceptions import RequestException
+from json import JSONDecodeError
 
 
 class AnalyticalManagementSystem:
@@ -103,6 +106,38 @@ class AnalyticalManagementSystem:
     """
     The host name of the IP Address.
     """
+    __ip_information_api: str
+    """
+    The API to be used for retrieving data from the IP Address.
+    """
+    not_found: int = 404
+    """
+    The status code for not found.
+    """
+    __latitude: float
+    """
+    The latitude of the geolocation.
+    """
+    __longitude: float
+    """
+    The longitude of the geolocation.
+    """
+    __city: str
+    """
+    The city of the geolocation.
+    """
+    __region: str
+    """
+    The region of the geolocation.
+    """
+    __country: str
+    """
+    The country of the geolocation.
+    """
+    __timezone: str
+    """
+    The timezone of the geolocation.
+    """
 
     def __init__(self):
         """
@@ -111,7 +146,50 @@ class AnalyticalManagementSystem:
         """
         self.setDatabaseHandler(Database_Handler())
         self.setLogger(Extractio_Logger(__name__))
+        self.setIpInformationApi("https://ipinfo.io")
         self.getLogger().inform("Analytical Management System has been initialized.")
+
+    def getTimezone(self) -> str:
+        return self.__timezone
+
+    def setTimezone(self, timezone: str) -> None:
+        self.__timezone = timezone
+
+    def getCountry(self) -> str:
+        return self.__country
+
+    def setCountry(self, country: str) -> None:
+        self.__country = country
+
+    def getRegion(self) -> str:
+        return self.__region
+
+    def setRegion(self, region: str) -> None:
+        self.__region = region
+
+    def getCity(self) -> str:
+        return self.__city
+
+    def setCity(self, city: str) -> None:
+        self.__city = city
+
+    def getLongitude(self) -> float:
+        return self.__longitude
+
+    def setLongitude(self, longitude: float) -> None:
+        self.__longitude = longitude
+
+    def getLatitude(self) -> float:
+        return self.__latitude
+
+    def setLatitude(self, latitude: float) -> None:
+        self.__latitude = latitude
+
+    def getIpInformationApi(self) -> str:
+        return self.__ip_information_api
+
+    def setIpInformationApi(self, ip_information_api: str) -> None:
+        self.__ip_information_api = ip_information_api
 
     def getHostname(self) -> Union[str, None]:
         return self.__hostname
@@ -250,9 +328,42 @@ class AnalyticalManagementSystem:
         status = self.getScreenResolutionData() if status == self.ok else status
         status = self.setDeviceType() if status == self.ok else status
         status = self.sanitizeIpAddress() if status == self.ok else status
-        status = 418
+        status = self.getGeolocationData() if status == self.ok else status
+        status = 418 if status == self.ok else status
         print(f"{self.__dict__=}")
         return status
+
+    def getGeolocationData(self) -> int:
+        """
+        Retrieving geolocation data from the IP address.
+
+        Returns:
+            int
+        """
+        if not self.getIpAddress():
+            self.getLogger().error("The Analytical Management System cannot retrieve data from the IP Address.")
+            return self.service_unavailable
+        try:
+            route: str = f"{self.getIpInformationApi()}/{self.getIpAddress()}/json"
+            response: Response = get(route)
+            response.raise_for_status()
+            geolocation_data: Any = response.json()
+            self.setLatitude(float(str(geolocation_data.get("loc")).split(",")[0]))
+            self.setLongitude(float(str(geolocation_data.get("loc")).split(",")[1]))
+            self.setCity(str(geolocation_data.get("city")))
+            self.setRegion(str(geolocation_data.get("region")))
+            self.setCountry(str(geolocation_data.get("country")))
+            self.setTimezone(str(geolocation_data.get("timezone")))
+            return self.ok
+        except RequestException as error:
+            self.getLogger().error(f"The Analytical Management System cannot retrieve data from the IP Address.\nError: {error}")
+            return self.service_unavailable
+        except JSONDecodeError as error:
+            self.getLogger().error(f"The Analytical Management System cannot decode the JSON response.\nError: {error}")
+            return self.service_unavailable
+        except Exception as error:
+            self.getLogger().error(f"A general error occurred: {error}")
+            return self.service_unavailable
 
     def sanitizeRealIpAddress(self) -> int:
         """

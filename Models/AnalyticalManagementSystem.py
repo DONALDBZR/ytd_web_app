@@ -7,6 +7,7 @@ from time import mktime
 from datetime import datetime
 from user_agents import parse
 from user_agents.parsers import UserAgent
+from re import match
 
 
 class AnalyticalManagementSystem:
@@ -40,7 +41,7 @@ class AnalyticalManagementSystem:
     """
     __loading_time: float
     """
-    The loading time of the page.
+    The loading time of the page in seconds.
     """
     __ip_address: str
     """
@@ -83,6 +84,18 @@ class AnalyticalManagementSystem:
     """
     The status code for ok.
     """
+    __width: int
+    """
+    The width of the screen resolution in pixels.
+    """
+    __height: int
+    """
+    The height of the screen resolution in pixels.
+    """
+    __aspect_ratio: Union[float, None]
+    """
+    The aspect ration of the screen resolution.
+    """
 
     def __init__(self):
         """
@@ -92,6 +105,24 @@ class AnalyticalManagementSystem:
         self.setDatabaseHandler(Database_Handler())
         self.setLogger(Extractio_Logger(__name__))
         self.getLogger().inform("Analytical Management System has been initialized.")
+
+    def getAspectRatio(self) -> Union[float, None]:
+        return self.__aspect_ratio
+
+    def setAspectRatio(self, aspect_ratio: Union[float, None]) -> None:
+        self.__aspect_ratio = aspect_ratio
+
+    def getHeight(self) -> int:
+        return self.__height
+
+    def setHeight(self, height: int) -> None:
+        self.__height = height
+
+    def getWidth(self) -> int:
+        return self.__width
+
+    def setWidth(self, width: int) -> None:
+        self.__width = width
 
     def getDevice(self) -> str:
         return self.__device
@@ -203,8 +234,33 @@ class AnalyticalManagementSystem:
         self.setLoadingTime(float(data["loading_time"]) / 1000)
         self.setIpAddress(str(data["ip_address"]) if data["ip_address"] != "127.0.0.1" else "omnitechbros.ddns.net")
         status: int = self.getUserAgentData()
+        status = self.getScreenResolutionData() if status == self.ok else status
+        status = 418
         print(f"{self.__dict__=}")
         return status
+
+    def getScreenResolutionData(self) -> int:
+        """
+        Retrieving the screen resolution data.
+
+        Returns:
+            int
+        """
+        if not self.getScreenResolution():
+            self.getLogger().error("The Analytical Management System cannot retrieve the screen resolution data.")
+            return self.service_unavailable
+        resolution_pattern_match = match(r"(\d+)x(\d+)", self.getScreenResolution())
+        if not resolution_pattern_match:
+            self.getLogger().error("The Analytical Management System cannot parse the screen resolution data.")
+            return self.service_unavailable
+        try:
+            self.setWidth(int(resolution_pattern_match.group(1)))
+            self.setHeight(int(resolution_pattern_match.group(1)))
+            self.setAspectRatio(self.getWidth() / self.getHeight() if self.getHeight() != 0 else None)
+            return self.ok
+        except ValueError as error:
+            self.getLogger().error(f"The Analytical Management System cannot parse the screen resolution data.\nError: {error}")
+            return self.service_unavailable
 
     def getUserAgentData(self) -> int:
         """

@@ -10,6 +10,7 @@ from user_agents.parsers import UserAgent
 from re import match
 from ipaddress import IPv4Address, IPv6Address, ip_address
 from socket import gethostbyname, gaierror
+from subprocess import run, CompletedProcess
 
 
 class AnalyticalManagementSystem:
@@ -278,6 +279,9 @@ class AnalyticalManagementSystem:
             try:
                 self.setHostname(self.getIpAddress())
                 self.setIpAddress(gethostbyname(str(self.getHostname())))
+                if self.getIpAddress() == "127.0.0.1":
+                    result: CompletedProcess[str] = run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True)
+                    self.setIpAddress(result.stdout.strip())
                 self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
                 return self.ok
             except gaierror as error:

@@ -3,6 +3,7 @@ The module that has the routing for the analytics.
 """
 from flask import Blueprint, Response, request
 from typing import Dict
+from Models.AnalyticalManagementSystem import AnalyticalManagementSystem
 
 
 Track_Portal = Blueprint("Track", __name__)
@@ -22,8 +23,8 @@ def postEvent():
         Response
     """
     mime_type: str = "application/json"
-    status: int = 503
-    response: Dict[str, str] = {
-        "message": "Service Unavailable"
-    }
-    return Response(response, status, mimetype=mime_type)
+    data: Dict[str, str] = request.get_json()
+    data["ip_address"] = request.environ.get('REMOTE_ADDR', request.remote_addr)
+    system: AnalyticalManagementSystem = AnalyticalManagementSystem()
+    status: int = system.processEvent(data)
+    return Response(None, status, mimetype=mime_type)

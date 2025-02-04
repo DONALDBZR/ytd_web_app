@@ -255,7 +255,7 @@ class AnalyticalManagementSystem:
             return self.service_unavailable
         try:
             self.setWidth(int(resolution_pattern_match.group(1)))
-            self.setHeight(int(resolution_pattern_match.group(1)))
+            self.setHeight(int(resolution_pattern_match.group(2)))
             self.setAspectRatio(self.getWidth() / self.getHeight() if self.getHeight() != 0 else None)
             return self.ok
         except ValueError as error:

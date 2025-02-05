@@ -562,7 +562,7 @@ class AnalyticalManagementSystem:
             self.getLogger().inform(f"The data has been successfully inserted in the Event Types table.\nStatus: {self.created}")
             return {
                 "status": self.created,
-                "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
+                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
             }
         except DatabaseHandlerError as error:
             self.getLogger().error(f"An error occurred while inserting data in the Event Types table.\nError: {error}")

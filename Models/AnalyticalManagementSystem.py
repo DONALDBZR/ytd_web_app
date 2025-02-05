@@ -369,6 +369,33 @@ class AnalyticalManagementSystem:
             }
         return self.postPageView()
 
+    def postPageView(self) -> Dict[str, int]:
+        """
+        Adding a new page view.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        parameters: Tuple[float] = (self.getLoadingTime(),)
+        try:
+            self.getDatabaseHandler().postData(
+                table="PageView",
+                columns="loading_time",
+                values="%s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Page View table.\nStatus: {self.created}")
+            return {
+                "status": self.created,
+                "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Page View table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "identifier": 0
+            }
+
     def manageNetworkLocation(self, status: int) -> Dict[str, int]:
         """
         Managing the network and location of the event.

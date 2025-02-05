@@ -470,6 +470,9 @@ class AnalyticalManagementSystem:
             return status
         if page_view != 0:
             return self.postEventPageView(device, event_type, network_location, page_view)
+        if color_scheme != 0:
+            return self.postEventColorSchemeUpdated(device, event_type, network_location, color_scheme)
+        return self.service_unavailable
 
     def postEventPageView(self, device: int, event_type: int, network_location: int, page_view: int) -> int:
         """

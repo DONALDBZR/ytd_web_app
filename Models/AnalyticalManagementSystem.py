@@ -352,6 +352,23 @@ class AnalyticalManagementSystem:
         status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
         return status
 
+    def managePageView(self, status: int) -> Dict[str, int]:
+        """
+        Managing the page view of the event.
+
+        Parameters:
+            status: int: The status of the previous processing.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        if status != self.ok or status != self.created:
+            return {
+                "status": status,
+                "identifier": 0
+            }
+        return self.postPageView()
+
     def manageNetworkLocation(self, status: int) -> Dict[str, int]:
         """
         Managing the network and location of the event.

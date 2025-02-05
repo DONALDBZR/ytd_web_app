@@ -343,8 +343,13 @@ class AnalyticalManagementSystem:
         event_type_response: Dict[str, int] = self.manageEventType(status)
         status = int(event_type_response["status"])
         event_type_identifier: int = int(event_type_response["identifier"])
-        status = 418 if status == self.ok else status
-        print(f"{self.__dict__=}")
+        network_location_response: Dict[str, int] = self.manageNetworkLocation(status)
+        status = int(network_location_response["status"])
+        network_location_identifier: int = int(network_location_response["identifier"])
+        page_view_response: Dict[str, int] = self.managePageView(status)
+        status = int(page_view_response["status"])
+        page_view_identifier: int = int(page_view_response["identifier"])
+        status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
         return status
 
     def manageEventType(self, status: int) -> Dict[str, int]:

@@ -475,12 +475,14 @@ class AnalyticalManagementSystem:
         Returns:
             {status: int, identifier: int}
         """
-        parameters: Tuple[str, Union[str, None], float, float, str, str, str, str, str] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})")
+        parameters: Union[Tuple[str, Union[str, None], float, float, str, str, str, str, str], Tuple[str, float, float, str, str, str, str, str]] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})") if hasattr(AnalyticalManagementSystem, "__hostname") else (self.getIpAddress(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})")
         try:
+            columns: str = "ip_address, hostname, latitude, longitude, city, region, country, timezone, location" if hasattr(AnalyticalManagementSystem, "__hostname") else "ip_address, latitude, longitude, city, region, country, timezone, location"
+            values: str = "%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)" if hasattr(AnalyticalManagementSystem, "__hostname") else "%s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)"
             self.getDatabaseHandler().postData(
                 table="NetworkLocation",
-                columns="ip_address, hostname, latitude, longitude, city, region, country, timezone, location",
-                values="%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)",
+                columns=columns,
+                values=values,
                 parameters=parameters # type: ignore
             )
             self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}")

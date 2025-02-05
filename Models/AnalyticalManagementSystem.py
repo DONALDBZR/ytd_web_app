@@ -330,7 +330,6 @@ class AnalyticalManagementSystem:
         self.setUserAgent(str(data["user_agent"]))
         self.setScreenResolution(str(data["screen_resolution"]))
         self.setReferrer(str(data["referrer"]) if "referrer" in data and data["referrer"] != "" else None)
-        self.setLoadingTime(float(data["loading_time"]) / 1000)
         self.setIpAddress(str(data["ip_address"]) if data["ip_address"] != "127.0.0.1" else "omnitechbros.ddns.net")
         status: int = self.getUserAgentData()
         status = self.getScreenResolutionData() if status == self.ok else status
@@ -338,6 +337,7 @@ class AnalyticalManagementSystem:
         status = self.sanitizeIpAddress() if status == self.ok else status
         status = self.getGeolocationData() if status == self.ok else status
         if self.getEventName() == "page_view":
+            self.setLoadingTime(float(data["loading_time"]) / 1000)
             device_response: Dict[str, int] = self.manageDevice(status)
             status = int(device_response["status"])
             device_identifier: int = int(device_response["identifier"])

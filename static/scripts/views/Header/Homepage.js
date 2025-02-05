@@ -110,6 +110,9 @@ class HeaderHomepage extends React.Component {
      * @returns {void}
      */
     searchMediaMetadata(platform, search, delay) {
+        this.tracker.sendEvent("search_submitted", {
+            search_term: search,
+        });
         this.setRoute(platform, search)
         .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`))
         .then(() => {

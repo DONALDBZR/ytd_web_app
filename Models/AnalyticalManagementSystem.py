@@ -1,8 +1,8 @@
 """
 The module that has the Analytical Management System.
 """
-from typing import Union, Dict, Any, Tuple
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Error as DatabaseHandlerError
+from typing import Union, Dict, Any, Tuple, List
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Error as DatabaseHandlerError, RowType
 from time import mktime
 from datetime import datetime
 from user_agents import parse
@@ -333,16 +333,19 @@ class AnalyticalManagementSystem:
         status = self.setDeviceType() if status == self.ok else status
         status = self.sanitizeIpAddress() if status == self.ok else status
         status = self.getGeolocationData() if status == self.ok else status
-        device_response: Dict[str, int] = self.postDevice(status)
+        device_response: Dict[str, int] = self.manageDevice(status)
         status = int(device_response["status"])
         device_identifier: int = int(device_response["identifier"])
+        event_type_response: Dict[str, int] = self.manageEventType(status)
+        status = int(event_type_response["status"])
+        event_type_identifier: int = int(event_type_response["identifier"])
         status = 418 if status == self.ok else status
         print(f"{self.__dict__=}")
         return status
 
-    def postDevice(self, status: int) -> Dict[str, int]:
+    def manageDevice(self, status: int) -> Dict[str, int]:
         """
-        Inserting the device of the event.
+        Managing the device of the event.
 
         Parameters:
             status: int: The status of the previous processing.
@@ -355,25 +358,33 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
-        try:
-            self.getDatabaseHandler().postData(
-                table="Devices",
-                columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
-                values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}")
+        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]] = self.getDatabaseDevice()
+        if database_response["status"] == self.ok:
+            device: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
             return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
+                "status": int(database_response["status"]), # type: ignore
+                "identifier": int(device["identifier"]) # type: ignore
             }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        return self.postDevice(status)
+        # parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
+        # try:
+        #     self.getDatabaseHandler().postData(
+        #         table="Devices",
+        #         columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
+        #         values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+        #         parameters=parameters # type: ignore
+        #     )
+        #     self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}")
+        #     return {
+        #         "status": self.created,
+        #         "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
+        #     }
+        # except DatabaseHandlerError as error:
+        #     self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nError: {error}")
+        #     return {
+        #         "status": self.service_unavailable,
+        #         "identifier": 0
+        #     }
 
     def getGeolocationData(self) -> int:
         """

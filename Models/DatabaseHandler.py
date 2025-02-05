@@ -261,3 +261,12 @@ class Database_Handler:
         self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
         self._query(self.getQuery(), self.getParameters())
         self._execute()
+
+    def getLastRowIdentifier(self) -> Union[int, None]:
+        """
+        Fetching the last inserted row identifier.
+
+        Returns:
+            int
+        """
+        return self.__getStatement().lastrowid

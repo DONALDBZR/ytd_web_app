@@ -359,13 +359,13 @@ class AnalyticalManagementSystem:
                 "identifier": 0
             }
         database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]] = self.getDatabaseDevice()
-        if database_response["status"] == self.ok:
+        if database_response["status"] == self.ok and len(database_response["data"]) > 0: # type: ignore
             device: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
             return {
                 "status": int(database_response["status"]), # type: ignore
                 "identifier": int(device["identifier"]) # type: ignore
             }
-        return self.postDevice(status)
+        return self.postDevice()
         # parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
         # try:
         #     self.getDatabaseHandler().postData(

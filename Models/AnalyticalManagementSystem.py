@@ -350,7 +350,6 @@ class AnalyticalManagementSystem:
         status = int(page_view_response["status"])
         page_view_identifier: int = int(page_view_response["identifier"])
         status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
-        print(f"{status=}")
         return status
 
     def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int) -> int:

@@ -453,7 +453,7 @@ class AnalyticalManagementSystem:
         try:
             parameters: Tuple[str, float, float] = (self.getIpAddress(), self.getLatitude(), self.getLongitude())
             data: List[Union[RowType, Dict[str, Union[int, str, float]]]] = self.getDatabaseHandler().getData(
-                table_name="NetworkLocations",
+                table_name="NetworkLocation",
                 filter_condition="ip_address = %s AND latitude = %s AND longitude = %s",
                 parameters=parameters # type: ignore
             )

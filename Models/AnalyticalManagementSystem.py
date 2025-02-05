@@ -451,15 +451,39 @@ class AnalyticalManagementSystem:
         status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
         return status
 
-    def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int) -> int:
+    def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int, color_scheme: int) -> int:
         """
         Adding a new event.
+
+        Parameters:
+            status: int: The status of the previous processing.
+            device: int: The identifier of the device.
+            event_type: int: The identifier of the event type.
+            network_location: int: The identifier of the network location.
+            page_view: int: The identifier of the page view.
+            color_scheme: int: The identifier of the color scheme.
 
         Returns:
             int
         """
         if status != self.ok and status != self.created:
             return status
+        if page_view != 0:
+            return self.postEventPageView(device, event_type, network_location, page_view)
+
+    def postEventPageView(self, device: int, event_type: int, network_location: int, page_view: int) -> int:
+        """
+        Adding the event that is specifically page view.
+
+        Parameters:
+            device: int: The identifier of the device.
+            event_type: int: The identifier of the event type.
+            network_location: int: The identifier of the network location.
+            page_view: int: The identifier of the page view.
+
+        Returns:
+            int
+        """
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, page_view)
         try:
             self.getDatabaseHandler().postData(

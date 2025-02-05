@@ -251,12 +251,16 @@ class HeaderHomepage extends React.Component {
     updateColorScheme(color_scheme, delay) {
         this.tracker.sendEvent("color_scheme_updated", {
             color_scheme: color_scheme,
+        })
+        .then(() => {
+            return this.updateSession(color_scheme);
+        })
+        .then((status) => {
+            console.log(`Request: PUT /Session\nStatus: ${status}`);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
         });
-        this.updateSession(color_scheme)
-        .then((status) => console.log(`Request: PUT /Session\nStatus: ${status}`));
-        setTimeout(() => {
-            window.location.href = window.location.href;
-        }, delay);
     }
 
     /**

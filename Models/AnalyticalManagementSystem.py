@@ -336,9 +336,9 @@ class AnalyticalManagementSystem:
         device_response: Dict[str, int] = self.manageDevice(status)
         status = int(device_response["status"])
         device_identifier: int = int(device_response["identifier"])
-        event_type_response: Dict[str, int] = self.manageEventType(status)
-        status = int(event_type_response["status"])
-        event_type_identifier: int = int(event_type_response["identifier"])
+        # event_type_response: Dict[str, int] = self.manageEventType(status)
+        # status = int(event_type_response["status"])
+        # event_type_identifier: int = int(event_type_response["identifier"])
         status = 418 if status == self.ok else status
         print(f"{self.__dict__=}")
         return status
@@ -385,6 +385,31 @@ class AnalyticalManagementSystem:
         #         "status": self.service_unavailable,
         #         "identifier": 0
         #     }
+
+    def getDatabaseDevice(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]]:
+        """
+        Retrieving the device data from the database.
+
+        Returns:
+            {status: int, data: [{identifier: int, user_agent: string, browser: string, browser_version: string, operating_system: string, operating_system_version: string, device: string, screen_resolution: string, width: int, height: int, aspect_ratio: float}]}
+        """
+        try:
+            parameters: Tuple[str, str] = (self.getUserAgent(), self.getScreenResolution())
+            data: List[Union[RowType, Dict[str, Union[int, str, None, float]]]] = self.getDatabaseHandler().getData(
+                table_name="Devices",
+                filter_condition="user_agent = %s AND screen_resolution = %s",
+                parameters=parameters # type: ignore
+            )
+            return {
+                "status": self.ok,
+                "data": data
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while retrieving data from the Devices table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "data": []
+            }
 
     def getGeolocationData(self) -> int:
         """

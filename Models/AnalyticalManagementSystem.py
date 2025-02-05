@@ -397,6 +397,33 @@ class AnalyticalManagementSystem:
             }
         return self.postColorSchemeUpdated()
 
+    def postColorSchemeUpdated(self) -> Dict[str, int]:
+        """
+        Adding a new color scheme.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        parameters: Tuple[str] = (self.getColorScheme(),)
+        try:
+            self.getDatabaseHandler().postData(
+                table="ColorSchemeUpdated",
+                columns="color_scheme",
+                values="%s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table.\nStatus: {self.created}")
+            return {
+                "status": self.created,
+                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "identifier": 0
+            }
+
     def processPageView(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
         Processing page view events.

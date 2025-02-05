@@ -363,7 +363,7 @@ class AnalyticalManagementSystem:
                 "identifier": 0
             }
         database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]] = self.getDatabaseDevice()
-        if database_response["status"] == self.ok and len(database_response["data"]) > 0: # type: ignore
+        if database_response["status"] == self.ok:
             device: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
             return {
                 "status": int(database_response["status"]), # type: ignore

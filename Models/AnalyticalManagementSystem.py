@@ -362,7 +362,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]] = self.getDatabaseEventType()
+        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]] = self.getDatabaseEventType()
         if database_response["status"] == self.ok:
             event_type: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
             return {
@@ -370,6 +370,31 @@ class AnalyticalManagementSystem:
                 "identifier": int(event_type["identifier"]) # type: ignore
             }
         return self.postEventType()
+
+    def getDatabaseEventType(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
+        """
+        Retrieving the device data from the database.
+
+        Returns:
+            {status: int, data: [{identifier: int, name: string}]}
+        """
+        try:
+            parameters: Tuple[str] = (self.getEventName(),)
+            data: List[Union[RowType, Dict[str, Union[int, str]]]] = self.getDatabaseHandler().getData(
+                table_name="EventTypes",
+                filter_condition="name = %s",
+                parameters=parameters # type: ignore
+            )
+            return {
+                "status": self.ok if len(data) > 0 else self.no_content,
+                "data": data if len(data) > 0 else []
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while retrieving data from the Devices table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "data": []
+            }
 
     def manageDevice(self, status: int) -> Dict[str, int]:
         """

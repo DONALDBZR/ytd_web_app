@@ -352,6 +352,30 @@ class AnalyticalManagementSystem:
         status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
         return status
 
+    def manageNetworkLocation(self, status: int) -> Dict[str, int]:
+        """
+        Managing the network and location of the event.
+
+        Parameters:
+            status: int: The status of the previous processing.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        if status != self.ok or status != self.created:
+            return {
+                "status": status,
+                "identifier": 0
+            }
+        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, float]]]]]] = self.getDatabaseNetworkLocation()
+        if database_response["status"] == self.ok:
+            network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
+            return {
+                "status": int(database_response["status"]), # type: ignore
+                "identifier": int(network_location["identifier"]) # type: ignore
+            }
+        return self.postNetworkLocation()
+
     def manageEventType(self, status: int) -> Dict[str, int]:
         """
         Managing the type of the event.
@@ -369,7 +393,7 @@ class AnalyticalManagementSystem:
             }
         database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]] = self.getDatabaseEventType()
         if database_response["status"] == self.ok:
-            event_type: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
+            event_type: Dict[str, Union[int, str]] = database_response["data"][-1] # type: ignore
             return {
                 "status": int(database_response["status"]), # type: ignore
                 "identifier": int(event_type["identifier"]) # type: ignore

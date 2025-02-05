@@ -366,25 +366,33 @@ class AnalyticalManagementSystem:
                 "identifier": int(device["identifier"]) # type: ignore
             }
         return self.postDevice()
-        # parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
-        # try:
-        #     self.getDatabaseHandler().postData(
-        #         table="Devices",
-        #         columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
-        #         values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-        #         parameters=parameters # type: ignore
-        #     )
-        #     self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}")
-        #     return {
-        #         "status": self.created,
-        #         "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
-        #     }
-        # except DatabaseHandlerError as error:
-        #     self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nError: {error}")
-        #     return {
-        #         "status": self.service_unavailable,
-        #         "identifier": 0
-        #     }
+
+    def postDevice(self) -> Dict[str, int]:
+        """
+        Adding a new device.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
+        try:
+            self.getDatabaseHandler().postData(
+                table="Devices",
+                columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
+                values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}")
+            return {
+                "status": self.created,
+                "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "identifier": 0
+            }
 
     def getDatabaseDevice(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]]:
         """

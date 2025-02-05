@@ -364,9 +364,9 @@ class AnalyticalManagementSystem:
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, page_view)
         try:
             self.getDatabaseHandler().postData(
-                table="PageView",
-                columns="loading_time",
-                values="%s",
+                table="Events",
+                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, PageView",
+                values="%s, %s, %s, %s, %s, %s, %s",
                 parameters=parameters # type: ignore
             )
             self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")

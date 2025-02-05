@@ -380,6 +380,23 @@ class AnalyticalManagementSystem:
         status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, color_scheme_updated_identifier)
         return status
 
+    def manageColorSchemeUpdated(self, status: int) -> Dict[str, int]:
+        """
+        Managing the color scheme updated of the event.
+
+        Parameters:
+            status: int: The status of the previous processing.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        if status != self.ok and status != self.created:
+            return {
+                "status": status,
+                "identifier": 0
+            }
+        return self.postColorSchemeUpdated()
+
     def processPageView(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
         Processing page view events.

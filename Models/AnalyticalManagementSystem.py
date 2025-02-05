@@ -373,7 +373,7 @@ class AnalyticalManagementSystem:
 
     def getDatabaseEventType(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
         """
-        Retrieving the device data from the database.
+        Retrieving the event type data from the database.
 
         Returns:
             {status: int, data: [{identifier: int, name: string}]}
@@ -390,10 +390,37 @@ class AnalyticalManagementSystem:
                 "data": data if len(data) > 0 else []
             }
         except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Devices table.\nError: {error}")
+            self.getLogger().error(f"An error occurred while retrieving data from the Event Types table.\nError: {error}")
             return {
                 "status": self.service_unavailable,
                 "data": []
+            }
+
+    def postEventType(self) -> Dict[str, int]:
+        """
+        Adding a new event type.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        parameters: Tuple[str] = (self.getEventName(),)
+        try:
+            self.getDatabaseHandler().postData(
+                table="EventTypes",
+                columns="name",
+                values="%s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Event Types table.\nStatus: {self.created}")
+            return {
+                "status": self.created,
+                "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Event Types table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "identifier": 0
             }
 
     def manageDevice(self, status: int) -> Dict[str, int]:

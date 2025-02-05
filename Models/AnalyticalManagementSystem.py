@@ -329,7 +329,7 @@ class AnalyticalManagementSystem:
         self.setTimestamp(int(mktime(datetime.strptime(str(data["timestamp"]), "%Y/%m/%d %H:%M:%S").timetuple())))
         self.setUserAgent(str(data["user_agent"]))
         self.setScreenResolution(str(data["screen_resolution"]))
-        self.setReferrer(str(data["referrer"]) if data["referrer"] != "" else None)
+        self.setReferrer(str(data["referrer"]) if data["referrer"] != "" and "referrer" in data else None)
         self.setLoadingTime(float(data["loading_time"]) / 1000)
         self.setIpAddress(str(data["ip_address"]) if data["ip_address"] != "127.0.0.1" else "omnitechbros.ddns.net")
         status: int = self.getUserAgentData()
@@ -337,20 +337,23 @@ class AnalyticalManagementSystem:
         status = self.setDeviceType() if status == self.ok else status
         status = self.sanitizeIpAddress() if status == self.ok else status
         status = self.getGeolocationData() if status == self.ok else status
-        device_response: Dict[str, int] = self.manageDevice(status)
-        status = int(device_response["status"])
-        device_identifier: int = int(device_response["identifier"])
-        event_type_response: Dict[str, int] = self.manageEventType(status)
-        status = int(event_type_response["status"])
-        event_type_identifier: int = int(event_type_response["identifier"])
-        network_location_response: Dict[str, int] = self.manageNetworkLocation(status)
-        status = int(network_location_response["status"])
-        network_location_identifier: int = int(network_location_response["identifier"])
-        page_view_response: Dict[str, int] = self.managePageView(status)
-        status = int(page_view_response["status"])
-        page_view_identifier: int = int(page_view_response["identifier"])
-        status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
-        return status
+        if self.getEventName() == "page_view":
+            device_response: Dict[str, int] = self.manageDevice(status)
+            status = int(device_response["status"])
+            device_identifier: int = int(device_response["identifier"])
+            event_type_response: Dict[str, int] = self.manageEventType(status)
+            status = int(event_type_response["status"])
+            event_type_identifier: int = int(event_type_response["identifier"])
+            network_location_response: Dict[str, int] = self.manageNetworkLocation(status)
+            status = int(network_location_response["status"])
+            network_location_identifier: int = int(network_location_response["identifier"])
+            page_view_response: Dict[str, int] = self.managePageView(status)
+            status = int(page_view_response["status"])
+            page_view_identifier: int = int(page_view_response["identifier"])
+            status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
+            return status
+        print(f"{self.__dict__=}")
+        return self.service_unavailable
 
     def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int) -> int:
         """

@@ -474,6 +474,33 @@ class AnalyticalManagementSystem:
             return self.postEventColorSchemeUpdated(device, event_type, network_location, color_scheme)
         return self.service_unavailable
 
+    def postEventColorSchemeUpdated(self, device: int, event_type: int, network_location: int, color_scheme: int) -> int:
+        """
+        Adding the event that is specifically color scheme updated.
+
+        Parameters:
+            device: int: The identifier of the device.
+            event_type: int: The identifier of the event type.
+            network_location: int: The identifier of the network location.
+            color_scheme: int: The identifier of the color scheme.
+
+        Returns:
+            int
+        """
+        parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, color_scheme)
+        try:
+            self.getDatabaseHandler().postData(
+                table="Events",
+                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, color_scheme_updated",
+                values="%s, %s, %s, %s, %s, %s, %s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
+            return self.created
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
+            return self.service_unavailable
+
     def postEventPageView(self, device: int, event_type: int, network_location: int, page_view: int) -> int:
         """
         Adding the event that is specifically page view.

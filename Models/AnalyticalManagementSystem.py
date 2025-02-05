@@ -142,6 +142,10 @@ class AnalyticalManagementSystem:
     """
     The status code for created.
     """
+    no_content: int = 204
+    """
+    The status code for no content.
+    """
 
     def __init__(self):
         """
@@ -409,8 +413,8 @@ class AnalyticalManagementSystem:
                 parameters=parameters # type: ignore
             )
             return {
-                "status": self.ok,
-                "data": data
+                "status": self.ok if len(data) > 0 else self.no_content,
+                "data": data if len(data) > 0 else []
             }
         except DatabaseHandlerError as error:
             self.getLogger().error(f"An error occurred while retrieving data from the Devices table.\nError: {error}")

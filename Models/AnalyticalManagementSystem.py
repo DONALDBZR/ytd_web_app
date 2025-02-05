@@ -340,12 +340,36 @@ class AnalyticalManagementSystem:
         device_response: Dict[str, int] = self.manageDevice(status)
         status = int(device_response["status"])
         device_identifier: int = int(device_response["identifier"])
-        # event_type_response: Dict[str, int] = self.manageEventType(status)
-        # status = int(event_type_response["status"])
-        # event_type_identifier: int = int(event_type_response["identifier"])
+        event_type_response: Dict[str, int] = self.manageEventType(status)
+        status = int(event_type_response["status"])
+        event_type_identifier: int = int(event_type_response["identifier"])
         status = 418 if status == self.ok else status
         print(f"{self.__dict__=}")
         return status
+
+    def manageEventType(self, status: int) -> Dict[str, int]:
+        """
+        Managing the type of the event.
+
+        Parameters:
+            status: int: The status of the previous processing.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        if status != self.ok or status != self.created:
+            return {
+                "status": status,
+                "identifier": 0
+            }
+        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]] = self.getDatabaseEventType()
+        if database_response["status"] == self.ok:
+            event_type: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
+            return {
+                "status": int(database_response["status"]), # type: ignore
+                "identifier": int(event_type["identifier"]) # type: ignore
+            }
+        return self.postEventType()
 
     def manageDevice(self, status: int) -> Dict[str, int]:
         """
@@ -357,7 +381,7 @@ class AnalyticalManagementSystem:
         Returns:
             {status: int, identifier: int}
         """
-        if status != self.ok:
+        if status != self.ok or status != self.created:
             return {
                 "status": status,
                 "identifier": 0

@@ -249,6 +249,9 @@ class HeaderHomepage extends React.Component {
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay) {
+        this.tracker.sendEvent("color_scheme_updated", {
+            color_scheme: color_scheme,
+        });
         this.updateSession(color_scheme)
         .then((status) => console.log(`Request: PUT /Session\nStatus: ${status}`));
         setTimeout(() => {

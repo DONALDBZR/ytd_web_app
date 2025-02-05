@@ -352,6 +352,29 @@ class AnalyticalManagementSystem:
         status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
         return status
 
+    def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int) -> int:
+        """
+        Adding a new event.
+
+        Returns:
+            int
+        """
+        if status != self.ok or status != self.created:
+            return status
+        parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, page_view)
+        try:
+            self.getDatabaseHandler().postData(
+                table="PageView",
+                columns="loading_time",
+                values="%s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
+            return self.created
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
+            return self.service_unavailable
+
     def managePageView(self, status: int) -> Dict[str, int]:
         """
         Managing the page view of the event.

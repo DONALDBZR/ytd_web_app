@@ -338,6 +338,8 @@ class AnalyticalManagementSystem:
         status = self.getGeolocationData() if status == self.ok else status
         if self.getEventName() == "page_view":
             return self.processPageView(data, status)
+        if self.getEventName() == "color_scheme_updated":
+            return self.processColorSchemeUpdated(data, status)
         print(f"{self.__dict__=}")
         return self.service_unavailable
 

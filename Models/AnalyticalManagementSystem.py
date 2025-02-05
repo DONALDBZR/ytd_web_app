@@ -374,10 +374,10 @@ class AnalyticalManagementSystem:
         network_location_response: Dict[str, int] = self.manageNetworkLocation(status)
         status = int(network_location_response["status"])
         network_location_identifier: int = int(network_location_response["identifier"])
-        page_view_response: Dict[str, int] = self.managePageView(status)
-        status = int(page_view_response["status"])
-        page_view_identifier: int = int(page_view_response["identifier"])
-        status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, page_view_identifier)
+        color_scheme_updated_response: Dict[str, int] = self.manageColorSchemeUpdated(status)
+        status = int(color_scheme_updated_response["status"])
+        color_scheme_updated_identifier: int = int(color_scheme_updated_response["identifier"])
+        status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, color_scheme_updated_identifier)
         return status
 
     def processPageView(self, data: Dict[str, Union[str, float]], status: int) -> int:

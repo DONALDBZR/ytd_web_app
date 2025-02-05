@@ -401,6 +401,33 @@ class AnalyticalManagementSystem:
                 "data": []
             }
 
+    def postNetworkLocation(self) -> Dict[str, int]:
+        """
+        Adding a new network and location.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        parameters: Tuple[str, Union[str, None], float, float, str, str, str, str, str] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"ST_GeomFromText(POINT({self.getLatitude()} {self.getLongitude()}))")
+        try:
+            self.getDatabaseHandler().postData(
+                table="NetworkLocation",
+                columns="ip_address, hostname, latitude, longitude, city, region, country, timezone, location",
+                values="%s, %s, %s, %s, %s, %s, %s, %s, %s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}")
+            return {
+                "status": self.created,
+                "identifier": int(self.getDatabaseHandler().__getStatement().lastrowid), # type: ignore
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Network and Location table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "identifier": 0
+            }
+
     def manageEventType(self, status: int) -> Dict[str, int]:
         """
         Managing the type of the event.

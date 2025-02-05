@@ -360,7 +360,7 @@ class AnalyticalManagementSystem:
         Returns:
             int
         """
-        if status != self.ok or status != self.created:
+        if status != self.ok and status != self.created:
             return status
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, page_view)
         try:

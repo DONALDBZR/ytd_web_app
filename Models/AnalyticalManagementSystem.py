@@ -386,7 +386,7 @@ class AnalyticalManagementSystem:
         Returns:
             {status: int, identifier: int}
         """
-        if status != self.ok or status != self.created:
+        if status != self.ok and status != self.created:
             return {
                 "status": status,
                 "identifier": 0

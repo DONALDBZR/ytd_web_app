@@ -31,6 +31,7 @@ class HeaderHomepage extends React.Component {
                 data_loaded: false,
             },
         };
+        this.tracker = window.Tracker;
     }
 
     /**

@@ -480,7 +480,7 @@ class AnalyticalManagementSystem:
             self.getDatabaseHandler().postData(
                 table="NetworkLocation",
                 columns="ip_address, hostname, latitude, longitude, city, region, country, timezone, location",
-                values="%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s)",
+                values="%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)",
                 parameters=parameters # type: ignore
             )
             self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}")

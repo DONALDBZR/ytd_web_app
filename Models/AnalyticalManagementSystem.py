@@ -329,7 +329,7 @@ class AnalyticalManagementSystem:
         self.setTimestamp(int(mktime(datetime.strptime(str(data["timestamp"]), "%Y/%m/%d %H:%M:%S").timetuple())))
         self.setUserAgent(str(data["user_agent"]))
         self.setScreenResolution(str(data["screen_resolution"]))
-        self.setReferrer(str(data["referrer"]) if data["referrer"] != "" and "referrer" in data else None)
+        self.setReferrer(str(data["referrer"]) if "referrer" in data and data["referrer"] != "" else None)
         self.setLoadingTime(float(data["loading_time"]) / 1000)
         self.setIpAddress(str(data["ip_address"]) if data["ip_address"] != "127.0.0.1" else "omnitechbros.ddns.net")
         status: int = self.getUserAgentData()

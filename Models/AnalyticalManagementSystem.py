@@ -376,6 +376,31 @@ class AnalyticalManagementSystem:
             }
         return self.postNetworkLocation()
 
+    def getDatabaseNetworkLocation(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, float]]]]]]:
+        """
+        Retrieving the network and location data from the database.
+
+        Returns:
+            {status: int, data: [{identifier: int, ip_address: string, hostname: string, latitude: float, longitude: float, city: string, region: string, country: string, timezone: string, location: string}]}
+        """
+        try:
+            parameters: Tuple[str, float, float] = (self.getIpAddress(), self.getLatitude(), self.getLongitude())
+            data: List[Union[RowType, Dict[str, Union[int, str, float]]]] = self.getDatabaseHandler().getData(
+                table_name="NetworkLocations",
+                filter_condition="ip_address = %s AND latitude = %s AND longitude = %s",
+                parameters=parameters # type: ignore
+            )
+            return {
+                "status": self.ok if len(data) > 0 else self.no_content,
+                "data": data if len(data) > 0 else []
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while retrieving data from the Network and Location table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "data": []
+            }
+
     def manageEventType(self, status: int) -> Dict[str, int]:
         """
         Managing the type of the event.

@@ -475,12 +475,12 @@ class AnalyticalManagementSystem:
         Returns:
             {status: int, identifier: int}
         """
-        parameters: Tuple[str, Union[str, None], float, float, str, str, str, str, str] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"ST_GeomFromText(POINT({self.getLatitude()} {self.getLongitude()}))")
+        parameters: Tuple[str, Union[str, None], float, float, str, str, str, str, str] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})")
         try:
             self.getDatabaseHandler().postData(
                 table="NetworkLocation",
                 columns="ip_address, hostname, latitude, longitude, city, region, country, timezone, location",
-                values="%s, %s, %s, %s, %s, %s, %s, %s, %s",
+                values="%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s)",
                 parameters=parameters # type: ignore
             )
             self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}")

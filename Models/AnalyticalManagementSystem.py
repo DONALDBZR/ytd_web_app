@@ -412,7 +412,13 @@ class AnalyticalManagementSystem:
         color_scheme_updated_response: Dict[str, int] = self.manageColorSchemeUpdated(status)
         status = int(color_scheme_updated_response["status"])
         color_scheme_updated_identifier: int = int(color_scheme_updated_response["identifier"])
-        status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, 0, color_scheme_updated_identifier)
+        status = self.postEvent(
+            status=status,
+            device=device_identifier,
+            event_type=event_type_identifier,
+            network_location=network_location_identifier,
+            color_scheme=color_scheme_updated_identifier
+        )
         return status
 
     def manageColorSchemeUpdated(self, status: int) -> Dict[str, int]:

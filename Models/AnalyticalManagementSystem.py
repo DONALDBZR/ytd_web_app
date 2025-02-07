@@ -350,6 +350,8 @@ class AnalyticalManagementSystem:
             return self.processPageView(data, status)
         if self.getEventName() == "color_scheme_updated":
             return self.processColorSchemeUpdated(data, status)
+        if self.getEventName() == "search_submitted":
+            return self.processSearchSubmitted(data, status)
         print(f"{self.__dict__=}")
         return self.service_unavailable
 

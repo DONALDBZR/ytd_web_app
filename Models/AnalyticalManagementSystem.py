@@ -422,6 +422,33 @@ class AnalyticalManagementSystem:
             }
         return self.postSearchSubmitted()
 
+    def postSearchSubmitted(self) -> Dict[str, int]:
+        """
+        Adding a new search term.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        parameters: Tuple[str] = (self.getColorScheme(),)
+        try:
+            self.getDatabaseHandler().postData(
+                table="SearchSubmitted",
+                columns="search_term",
+                values="%s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Search Submitted table.\nStatus: {self.created}")
+            return {
+                "status": self.created,
+                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Search Submitted table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "identifier": 0
+            }
+
     def getSearchSubmitted(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
         """
         Retrieving the search submitted data from the database.

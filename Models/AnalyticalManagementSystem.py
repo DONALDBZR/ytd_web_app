@@ -498,7 +498,7 @@ class AnalyticalManagementSystem:
         )
         return status
 
-    def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int, color_scheme: int) -> int:
+    def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int = 0, color_scheme: int = 0, search_submitted: int = 0) -> int:
         """
         Adding a new event.
 
@@ -509,6 +509,7 @@ class AnalyticalManagementSystem:
             network_location: int: The identifier of the network location.
             page_view: int: The identifier of the page view.
             color_scheme: int: The identifier of the color scheme.
+            search_submitted: int: The identifier of the search submitted.
 
         Returns:
             int
@@ -519,6 +520,8 @@ class AnalyticalManagementSystem:
             return self.postEventPageView(device, event_type, network_location, page_view)
         if color_scheme != 0:
             return self.postEventColorSchemeUpdated(device, event_type, network_location, color_scheme)
+        if search_submitted != 0:
+            return self.postEventSearchSubmitted(device, event_type, network_location, search_submitted)
         return self.service_unavailable
 
     def postEventColorSchemeUpdated(self, device: int, event_type: int, network_location: int, color_scheme: int) -> int:

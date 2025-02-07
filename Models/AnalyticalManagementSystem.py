@@ -429,7 +429,7 @@ class AnalyticalManagementSystem:
         Returns:
             {status: int, identifier: int}
         """
-        parameters: Tuple[str] = (self.getColorScheme(),)
+        parameters: Tuple[str] = (self.getSearchTerm(),)
         try:
             self.getDatabaseHandler().postData(
                 table="SearchSubmitted",

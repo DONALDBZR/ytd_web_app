@@ -355,6 +355,33 @@ class AnalyticalManagementSystem:
         print(f"{self.__dict__=}")
         return self.service_unavailable
 
+    def processSearchSubmitted(self, data: Dict[str, Union[str, float]], status: int) -> int:
+        """
+        Processing search submitted events.
+
+        Args:
+            data: {event_name: string, page_url: string, timestamp: string, user_agent: string, screen_resolution: string, search_term: string}: The data that will be processed.
+            status: int: The status of the previous processing.
+
+        Returns:
+            int
+        """
+        self.setSearchTerm(str(data["search_term"]))
+        device_response: Dict[str, int] = self.manageDevice(status)
+        status = int(device_response["status"])
+        device_identifier: int = int(device_response["identifier"])
+        event_type_response: Dict[str, int] = self.manageEventType(status)
+        status = int(event_type_response["status"])
+        event_type_identifier: int = int(event_type_response["identifier"])
+        network_location_response: Dict[str, int] = self.manageNetworkLocation(status)
+        status = int(network_location_response["status"])
+        network_location_identifier: int = int(network_location_response["identifier"])
+        search_submitted_response: Dict[str, int] = self.manageSearchSubmitted(status)
+        status = int(search_submitted_response["status"])
+        search_submitted_identifier: int = int(search_submitted_response["identifier"])
+        status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, 0, 0, search_submitted_identifier)
+        return status
+
     def processColorSchemeUpdated(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
         Processing color scheme updated events.

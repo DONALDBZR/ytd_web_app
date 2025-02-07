@@ -150,6 +150,10 @@ class AnalyticalManagementSystem:
     """
     The color scheme to be updated in.
     """
+    __search_term: str
+    """
+    The term to be searched.
+    """
 
     def __init__(self):
         """
@@ -160,6 +164,12 @@ class AnalyticalManagementSystem:
         self.setLogger(Extractio_Logger(__name__))
         self.setIpInformationApi("https://ipinfo.io")
         self.getLogger().inform("Analytical Management System has been initialized.")
+
+    def getSearchTerm(self) -> str:
+        return self.__search_term
+
+    def setSearchTerm(self, search_term: str) -> None:
+        self.__search_term = search_term
 
     def getColorScheme(self) -> str:
         return self.__color_scheme
@@ -387,6 +397,30 @@ class AnalyticalManagementSystem:
             search_submitted=search_submitted_identifier
         )
         return status
+
+    def manageSearchSubmitted(self, status: int) -> Dict[str, int]:
+        """
+        Managing the search submitted of the event.
+
+        Parameters:
+            status: int: The status of the previous processing.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        if status != self.ok and status != self.created:
+            return {
+                "status": status,
+                "identifier": 0
+            }
+        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, float]]]]]] = self.getSearchSubmitted()
+        if database_response["status"] == self.ok:
+            network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
+            return {
+                "status": int(database_response["status"]), # type: ignore
+                "identifier": int(network_location["identifier"]) # type: ignore
+            }
+        return self.postSearchSubmitted()
 
     def processColorSchemeUpdated(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """

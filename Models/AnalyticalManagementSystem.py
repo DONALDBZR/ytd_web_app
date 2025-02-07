@@ -379,7 +379,13 @@ class AnalyticalManagementSystem:
         search_submitted_response: Dict[str, int] = self.manageSearchSubmitted(status)
         status = int(search_submitted_response["status"])
         search_submitted_identifier: int = int(search_submitted_response["identifier"])
-        status = self.postEvent(status, device_identifier, event_type_identifier, network_location_identifier, 0, 0, search_submitted_identifier)
+        status = self.postEvent(
+            status=status,
+            device=device_identifier,
+            event_type=event_type_identifier,
+            network_location=network_location_identifier,
+            search_submitted=search_submitted_identifier
+        )
         return status
 
     def processColorSchemeUpdated(self, data: Dict[str, Union[str, float]], status: int) -> int:

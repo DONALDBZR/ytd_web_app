@@ -112,12 +112,20 @@ class HeaderHomepage extends React.Component {
     searchMediaMetadata(platform, search, delay) {
         this.tracker.sendEvent("search_submitted", {
             search_term: search,
-        });
-        this.setRoute(platform, search)
-        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`))
+        })
         .then(() => {
+            return this.setRoute(platform, search);
+        })
+        .then((status) => {
+            console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`);
             setTimeout(() => {
                 window.location.href = this.state.System.view_route;
+            }, delay);
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
             }, delay);
         });
     }

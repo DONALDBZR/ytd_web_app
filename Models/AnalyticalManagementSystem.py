@@ -627,7 +627,7 @@ class AnalyticalManagementSystem:
         try:
             self.getDatabaseHandler().postData(
                 table="Events",
-                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, search_submitted",
+                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, SearchSubmitted",
                 values="%s, %s, %s, %s, %s, %s, %s",
                 parameters=parameters # type: ignore
             )

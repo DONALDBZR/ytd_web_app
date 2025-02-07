@@ -524,6 +524,33 @@ class AnalyticalManagementSystem:
             return self.postEventSearchSubmitted(device, event_type, network_location, search_submitted)
         return self.service_unavailable
 
+    def postEventSearchSubmitted(self, device: int, event_type: int, network_location: int, search_submitted: int) -> int:
+        """
+        Adding the event that is specifically search submitted.
+
+        Parameters:
+            device: int: The identifier of the device.
+            event_type: int: The identifier of the event type.
+            network_location: int: The identifier of the network location.
+            search_submitted: int: The identifier of the search submitted.
+
+        Returns:
+            int
+        """
+        parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, search_submitted)
+        try:
+            self.getDatabaseHandler().postData(
+                table="Events",
+                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, search_submitted",
+                values="%s, %s, %s, %s, %s, %s, %s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
+            return self.created
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
+            return self.service_unavailable
+
     def postEventColorSchemeUpdated(self, device: int, event_type: int, network_location: int, color_scheme: int) -> int:
         """
         Adding the event that is specifically color scheme updated.

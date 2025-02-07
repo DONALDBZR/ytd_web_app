@@ -422,6 +422,31 @@ class AnalyticalManagementSystem:
             }
         return self.postSearchSubmitted()
 
+    def getSearchSubmitted(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
+        """
+        Retrieving the search submitted data from the database.
+
+        Returns:
+            {status: int, data: [{identifier: int, search_term: string}]}
+        """
+        try:
+            parameters: Tuple[str] = (self.getSearchTerm(),)
+            data: List[Union[RowType, Dict[str, Union[int, str]]]] = self.getDatabaseHandler().getData(
+                table_name="SearchSubmitted",
+                filter_condition="search_term = %s",
+                parameters=parameters # type: ignore
+            )
+            return {
+                "status": self.ok if len(data) > 0 else self.no_content,
+                "data": data if len(data) > 0 else []
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while retrieving data from the Search Submitted table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "data": []
+            }
+
     def processColorSchemeUpdated(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
         Processing color scheme updated events.

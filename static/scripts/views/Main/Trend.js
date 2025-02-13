@@ -75,7 +75,7 @@ class Trend extends React.Component {
             uniform_resource_locator: uniform_resource_locator,
         })
         .then(() => {
-            window.location.href = uniform_resource_locator;
+            window.open(uniform_resource_locator, "_blank");
         });
     };
 

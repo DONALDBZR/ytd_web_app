@@ -435,7 +435,7 @@ class AnalyticalManagementSystem:
         Returns:
             {status: int, identifier: int}
         """
-        parameters: Tuple[str] = (self.getSearchTerm(),)
+        parameters: Tuple[str] = (self.getForwardedUniformResourceLocator(),)
         try:
             self.getDatabaseHandler().postData(
                 table="Click",

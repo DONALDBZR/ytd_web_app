@@ -428,6 +428,33 @@ class AnalyticalManagementSystem:
             }
         return self.postClick()
 
+    def postClick(self) -> Dict[str, int]:
+        """
+        Adding a new click.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        parameters: Tuple[str] = (self.getSearchTerm(),)
+        try:
+            self.getDatabaseHandler().postData(
+                table="Click",
+                columns="uniform_resource_locator",
+                values="%s",
+                parameters=parameters # type: ignore
+            )
+            self.getLogger().inform(f"The data has been successfully inserted in the Click table.\nStatus: {self.created}")
+            return {
+                "status": self.created,
+                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
+            }
+        except DatabaseHandlerError as error:
+            self.getLogger().error(f"An error occurred while inserting data in the Click table.\nError: {error}")
+            return {
+                "status": self.service_unavailable,
+                "identifier": 0
+            }
+
     def processSearchSubmitted(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
         Processing search submitted events.

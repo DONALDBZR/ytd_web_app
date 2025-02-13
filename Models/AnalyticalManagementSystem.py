@@ -154,6 +154,11 @@ class AnalyticalManagementSystem:
     """
     The term to be searched.
     """
+    __forwarded_uniform_resource_locator: str
+    """
+    The uniform resource locator on which the user to be
+    forwarded on.
+    """
 
     def __init__(self):
         """
@@ -164,6 +169,12 @@ class AnalyticalManagementSystem:
         self.setLogger(Extractio_Logger(__name__))
         self.setIpInformationApi("https://ipinfo.io")
         self.getLogger().inform("Analytical Management System has been initialized.")
+
+    def getForwardedUniformResourceLocator(self) -> str:
+        return self.__forwarded_uniform_resource_locator
+
+    def setForwardedUniformResourceLocator(self, forwarded_uniform_resource_locator: str) -> None:
+        self.__forwarded_uniform_resource_locator = forwarded_uniform_resource_locator
 
     def getSearchTerm(self) -> str:
         return self.__search_term
@@ -366,6 +377,39 @@ class AnalyticalManagementSystem:
             return self.processClick(data, status)
         print(f"{self.__dict__=}")
         return self.service_unavailable
+
+    def processClick(self, data: Dict[str, Union[str, float]], status: int) -> int:
+        """
+        Processing click events.
+
+        Args:
+            data: {event_name: string, page_url: string, timestamp: string, user_agent: string, screen_resolution: string, uniform_resource_locator: string}: The data that will be processed.
+            status: int: The status of the previous processing.
+
+        Returns:
+            int
+        """
+        self.setForwardedUniformResourceLocator(str(data["uniform_resource_locator"]))
+        device_response: Dict[str, int] = self.manageDevice(status)
+        status = int(device_response["status"])
+        device_identifier: int = int(device_response["identifier"])
+        event_type_response: Dict[str, int] = self.manageEventType(status)
+        status = int(event_type_response["status"])
+        event_type_identifier: int = int(event_type_response["identifier"])
+        network_location_response: Dict[str, int] = self.manageNetworkLocation(status)
+        status = int(network_location_response["status"])
+        network_location_identifier: int = int(network_location_response["identifier"])
+        click_response: Dict[str, int] = self.manageClick(status)
+        status = int(click_response["status"])
+        click_identifier: int = int(click_response["identifier"])
+        status = self.postEvent(
+            status=status,
+            device=device_identifier,
+            event_type=event_type_identifier,
+            network_location=network_location_identifier,
+            click=click_identifier
+        )
+        return status
 
     def processSearchSubmitted(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """

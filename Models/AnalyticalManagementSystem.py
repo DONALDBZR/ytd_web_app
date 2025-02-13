@@ -411,6 +411,23 @@ class AnalyticalManagementSystem:
         )
         return status
 
+    def manageClick(self, status: int) -> Dict[str, int]:
+        """
+        Managing the click of the event.
+
+        Parameters:
+            status: int: The status of the previous processing.
+
+        Returns:
+            {status: int, identifier: int}
+        """
+        if status != self.ok and status != self.created:
+            return {
+                "status": status,
+                "identifier": 0
+            }
+        return self.postClick()
+
     def processSearchSubmitted(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
         Processing search submitted events.

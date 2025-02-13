@@ -64,6 +64,22 @@ class Trend extends React.Component {
     }
 
     /**
+     * Handles the click event on a media card.
+     * @param {MouseEvent} event The click event.
+     * @returns {void}
+     */
+    handleClick = (event) => {
+        event.preventDefault();
+        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
+        window.Tracker.sendEvent("click", {
+            uniform_resource_locator: uniform_resource_locator,
+        })
+        .then(() => {
+            // window.location.href = uniform_resource_locator;
+        });
+    };
+
+    /**
      * Rendering the media card.
      * @param {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}} content
      * @return {React.Component}
@@ -74,14 +90,14 @@ class Trend extends React.Component {
         return (
             <div className="card" key={content.identifier}>
                 <div>
-                    <a href={content.uniform_resource_locator} target="__blank">
+                    <a href={content.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
                         <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`}  width={width} height={height} sizes="(max-width: 640px) 179px, (min-width: 641px) 1280px" />
                     </a>
                 </div>
                 <div>
                     <div>{content.title}</div>
                     <div>
-                        <a href={content.author_channel}>{content.author}</a>
+                        <a href={content.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{content.author}</a>
                     </div>
                     <div>
                         <div>Duration:</div>
@@ -94,7 +110,7 @@ class Trend extends React.Component {
                         </div>
                     </div>
                     <div>
-                        <a href={`/Download/YouTube/${content.identifier}`}>
+                        <a href={`/Download/YouTube/${content.identifier}`} target="__blank" onClick={this.handleClick.bind(this)}>
                             <i className="fa-solid fa-download"></i>
                         </a>
                     </div>

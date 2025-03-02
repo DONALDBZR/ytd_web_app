@@ -3,8 +3,8 @@
  */
 class Trend extends React.Component {
     /**
-     * Constructing the Trend component which is based on the Main
-     * component of the Homepage.
+     * Constructing the Trend component which is will render the
+     * trend list.
      * @param {*} props The properties of the component
      */
     constructor(props) {
@@ -16,6 +16,12 @@ class Trend extends React.Component {
         this.state = {
             Trend: [],
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**

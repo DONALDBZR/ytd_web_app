@@ -191,6 +191,22 @@ class YouTube extends React.Component {
     }
 
     /**
+     * Handles the click event on a component.
+     * @param {MouseEvent} event The click event.
+     * @returns {void}
+     */
+    handleClick = (event) => {
+        event.preventDefault();
+        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: uniform_resource_locator,
+        })
+        .then(() => {
+            window.open(uniform_resource_locator, "_blank");
+        });
+    };
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */

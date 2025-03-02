@@ -199,7 +199,7 @@ class YouTube extends React.Component {
             return (
                 <div className="YouTube">
                     <div>
-                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank">
+                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
                             <img src={this.state.Media.YouTube.thumbnail} />
                         </a>
                     </div>
@@ -207,7 +207,7 @@ class YouTube extends React.Component {
                         <div class="metadata">
                             <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title), fontSize: this.getTitleFontSize(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
                             <div>
-                                <a href={this.state.Media.YouTube.author_channel} target="__blank">{this.state.Media.YouTube.author}</a>
+                                <a href={this.state.Media.YouTube.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.Media.YouTube.author}</a>
                             </div>
                             <div>
                                 <div id="duration">

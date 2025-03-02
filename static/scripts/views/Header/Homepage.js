@@ -31,6 +31,12 @@ class HeaderHomepage extends React.Component {
                 data_loaded: false,
             },
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**
@@ -109,11 +115,22 @@ class HeaderHomepage extends React.Component {
      * @returns {void}
      */
     searchMediaMetadata(platform, search, delay) {
-        this.setRoute(platform, search)
-        .then((status) => console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`))
+        this.tracker.sendEvent("search_submitted", {
+            search_term: search,
+        })
         .then(() => {
+            return this.setRoute(platform, search);
+        })
+        .then((status) => {
+            console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&search=${search}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`);
             setTimeout(() => {
                 window.location.href = this.state.System.view_route;
+            }, delay);
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
             }, delay);
         });
     }
@@ -245,11 +262,24 @@ class HeaderHomepage extends React.Component {
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay) {
-        this.updateSession(color_scheme)
-        .then((status) => console.log(`Request: PUT /Session\nStatus: ${status}`));
-        setTimeout(() => {
-            window.location.href = window.location.href;
-        }, delay);
+        this.tracker.sendEvent("color_scheme_updated", {
+            color_scheme: color_scheme,
+        })
+        .then(() => {
+            return this.updateSession(color_scheme);
+        })
+        .then((status) => {
+            console.log(`Request: PUT /Session\nStatus: ${status}`);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
     }
 
     /**

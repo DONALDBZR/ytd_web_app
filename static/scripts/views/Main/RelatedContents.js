@@ -6,8 +6,7 @@
 class RelatedContents extends React.Component {
     /**
      * Constructing the component given that it will only render
-     * the related contents with the properties and states of the
-     * component.
+     * the related contents.
      * @param {*} props The properties of the component.
      */
     constructor(props) {
@@ -24,6 +23,12 @@ class RelatedContents extends React.Component {
                 data_loaded: false,
             },
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**
@@ -71,6 +76,28 @@ class RelatedContents extends React.Component {
     }
 
     /**
+     * Handles the click event on a component.
+     * @param {MouseEvent} event The click event.
+     * @returns {void}
+     */
+    handleClick = (event) => {
+        event.preventDefault();
+        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: uniform_resource_locator,
+        })
+        .then(() => {
+            window.open(uniform_resource_locator, "_blank");
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
+    };
+
+    /**
      * Rendering the media content that are related with the main
      * content.
      * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}} media The metadata of the media content.
@@ -81,14 +108,14 @@ class RelatedContents extends React.Component {
         return (
             <div className="card" key={identifier}>
                 <div className="thumbnail">
-                    <a href={media.uniform_resource_locator} target="__blank">
+                    <a href={media.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
                         <img src={media.thumbnail} loading="lazy" alt={`Thumbnail for ${media.title}`} />
                     </a>
                 </div>
                 <div className="metadata">
                     <div className="title">{media.title}</div>
                     <div className="author">
-                        <a href={media.author_channel} target="__blank">{media.channel}</a>
+                        <a href={media.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{media.channel}</a>
                     </div>
                     <div className="duration">
                         <div>Duration</div>

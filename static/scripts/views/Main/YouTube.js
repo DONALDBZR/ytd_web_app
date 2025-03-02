@@ -4,8 +4,8 @@
  */
 class YouTube extends React.Component {
     /**
-     * Constructing the Youtube component and also inheriting the
-     * properties and states from the media
+     * Constructing the YouTube component which will render the
+     * data of the video from YouTube.
      * @param {*} props
      */
     constructor(props) {
@@ -34,6 +34,12 @@ class YouTube extends React.Component {
                 data_loaded: false,
             },
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**
@@ -97,8 +103,19 @@ class YouTube extends React.Component {
         const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
         const platform = new URL(this.state.Media.YouTube.uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
-        this.postMediaDownload(uniform_resource_locator, platform)
-        .then((response) => this.manageResponse(response, delay));
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: `/Download/YouTube/${this.state.Media.YouTube.identifier}`,
+        })
+        .then(() => {
+            return this.postMediaDownload(uniform_resource_locator, platform);
+        })
+        .then((response) => this.manageResponse(response, delay))
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
     }
 
     /**
@@ -185,6 +202,28 @@ class YouTube extends React.Component {
     }
 
     /**
+     * Handles the click event on a component.
+     * @param {MouseEvent} event The click event.
+     * @returns {void}
+     */
+    handleClick = (event) => {
+        event.preventDefault();
+        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: uniform_resource_locator,
+        })
+        .then(() => {
+            window.open(uniform_resource_locator, "_blank");
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
+    };
+
+    /**
      * Rendering the component
      * @returns {React.Component}
      */
@@ -193,7 +232,7 @@ class YouTube extends React.Component {
             return (
                 <div className="YouTube">
                     <div>
-                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank">
+                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
                             <img src={this.state.Media.YouTube.thumbnail} />
                         </a>
                     </div>
@@ -201,7 +240,7 @@ class YouTube extends React.Component {
                         <div class="metadata">
                             <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title), fontSize: this.getTitleFontSize(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
                             <div>
-                                <a href={this.state.Media.YouTube.author_channel} target="__blank">{this.state.Media.YouTube.author}</a>
+                                <a href={this.state.Media.YouTube.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.Media.YouTube.author}</a>
                             </div>
                             <div>
                                 <div id="duration">

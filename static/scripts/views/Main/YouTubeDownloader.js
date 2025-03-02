@@ -4,7 +4,7 @@
  */
 class YouTubeDownloader extends React.Component {
     /**
-     * Constructing the application from React's Component
+     * Constructing the downloader component for YouTube media.
      * @param {*} props The properties of the component
      */
     constructor(props) {
@@ -30,6 +30,12 @@ class YouTubeDownloader extends React.Component {
             },
             data_loaded: false,
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**
@@ -78,8 +84,8 @@ class YouTubeDownloader extends React.Component {
             duration: (media) ? media.duration : this.state.duration,
             File: {
                 ...previous.File,
-                audio: (media) ? media.audio_file : this.state.File.audio,
-                video: (media) ? media.video_file : this.state.File.video,
+                audio: (media) ? media.audio : this.state.File.audio,
+                video: (media) ? media.video : this.state.File.video,
             },
             data_loaded: data_loaded,
         }));
@@ -199,10 +205,38 @@ class YouTubeDownloader extends React.Component {
         const button = event.target.parentElement.parentElement;
         const file_location = button.value;
         const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
-        this.downloadFileServer(file_location, file_name)
-            .then((data) => this.downloadFileClient(data, file_name))
-            .catch((error) => console.error("Download Failed: ", error));
+        const uniform_resource_locator = (file_location.includes("/Public/Audio/")) ? `/Public/Audio/${this.state.identifier}.mp3` : `/Public/Video/${this.state.identifier}.mp4`;
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: uniform_resource_locator,
+        })
+        .then(() => {
+            return this.downloadFileServer(file_location, file_name);
+        })
+        .then((data) => this.downloadFileClient(data, file_name))
+        .catch((error) => console.error("Download Failed: ", error));
     }
+
+    /**
+     * Handles the click event on a component.
+     * @param {MouseEvent} event The click event.
+     * @returns {void}
+     */
+    handleClick = (event) => {
+        event.preventDefault();
+        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: uniform_resource_locator,
+        })
+        .then(() => {
+            window.open(uniform_resource_locator, "_blank");
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
+    };
 
     /**
      * Rendering the component for the YouTube downloader.
@@ -217,10 +251,10 @@ class YouTubeDownloader extends React.Component {
                     </div>
                     <div id="data">
                         <div id="title">
-                            <a href={this.state.uniform_resource_locator} target="__blank">{this.state.title}</a>
+                            <a href={this.state.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.title}</a>
                         </div>
                         <div id="author">
-                            <a href={this.state.author_channel} target="__blank">{this.state.author}</a>
+                            <a href={this.state.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.author}</a>
                         </div>
                         <div id="actions">
                             <div id="metrics">

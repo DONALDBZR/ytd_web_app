@@ -3,8 +3,8 @@
  */
 class Trend extends React.Component {
     /**
-     * Constructing the Trend component which is based on the Main
-     * component of the Homepage.
+     * Constructing the Trend component which is will render the
+     * trend list.
      * @param {*} props The properties of the component
      */
     constructor(props) {
@@ -16,6 +16,12 @@ class Trend extends React.Component {
         this.state = {
             Trend: [],
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**
@@ -64,6 +70,28 @@ class Trend extends React.Component {
     }
 
     /**
+     * Handles the click event on a media card.
+     * @param {MouseEvent} event The click event.
+     * @returns {void}
+     */
+    handleClick = (event) => {
+        event.preventDefault();
+        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: uniform_resource_locator,
+        })
+        .then(() => {
+            window.open(uniform_resource_locator, "_blank");
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
+    };
+
+    /**
      * Rendering the media card.
      * @param {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}} content
      * @return {React.Component}
@@ -74,14 +102,14 @@ class Trend extends React.Component {
         return (
             <div className="card" key={content.identifier}>
                 <div>
-                    <a href={content.uniform_resource_locator} target="__blank">
+                    <a href={content.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
                         <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`}  width={width} height={height} sizes="(max-width: 640px) 179px, (min-width: 641px) 1280px" />
                     </a>
                 </div>
                 <div>
                     <div>{content.title}</div>
                     <div>
-                        <a href={content.author_channel}>{content.author}</a>
+                        <a href={content.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{content.author}</a>
                     </div>
                     <div>
                         <div>Duration:</div>
@@ -94,7 +122,7 @@ class Trend extends React.Component {
                         </div>
                     </div>
                     <div>
-                        <a href={`/Download/YouTube/${content.identifier}`}>
+                        <a href={`/Download/YouTube/${content.identifier}`} target="__blank" onClick={this.handleClick.bind(this)}>
                             <i className="fa-solid fa-download"></i>
                         </a>
                     </div>

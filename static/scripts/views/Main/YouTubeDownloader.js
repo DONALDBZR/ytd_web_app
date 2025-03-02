@@ -217,10 +217,10 @@ class YouTubeDownloader extends React.Component {
                     </div>
                     <div id="data">
                         <div id="title">
-                            <a href={this.state.uniform_resource_locator} target="__blank">{this.state.title}</a>
+                            <a href={this.state.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.title}</a>
                         </div>
                         <div id="author">
-                            <a href={this.state.author_channel} target="__blank">{this.state.author}</a>
+                            <a href={this.state.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.author}</a>
                         </div>
                         <div id="actions">
                             <div id="metrics">

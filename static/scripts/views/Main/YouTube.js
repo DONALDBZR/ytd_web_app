@@ -4,8 +4,8 @@
  */
 class YouTube extends React.Component {
     /**
-     * Constructing the Youtube component and also inheriting the
-     * properties and states from the media
+     * Constructing the YouTube component which will render the
+     * data of the video from YouTube.
      * @param {*} props
      */
     constructor(props) {
@@ -34,6 +34,12 @@ class YouTube extends React.Component {
                 data_loaded: false,
             },
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**

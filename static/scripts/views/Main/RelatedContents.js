@@ -86,14 +86,14 @@ class RelatedContents extends React.Component {
         return (
             <div className="card" key={identifier}>
                 <div className="thumbnail">
-                    <a href={media.uniform_resource_locator} target="__blank">
+                    <a href={media.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
                         <img src={media.thumbnail} loading="lazy" alt={`Thumbnail for ${media.title}`} />
                     </a>
                 </div>
                 <div className="metadata">
                     <div className="title">{media.title}</div>
                     <div className="author">
-                        <a href={media.author_channel} target="__blank">{media.channel}</a>
+                        <a href={media.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{media.channel}</a>
                     </div>
                     <div className="duration">
                         <div>Duration</div>

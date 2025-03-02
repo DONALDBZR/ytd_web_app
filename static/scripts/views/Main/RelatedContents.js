@@ -88,6 +88,12 @@ class RelatedContents extends React.Component {
         })
         .then(() => {
             window.open(uniform_resource_locator, "_blank");
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
         });
     };
 

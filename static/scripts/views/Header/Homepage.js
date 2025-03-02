@@ -273,6 +273,12 @@ class HeaderHomepage extends React.Component {
             setTimeout(() => {
                 window.location.href = window.location.href;
             }, delay);
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
         });
     }
 

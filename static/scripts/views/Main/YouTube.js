@@ -103,7 +103,12 @@ class YouTube extends React.Component {
         const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
         const platform = new URL(this.state.Media.YouTube.uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
-        this.postMediaDownload(uniform_resource_locator, platform)
+        this.tracker.sendEvent("click", {
+            uniform_resource_locator: `/Download/YouTube/${this.state.Media.YouTube.identifier}`,
+        })
+        .then(() => {
+            return this.postMediaDownload(uniform_resource_locator, platform);
+        })
         .then((response) => this.manageResponse(response, delay));
     }
 

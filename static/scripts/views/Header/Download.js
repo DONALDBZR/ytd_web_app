@@ -260,11 +260,24 @@ class HeaderDownload extends React.Component {
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay) {
-        this.updateSession(color_scheme)
-        .then((status) => console.log(`Request: PUT /Session\nStatus: ${status}`));
-        setTimeout(() => {
-            window.location.href = window.location.href;
-        }, delay);
+        this.tracker.sendEvent("color_scheme_updated", {
+            color_scheme: color_scheme,
+        })
+        .then(() => {
+            return this.updateSession(color_scheme);
+        })
+        .then((status) => {
+            console.log(`Request: PUT /Session\nStatus: ${status}`);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        })
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
     }
 
     /**

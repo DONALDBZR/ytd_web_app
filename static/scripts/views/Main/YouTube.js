@@ -109,7 +109,13 @@ class YouTube extends React.Component {
         .then(() => {
             return this.postMediaDownload(uniform_resource_locator, platform);
         })
-        .then((response) => this.manageResponse(response, delay));
+        .then((response) => this.manageResponse(response, delay))
+        .catch((error) => {
+            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+            setTimeout(() => {
+                window.location.href = window.location.href;
+            }, delay);
+        });
     }
 
     /**

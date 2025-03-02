@@ -84,8 +84,8 @@ class YouTubeDownloader extends React.Component {
             duration: (media) ? media.duration : this.state.duration,
             File: {
                 ...previous.File,
-                audio: (media) ? media.audio_file : this.state.File.audio,
-                video: (media) ? media.video_file : this.state.File.video,
+                audio: (media) ? media.audio : this.state.File.audio,
+                video: (media) ? media.video : this.state.File.video,
             },
             data_loaded: data_loaded,
         }));
@@ -205,9 +205,10 @@ class YouTubeDownloader extends React.Component {
         const button = event.target.parentElement.parentElement;
         const file_location = button.value;
         const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
-        this.downloadFileServer(file_location, file_name)
-        .then((data) => this.downloadFileClient(data, file_name))
-        .catch((error) => console.error("Download Failed: ", error));
+        console.log(file_location);
+        // this.downloadFileServer(file_location, file_name)
+        // .then((data) => this.downloadFileClient(data, file_name))
+        // .catch((error) => console.error("Download Failed: ", error));
     }
 
     /**

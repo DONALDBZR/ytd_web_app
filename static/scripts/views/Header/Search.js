@@ -31,6 +31,12 @@ class HeaderSearch extends React.Component {
                 data_loaded: false,
             },
         };
+        /**
+         * The tracker class which will track the user's activity on
+         * the application.
+         * @type {Tracker}
+         */
+        this.tracker = window.Tracker;
     }
 
     /**

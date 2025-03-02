@@ -24,12 +24,13 @@ Ensure you have the following installed on your system:
    ```
 2. Install dependencies:
    ```sh
-   pip install -r requirements.txt  # Install backend dependencies
+   pip3 install -r requirements.txt
    ```
 3. Configure environment variables (e.g., API keys, database settings).
 4. Start the backend server:
    ```sh
-   python app.py
+   source ./venv/bin/activate
+   python3 -m flask --app index run
    ```
 5. Open the application in your browser.
 

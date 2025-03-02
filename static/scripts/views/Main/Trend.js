@@ -77,7 +77,7 @@ class Trend extends React.Component {
     handleClick = (event) => {
         event.preventDefault();
         const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-        window.Tracker.sendEvent("click", {
+        this.tracker.sendEvent("click", {
             uniform_resource_locator: uniform_resource_locator,
         })
         .then(() => {

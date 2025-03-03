@@ -80,8 +80,7 @@ CORS(Application, origins=ENV.getAllowedOrigins())
 @Application.route('/', methods=['GET'])
 def homepage() -> Response:
     """
-    Rendering the template needed which will import the
-    web-worker.
+    Rendering the homepage.
 
     Returns:
         Response
@@ -89,8 +88,24 @@ def homepage() -> Response:
     template: str = render_template("Homepage.html")
     mime_type: str = "text/html"
     status: int = 200
+    content_security_policy: str = "; ".join([
+        "default-src 'self'",
+        "script-src 'self' https://cdnjs.cloudflare.com ",
+        "style-src 'self'",
+        "img-src 'self' data: https://i.ytimg.com",
+        "font-src 'self' https://fonts.cdnfonts.com",
+        "connect-src 'self'",
+        "frame-src 'none'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'"
+    ])
     response: Response = Response(template, status, mimetype=mime_type)
-    response.headers["Cache-Control"] = "public, max-age=604800"
+    response.cache_control.max_age = 604800
+    response.cache_control.no_cache = False
+    response.cache_control.public = True
+    response.content_security_policy = content_security_policy
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
     return response
 
 

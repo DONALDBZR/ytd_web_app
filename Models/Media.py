@@ -7,6 +7,7 @@ from mysql.connector.types import RowType
 from typing import Dict, Union, List, Tuple
 from mysql.connector import Error
 from json import dumps
+from re import match
 
 
 class Media:
@@ -388,3 +389,23 @@ class Media:
             "channel": str(database_response["channel"]), # type: ignore
             "author": str(database_response["title"]).split(" - ")[0] # type: ignore
         }
+
+    def sanitizeValue(self) -> None:
+        """
+        Sanitizing the platform value.
+
+        Raises:
+            ValueError: If the platform value is empty or contains incorrect characters.
+
+        Returns:
+            void
+        """
+        if not self.getValue():
+            self.setValue("")
+            self.getLogger().error(f"Failed to sanitize the value.\nStatus: 400\nValue: {self.getValue()}")
+            raise ValueError("Failed to sanitize the value.")
+        if not match(r"^[a-z]+$", self.getValue()):
+            self.setValue("")
+            self.getLogger().error(f"Incorrect characters in value!\nStatus: 400\nValue: {self.getValue()}")
+            raise ValueError("Incorrect characters in value!")
+        self.setValue(self.getValue())

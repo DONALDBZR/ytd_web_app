@@ -251,6 +251,7 @@ class YTD {
         this.setRequestURI(window.location.pathname);
         this.setBody(document.body);
         this.setHead(document.head);
+        this.addStylesheets();
         if (this.getRequestURI() == "/") {
             this.setBodyId("Homepage");
         } else {

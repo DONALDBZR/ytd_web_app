@@ -199,21 +199,29 @@ class Media:
         Retrieving the Media data from the Media table.
 
         Returns:
-            {status: int, data: [{identifier: int, value: string}], timestamp: string}
+            {"status": int, "data": [{"identifier": int, "value": string}], "timestamp": string}
         """
         filter_data: Tuple[str] = (self.getValue(),)
-        media: List[RowType] = self.getDatabaseHandler().getData(
-            parameters=filter_data,
-            table_name="Media",
-            filter_condition="value = %s"
-        )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        status: int = 404 if len(media) == 0 else 200
-        return {
-            "status": status,
-            "data": media,
-            "timestamp": self.getTimestamp()
-        }
+        try:
+            media: List[RowType] = self.getDatabaseHandler().getData(
+                parameters=filter_data,
+                table_name="Media",
+                filter_condition="value = %s"
+            )
+            status: int = 404 if len(media) == 0 else 200
+            return {
+                "status": status,
+                "data": media,
+                "timestamp": self.getTimestamp()
+            }
+        except Error as relational_database_server_error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
+            return {
+                "status": 503,
+                "data": [],
+                "timestamp": self.getTimestamp()
+            }
 
     def postMedia(self) -> int:
         """

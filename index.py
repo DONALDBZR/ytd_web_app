@@ -152,9 +152,12 @@ def serveViews(file: str) -> Response:
     """
     allowed_view_root: str = "static/scripts/views"
     response: Response
+    if not isPathAllowed(file, allowed_view_root):
+        return Response("Invalid File Name", 403)
     if not validateFileName(file):
         return Response("Invalid File Name", 400)
-    response = send_from_directory('static/scripts/views', file)
+    safe_path: str = join(Application.root_path, allowed_view_root, file)
+    response = send_from_directory(Application.root_path, safe_path)
     response.cache_control.max_age = 604800
     response.cache_control.no_cache = False # type: ignore
     response.cache_control.public = True

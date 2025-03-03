@@ -12,7 +12,7 @@ class Header extends React.Component {
     
     /**
      * Rendering the component for the header.
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         if (window.location.pathname.includes("Search")) {

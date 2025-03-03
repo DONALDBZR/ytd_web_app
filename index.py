@@ -154,8 +154,8 @@ def serveViews(file: str) -> Response:
     response: Response
     if not isPathAllowed(file, allowed_view_root):
         return Response("Invalid File Name", 403)
-    safe_path: str = join(Application.root_path, allowed_view_root, file)
-    response = send_from_directory(Application.root_path, safe_path)
+    safe_path: str = join(Application.root_path, allowed_view_root, file).replace(Application.root_path, "")
+    response = send_from_directory("static", safe_path[len("static/") + 1:])
     response.cache_control.max_age = 604800
     response.cache_control.no_cache = False # type: ignore
     response.cache_control.public = True

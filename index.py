@@ -86,7 +86,7 @@ Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Application.register_blueprint(Track_Portal, url_prefix="/Track")
 Compress(Application)
 CORS(Application, origins=ENV.getAllowedOrigins())
-limiter.init_app(Media_Portal) # type: ignore
+limiter.init_app(Application)
 
 
 @Application.before_request

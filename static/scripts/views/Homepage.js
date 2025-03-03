@@ -38,7 +38,7 @@ class Homepage extends React.Component {
      * @returns {React.JSX.Element[]|null}
      */
     render() {
-        return (this.isEmbedded) ? null : [<Header />, <Main />, <Footer />];
+        return (this.embedded) ? null : [<Header />, <Main />, <Footer />];
     }
 }
 

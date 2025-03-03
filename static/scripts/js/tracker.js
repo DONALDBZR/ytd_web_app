@@ -111,7 +111,7 @@ class Tracker {
             });
             console.log(`Event Successfully Tracked!\nStatus: ${response.status}`);
         } catch (error) {
-            console.error(`Error Tracking Event: ${error}`);
+            console.error(`Error Tracking Event: ${error.message}`);
         }
     }
 }

@@ -616,7 +616,7 @@ class YTD {
         for (let index = 0; index < trend_list.length; index++) {
             const trend = trend_list[index];
             sanitized_trend_list.push({
-                audio_file: (audio_file != null) ? this.escapeHtml(trend.audio_file) : null,
+                audio_file: (trend.audio_file != null) ? this.escapeHtml(trend.audio_file) : null,
                 author: this.escapeHtml(trend.author),
                 author_channel: this.escapeHtml(trend.author_channel),
                 duration: this.escapeHtml(trend.duration),

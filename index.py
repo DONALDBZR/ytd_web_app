@@ -191,4 +191,8 @@ def validateFileName(file_name: str) -> bool:
         boolean
     """
     allowed_characters: str = r"^[a-zA-Z0-9-_.]+$"
-    return False if not match(allowed_characters, file_name) else True
+    if not match(allowed_characters, file_name):
+        return False
+    if ".." in file_name or "\\" in file_name or "/" in file_name:
+        return False
+    return True

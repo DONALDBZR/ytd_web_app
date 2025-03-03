@@ -636,6 +636,33 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
         }
     }
+
+    /**
+     * Sanitizing the HTML content.
+     * @param {string} unsafe The unsafe HTML content.
+     * @returns {string}
+     */
+    escapeHtml(unsafe) {
+        if (unsafe === null || unsafe === undefined) {
+            return "";
+        }
+        return String(unsafe).replace(/[&<>"']/g, (character) => {
+            switch (character) {
+                case "&":
+                    return "&amp;";
+                case "<":
+                    return "&lt;";
+                case ">":
+                    return "&gt;";
+                case '"':
+                    return "&quot;";
+                case "'":
+                    return "&#039;";
+                default:
+                    return character;
+            }
+        });
+    }
 }
 
 const application = new YTD();

@@ -607,6 +607,32 @@ class YTD {
     }
 
     /**
+     * Sanitizing the trend list.
+     * @param {{audio_file: string|null, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video_file: string|null, views: number}[]} trend_list The trend list to sanitize.
+     * @returns {{audio_file: string|null, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video_file: string|null, views: number}[]}
+     */
+    sanitizeTrendList(trend_list) {
+        const sanitized_trend_list = [];
+        for (let index = 0; index < trend_list.length; index++) {
+            const trend = trend_list[index];
+            sanitized_trend_list.push({
+                audio_file: (audio_file != null) ? this.escapeHtml(trend.audio_file) : null,
+                author: this.escapeHtml(trend.author),
+                author_channel: this.escapeHtml(trend.author_channel),
+                duration: this.escapeHtml(trend.duration),
+                identifier: this.escapeHtml(trend.identifier),
+                published_at: this.escapeHtml(trend.published_at),
+                thumbnail: this.escapeHtml(trend.thumbnail),
+                title: this.escapeHtml(trend.title),
+                uniform_resource_locator: this.escapeHtml(trend.uniform_resource_locator),
+                video_file: (trend.video_file != null) ? this.escapeHtml(trend.video_file) : null,
+                views: trend.views,
+            });
+        }
+        return sanitized_trend_list;
+    }
+
+    /**
      * Setting the session of the user.
      * @returns {void}
      */

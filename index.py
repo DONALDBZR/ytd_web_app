@@ -102,6 +102,7 @@ def homepage() -> Response:
     response: Response
     if isEmbeddedRequest(request):
         response = Response("Forbidden", status, mimetype=mime_type)
+        return response
     nonce: str = SecurityManagementSystem.getNonce()
     template: str = render_template(
         template_name_or_list="Homepage.html",

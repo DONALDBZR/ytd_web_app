@@ -29,7 +29,7 @@ class Homepage extends React.Component {
      */
     checkEmbedded() {
         if (window.top !== window.self) {
-            this.isEmbedded = true;
+            this.embedded = true;
         }
     }
 

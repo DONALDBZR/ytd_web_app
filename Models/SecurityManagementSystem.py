@@ -166,18 +166,21 @@ class Security_Management_System:
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
+        self.setNonce(b64encode(self.getHashBytes()).decode("utf-8"))
 
-    def getHashBytes(self) -> Union[bytes, None]:
+    def getHashBytes(self) -> bytes:
         """
         Retrieving the bytes of the hashed value.
 
         Returns:
-            bytes|void
+            bytes
         """
         match: Union[Match[str], None] = search(r"\$([0-9a-fA-F]+)$", self.getHash())
         if not match:
             self.getLogger().error("The nonce has not been generated!")
-            return
+            self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
+            self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
+            return self.getHashBytes()
         hash_hexadecimal_value: str = match.group(1)
         try:
             hash_bytes: bytes = unhexlify(hash_hexadecimal_value)

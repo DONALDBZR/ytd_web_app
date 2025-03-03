@@ -56,8 +56,13 @@ const cacheUniformResourceLocators = (cache) => {
     console.log('Opened cache');
     return cache.addAll(uniform_resource_locators_to_cache);
 };
-self.addEventListener("install", (event) => install(event));
-self.addEventListener('fetch', (event) => {
+
+/**
+ * Retrieving the data to be cached.
+ * @param {Event} event The fetch event
+ * @returns {void}
+ */
+const retrieveData = (event) => {
     event.respondWith(
         caches.match(event.request)
         .then((response) => {
@@ -74,7 +79,10 @@ self.addEventListener('fetch', (event) => {
             });
         })
     );
-});
+};
+
+self.addEventListener("install", (event) => install(event));
+self.addEventListener('fetch', (event) => retrieveData(event));
 self.addEventListener('activate', (event) => {
     const cache_whitelist = [main_cache_name];
     event.waitUntil(

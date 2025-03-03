@@ -77,6 +77,16 @@ Compress(Application)
 CORS(Application, origins=ENV.getAllowedOrigins())
 
 
+@Application.before_request
+def before_request() -> None:
+    """
+    Preparing the data before the request is made.
+
+    Returns:
+        void
+    """
+    SecurityManagementSystem.generateNonce()
+
 @Application.route('/', methods=['GET'])
 def homepage() -> Response:
     """
@@ -85,7 +95,6 @@ def homepage() -> Response:
     Returns:
         Response
     """
-    SecurityManagementSystem.generateNonce()
     nonce: str = SecurityManagementSystem.getNonce()
     template: str = render_template(
         template_name_or_list="Homepage.html",
@@ -95,8 +104,8 @@ def homepage() -> Response:
     status: int = 200
     content_security_policy: str = "; ".join([
         "default-src 'self'",
-        "script-src 'self' https://cdnjs.cloudflare.com ",
-        "style-src 'self'",
+        f"script-src 'self' https://cdnjs.cloudflare.com https://omnitechbros.ddns.net:5000 https://omnitechbros.ddns.net:591 'nonce-{nonce}'",
+        f"style-src 'self' https://omnitechbros.ddns.net:5000 https://omnitechbros.ddns.net:591 'nonce-{nonce}'",
         "img-src 'self' data: https://i.ytimg.com",
         "font-src 'self' https://fonts.cdnfonts.com",
         "connect-src 'self'",

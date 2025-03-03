@@ -196,10 +196,18 @@ class Media:
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
-        Retrieving the Media data from the Media table.
+        Retrieves media data from the Media table in the database
+        based on a specified value.  The function filters the data
+        by a given value and returns the status of the query along
+        with the retrieved data.  The function also captures the
+        current timestamp when the data is retrieved and returns it
+        along with the result.
 
         Returns:
             {"status": int, "data": [{"identifier": int, "value": string}], "timestamp": string}
+
+        Raises:
+            Error: If there is an issue with the database query, an error will be logged, and the function will return a 503 status with an empty data list.
         """
         filter_data: Tuple[str] = (self.getValue(),)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))

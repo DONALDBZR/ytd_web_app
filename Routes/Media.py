@@ -193,15 +193,27 @@ def getRelatedContents(identifier: str) -> Response:
 @Media_Portal.after_request
 def securityHeaders(response: Response) -> Response:
     """
-    Setting the security headers for the response.
+    Adds security-related HTTP headers to the response to
+    enhance security.  This function sets various security
+    headers to mitigate risks such as  clickjacking, MIME-type
+    sniffing, and improper content embedding.
 
     Parameters:
-        response: Response: The response object.
+        response (Response): The Flask response object.
 
     Returns:
         Response
     """
+    content_security_policy: str = "; ".join([
+        "default-src 'none'",
+        "connect-src 'self'",
+        "frame-src 'none'",
+        "object-src 'none'",
+        "base-uri 'none'",
+        "form-action 'none'"
+    ])
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = content_security_policy
     return response

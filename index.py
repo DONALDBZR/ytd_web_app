@@ -107,8 +107,8 @@ def homepage() -> Response:
     status: int = 200
     content_security_policy: str = "; ".join([
         "default-src 'self'",
-        f"script-src 'self' https://cdnjs.cloudflare.com 'nonce-{nonce}'",
-        f"style-src 'self' 'sha256-{sha256_hash}'",
+        "script-src 'self' https://cdnjs.cloudflare.com",
+        "style-src 'self'",
         "img-src 'self' data: https://i.ytimg.com",
         "font-src 'self' https://fonts.cdnfonts.com",
         "connect-src 'self'",

@@ -156,8 +156,6 @@ def serveViews(file: str) -> Response:
         return Response("That File is not allowed!", 403)    
     if not exists(full_path) or not isfile(full_path):
         return Response("That file does not exist!", 404)
-    if not isPathAllowed(file, allowed_view_root):
-        return Response("That file is invalid!", 403)
     relative_path: str = relpath(full_path, Application.root_path)
     response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800

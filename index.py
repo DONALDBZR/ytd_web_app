@@ -86,6 +86,7 @@ def before_request() -> None:
         void
     """
     SecurityManagementSystem.generateNonce()
+    SecurityManagementSystem.generateHash()
 
 @Application.route('/', methods=['GET'])
 def homepage() -> Response:
@@ -104,7 +105,7 @@ def homepage() -> Response:
     status: int = 200
     content_security_policy: str = "; ".join([
         "default-src 'self'",
-        "script-src 'self' https://cdnjs.cloudflare.com",
+        f"script-src 'self' https://cdnjs.cloudflare.com 'nonce-{nonce}'",
         "style-src 'self'",
         "img-src 'self' data: https://i.ytimg.com",
         "font-src 'self' https://fonts.cdnfonts.com",

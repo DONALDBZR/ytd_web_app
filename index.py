@@ -149,6 +149,9 @@ def serveViews(file: str) -> Response:
     Returns:
         Response
     """
+    response: Response
+    if not validateFileName(file):
+        return Response("Invalid File Name", 400)
     response = send_from_directory('static/scripts/views', file)
     response.cache_control.max_age = 604800
     response.cache_control.no_cache = False # type: ignore

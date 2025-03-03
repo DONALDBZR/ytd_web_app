@@ -85,10 +85,7 @@ def homepage() -> Response:
     Returns:
         Response
     """
-    template: str = render_template(
-        'Homepage.html',
-        google_analytics_key=ENV.getGoogleAnalyticsKey()
-    )
+    template: str = render_template("Homepage.html")
     mime_type: str = "text/html"
     status: int = 200
     response: Response = Response(template, status, mimetype=mime_type)

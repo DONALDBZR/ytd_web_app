@@ -26,7 +26,13 @@ const uniform_resource_locators_to_cache = [
     "/manifest.json",
     "/static/images/icons/Extractio.png",
 ];
-self.addEventListener("install", (event) => {
+
+/**
+ * The listener for the installation of the service worker.
+ * @param {Event} event
+ * @returns {void}
+ */
+const install = (event) => {
     event.waitUntil(
         caches.open(main_cache_name)
         .then((cache) => {
@@ -34,7 +40,8 @@ self.addEventListener("install", (event) => {
             return cache.addAll(uniform_resource_locators_to_cache);
         })
     );
-});
+};
+self.addEventListener("install", (event) => install(event));
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request)

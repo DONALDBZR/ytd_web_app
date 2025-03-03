@@ -251,7 +251,6 @@ class YTD {
         this.setRequestURI(window.location.pathname);
         this.setBody(document.body);
         this.setHead(document.head);
-        this.addStylesheets();
         if (this.getRequestURI() == "/") {
             this.setBodyId("Homepage");
         } else {
@@ -259,6 +258,17 @@ class YTD {
         }
         this.getBody().id = this.getBodyId();
         this.loadData();
+    }
+
+    /**
+     * Adding the stylesheets needed for the application.
+     * @returns {void}
+     */
+    addStylesheets() {
+        this._stylesheetIdentifiers.forEach((identifier) => {
+            let link = document.getElementById(identifier);
+            if (link) link.rel = "stylesheet";
+        });
     }
 
     /**

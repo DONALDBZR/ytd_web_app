@@ -24,6 +24,8 @@ from re import match
 from os.path import join, exists, isfile, normpath, relpath, splitext
 from typing import List, Union
 from urllib.parse import ParseResult, urlparse
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 Application: Flask = Flask(__name__)
@@ -60,6 +62,14 @@ ENV: Environment = Environment()
 """
 ENV File of the application
 """
+limiter: Limiter = Limiter(
+    app=Application,
+    key_func=get_remote_address,
+    default_limits=["100 per minute", "5 per second"],
+)
+"""
+The Limiter class initializes the Flask-Limiter extension.
+"""
 Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 Application.config["COMPRESS_ALGORITHM"] = "gzip"
@@ -76,6 +86,7 @@ Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Application.register_blueprint(Track_Portal, url_prefix="/Track")
 Compress(Application)
 CORS(Application, origins=ENV.getAllowedOrigins())
+limiter.init_app(Media_Portal) # type: ignore
 
 
 @Application.before_request
@@ -122,7 +133,7 @@ def homepage() -> Response:
     ])
     response = Response(template, status, mimetype=mime_type)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False
+    response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True
     response.content_security_policy = content_security_policy
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
@@ -169,7 +180,7 @@ def serveScripts(file: str) -> Response:
         return Response("Invalid File Name or Format", 403)
     response = send_from_directory('static/scripts/js', file)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False
+    response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True
     return response
 
@@ -195,7 +206,7 @@ def serveViews(file: str) -> Response:
     relative_path: str = relpath(full_path, Application.root_path)
     response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False
+    response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True
     return response
 
@@ -218,7 +229,7 @@ def serveStylesheets(file: str) -> Response:
         return Response("Invalid File Name or Format", 403)
     response = send_from_directory('static/stylesheets', file)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False
+    response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True
     return response
 

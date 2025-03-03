@@ -92,10 +92,19 @@ const manageResponse = (response, request) => {
  */
 const manageCachedResponse = (response, request) => {
     return caches.open(main_cache_name)
-    .then((cache) => {
-        cache.put(request, response.clone());
-        return response;
-    });
+    .then((cache) => cloneResponse(cache, request, response));
+};
+
+/**
+ * Cloning the response of the service worker.
+ * @param {Cache} cache The cache storage to be used.
+ * @param {RequestInfo|URL} request The request from the event.
+ * @param {Response} response The response to be cloned.
+ * @returns {Response}
+ */
+const cloneResponse = (cache, request, response) => {
+    cache.put(request, response.clone());
+    return response;
 };
 
 self.addEventListener("install", (event) => install(event));

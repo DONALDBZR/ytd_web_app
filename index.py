@@ -178,7 +178,7 @@ def serveStylesheets(file: str) -> Response:
     response: Response
     if not validateFileName(file):
         return Response("Invalid File Name", 400)
-    if ".css" not in file:
+    if not match(r"^[a-zA-Z0-9-_.]+\.css$", file):
         return Response("Invalid File", 403)
     response = send_from_directory('static/stylesheets', file)
     response.cache_control.max_age = 604800

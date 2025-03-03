@@ -160,6 +160,7 @@ def serveViews(file: str) -> Response:
     relative_path: str = relpath(full_path, Application.root_path)
     response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800
+    response.cache_control.no_cache = False
     response.cache_control.public = True
     return response
 

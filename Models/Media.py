@@ -379,7 +379,7 @@ class Media:
             Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
         """
         response: List[Dict[str, Union[str, int]]] = []
-        parameters: Tuple[str] = (f"'%{author}%'",)
+        parameters: Tuple[str] = (f"%{author}%",)
         try:
             database_response: List[Dict[str, Union[str, int]]] = self.getDatabaseHandler().getData(
                 parameters=parameters,

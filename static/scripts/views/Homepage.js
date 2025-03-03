@@ -24,6 +24,16 @@ class Homepage extends React.Component {
     }
 
     /**
+     * Checking if the page is embedded or not.
+     * @returns {void}
+     */
+    checkEmbedded() {
+        if (window.top !== window.self) {
+            this.isEmbedded = true;
+        }
+    }
+
+    /**
      * Rendering the component.
      * @returns {React.Component}
      */

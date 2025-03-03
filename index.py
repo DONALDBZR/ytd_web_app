@@ -73,7 +73,7 @@ Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Application.register_blueprint(Track_Portal, url_prefix="/Track")
 Compress(Application)
-CORS(Application)
+CORS(Application, origins=ENV.getAllowedOrigins())
 
 
 @Application.route('/', methods=['GET'])

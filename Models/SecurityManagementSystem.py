@@ -166,28 +166,5 @@ class Security_Management_System:
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
-        self.setNonce(b64encode(self.getHashBytes()).decode("utf-8"))
-
-    def getHashBytes(self) -> bytes:
-        """
-        Retrieving the bytes of the hashed value.
-
-        Returns:
-            bytes
-        """
-        match: Union[Match[str], None] = search(r"\$([0-9a-fA-F]+)$", self.getHash())
-        if not match:
-            self.getLogger().error("The nonce has not been generated!")
-            self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
-            self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
-            return self.getHashBytes()
-        hash_hexadecimal_value: str = match.group(1)
-        try:
-            hash_bytes: bytes = unhexlify(hash_hexadecimal_value)
-            self.getLogger().inform("The bytes of the hashed has been generated!")
-            return hash_bytes
-        except ValueError as error:
-            self.getLogger().error(f"The error has been raised: {error}")
-            self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
-            self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
-            return self.getHashBytes()
+        self.setNonce(b64encode(self.getHash().encode("utf-8")).decode("utf-8"))
+        self.getLogger().inform("The nonce has been generated!")

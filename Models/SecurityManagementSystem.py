@@ -16,8 +16,7 @@ from argon2 import PasswordHasher
 from datetime import datetime
 from typing import Union, Tuple
 from base64 import b64encode
-from re import search, Match
-from binascii import unhexlify
+from hashlib import sha256
 
 
 class Security_Management_System:
@@ -60,6 +59,10 @@ class Security_Management_System:
     authentication protocol to ensure that old communications
     cannot be reused in replay attacks.
     """
+    __sha256_hash: str
+    """
+    It is a hash that is based on the SHA-256 algorithm.
+    """
 
     def __init__(self) -> None:
         """
@@ -79,6 +82,12 @@ class Security_Management_System:
         self.getDatabaseHandler()._execute()
         self.getLogger().inform("The Security Management System has been successfully been initialized!")
         self.hash()
+
+    def getSha256Hash(self) -> str:
+        return self.__sha256_hash
+
+    def setSha256Hash(self, sha256_hash: str) -> None:
+        self.__sha256_hash = sha256_hash
 
     def getNonce(self) -> str:
         return self.__nonce
@@ -168,3 +177,16 @@ class Security_Management_System:
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
         self.setNonce(b64encode(self.getHash().encode("utf-8")).decode("utf-8"))
         self.getLogger().inform("The nonce has been generated!")
+
+    def generateSha256Hash(self) -> None:
+        """
+        It will generate a SHA-256 hash that will be used to
+        authenticate resource.
+
+        Returns:
+            void
+        """
+        self.setPasswordHasher(PasswordHasher())
+        self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
+        self.setSha256Hash(sha256(self.getApplicationName().encode("utf-8")).hexdigest())
+        self.getLogger().inform("The SHA-256 hash has been generated!")

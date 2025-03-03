@@ -90,9 +90,9 @@ const manageResponse = (response, request) => {
  * @param {RequestInfo|URL} request The request from the event.
  * @returns {Promise<Response>}
  */
-const manageCachedResponse = (response, request) => {
-    return caches.open(main_cache_name)
-    .then((cache) => cloneResponse(cache, request, response));
+const manageCachedResponse = async (response, request) => {
+    const cache = await caches.open(main_cache_name);
+    return cloneResponse(cache, request, response);
 };
 
 /**

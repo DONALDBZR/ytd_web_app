@@ -767,3 +767,4 @@ window.addEventListener("resize", () => application.resizeApplication(), true);
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => load());
 }
+document.addEventListener("DOMContentLoaded", () => application.addStylesheets(), true);

@@ -362,31 +362,37 @@ class Media:
 
     def getRelatedAuthorContents(self, author: str) -> List[Dict[str, Union[str, int]]]:
         """
-        Retrieving the related content for the author.
+        Retrieves the related content for a given author from the
+        YouTube database.  This function queries the database to
+        find content associated with the provided author's name.  It
+        returns a list of dictionaries with the content's
+        identifier, duration, channel name, title, URL, and media
+        identifier.
 
         Parameters:
-            author: string: The name of the author.
+            author (string): The name of the author whose related content is being retrieved.
 
         Returns:
-            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]
+            [{"identifier": string, "duration": string, "channel": string, "title": string, "uniform_resource_locator": string, "media_identifier": int}]
+
+        Raises:
+            Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
         """
         response: List[Dict[str, Union[str, int]]] = []
-        database_response: Union[List[RowType], List[Dict[str, Union[str, int]]]] = self.getDatabaseHandler().getData(
-            parameters=None,
-            table_name="YouTube",
-            filter_condition=f"title LIKE '%{author}%'",
-            column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
-        )
-        for index in range(0, len(database_response), 1):
-            response.append({
-                "identifier": str(database_response[index]["identifier"]), # type: ignore
-                "duration": str(database_response[index]["duration"]), # type: ignore
-                "channel": str(database_response[index]["channel"]), # type: ignore
-                "title": str(database_response[index]["title"]), # type: ignore
-                "uniform_resource_locator": str(database_response[index]["uniform_resource_locator"]), # type: ignore
-                "media_identifier": int(database_response[index]["media_identifier"]) # type: ignore
-            })
-        return response
+        parameters: Tuple[str] = (f"'%{author}%'",)
+        try:
+            database_response: List[Dict[str, Union[str, int]]] = self.getDatabaseHandler().getData(
+                parameters=parameters,
+                table_name="YouTube",
+                filter_condition=f"title LIKE %s",
+                column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
+            ) # type: ignore
+            response = [{"identifier": str(author_content["identifier"]), "duration": str(author_content["duration"]), "channel": str(author_content["channel"]), "title": str(author_content["title"]), "uniform_resource_locator": str(author_content["uniform_resource_locator"]), "media_identifier": str(author_content["media_identifier"])} for author_content in database_response]
+            self.getLogger().inform(f"The related author contents have been successfully retrieved.\nStatus: 200\nAuthor: {author}\nAmount: {len(response)}")
+            return response
+        except Error as relational_database_server_error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
+            return response
 
     def getRelatedChannelContents(self, channel: str) -> List[Dict[str, Union[str, int]]]:
         """

@@ -622,18 +622,17 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
+        status = (current_time < session.Client.timestamp + 3600) ? 304 : 204;
         if (current_time < session.Client.timestamp + 3600) {
-            status = 304;
             session.Client.timestamp = current_time + 3600;
+            session.Client.color_scheme = this.escapeHtml(session.Client.color_scheme);
             localStorage.setItem(data_object, JSON.stringify(session));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-        } else {
-            status = 204;
-            localStorage.removeItem(data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-            this.getSession(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
         }
+        localStorage.removeItem(data_object);
+        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getSession(route, request_method, data_object)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 
     /**

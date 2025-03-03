@@ -20,6 +20,7 @@ from Routes.Video import Video_Portal
 from Routes.Trend import Trend_Portal
 from Routes.Track import Track_Portal
 from Environment import Environment
+from re import match
 
 
 Application: Flask = Flask(__name__)
@@ -168,3 +169,17 @@ def serveStylesheets(file: str) -> Response:
     response.cache_control.no_cache = False # type: ignore
     response.cache_control.public = True
     return response
+
+def validateFileName(file_name: str) -> bool:
+    """
+    Validating the file name based on the characters that are
+    allowed.
+
+    Parameters:
+        file_name: string: The name of the file.
+
+    Returns:
+        boolean
+    """
+    allowed_characters: str = r"^[a-zA-Z0-9-_.]+$"
+    return False if not match(allowed_characters, file_name) else True

@@ -21,7 +21,7 @@ from Routes.Trend import Trend_Portal
 from Routes.Track import Track_Portal
 from Environment import Environment
 from re import match
-from os.path import join, exists, isfile, normpath
+from os.path import join, exists, isfile, normpath, relpath
 
 
 Application: Flask = Flask(__name__)
@@ -149,11 +149,16 @@ def serveViews(file: str) -> Response:
         Response
     """
     allowed_view_root: str = "static/scripts/views"
+    full_path: str = normpath(join(Application.root_path, allowed_view_root, file))
     response: Response
+    if not full_path.startswith(normpath(join(Application.root_path, allowed_view_root))):
+        return Response("Not Allowed File", 403)    
+    if not exists(full_path) or not isfile(full_path):
+        return Response("File Doesn't Exist", 404)
     if not isPathAllowed(file, allowed_view_root):
         return Response("Invalid File Name", 403)
-    safe_path: str = join(Application.root_path, allowed_view_root, file).replace(Application.root_path, "")
-    response = send_from_directory("static", safe_path[len("static/") + 1:])
+    relative_path: str = relpath(full_path, Application.root_path)
+    response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800
     response.cache_control.public = True
     return response

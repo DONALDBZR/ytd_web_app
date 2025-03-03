@@ -11,6 +11,7 @@ from typing import Dict, Union, List
 from json import dumps, loads, JSONDecodeError
 from os.path import isfile
 from Environment import Environment
+from html import escape
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)
@@ -96,8 +97,8 @@ def search() -> Response:
     Returns:
         Response
     """
-    platform: str = str(request.args.get("platform"))
-    search: str = str(request.args.get("search"))
+    platform: str = escape(str(request.args.get("platform")))
+    search: str = escape(str(request.args.get("search")))
     mime_type: str = "application/json"
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,

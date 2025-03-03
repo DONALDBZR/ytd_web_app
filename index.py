@@ -177,7 +177,6 @@ def serveStylesheets(file: str) -> Response:
         return Response("Invalid File", 403)
     response = send_from_directory('static/stylesheets', file)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False # type: ignore
     response.cache_control.public = True
     return response
 

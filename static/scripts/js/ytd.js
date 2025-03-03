@@ -592,18 +592,18 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
+        status = (current_time < trend.timestamp + 86400) ? 304 : 204;
         if (current_time < trend.timestamp + 86400) {
-            status = 304;
             trend.timestamp = current_time + 86400;
+            trend.data = this.sanitizeTrendList(trend.data);
             localStorage.setItem(data_object, JSON.stringify(trend));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-        } else {
-            status = 204;
-            localStorage.removeItem(data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-            this.getTrend(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
         }
+        localStorage.removeItem(data_object);
+        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getTrend(route, request_method, data_object)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 
     /**

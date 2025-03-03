@@ -265,10 +265,19 @@ class YTD {
      * @returns {void}
      */
     addStylesheets() {
-        this._stylesheetIdentifiers.forEach((identifier) => {
-            let link = document.getElementById(identifier);
-            if (link) link.rel = "stylesheet";
-        });
+        this._stylesheetIdentifiers.forEach((identifier) => this.addStylesheet(identifier));
+    }
+
+    /**
+     * Adding the stylesheet based on its identifier.
+     * @param {string} identifier The identifier of the stylesheet.
+     * @returns {void}
+     */
+    addStylesheet(identifier) {
+        let link = document.getElementById(identifier);
+        if (link) {
+            link.rel = "stylesheet";
+        }
     }
 
     /**

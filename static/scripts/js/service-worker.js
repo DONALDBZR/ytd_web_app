@@ -1,4 +1,12 @@
+/**
+ * The name of the cache for the service worker.
+ * @type {string}
+ */
 const main_cache_name = "extractio-app-cache-v3";
+/**
+ * The uniform resource locators to cache.
+ * @type {string[]}
+ */
 const uniform_resource_locators_to_cache = [
     "/",
     "/static/stylesheets/ytd.css",
@@ -29,17 +37,24 @@ const uniform_resource_locators_to_cache = [
 
 /**
  * The listener for the installation of the service worker.
- * @param {Event} event
+ * @param {Event} event The install event
  * @returns {void}
  */
 const install = (event) => {
     event.waitUntil(
         caches.open(main_cache_name)
-        .then((cache) => {
-            console.log('Opened cache');
-            return cache.addAll(uniform_resource_locators_to_cache);
-        })
+        .then((cache) => cacheUniformResourceLocators(cache))
     );
+};
+
+/**
+ * Caching the uniform resource locators.
+ * @param {Cache} cache The cache storage to be used.
+ * @returns {Promise<void>}
+ */
+const cacheUniformResourceLocators = (cache) => {
+    console.log('Opened cache');
+    return cache.addAll(uniform_resource_locators_to_cache);
 };
 self.addEventListener("install", (event) => install(event));
 self.addEventListener('fetch', (event) => {

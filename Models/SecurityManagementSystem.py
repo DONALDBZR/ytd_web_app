@@ -185,4 +185,6 @@ class Security_Management_System:
             return hash_bytes
         except ValueError as error:
             self.getLogger().error(f"The error has been raised: {error}")
-            return None
+            self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
+            self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
+            return self.getHashBytes()

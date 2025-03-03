@@ -86,7 +86,6 @@ def before_request() -> None:
         void
     """
     SecurityManagementSystem.generateNonce()
-    SecurityManagementSystem.generateSha256Hash()
 
 @Application.route('/', methods=['GET'])
 def homepage() -> Response:
@@ -97,20 +96,18 @@ def homepage() -> Response:
         Response
     """
     nonce: str = SecurityManagementSystem.getNonce()
-    sha256_hash: str = SecurityManagementSystem.getSha256Hash()
     template: str = render_template(
         template_name_or_list="Homepage.html",
-        nonce=nonce,
-        sha256_hash=sha256_hash
+        nonce=nonce
     )
     mime_type: str = "text/html"
     status: int = 200
     content_security_policy: str = "; ".join([
         "default-src 'self'",
-        "script-src 'self' https://cdnjs.cloudflare.com",
-        "style-src 'self'",
+        f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com",
+        "style-src 'self' https://fonts.cdnfonts.com https://cdnjs.cloudflare.com",
         "img-src 'self' data: https://i.ytimg.com",
-        "font-src 'self' https://fonts.cdnfonts.com",
+        "font-src 'self' https://fonts.cdnfonts.com https://cdnjs.cloudflare.com",
         "connect-src 'self'",
         "frame-src 'none'",
         "object-src 'none'",

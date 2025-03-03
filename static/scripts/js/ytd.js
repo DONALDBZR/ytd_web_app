@@ -447,6 +447,27 @@ class YTD {
     }
 
     /**
+     * Sanitizing the data of the related contents.
+     * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}[]} related_contents The related content list to sanitize.
+     * @returns {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}[]}
+     */
+    sanitizeRelatedContentList(related_contents) {
+        const sanitized_related_contents = [];
+        for (let index = 0; index < related_contents.length; index++) {
+            const related_content = related_contents[index];
+            sanitized_related_contents.push({
+                duration: this.escapeHtml(related_content.duration),
+                channel: this.escapeHtml(related_content.channel),
+                title: this.escapeHtml(related_content.title),
+                uniform_resource_locator: this.escapeHtml(related_content.uniform_resource_locator),
+                author_channel: this.escapeHtml(related_content.author_channel),
+                thumbnail: this.escapeHtml(related_content.thumbnail),
+            });
+        }
+        return sanitized_related_contents;
+    }
+
+    /**
      * Retrieving the route needed for the Media API route.
      * @returns {string}
      */

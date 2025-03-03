@@ -156,25 +156,43 @@ class Media:
 
     def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Verifying the uniform resource locator in order to switch to
-        the correct system as well as select and return the correct
-        response.
+        Verifies the uniform resource locator to determine the
+        correct system and selects the appropriate response based on
+        the platform. It ensures that the uniform resource locator
+        is valid, sanitizes the input, and processes the media
+        information accordingly.  If the platform is recognized, it
+        handles the platform-specific logic. If the platform is
+        unsupported or the uniform resource locator is invalid, an
+        error response is returned.
 
         Returns:
-            {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
+            {"status": int, "data": {"status": int, "data": {"uniform_resource_locator": string, "author": string, "title": string, "identifier": string, "author_channel": string, "views": int, "published_at": string | Datetime | null, "thumbnail": string, "duration": string, "audio_file": string, "video_file": string}}}
+
+        Raises:
+            ValueError: If there is an error while verifying the platform.
         """
-        media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
-        status: int = int(str(media["status"]))
-        if status != 200:
-            status = self.postMedia()
-            return self.__verifyPlatform(status)
-        self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
-        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
-            return self.handleYouTube()
-        return {
-            "status": 401,
-            "data": {}
-        }
+        try:
+            self.sanitizeValue()
+            self.sanitizeSearch()
+            media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
+            status: int = int(str(media["status"]))
+            if status != 200:
+                status = self.postMedia()
+                return self.__verifyPlatform(status)
+            self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
+            if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+                return self.handleYouTube()
+            self.getLogger().error(f"This platform is not supported by the application!\nStatus: 403")
+            return {
+                "status": 403,
+                "data": {}
+            }
+        except ValueError as error:
+            self.getLogger().error(f"An error occurred while verifying the platform.\nError: {error}")
+            return {
+                "status": 400,
+                "data": {}
+            }
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """

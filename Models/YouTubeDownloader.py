@@ -5,10 +5,11 @@ from Environment import Environment
 from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict, Union, List, Tuple
+from typing import Dict, Union, List, Tuple, Any
 from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
+from html import escape
 
 
 class YouTube_Downloader:
@@ -246,10 +247,13 @@ class YouTube_Downloader:
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Searching for the video in YouTube.
+        Searches for a video on YouTube and retrieves its metadata.  This function uses `youtube-dl` to extract information about a YouTube video based on its uniform resource locator.  If metadata exists in the database, it is retrieved; otherwise, new data is extracted and stored.
 
         Returns:
-            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}
+            {"uniform_resource_locator": string, "author": string, "title": string, "identifier": string, "author_channel": string, "views": int, "published_at": string, "thumbnail": string, "duration": string, "audio_file": string | null, "video_file": string | null}
+
+        Raises:
+            Error: If an issue occurs with extracting video metadata or database retrieval.
         """
         options: Dict[str, bool] = {
             "quiet": True,
@@ -259,7 +263,10 @@ class YouTube_Downloader:
         self.setIdentifier(self.getUniformResourceLocator())
         identifier: str = self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
         self.setIdentifier(identifier)
-        youtube = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+        raw_youtube = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+        youtube: Dict[str, Any] = {}
+        for key, value in raw_youtube.items(): # type: ignore
+            youtube[key] = escape(value) if isinstance(value, str) else value
         meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
         self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
         published_date: str = youtube["upload_date"] # type: ignore
@@ -278,10 +285,10 @@ class YouTube_Downloader:
             "author": self.getAuthor(),
             "title": self.getTitle(),
             "identifier": self.getIdentifier(),
-            "author_channel": str(youtube["uploader_url"]),  # type: ignore
-            "views": int(youtube["view_count"]),  # type: ignore
+            "author_channel": str(youtube["uploader_url"]),
+            "views": int(youtube["view_count"]),
             "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": str(youtube["thumbnail"]),  # type: ignore
+            "thumbnail": str(youtube["thumbnail"]),
             "duration": self.getDuration(),
             "audio_file": audio_file,
             "video_file": video_file

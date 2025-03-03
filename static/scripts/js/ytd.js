@@ -432,18 +432,18 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
+        status = ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) ? 304 : 204;
         if ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) {
-            status = 304;
             related_content.timestamp = current_time + 3600;
+            related_content.data = this.sanitizeRelatedContentList(related_content.data);
             localStorage.setItem(data_object, JSON.stringify(related_content));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-        } else {
-            status = 204;
-            localStorage.removeItem(data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-            this.getRelatedContents(route, request_method, data_object, identifier)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
         }
+        localStorage.removeItem(data_object);
+        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getRelatedContents(route, request_method, data_object, identifier)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 
     /**

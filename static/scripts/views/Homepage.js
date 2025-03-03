@@ -16,6 +16,14 @@ class Homepage extends React.Component {
     }
 
     /**
+     * Mounting the component.
+     * @returns {void}
+     */
+    componentDidMount() {
+        this.checkEmbedded();
+    }
+
+    /**
      * Rendering the component.
      * @returns {React.Component}
      */

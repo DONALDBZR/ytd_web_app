@@ -81,12 +81,20 @@ const manageResponse = (response, request) => {
         return response;
     }
     return fetch(request)
-    .then((response) => {
-        return caches.open(main_cache_name)
-        .then((cache) => {
-            cache.put(request, response.clone());
-            return response;
-        });
+    .then((response) => manageCachedResponse(response, request));
+};
+
+/**
+ * Managing the response of the requested cached event.
+ * @param {Response} response The response to be managed.
+ * @param {RequestInfo|URL} request The request from the event.
+ * @returns {Promise<Response>}
+ */
+const manageCachedResponse = (response, request) => {
+    return caches.open(main_cache_name)
+    .then((cache) => {
+        cache.put(request, response.clone());
+        return response;
     });
 };
 

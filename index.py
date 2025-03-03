@@ -85,7 +85,12 @@ def homepage() -> Response:
     Returns:
         Response
     """
-    template: str = render_template("Homepage.html")
+    SecurityManagementSystem.generateNonce()
+    nonce: str = SecurityManagementSystem.getNonce()
+    template: str = render_template(
+        template_name_or_list="Homepage.html",
+        nonce=nonce
+    )
     mime_type: str = "text/html"
     status: int = 200
     content_security_policy: str = "; ".join([

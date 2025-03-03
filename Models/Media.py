@@ -409,3 +409,27 @@ class Media:
             self.getLogger().error(f"Incorrect characters in value!\nStatus: 400\nValue: {self.getValue()}")
             raise ValueError("Incorrect characters in value!")
         self.setValue(self.getValue())
+
+    def sanitizeSearch(self) -> None:
+        """
+        Sanitizing the search value.
+
+        Raises:
+            ValueError: If the search value is empty, contains incorrect characters, or exceeds the maximum length.
+
+        Returns:
+            void
+        """
+        if not self.getSearch():
+            self.getLogger().error(f"Failed to sanitize the search value.\nStatus: 400\nSearch: {self.getSearch()}")
+            self.setSearch("")
+            raise ValueError("Failed to sanitize the search value.")
+        if not match(r"^[a-zA-Z0-9:/.?=]+$", self.getSearch()):
+            self.getLogger().error(f"Invalid characters in search term!\nStatus: 400\nSearch: {self.getSearch()}")
+            self.setSearch("")
+            raise ValueError("Invalid characters in search term")
+        if len(self.getSearch()) > 64:
+            self.getLogger().error(f"Search term is too long!\nStatus: 400\nSearch: {self.getSearch()}")
+            self.setSearch("")
+            raise ValueError("The search query is too long.")
+        self.setSearch(self.getSearch())

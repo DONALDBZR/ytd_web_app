@@ -7,7 +7,7 @@ Link:
 """
 
 
-from flask import Flask, render_template, request, Response, send_from_directory
+from flask import Flask, render_template, Request, Response, send_from_directory
 from flask_compress import Compress
 from flask_cors import CORS
 from Models.DatabaseHandler import Database_Handler
@@ -22,7 +22,8 @@ from Routes.Track import Track_Portal
 from Environment import Environment
 from re import match
 from os.path import join, exists, isfile, normpath, relpath, splitext
-from typing import List
+from typing import List, Union
+from urllib.parse import ParseResult, urlparse
 
 
 Application: Flask = Flask(__name__)
@@ -260,3 +261,24 @@ def isPathAllowed(filepath: str, allowed_view_root: str) -> bool:
     if not normalized_path.startswith(allowed_root_path):
         return False
     return True
+
+def isEmbeddedRequest(request: Request) -> bool:
+    """
+    Checks if the request is an embedded request.
+
+    Parameters:
+        request: Request: The request object.
+
+    Returns:
+        boolean
+    """
+    referrer: Union[str, None] = request.headers.get("Referer")
+    origin: Union[str, None] = request.headers.get("Origin")
+    if referrer:
+        parsed_referrer: ParseResult = urlparse(referrer)
+        referrer_domain: str = f"{parsed_referrer.scheme}://{parsed_referrer.netloc}"
+        if referrer_domain not in ENV.getAllowedOrigins():
+            return True
+    if origin and origin not in ENV.getAllowedOrigins():
+        return True
+    return False

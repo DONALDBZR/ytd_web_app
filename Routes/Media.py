@@ -189,3 +189,19 @@ def getRelatedContents(identifier: str) -> Response:
     media: Media = Media(system_request)
     model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
     return Response(dumps(model_response["data"], indent=4), int(str(model_response["status"])), mimetype=mime_type)
+
+@Media_Portal.after_request
+def securityHeaders(response: Response) -> Response:
+    """
+    Setting the security headers for the response.
+
+    Parameters:
+        response: Response: The response object.
+
+    Returns:
+        Response
+    """
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response

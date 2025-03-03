@@ -4,7 +4,7 @@
 class Footer extends React.Component {
     /**
      * Rendering the component
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         return (

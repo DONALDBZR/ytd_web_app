@@ -154,9 +154,9 @@ def serveViews(file: str) -> Response:
     allowed_view_root: str = "static/scripts/views"
     full_path: str = normpath(join(Application.root_path, allowed_view_root, file))
     if not full_path.startswith(normpath(join(Application.root_path, allowed_view_root))):
-        return Response("That File is not allowed!", 403)    
+        return Response("Access Denied!", 403)    
     if not exists(full_path) or not isfile(full_path):
-        return Response("That file does not exist!", 404)
+        return Response("File Not Found!", 404)
     relative_path: str = relpath(full_path, Application.root_path)
     response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800

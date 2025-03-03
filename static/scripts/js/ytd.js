@@ -84,6 +84,11 @@ class YTD {
          * @type {string}
          */
         this.__origin;
+        /**
+         * The identifiers of the stylsheets.
+         * @type {string[]}
+         */
+        this._stylesheetIdentifiers = ["ytd-css", "desktop-css", "mobile-css", "tablet-css"];
         this.init();
     }
 

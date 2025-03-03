@@ -104,8 +104,8 @@ def homepage() -> Response:
     status: int = 200
     content_security_policy: str = "; ".join([
         "default-src 'self'",
-        f"script-src 'self' https://cdnjs.cloudflare.com https://omnitechbros.ddns.net:5000 https://omnitechbros.ddns.net:591 'nonce-{nonce}'",
-        f"style-src 'self' https://omnitechbros.ddns.net:5000 https://omnitechbros.ddns.net:591 'nonce-{nonce}'",
+        "script-src 'self' https://cdnjs.cloudflare.com",
+        "style-src 'self'",
         "img-src 'self' data: https://i.ytimg.com",
         "font-src 'self' https://fonts.cdnfonts.com",
         "connect-src 'self'",

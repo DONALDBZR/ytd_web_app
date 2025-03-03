@@ -129,9 +129,9 @@ def serveScripts(file: str) -> Response:
     """
     response: Response
     if not validateFileName(file):
-        return Response("Invalid File Name", 400)
+        return Response("Invalid Filename Format", 400)
     if not match(r"^[a-zA-Z0-9-_.]+\.js$", file):
-        return Response("Invalid File", 403)
+        return Response("Invalid File Name or Format", 403)
     response = send_from_directory('static/scripts/js', file)
     response.cache_control.max_age = 604800
     response.cache_control.no_cache = False

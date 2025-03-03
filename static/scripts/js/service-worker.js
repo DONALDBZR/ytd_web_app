@@ -107,12 +107,16 @@ const cloneResponse = (cache, request, response) => {
     return response;
 };
 
-self.addEventListener("install", (event) => install(event));
-self.addEventListener('fetch', (event) => retrieveData(event));
-self.addEventListener('activate', (event) => {
+/**
+ * Activating the service worker.
+ * @param {Event} event The activate event
+ * @returns {void}
+ */
+const activate = (event) => {
     const cache_whitelist = [main_cache_name];
     event.waitUntil(
-        caches.keys().then((cache_names) => {
+        caches.keys()
+        .then((cache_names) => {
             return Promise.all(
                 cache_names.map((cache_name) => {
                     if (!cache_whitelist.includes(cache_name)) {
@@ -122,4 +126,8 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
-});
+};
+
+self.addEventListener("install", (event) => install(event));
+self.addEventListener('fetch', (event) => retrieveData(event));
+self.addEventListener('activate', (event) => activate(event));

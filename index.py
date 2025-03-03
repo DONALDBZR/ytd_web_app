@@ -7,7 +7,7 @@ Link:
 """
 
 
-from flask import Flask, render_template, Request, Response, send_from_directory
+from flask import Flask, render_template, Request, Response, send_from_directory, request
 from flask_compress import Compress
 from flask_cors import CORS
 from Models.DatabaseHandler import Database_Handler
@@ -96,13 +96,17 @@ def homepage() -> Response:
     Returns:
         Response
     """
+    is_embedded: bool = isEmbeddedRequest(request)
+    status: int = 403 if is_embedded else 200
+    mime_type: str = "text/html"
+    response: Response
+    if isEmbeddedRequest(request):
+        response = Response("Forbidden", status, mimetype=mime_type)
     nonce: str = SecurityManagementSystem.getNonce()
     template: str = render_template(
         template_name_or_list="Homepage.html",
         nonce=nonce
     )
-    mime_type: str = "text/html"
-    status: int = 200
     content_security_policy: str = "; ".join([
         "default-src 'self'",
         f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com",
@@ -115,7 +119,7 @@ def homepage() -> Response:
         "base-uri 'self'",
         "form-action 'self'"
     ])
-    response: Response = Response(template, status, mimetype=mime_type)
+    response = Response(template, status, mimetype=mime_type)
     response.cache_control.max_age = 604800
     response.cache_control.no_cache = False
     response.cache_control.public = True

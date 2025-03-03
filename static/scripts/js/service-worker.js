@@ -1,4 +1,4 @@
-const main_cache_name = "extractio-app-cache-v2";
+const main_cache_name = "extractio-app-cache-v3";
 const uniform_resource_locators_to_cache = [
     "/",
     "/static/stylesheets/ytd.css",

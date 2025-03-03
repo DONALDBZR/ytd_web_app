@@ -247,7 +247,11 @@ class YouTube_Downloader:
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Searches for a video on YouTube and retrieves its metadata.  This function uses `youtube-dl` to extract information about a YouTube video based on its uniform resource locator.  If metadata exists in the database, it is retrieved; otherwise, new data is extracted and stored.
+        Searches for a video on YouTube and retrieves its metadata.
+        This function uses `youtube-dl` to extract information about
+        a YouTube video based on its uniform resource locator.  If
+        metadata exists in the database, it is retrieved; otherwise,
+        new data is extracted and stored.
 
         Returns:
             {"uniform_resource_locator": string, "author": string, "title": string, "identifier": string, "author_channel": string, "views": int, "published_at": string, "thumbnail": string, "duration": string, "audio_file": string | null, "video_file": string | null}

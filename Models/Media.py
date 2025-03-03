@@ -171,11 +171,10 @@ class Media:
         self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             return self.handleYouTube()
-        else:
-            return {
-                "status": 401,
-                "data": {}
-            }
+        return {
+            "status": 401,
+            "data": {}
+        }
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """

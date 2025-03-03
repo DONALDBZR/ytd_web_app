@@ -21,6 +21,7 @@ from Routes.Trend import Trend_Portal
 from Routes.Track import Track_Portal
 from Environment import Environment
 from re import match
+from os.path import join, exists, isfile, normpath
 
 
 Application: Flask = Flask(__name__)
@@ -149,6 +150,7 @@ def serveViews(file: str) -> Response:
     Returns:
         Response
     """
+    allowed_view_root: str = "static/scripts/views"
     response: Response
     if not validateFileName(file):
         return Response("Invalid File Name", 400)
@@ -194,5 +196,26 @@ def validateFileName(file_name: str) -> bool:
     if not match(allowed_characters, file_name):
         return False
     if ".." in file_name or "\\" in file_name or "/" in file_name:
+        return False
+    return True
+
+def isPathAllowed(filepath: str, allowed_view_root: str) -> bool:
+    """
+    Recursively checks that a path is within the allowed
+    directory.
+
+    Parameters:
+        filepath: string: The path to check.
+        allowed_view_root: string: The root directory to check
+
+    Returns:
+        boolean
+    """
+    full_path: str = join(Application.root_path, allowed_view_root, filepath)
+    if not exists(full_path) or not isfile(full_path):
+        return False
+    normalized_path: str = normpath(full_path)
+    allowed_root_path: str = join(Application.root_path, allowed_view_root)
+    if not normalized_path.startswith(allowed_root_path):
         return False
     return True

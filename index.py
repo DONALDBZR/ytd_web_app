@@ -155,7 +155,6 @@ def serveViews(file: str) -> Response:
     safe_path: str = join(Application.root_path, allowed_view_root, file).replace(Application.root_path, "")
     response = send_from_directory("static", safe_path[len("static/") + 1:])
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False # type: ignore
     response.cache_control.public = True
     return response
 

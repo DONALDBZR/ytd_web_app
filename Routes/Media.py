@@ -100,6 +100,14 @@ def search() -> Response:
     platform: str = escape(str(request.args.get("platform")))
     search: str = escape(str(request.args.get("search")))
     mime_type: str = "application/json"
+    if not platform or not search:
+        return Response(dumps({
+            "error": "The parameters are missing."
+        }, indent=4), 400, mimetype=mime_type)
+    if len(search) > 64:
+        return Response(dumps({
+            "error": "The search query is too long."
+        }, indent=4), 400, mimetype=mime_type)
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,
         "search": search,

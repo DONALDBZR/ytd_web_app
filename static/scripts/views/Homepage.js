@@ -3,13 +3,17 @@
  */
 class Homepage extends React.Component {
     /**
-     * The constructor of the component.
+     * Constructing the homepage.
      * @param {*} props The properties of the component
      */
     constructor(props) {
         super(props);
+        /**
+         * The flag for checking that the page is embedded or not.
+         * @type {boolean}
+         */
+        this.embedded = false;
     }
-    
 
     /**
      * Rendering the component.

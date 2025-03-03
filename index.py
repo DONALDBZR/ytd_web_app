@@ -21,7 +21,8 @@ from Routes.Trend import Trend_Portal
 from Routes.Track import Track_Portal
 from Environment import Environment
 from re import match
-from os.path import join, exists, isfile, normpath, relpath
+from os.path import join, exists, isfile, normpath, relpath, splitext
+from typing import List
 
 
 Application: Flask = Flask(__name__)
@@ -198,11 +199,15 @@ def validateFileName(file_name: str) -> bool:
         boolean
     """
     allowed_characters: str = r"^[a-zA-Z0-9-_.]+$"
+    allowed_extensions: List[str] = [".js", ".css"]
+    file_extension: str = splitext(file_name)[1]
     if not match(allowed_characters, file_name):
         return False
     if ".." in file_name or "\\" in file_name or "/" in file_name:
         return False
     if file_name.startswith("/") or file_name.startswith("\\"):
+        return False
+    if file_extension not in allowed_extensions:
         return False
     return True
 

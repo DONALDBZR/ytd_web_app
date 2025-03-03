@@ -116,14 +116,23 @@ const activate = (event) => {
     const cache_whitelist = [main_cache_name];
     event.waitUntil(
         caches.keys()
-        .then((cache_names) => {
-            return Promise.all(
-                cache_names.map((cache_name) => {
-                    if (!cache_whitelist.includes(cache_name)) {
-                        return caches.delete(cache_name);
-                    }
-                })
-            );
+        .then((cache_names) => maintainCache(cache_names, cache_whitelist, caches))
+    );
+};
+
+/**
+ * Maintaining the caches.
+ * @param {string[]} cache_names The cache names to be maintained.
+ * @param {string[]} cache_whitelist The cache whitelist.
+ * @param {CacheStorage} caches The cache storage to be used.
+ * @returns {Promise<(boolean | undefined)[]>}
+ */
+const maintainCache = (cache_names, cache_whitelist, caches) => {
+    return Promise.all(
+        cache_names.map((cache_name) => {
+            if (!cache_whitelist.includes(cache_name)) {
+                return caches.delete(cache_name);
+            }
         })
     );
 };

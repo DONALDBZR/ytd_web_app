@@ -672,16 +672,18 @@ class YTD {
     }
 }
 
+/**
+ * Loading the service worker.
+ * @returns {void}
+ */
+const load = () => {
+    navigator.serviceWorker.register('/static/scripts/js/service-worker.js')
+    .then((registration) => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+    .catch((error) => console.error('ServiceWorker registration failed: ', error));
+};
+
 const application = new YTD();
 window.addEventListener("resize", () => application.resizeApplication(), true);
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/static/scripts/js/service-worker.js')
-            .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            })
-            .catch(error => {
-                console.log('ServiceWorker registration failed: ', error);
-            });
-    });
+    window.addEventListener('load', () => load());
 }

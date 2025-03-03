@@ -199,6 +199,8 @@ def validateFileName(file_name: str) -> bool:
         return False
     if ".." in file_name or "\\" in file_name or "/" in file_name:
         return False
+    if file_name.startswith("/") or file_name.startswith("\\"):
+        return False
     return True
 
 def isPathAllowed(filepath: str, allowed_view_root: str) -> bool:

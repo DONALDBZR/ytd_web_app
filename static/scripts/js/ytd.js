@@ -646,22 +646,29 @@ class YTD {
         if (unsafe === null || unsafe === undefined) {
             return "";
         }
-        return String(unsafe).replace(/[&<>"']/g, (character) => {
-            switch (character) {
-                case "&":
-                    return "&amp;";
-                case "<":
-                    return "&lt;";
-                case ">":
-                    return "&gt;";
-                case '"':
-                    return "&quot;";
-                case "'":
-                    return "&#039;";
-                default:
-                    return character;
-            }
-        });
+        return String(unsafe).replace(/[&<>"']/g, (character) => this.replaceHtmlCharacters(character));
+    }
+
+    /**
+     * Replacing HTML characters.
+     * @param {string} character The character to replace.
+     * @returns {string}
+     */
+    replaceHtmlCharacters(character) {
+        switch (character) {
+            case "&":
+                return "&amp;";
+            case "<":
+                return "&lt;";
+            case ">":
+                return "&gt;";
+            case '"':
+                return "&quot;";
+            case "'":
+                return "&#039;";
+            default:
+                return character;
+        }
     }
 }
 

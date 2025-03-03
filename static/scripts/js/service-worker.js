@@ -129,12 +129,21 @@ const activate = (event) => {
  */
 const maintainCache = (cache_names, cache_whitelist, caches) => {
     return Promise.all(
-        cache_names.map((cache_name) => {
-            if (!cache_whitelist.includes(cache_name)) {
-                return caches.delete(cache_name);
-            }
-        })
+        cache_names.map((cache_name) => deleteBlacklistedCaches(cache_whitelist, cache_name, caches))
     );
+};
+
+/**
+ * Removing blacklisted caches.
+ * @param {string[]} cache_whitelist The cache whitelist.
+ * @param {string} cache_name The cache name to be removed.
+ * @param {CacheStorage} caches The cache storage to be used.
+ * @returns {Promise<boolean> | undefined}
+ */
+const deleteBlacklistedCaches = (cache_whitelist, cache_name, caches) => {
+    if (!cache_whitelist.includes(cache_name)) {
+        return caches.delete(cache_name);
+    }
 };
 
 self.addEventListener("install", (event) => install(event));

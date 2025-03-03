@@ -65,20 +65,29 @@ const cacheUniformResourceLocators = (cache) => {
 const retrieveData = (event) => {
     event.respondWith(
         caches.match(event.request)
-        .then((response) => {
-            if (response) {
-                return response;
-            }
-            return fetch(event.request)
-            .then((response) => {
-                return caches.open(main_cache_name)
-                .then((cache) => {
-                    cache.put(event.request, response.clone());
-                    return response;
-                });
-            });
-        })
+        .then((response) => manageResponse(response, event.request))
     );
+};
+
+/**
+ * Managing the response of the service worker when retrieving
+ * the data to be cached.
+ * @param {Response|undefined} response The response to be managed
+ * @param {RequestInfo|URL} request The request from the event.
+ * @returns {Response|Promise<Response>}
+ */
+const manageResponse = (response, request) => {
+    if (response) {
+        return response;
+    }
+    return fetch(request)
+    .then((response) => {
+        return caches.open(main_cache_name)
+        .then((cache) => {
+            cache.put(request, response.clone());
+            return response;
+        });
+    });
 };
 
 self.addEventListener("install", (event) => install(event));

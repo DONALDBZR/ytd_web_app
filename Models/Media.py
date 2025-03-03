@@ -263,11 +263,19 @@ class Media:
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Handling the data throughout the You Tube Downloader which
-        will depend on the referer.
+        Handles the data for the YouTube downloader, which depends
+        on the referer.  This function interacts with a YouTube
+        downloader to either search for content or retrieve
+        available streams, and then saves the retrieved data into a
+        JSON file.  The function also returns a response with a
+        status code and the retrieved data from the YouTube
+        downloader.
 
         Returns:
-            {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}
+            {"status": int, "data": {"uniform_resource_locator": string, "author": string, "title": string, "identifier": string, "author_channel": string, "views": int, "published_at": string | Datetime | null, "thumbnail": string, "duration": string, "audio_file": string | null, "video_file": string | null}}
+
+        Raises:
+            None
         """
         response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())

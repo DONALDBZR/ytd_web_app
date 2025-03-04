@@ -237,6 +237,7 @@ class Crawler:
         for index in range(0, len(self.getData()), 1):
             delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
             self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
+            sleep(delay)
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
 

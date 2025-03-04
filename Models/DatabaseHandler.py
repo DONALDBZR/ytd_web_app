@@ -212,14 +212,24 @@ class Database_Handler:
 
     def _execute(self) -> None:
         """
-        Executing the SQL query which will send a command to the
-        database server
+        Committing the current database transaction.  If the commit
+        operation is successful, an informational message is logged.
+        If the commit fails, the transaction is rolled back to
+        maintain data integrity, and an error message is logged.
+
+        Raises:
+            Relational_Database_Error: If the commit operation fails.
 
         Returns:
             void
         """
-        self.__getDatabaseHandler().commit()
-        self.getLogger().inform("The query has been executed!")
+        try:
+            self.__getDatabaseHandler().commit()
+            self.getLogger().inform("The database transaction has been successfully committed!")
+        except Relational_Database_Error as error:
+            self.__getDatabaseHandler().rollback()
+            self.getLogger().error(f"The database transaction has failed to be committed.  It has been rolled back.\nError: {error}")
+            raise
 
     def _resultSet(self) -> List[RowType]:
         """

@@ -614,7 +614,7 @@ class Crawler:
             return
         self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
 
-    def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, index: int, user_agent: str) -> None:
+    def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, user_agent: str) -> None:
         """
         Checking if the crawler is allowed to access a specific
         target based on the `robots.txt` file.  If not allowed, logs
@@ -624,7 +624,6 @@ class Crawler:
         Parameters:
             parser (Union[RobotFileParser, None]): The parser object for the `robots.txt` file.  It should be able to check whether crawling is allowed.
             target (string): The Uniform Resource Locator that is being checked for crawling permission.
-            index (int): The index of the target in the data list to be removed if crawling is not allowed.
             user_agent (string): The user agent value that is being used to access the target.
 
         Returns:

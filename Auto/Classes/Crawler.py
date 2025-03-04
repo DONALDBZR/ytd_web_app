@@ -430,7 +430,7 @@ class Crawler:
             self.setData(dataset)
         except Exception as error:
             self.getLogger().error(f"An error occured while retrieving data from the database server.\nError: {error}")
-            exit()
+            raise error
 
     def __getYoutubeData(self, dataset: List[Dict[str, Union[str, int, None]]], identifiers: List[RowType], allowed_platforms: List[str]) -> List[Dict[str, Union[str, int, None]]]:
         """

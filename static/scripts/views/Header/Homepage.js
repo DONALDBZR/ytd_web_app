@@ -183,12 +183,13 @@ class HeaderHomepage extends React.Component {
      */
     async setMediaYouTubeUniformResourceLocator(platform, search) {
         const response = await this.getSearchMedia(platform, search);
+        const uniform_resource_locator = this.sanitizeUniformResourceLocator(response.data.uniform_resource_locator);
         this.setState((previous) => ({
             Media: {
                 ...previous.Media,
                 YouTube: {
                     ...previous.Media.YouTube,
-                    uniform_resource_locator: response.data.uniform_resource_locator,
+                    uniform_resource_locator: uniform_resource_locator,
                 },
             },
         }));

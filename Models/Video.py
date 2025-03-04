@@ -6,7 +6,7 @@ Authors:
 """
 from Environment import Environment
 from Models.Logger import Extractio_Logger
-from Models.DatabaseHandler import Database_Handler, Error as Relational_Database_Error
+from Models.DatabaseHandler import Database_Handler, Relational_Database_Error
 from os.path import exists
 from typing import Tuple
 from os import remove

@@ -714,11 +714,18 @@ class Crawler:
 
         Returns:
             None
+
+        Raises:
+            Exception: If an error occurs while entering the second target.
         """
         if referrer != "secondRun":
             return
-        self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
-        self.getDriver().get(f"{target}/videos")
+        try:
+            self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
+            self.getDriver().get(f"{target}/videos")
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while entering the second target!\nError: {error}\nTarget: {target}")
+            raise error
 
     def __checkRobotsParser(self, uniform_resource_locator: str) -> Union[RobotFileParser, None]:
         """

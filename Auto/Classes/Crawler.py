@@ -690,11 +690,18 @@ class Crawler:
 
         Returns:
             None
+
+        Raises:
+            Exception: If an error occurs while entering the first target.
         """
         if referrer != "firstRun":
             return
-        self.getLogger().inform(f"Entering the target!\nTarget: {target}")
-        self.getDriver().get(target)
+        try:
+            self.getLogger().inform(f"Entering the target!\nTarget: {target}")
+            self.getDriver().get(target)
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while entering the first target!\nError: {error}\nTarget: {target}")
+            raise error
 
 
     def __enterTargetSecondRun(self, referrer: str, target: str) -> None:

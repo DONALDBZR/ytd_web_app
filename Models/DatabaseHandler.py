@@ -10,6 +10,7 @@ from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
 from typing import Union, Tuple, Any, List
 from mysql.connector import connect, Error as Relational_Database_Error
+from inspect import stack
 
 
 class Database_Handler:
@@ -195,6 +196,7 @@ class Database_Handler:
         Returns:
             void
         """
+        referrer: str = stack()[1][3]
         self.getLogger().debug(f"Query to be executed!\nQuery: {query}\nParameters: {parameters}")
         try:
             self.__setStatement(
@@ -208,7 +210,7 @@ class Database_Handler:
             self.getLogger().error(f"Query Execution Failed!\nError: {error}\nQuery: {query}\nParameters: {parameters}")
             raise
         finally:
-            self._closeCursor()
+            self._closeCursor() if referrer != "getData" else self.getLogger().warn(f"The cursor cannot be closed at the moment as it is being called to retrieve data.\nFunction: {referrer}")
 
     def _execute(self) -> None:
         """

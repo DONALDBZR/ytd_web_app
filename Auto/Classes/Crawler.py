@@ -597,7 +597,7 @@ class Crawler:
             self.getLogger().error(f"An unexpected error occurred!\nError: {error}\nUniform Resource Locator: {target}")
             return False
 
-    def __robotTxtNotParsed(self, parser: Union[RobotFileParser, None], target: str, index: int) -> None:
+    def __robotTxtNotParsed(self, parser: Union[RobotFileParser, None], target: str) -> None:
         """
         Checking whether the `robots.txt` file has been parsed.  If
         it has not, logs an error and removes the target uniform
@@ -606,7 +606,6 @@ class Crawler:
         Parameters:
             parser (Union[RobotFileParser, None]): The parser object for the `robots.txt` file.  If None, the `robots.txt` file is considered not parsed.
             target (string): The Uniform Resource Locator that is being checked.
-            index (int): The index of the target in the data list to be removed if `robots.txt` is not parsed.
 
         Returns:
             None

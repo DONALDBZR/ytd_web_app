@@ -88,7 +88,12 @@ class Crawler:
 
     def __init__(self) -> None:
         """
-        Initializing the crawler to scrape the data needed.
+        Initializing the crawler to scrape the required data.  This
+        method sets up the necessary components for the crawler,
+        including the logger, services, options, web driver, data
+        storage, and database handler.  It also sets the  directory
+        for caching and initializes the data structures required for
+        the crawler.
         """
         ENV: Environment = Environment()
         self.setLogger(Extractio_Logger(__name__))
@@ -98,6 +103,7 @@ class Crawler:
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Trend/")
         self.setDatabaseHandler(Database_Handler())
         self.setData([])
+        self.setRobotParsers({})
         self.setUpData()
 
     def getRobotParsers(self) -> Dict[str, Union[RobotFileParser, None]]:
@@ -365,8 +371,8 @@ class Crawler:
         referrer: str = stack()[1][3]
         parsed_uniform_resource_locator: ParseResult = urlparse(target)
         base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
-        robots_uniform_resource_locator: str = f"{base_uniform_resource_locator}/robots.txt"
         try:
+            robots_uniform_resource_locator: str = f"{base_uniform_resource_locator}/robots.txt"
             parser: RobotFileParser = RobotFileParser()
             parser.set_url(robots_uniform_resource_locator)
             self.__readRobotTxt(parser, base_uniform_resource_locator)
@@ -386,6 +392,10 @@ class Crawler:
             self.getLogger().error(f"An error occurred while checking robots.txt or entering the target!\nError: {error}\nUniform Resource Locator: {target}")
             self.getData()[index]["author_channel"] = ""
             self.getData()[index]["latest_content"] = ""
+
+    def __checkRobotsParser(self, uniform_resource_locator: str) -> Union[RobotFileParser, None]:
+        
+
 
     def __readRobotTxt(self, parser: Union[RobotFileParser, None], uniform_resource_locator: str) -> None:
         """

@@ -9,7 +9,7 @@ from Classes.Media import Media
 from mysql.connector.types import RowType
 from os import getcwd
 from typing import List, Dict, Union, Tuple, cast
-from logging import DEBUG
+from logging import DEBUG, getLogger
 from inspect import stack
 from time import time, sleep
 from json import dumps
@@ -374,35 +374,91 @@ class Crawler:
         self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
         self.getDriver().quit()
 
-    def prepareFirstRun(self, identifiers: Union[List[RowType], List[Dict[str, str]]]) -> None:
+    def prepareFirstRun(self, identifiers: List[RowType]) -> None:
         """
-        Setting up the data for the first run.
+        Preparing the data for the first run by fetching and
+        processing YouTube data.  This method processes the
+        identifiers, retrieves YouTube data from the database, and
+        updates the dataset.  It then sets the processed dataset to
+        be used later in the web crawler.
 
         Parameters:
-            identifiers: [{YouTube: string}]: The result set of the identifiers for the last weeks.
+            identifiers (List[RowType]): A list of identifiers used to fetch YouTube data from the database.
 
         Returns:
             void
+
+        Raises:
+            Exception: If there is an error while retrieving data from the database or processing it.
         """
+        allowed_platforms: List[str] = ["youtube", "youtu.be"]
         dataset: List[Dict[str, Union[str, int, None]]] = []
+        try:
+            dataset = self.__getYoutubeData(dataset, identifiers, allowed_platforms)
+            self.setData(dataset)
+        except Exception as error:
+            self.getLogger().error(f"An error occured while retrieving data from the database server.\nError: {error}")
+            exit()
+
+    def __getYoutubeData(self, dataset: List[Dict[str, Union[str, int, None]]], identifiers: List[RowType], allowed_platforms: List[str]) -> List[Dict[str, Union[str, int, None]]]:
+        """
+        Retrieving YouTube data based on the provided identifiers
+        and updates the dataset.  This method fetches YouTube data
+        from the database based on each identifier in the provided
+        list, processes the data using the `__processYouTubeData`
+        method, and appends relevant information to the provided
+        dataset.
+
+        Parameters:
+            dataset (List[Dict[str, Union[str, int, None]]]): The dataset to be updated with processed YouTube data.
+            identifiers (List[RowType]): A list of identifiers used to fetch YouTube data from the database.
+            allowed_platforms (List[str]): A list of allowed platforms for which URLs will be generated.
+
+        Returns:
+            List[Dict[str, Union[str, int, None]]]
+        """
         for index in range(0, len(identifiers), 1):
-            parameters: Tuple[str] = (str(identifiers[index]["YouTube"]),) # type: ignore
-            data: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
+            media_file_dataset: Dict[str, str] = identifiers[index] # type: ignore
+            parameters: Tuple[str] = (media_file_dataset["YouTube"],)
+            youtube_data: List[RowType] = self.getDatabaseHandler().getData(
                 parameters=parameters,
                 table_name="YouTube",
                 join_condition="Media ON YouTube.Media = Media.identifier",
                 filter_condition="YouTube.identifier = %s",
                 column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform"
-            )[0]
-            uniform_resource_locator: str = f"https://www.youtube.com/watch?v={data['identifier']}" if str(data["platform"]) == "youtube" or str(data["platform"]) == "youtu.be" else "" # type: ignore
-            metadata: Dict[str, Union[str, int, None]] = {
-                "identifier": str(data["identifier"]), # type: ignore
-                "author": str(data["author"]), # type: ignore
+            )
+            dataset = self.__processYouTubeData(youtube_data, allowed_platforms, dataset)
+        return dataset
+
+
+    def __processYouTubeData(self, youtube: List[RowType], allowed_platforms: List[str], dataset: List[Dict[str, Union[str, int, None]]]) -> List[Dict[str, Union[str, int, None]]]:
+        """
+        Processing YouTube data and adds relevant information to the
+        provided dataset.  This method checks if the YouTube data is
+        valid, processes the information to generate a dictionary
+        with the YouTube identifier, author, and the platform's
+        uniform resource locator.  If the platform is allowed, the
+        YouTube video uniform resource locator is constructed and
+        added to the dataset.
+
+        Parameters:
+            youtube (List[RowType]): The YouTube data retrieved from the database.
+            allowed_platforms (List[str]): A list of allowed platforms (e.g., "youtube", "youtu.be").
+            dataset (List[Dict[str, Union[str, int, None]]]): The list where the processed data will be appended.
+
+        Returns:
+            List[Dict[str, Union[str, int, None]]]
+        """
+        if youtube:
+            data: Dict[str, str] = youtube[0] # type: ignore
+            uniform_resource_locator: str = f"https://www.youtube.com/watch?v={data['identifier']}" if data["platform"] in allowed_platforms else ""
+            dataset.append({
+                "identifier": data["identifier"],
+                "author": data["author"],
                 "uniform_resource_locator": uniform_resource_locator,
                 "author_channel": None
-            }
-            dataset.append(metadata)
-        self.setData(dataset)
+            })
+        return dataset
 
     def firstRun(self) -> None:
         """

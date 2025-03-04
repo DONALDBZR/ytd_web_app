@@ -233,17 +233,26 @@ class Database_Handler:
 
     def _resultSet(self) -> List[RowType]:
         """
-        Fetching all the data that is requested from the command
-        that was sent to the database server.
+        Retrieving all rows from the executed query result set.
+        This method fetches all rows from the database statement
+        cursor.  If an error occurs, it logs the failure and raises
+        an exception.  The cursor is always closed after execution.
 
         Returns:
-            [RowType]
+            List[RowType]: The fetched result set from the database.
+
+        Raises:
+            Relational_Database_Error: If fetching the result set fails.
         """
-        result_set: List[RowType] = self.__getStatement().fetchall()
-        self.getLogger().debug("The data has been successfully retrieved!")
-        self.__getStatement().close()
-        self.getLogger().inform("The connection between the application and the database server will be closed!")
-        return result_set
+        try:
+            result_set: List[RowType] = self.__getStatement().fetchall()
+            self.getLogger().debug("The data has been successfully retrieved!")
+            return result_set
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"Failed to retrieve data from the database.\nError: {error}")
+            raise
+        finally:
+            self.__getStatement().close() if self.__getStatement() else self.getLogger().warn("The database statement cursor has already been closed.")
 
     def getData(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0, group_condition: str = "") -> List[RowType]:
         """

@@ -206,7 +206,7 @@ class HeaderHomepage extends React.Component {
         const allowed_domains = ["https://youtube.com", "https://youtu.be"];
         try {
             const url = new URL(uniform_resource_locator);
-            return (allowed_domains.includes(url.hostname)) ? uniform_resource_locator : "";
+            return (allowed_domains.includes(url.hostname)) ? url.href : "";
         } catch (error) {
             console.error("Invalid uniform resource locator!\nError: ", error);
             return "";

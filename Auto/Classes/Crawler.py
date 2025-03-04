@@ -81,6 +81,10 @@ class Crawler:
     """
     The logger that will all the action of the application.
     """
+    __robot_parsers: Dict[str, Union[RobotFileParser, None]]
+    """
+    The robot parsers.
+    """
 
     def __init__(self) -> None:
         """
@@ -95,6 +99,12 @@ class Crawler:
         self.setDatabaseHandler(Database_Handler())
         self.setData([])
         self.setUpData()
+
+    def getRobotParsers(self) -> Dict[str, Union[RobotFileParser, None]]:
+        return self.__robot_parsers
+
+    def setRobotParsers(self, robot_parsers: Dict[str, Union[RobotFileParser, None]]) -> None:
+        self.__robot_parsers = robot_parsers
 
     def getDriver(self) -> WebDriver:
         return self.__driver
@@ -359,7 +369,7 @@ class Crawler:
         try:
             parser: RobotFileParser = RobotFileParser()
             parser.set_url(robots_uniform_resource_locator)
-            parser.read()
+            self.__readRobotTxt(parser, base_uniform_resource_locator)
             if not parser.can_fetch("ExtractioCrawlerBot/3.0", target):
                 self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
                 self.getData()[index]["author_channel"] = ""
@@ -376,6 +386,30 @@ class Crawler:
             self.getLogger().error(f"An error occurred while checking robots.txt or entering the target!\nError: {error}\nUniform Resource Locator: {target}")
             self.getData()[index]["author_channel"] = ""
             self.getData()[index]["latest_content"] = ""
+
+    def __readRobotTxt(self, parser: Union[RobotFileParser, None], uniform_resource_locator: str) -> None:
+        """
+        Reading the `robots.txt` file for the specified
+        uniform resource locator and updates the internal robot
+        parsers.  This function attempts to read the `robots.txt`
+        file using the provided parser.  If an error occurs during
+        the reading process, it logs the error and sets the parser
+        to None.  The result is stored in the internal robot parsers
+        dictionary with the URL as the key.
+
+        Parameters:
+            parser (Union[RobotFileParser, None]): The parser instance used to read the robots.txt file.
+            uniform_resource_locator (str): The uniform resource locator for which the robots.txt file is being read.
+
+        Returns:
+            void
+        """
+        try:
+            parser.read() # type: ignore
+        except Exception as error:
+            self.getLogger().error(f"An error occured while reading the robots.txt file.\nError: {error}")
+            parser = None
+        self.setRobotParsers({uniform_resource_locator: parser})
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:
         """

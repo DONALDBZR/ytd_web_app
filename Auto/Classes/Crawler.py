@@ -237,9 +237,16 @@ class Crawler:
 
         Returns:
             void
+
+        Raises:
+            Exception: If an error occurs while setting the service.
         """
-        self.setService(Service(ChromeDriverManager().install()))
-        self.getLogger().inform("The Crawler's Service has been installed!")
+        try:
+            self.setService(Service(ChromeDriverManager().install()))
+            self.getLogger().inform("The Crawler's Service has been installed!")
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while setting the service.\nError: {error}")
+            raise error
 
     def __setOptions(self) -> None:
         """

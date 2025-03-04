@@ -142,12 +142,13 @@ class HeaderHomepage extends React.Component {
      * @returns {Promise<number>}
      */
     async setRoute(platform, search) {
-        const status = await this.setMediaYouTubeIdentifier(platform, search);
+        let status = await this.setMediaYouTubeIdentifier(platform, search);
+        status = (this.state.Media.YouTube.identifier.length <= 16) ? status : 403;
         this.setState((previous) => ({
             ...previous,
             System: {
                 ...previous.System,
-                view_route: `/Search/${this.state.Media.YouTube.identifier}`,
+                view_route: (this.state.Media.YouTube.identifier.length <= 16) ? `/Search/${this.state.Media.YouTube.identifier}` : "/",
             },
         }));
         return status;

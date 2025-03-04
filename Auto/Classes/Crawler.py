@@ -233,8 +233,7 @@ class Crawler:
             self.__setUpSecondRun(referrer, dataset)
             self.__initializeFirstRun(referrer)
             self.__initializeSecondRun(referrer)
-            if len(identifiers) == 0:
-                self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
+            self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}") if len(identifiers) == 0 else exit()
         except Exception as error:
             self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
 

@@ -2,8 +2,6 @@
 The module of the database handler which will act as the
 object-relational mapper.
 """
-
-
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
@@ -11,7 +9,7 @@ from Environment import Environment
 from Models.Logger import Extractio_Logger
 from mysql.connector.types import RowType
 from typing import Union, Tuple, Any, List
-from mysql.connector import connect, Error
+from mysql.connector import connect, Error as Relational_Database_Error
 
 
 class Database_Handler:
@@ -62,28 +60,66 @@ class Database_Handler:
 
     def __init__(self):
         """
-        Instantiating the class which will try to connect to the
-        database.
+        Initializing the database connection and logging for the
+        application.  This constructor sets up the logger, retrieves
+        database connection parameters from the `Environment`
+        instance, and attempts to establish a database connection.
+        If the connection fails, an error is logged and the
+        exception is raised.
+        
+        Raises:
+            Relational_Database_Error: If the database connection fails.
         """
-        ENV: Environment = Environment()
         self.setLogger(Extractio_Logger(__name__))
-        self.__setHost(ENV.getDatabaseHost())
-        self.__setDatabase(ENV.getDatabaseSchema())
-        self.__setUsername(ENV.getDatabaseUsername())
-        self.__setPassword(ENV.getDatabasePassword())
+        self.__setDatabaseConnectionParameters(Environment())
         try:
-            self.__setDatabaseHandler(
-                connect(
-                    host=self.__getHost(),
-                    database=self.__getDatabase(),
-                    username=self.__getUsername(),
-                    password=self.__getPassword()
-                )
-            )
+            self.__connectDatabase()
             self.getLogger().inform("The application has been successfully connected to the database server!")
-        except Error as error:
-            print(f"Connection Failed!\nError: {error}")
-            self.getLogger().error(f"Connection Failed!\nError: {error}")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"Database Connection Failed!\nError: {error}")
+            raise
+
+    def __setDatabaseConnectionParameters(self, environment: Environment) -> None:
+        """
+        Setting the database connection parameters from the provided
+        environment instance.  This method retrieves the database
+        host, schema, username, and password from the `Environment`
+        instance and assigns them to the respective internal
+        attributes.
+
+        Parameters:
+            environment (Environment): An instance of the `Environment` class containing the database connection details.
+
+        Returns:
+            None
+        """
+        self.__setHost(environment.getDatabaseHost())
+        self.__setDatabase(environment.getDatabaseSchema())
+        self.__setUsername(environment.getDatabaseUsername())
+        self.__setPassword(environment.getDatabasePassword())
+
+    def __connectDatabase(self) -> None:
+        """
+        Establishing a connection to the database server and sets up
+        the database handler.  This method uses the connection
+        details retrieved from the environment to establish the
+        connection to the database and initialize the database
+        handler for interacting with the database.
+
+        Returns:
+            void
+
+        Raises:
+            Relational_Database_Error: If the connection to the database server fails.
+        """
+        self.__setDatabaseHandler(
+            connect(
+                host=self.__getHost(),
+                database=self.__getDatabase(),
+                username=self.__getUsername(),
+                password=self.__getPassword()
+            )
+        )
 
     def __getHost(self) -> str:
         return self.__host

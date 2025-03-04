@@ -9,12 +9,10 @@ from Classes.Media import Media
 from mysql.connector.types import RowType
 from os import getcwd
 from typing import List, Dict, Union, Tuple, cast
-from logging import DEBUG, getLogger
 from inspect import stack
 from time import time, sleep
 from json import dumps
 from sys import path
-from bleach import clean
 from urllib.parse import ParseResult, urlparse
 from random import randint
 from urllib.robotparser import RobotFileParser
@@ -855,28 +853,6 @@ class Crawler:
         except Exception as error:
             self.getLogger().error(f"An error occurred while retrieving data for the first run!\nError: {error}")
             raise error
-
-    def sanitizeHtml(self, html: str) -> str:
-        """
-        Sanitizing the given HTML string by removing all tags and
-        attributes.
-
-        Parameters:
-            html (string): The HTML content to be sanitized.
-
-        Returns:
-            string
-        """
-        allowed_tags: List[str] = ["a"]
-        allowed_attributes: Dict[str, List[str]] = {
-            "a": ["href", "title", "target", "rel"]
-        }
-        return clean(
-            text=html,
-            tags=allowed_tags,
-            attributes=allowed_attributes,
-            strip=True
-        )
 
     def sanitizeUniformResourceLocator(self, uniform_resource_locator: str) -> str:
         """

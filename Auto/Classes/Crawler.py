@@ -306,7 +306,7 @@ class Crawler:
 
     def firstRun(self) -> None:
         """
-        Executes the first run of the data processing workflow.
+        Executing the first run of the data processing workflow.
 
         Returns:
             void
@@ -314,6 +314,7 @@ class Crawler:
         for index in range(0, len(self.getData()), 1):
             delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
             self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
+            sleep(delay)
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
 

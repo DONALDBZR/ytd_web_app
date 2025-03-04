@@ -900,20 +900,23 @@ class Crawler:
 
         Returns:
             string
+
+        Raises:
+            ValueError: If the uniform resource locator is invalid.
         """
         if parsed_uniform_resource_locator.scheme != "https":
             self.getLogger().error(f"Invalid scheme in URL. Only HTTPS is allowed.\nUniform Resource Locator: {uniform_resource_locator}")
-            return ""
+            raise ValueError("Invalid scheme in URL. Only HTTPS is allowed.")
         if parsed_uniform_resource_locator.netloc not in allowed_domains:
             self.getLogger().error(f"Invalid domain in URL. Domain is not allowed.\nUniform Resource Locator: {uniform_resource_locator}")
-            return ""
+            raise ValueError("Invalid domain in URL. Domain is not allowed.")
         if parsed_uniform_resource_locator.port is not None:
             self.getLogger().error(f"Port number is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
-            return ""
+            raise ValueError("Port number is not allowed in URL.")
         if parsed_uniform_resource_locator.username or parsed_uniform_resource_locator.password:
             self.getLogger().error(f"User information is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
-            return ""
+            raise ValueError("User information is not allowed in URL.")
         if parsed_uniform_resource_locator.fragment:
             self.getLogger().error(f"Fragment is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
-            return ""
+            raise ValueError("Fragment is not allowed in URL.")
         return uniform_resource_locator

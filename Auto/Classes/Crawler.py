@@ -85,26 +85,36 @@ class Crawler:
     """
     The robot parsers.
     """
+    __environment: Environment
+    """
+    ENV File of the application
+    """
 
     def __init__(self) -> None:
         """
         Initializing the crawler to scrape the required data.  This
         method sets up the necessary components for the crawler,
         including the logger, services, options, web driver, data
-        storage, and database handler.  It also sets the  directory
+        storage, and database handler.  It also sets the directory
         for caching and initializes the data structures required for
         the crawler.
         """
-        ENV: Environment = Environment()
+        self.setEnvironment(Environment())
         self.setLogger(Extractio_Logger(__name__))
         self.__setServices()
         self.__setOptions()
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
-        self.setDirectory(f"{ENV.getDirectory()}/Cache/Trend/")
+        self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
         self.setDatabaseHandler(Database_Handler())
         self.setData([])
         self.setRobotParsers({})
         self.setUpData()
+
+    def getEnvironment(self) -> Environment:
+        return self.__environment
+
+    def setEnvironment(self, environment: Environment) -> None:
+        self.__environment = environment
 
     def getRobotParsers(self) -> Dict[str, RobotFileParser]:
         return self.__robot_parsers

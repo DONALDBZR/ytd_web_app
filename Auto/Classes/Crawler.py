@@ -81,7 +81,7 @@ class Crawler:
     """
     The logger that will all the action of the application.
     """
-    __robot_parsers: Dict[str, Union[RobotFileParser, None]]
+    __robot_parsers: Dict[str, RobotFileParser]
     """
     The robot parsers.
     """
@@ -106,10 +106,10 @@ class Crawler:
         self.setRobotParsers({})
         self.setUpData()
 
-    def getRobotParsers(self) -> Dict[str, Union[RobotFileParser, None]]:
+    def getRobotParsers(self) -> Dict[str, RobotFileParser]:
         return self.__robot_parsers
 
-    def setRobotParsers(self, robot_parsers: Dict[str, Union[RobotFileParser, None]]) -> None:
+    def setRobotParsers(self, robot_parsers: Dict[str, RobotFileParser]) -> None:
         self.__robot_parsers = robot_parsers
 
     def getDriver(self) -> WebDriver:
@@ -420,29 +420,31 @@ class Crawler:
         return self.getRobotParsers().get(uniform_resource_locator)
 
 
-    def __readRobotTxt(self, parser: Union[RobotFileParser, None], uniform_resource_locator: str) -> None:
+    def __readRobotTxt(self, parser: RobotFileParser, uniform_resource_locator: str) -> None:
         """
-        Reading the `robots.txt` file for the specified
-        uniform resource locator and updates the internal robot
-        parsers.  This function attempts to read the `robots.txt`
-        file using the provided parser.  If an error occurs during
-        the reading process, it logs the error and sets the parser
-        to None.  The result is stored in the internal robot parsers
-        dictionary with the URL as the key.
+        Reading the `robots.txt` file for the specified Uniform
+        Resource Locator and updating the internal robot parsers.
+        This method attempts to read the `robots.txt` file using the
+        provided parser.  If an error occurs during the reading
+        process, it logs the error and removes the corresponding
+        entry from the internal robot parsers dictionary.  The
+        result is stored in the internal robot parsers dictionary
+        with the uniform resource locator as the key.
 
         Parameters:
-            parser (Union[RobotFileParser, None]): The parser instance used to read the robots.txt file.
-            uniform_resource_locator (str): The uniform resource locator for which the robots.txt file is being read.
+            parser (RobotFileParser): The parser instance used to read the `robots.txt` file.
+            uniform_resource_locator (string): The uniform resource locator for which the `robots.txt` file is being read.
 
         Returns:
-            void
+            None
         """
         try:
             parser.read() # type: ignore
+            self.getRobotParsers()[uniform_resource_locator] = parser
         except Exception as error:
             self.getLogger().error(f"An error occured while reading the robots.txt file.\nError: {error}")
-            parser = None
-        self.getRobotParsers()[uniform_resource_locator] = parser
+            if uniform_resource_locator in self.getRobotParsers():
+                del self.getRobotParsers()[uniform_resource_locator]
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:
         """

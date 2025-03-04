@@ -343,3 +343,40 @@ class Database_Handler:
             int
         """
         return self.__getStatement().lastrowid
+
+    def close(self) -> None:
+        """
+        Attempting to close the database connection.  This method
+        calls the internal `__close` method to safely close the
+        database connection.  If an error occurs during the process,
+        a log message is generated with the error details.
+
+        Returns:
+            void
+        
+        Raises:
+            Relational_Database_Error: If an error occurs while closing the connection, it is logged and re-raised.
+        """
+        try:
+            self.__close()
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"Failed to close the database connection.\nError: {error}")
+            raise
+
+    def __close(self) -> None:
+        """
+        Closing the database connection if it is currently open and
+        connected.  This method checks whether the database handler
+        is initialized and whether the connection is active.  If the
+        connection is open, it is safely closed, and a success
+        message is logged.  If the connection is already closed or
+        was never established, a warning is logged instead.
+
+        Returns:
+            void
+        """
+        if self.__getDatabaseHandler() and self.__getDatabaseHandler().is_connected():
+            self.__getDatabaseHandler().close()
+            self.getLogger().inform("Database connection successfully closed.")
+        else:
+            self.getLogger().warn("Database connection is already closed or was never established.")

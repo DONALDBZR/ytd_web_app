@@ -231,9 +231,7 @@ class Crawler:
             referrer: str = stack()[1][3]
             self.__setUpFirstRun(referrer, identifiers)
             self.__setUpSecondRun(referrer, dataset)
-            if referrer == "__init__" and len(self.getData()) > 0:
-                self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
-                self.firstRun()
+            self.__initializeFirstRun(referrer)
             if referrer == "firstRun" and len(self.getData()) > 0:
                 self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
                 self.secondRun()
@@ -241,6 +239,25 @@ class Crawler:
                 self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
         except Exception as error:
             self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
+
+    def __initializeFirstRun(self, referrer: str) -> None:
+        """
+        Initializing the first run of the crawler if the conditions
+        are met.  This method checks if the referrer is "__init__"
+        and if data has been successfully retrieved.  If these
+        conditions are satisfied, it logs the successful retrieval
+        of the data and initiates the first run of the crawler.
+
+        Parameters:
+            referrer (string): The referrer string that indicates the state of the system.
+
+        Returns:
+            void
+        """
+        if referrer != "__init__" or len(self.getData()) == 0:
+            return
+        self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
+        self.firstRun()
 
     def __setUpSecondRun(self, referrer: str, dataset: List[Dict[str, Union[str, int, None]]]) -> None:
         """

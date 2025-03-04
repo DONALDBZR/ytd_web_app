@@ -117,7 +117,8 @@ class Database_Handler:
                 host=self.__getHost(),
                 database=self.__getDatabase(),
                 username=self.__getUsername(),
-                password=self.__getPassword()
+                password=self.__getPassword(),
+                connect_timeout=10
             )
         )
 

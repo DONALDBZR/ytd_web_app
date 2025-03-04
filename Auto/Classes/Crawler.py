@@ -103,18 +103,25 @@ class Crawler:
         storage, and database handler.  It also sets the directory
         for caching and initializes the data structures required for
         the crawler.
+
+        Raises:
+            Exception: If an error occurs during the initialization process.
         """
-        self.setEnvironment(Environment())
-        self.setLogger(Extractio_Logger(__name__))
-        self.__setUserAgents()
-        self.__setServices()
-        self.__setOptions()
-        self.setDriver(Chrome(self.getOption(), self.getService()))
-        self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
-        self.setDatabaseHandler(Database_Handler())
-        self.setData([])
-        self.setRobotParsers({})
-        self.setUpData()
+        try:
+            self.setEnvironment(Environment())
+            self.setLogger(Extractio_Logger(__name__))
+            self.__setUserAgents()
+            self.__setServices()
+            self.__setOptions()
+            self.setDriver(Chrome(self.getOption(), self.getService()))
+            self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
+            self.setDatabaseHandler(Database_Handler())
+            self.setData([])
+            self.setRobotParsers({})
+            self.setUpData()
+        except Exception as error:
+            self.getLogger().error(f"An error occured while initializing the application\nError: {error}")
+            raise error
 
     def __setUserAgents(self) -> None:
         file_name: str = f"{self.getEnvironment().getDirectory()}/user_agents.txt"

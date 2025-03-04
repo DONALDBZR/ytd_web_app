@@ -90,7 +90,7 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     }
 
 @Media_Portal.route("/Search", methods=["GET"])
-@limiter.limit("100 per hour", error_message="Rate Limit Exceeded")
+@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def search() -> Response:
     """
     Searching for the media by the uniform resource locator that

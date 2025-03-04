@@ -15,6 +15,7 @@ from time import time, sleep
 from json import dumps
 from sys import path
 from bleach import clean
+from urllib.parse import ParseResult, urlparse
 
 
 path.append(getcwd())
@@ -355,10 +356,12 @@ class Crawler:
             void
         """
         if referrer == "firstRun":
-            self.getData()[index]["author_channel"] = self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a').get_attribute("href")
-        elif referrer == "secondRun":
-            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
-            self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))
+            self.setHtmlTag(self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a'))
+            author_channel_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
+            # self.getData()[index]["author_channel"] = urlparse()
+            return
+        self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
+        self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))
 
     def sanitizeHtml(self, html: str) -> str:
         """
@@ -381,3 +384,23 @@ class Crawler:
             attributes=allowed_attributes,
             strip=True
         )
+
+    def sanitizeUniformResourceLocator(self, uniform_resource_locator: str) -> str:
+        """
+        Sanitizing the given uniform resource locator by ensuring it
+        belongs to an allowed domain.
+
+        Parameters:
+            uniform_resource_locator (string): The uniform resource locator to be sanitized.
+
+        Returns:
+            string
+        """
+        allowed_domains: List[str] = ["youtube.com", "youtu.be"]
+        try:
+            parsed_uniform_resource_locator: ParseResult = urlparse(uniform_resource_locator)
+            return uniform_resource_locator if parsed_uniform_resource_locator.netloc in allowed_domains else ""
+        except Exception as error:
+            self.getLogger().error(f"Error occurred while sanitizing the Uniform Resource Locator!\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")
+            return ""
+

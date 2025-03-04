@@ -717,6 +717,7 @@ class Crawler:
             self.getLogger().error(f"An error occured while reading the robots.txt file.\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")
             if uniform_resource_locator in self.getRobotParsers():
                 del self.getRobotParsers()[uniform_resource_locator]
+                parser = None
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:
         """

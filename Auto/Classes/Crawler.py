@@ -232,13 +232,29 @@ class Crawler:
             self.__setUpFirstRun(referrer, identifiers)
             self.__setUpSecondRun(referrer, dataset)
             self.__initializeFirstRun(referrer)
-            if referrer == "firstRun" and len(self.getData()) > 0:
-                self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
-                self.secondRun()
+            self.__initializeSecondRun(referrer)
             if len(identifiers) == 0:
                 self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
         except Exception as error:
             self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
+
+    def __initializeSecondRun(self, referrer: str) -> None:
+        """
+        Initializing the second run process by checking if the
+        system is in the `'firstRun'` state and contains data to
+        process.  If the conditions are met, it logs the new content
+        amount and proceeds with the second run.
+
+        Parameters:
+            referrer (string): The referrer string indicating the state of the system.
+
+        Returns:
+            void
+        """
+        if referrer != "firstRun" or len(self.getData()) == 0:
+            return
+        self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
+        self.secondRun()
 
     def __initializeFirstRun(self, referrer: str) -> None:
         """

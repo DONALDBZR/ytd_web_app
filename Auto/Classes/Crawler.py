@@ -89,6 +89,10 @@ class Crawler:
     """
     ENV File of the application
     """
+    __user_agents: List[str]
+    """
+    The list of user agents.
+    """
 
     def __init__(self) -> None:
         """
@@ -101,6 +105,7 @@ class Crawler:
         """
         self.setEnvironment(Environment())
         self.setLogger(Extractio_Logger(__name__))
+        self.__setUserAgents()
         self.__setServices()
         self.__setOptions()
         self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
@@ -109,6 +114,18 @@ class Crawler:
         self.setData([])
         self.setRobotParsers({})
         self.setUpData()
+
+    def __setUserAgents(self) -> None:
+        file_name: str = f"{self.getEnvironment().getDirectory()}/user_agents.txt"
+        file = open(file_name, "r")
+        self.setUserAgents([line.strip() for line in file.readlines()])
+        file.close()
+
+    def getUserAgents(self) -> List[str]:
+        return self.__user_agents
+
+    def setUserAgents(self, user_agents: List[str]) -> None:
+        self.__user_agents = user_agents
 
     def getEnvironment(self) -> Environment:
         return self.__environment

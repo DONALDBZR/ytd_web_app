@@ -797,12 +797,16 @@ class Crawler:
 
         Returns:
             void
+
+        Raises:
+            Exception: If an error occurs while retrieving data.
         """
         try:
             self.__getDataFirstRun(referrer, index)
             self.__getDataSecondRun(referrer, index)
         except Exception as error:
             self.getLogger().error(f"An error occurred while retrieving data!\nError: {error}")
+            raise error
 
     def __getDataSecondRun(self, referrer: str, index: int) -> None:
         """

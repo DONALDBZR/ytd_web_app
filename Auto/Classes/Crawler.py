@@ -357,8 +357,35 @@ class Crawler:
         """
         try:
             self.__getDataFirstRun(referrer, index)
+            self.__getDataSecondRun(referrer, index)
             self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
             self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))
+
+    def __getDataSecondRun(self, referrer: str, index: int) -> None:
+        """
+        Retrieving the latest content uniform resource locator
+        during the second run and updates the data structure.
+
+        Parameters:
+            referrer (string): The source of the function call. Should be "secondRun" to proceed.
+            index (int): The index in the data structure where the latest content uniform resource locator should be stored.
+
+        Returns:
+            void
+        """
+        if referrer != "secondRun":
+            return
+        try:
+            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
+            if len(self.getHtmlTags()) < 2:
+                self.getLogger().warn("The thumbnail element is not found!")
+                return
+            self.setHtmlTag(self.getHtmlTags()[2])
+            latest_content_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
+            self.getData()[index]["latest_content"] = self.sanitizeUniformResourceLocator(latest_content_uniform_resource_locator)
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while retrieving data for the second run!\nError: {error}")
+            self.getData()[index]["latest_content"] = ""
 
     def __getDataFirstRun(self, referrer: str, index: int) -> None:
         """

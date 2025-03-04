@@ -203,7 +203,7 @@ class HeaderHomepage extends React.Component {
      * @returns {string}
      */
     sanitizeUniformResourceLocator(uniform_resource_locator) {
-        const allowed_domains = ["https://youtube.com", "https://youtu.be"];
+        const allowed_domains = ["youtube.com", "youtu.be"];
         try {
             const url = new URL(uniform_resource_locator);
             return (allowed_domains.includes(url.hostname)) ? url.href : "";

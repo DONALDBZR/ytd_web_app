@@ -781,7 +781,7 @@ class Crawler:
             self.getData()[index]["author_channel"] = self.sanitizeUniformResourceLocator(author_channel_uniform_resource_locator)
         except Exception as error:
             self.getLogger().error(f"An error occurred while retrieving data for the first run!\nError: {error}")
-            self.getData()[index]["author_channel"] = ""
+            raise error
 
     def sanitizeHtml(self, html: str) -> str:
         """

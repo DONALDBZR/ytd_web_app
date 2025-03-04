@@ -246,6 +246,9 @@ class Crawler:
 
         Returns:
             void
+
+        Raises:
+            Exception: If an error occurs while setting up the data.
         """
         try:
             identifiers: List[RowType] = self.getDatabaseHandler().getData(
@@ -264,6 +267,7 @@ class Crawler:
             self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}") if len(identifiers) == 0 else exit()
         except Exception as error:
             self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
+            raise error
 
     def __initializeSecondRun(self, referrer: str) -> None:
         """

@@ -358,8 +358,8 @@ class Crawler:
         try:
             self.__getDataFirstRun(referrer, index)
             self.__getDataSecondRun(referrer, index)
-            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
-            self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while retrieving data!\nError: {error}")
 
     def __getDataSecondRun(self, referrer: str, index: int) -> None:
         """

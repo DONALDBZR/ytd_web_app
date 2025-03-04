@@ -538,11 +538,12 @@ class Crawler:
         """
         referrer: str = stack()[1][3]
         retries: int = 3
+        user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
+        self.getOption().add_argument(f"user-agent={user_agent}")
         try:
             for attempt in range(0, retries, 1):
-                user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
-                self.getOption().add_argument(f"user-agent={user_agent}")
                 self.setDriver(Chrome(self.getOption(), self.getService()))
+                self.getLogger().debug(f"Attempting to enter the target!\nAttempt: {attempt + 1}\nUniform Resource Locator: {target}")
                 parsed_uniform_resource_locator: ParseResult = urlparse(target)
                 base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
                 if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries, user_agent):
@@ -609,10 +610,14 @@ class Crawler:
 
         Returns:
             None
+
+        Raises:
+            Exception: If the `robots.txt` file has not been parsed.
         """
         if parser:
             return
         self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
+        raise Exception("The robots.txt file has not been parsed!")
 
     def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, user_agent: str) -> None:
         """

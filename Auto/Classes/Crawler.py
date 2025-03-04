@@ -225,20 +225,18 @@ class Crawler:
         new_dataset: List[Dict[str, Union[str, None]]] = [{"author_channel": author_channel, "latest_content": None} for author_channel in list(set([str(media_metadata["author_channel"]) for media_metadata in dataset]))]
         self.setData(cast(List[Dict[str, Union[str, int, None]]], new_dataset))
 
-    def secondRun(self):
+    def secondRun(self) -> None:
         """
-        The second run for the web-crawler to seek for the data
-        needed from the targets.
+        Executing the second phase of the data retrieval process by
+        iterating through stored data and processing each entry with
+        an appropriate delay.
 
         Returns:
             void
         """
-        total: int = 0
         for index in range(0, len(self.getData()), 1):
-            total += len(str(self.getData()[index]["author_channel"]))
-        delay: float = ((total / len(self.getData())) / 200) * 60
-        self.getLogger().debug(f"The delay has been calculated!\nDelay: {delay} s")
-        for index in range(0, len(self.getData()), 1):
+            delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
+            self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
 

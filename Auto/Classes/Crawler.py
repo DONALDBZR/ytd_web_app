@@ -684,13 +684,13 @@ class Crawler:
         Returns:
             Union[RobotFileParser, None]
         """
+        self.getLogger().debug(f"Checking robots parser.\nUniform Resource Locator: {uniform_resource_locator}")
         if uniform_resource_locator not in self.getRobotParsers():
             robots_uniform_resource_locator: str = f"{uniform_resource_locator}/robots.txt"
             parser: RobotFileParser = RobotFileParser()
             parser.set_url(robots_uniform_resource_locator)
             self.__readRobotTxt(parser, uniform_resource_locator)
         return self.getRobotParsers().get(uniform_resource_locator)
-
 
     def __readRobotTxt(self, parser: RobotFileParser, uniform_resource_locator: str) -> None:
         """

@@ -12,13 +12,6 @@ from flask_compress import Compress
 from flask_cors import CORS
 from Models.DatabaseHandler import Database_Handler
 from Models.SecurityManagementSystem import Security_Management_System
-from Routes.Session import Session_Portal
-from Routes.Search import Search_Portal
-from Routes.Media import Media_Portal
-from Routes.Download import Download_Portal
-from Routes.Video import Video_Portal
-from Routes.Trend import Trend_Portal
-from Routes.Track import Track_Portal
 from Environment import Environment
 from re import match
 from os.path import join, exists, isfile, normpath, relpath, splitext
@@ -65,11 +58,20 @@ ENV File of the application
 limiter: Limiter = Limiter(
     app=Application,
     key_func=get_remote_address,
-    default_limits=["100 per minute", "5 per second"],
+    default_limits=["100 per second"],
 )
 """
 The Limiter class initializes the Flask-Limiter extension.
 """
+from Routes.Session import Session_Portal
+from Routes.Search import Search_Portal
+from Routes.Media import Media_Portal
+from Routes.Download import Download_Portal
+from Routes.Video import Video_Portal
+from Routes.Trend import Trend_Portal
+from Routes.Track import Track_Portal
+
+
 Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 Application.config["COMPRESS_ALGORITHM"] = "gzip"

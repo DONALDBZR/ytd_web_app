@@ -238,7 +238,7 @@ class Crawler:
             delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
             self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
             sleep(delay)
-            self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
+            self.enterTarget(str(self.getData()[index]["author_channel"]), index)
         self.buildData()
 
     def buildData(self) -> None:
@@ -315,7 +315,7 @@ class Crawler:
             delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
             self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             sleep(delay)
-            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), index)
         self.setUpData()
 
     def getDelay(self, uniform_resource_locator: str) -> float:
@@ -334,14 +334,13 @@ class Crawler:
         delay: float = (len(uniform_resource_locator) / (200 * (1.1 ** iteration))) * 60
         return delay if delay >= 10.00 and delay < 15.00 else 12.50
 
-    def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
+    def enterTarget(self, target: str, index: int = 0) -> None:
         """
         Navigating to the specified target uniform resource locator
         and processes data based on the referrer.
 
         Parameters:
             target (string): The uniform resource locator to be visited.
-            delay (float): The waiting time before proceeding.
             index (int): The index of the data entry being processed.
 
         Returns:

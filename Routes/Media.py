@@ -12,8 +12,7 @@ from json import dumps, loads, JSONDecodeError
 from os.path import isfile
 from Environment import Environment
 from html import escape
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from index import limiter
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)

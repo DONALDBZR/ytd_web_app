@@ -1,4 +1,4 @@
-from selenium import webdriver
+from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -18,6 +18,7 @@ from bleach import clean
 from urllib.parse import ParseResult, urlparse
 from random import randint
 from urllib.robotparser import RobotFileParser
+from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
 
 
 path.append(getcwd())
@@ -108,7 +109,7 @@ class Crawler:
         self.__setUserAgents()
         self.__setServices()
         self.__setOptions()
-        self.setDriver(webdriver.Chrome(self.getOption(), self.getService()))
+        self.setDriver(Chrome(self.getOption(), self.getService()))
         self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
         self.setDatabaseHandler(Database_Handler())
         self.setData([])
@@ -365,7 +366,7 @@ class Crawler:
             delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
             self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
             sleep(delay)
-            self.enterTarget(str(self.getData()[index]["author_channel"]), index)
+            self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
 
     def buildData(self) -> None:
@@ -498,7 +499,7 @@ class Crawler:
             delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
             self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             sleep(delay)
-            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), index)
+            self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
 
     def getDelay(self, uniform_resource_locator: str) -> float:
@@ -517,7 +518,7 @@ class Crawler:
         delay: float = (len(uniform_resource_locator) / (200 * (1.1 ** iteration))) * 60
         return delay if delay >= 10.00 and delay < 15.00 else 12.50
 
-    def enterTarget(self, target: str, index: int = 0) -> None:
+    def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """
         Navigating to the specified target uniform resource locator
         and processes data based on the referrer.  Checks the
@@ -529,24 +530,69 @@ class Crawler:
 
         Parameters:
             target (string): The uniform resource locator to be visited.
+            delay (float): The delay between requests.
             index (int): The index of the data entry being processed.
 
         Returns:
             void
         """
         referrer: str = stack()[1][3]
-        parsed_uniform_resource_locator: ParseResult = urlparse(target)
-        base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
+        retries: int = 3
+        for attempt in range(0, retries, 1):
+            user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
+            self.getOption().add_argument(f"user-agent={user_agent}")
+            self.setDriver(Chrome(self.getOption(), self.getService()))
+            parsed_uniform_resource_locator: ParseResult = urlparse(target)
+            base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
+            if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries, user_agent):
+                return
+            sleep(delay)
+            delay *= 2
+
+    def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int, user_agent: str) -> bool:
+        """
+        Attempting to navigate to a given target uniform resource
+        locator, handling crawling restrictions, and retrieving
+        data.  This method checks the `robots.txt` file to ensure
+        that crawling is allowed, navigates to the target based on
+        the referrer, and retrieves data if successful.
+
+        Parameters:
+            target (string): The uniform resource locator to be visited.
+            base_uniform_resource_locator (string): The base uniform resource locator extracted from the target.
+            referrer (string): The function or context that initiated the navigation.
+            index (int): The index of the data entry being processed.
+            attempt (int): The current attempt number for crawling.
+            retries (int): The total number of allowed retry attempts.
+            user_agent (string): The user agent string used for the request.
+
+        Returns:
+            bool
+
+        Raises:
+            TimeoutException: If the request times out.
+            WebDriverException: If an issue occurs with the web driver.
+            NoSuchElementException: If the target element is not found.
+            Exception: If an unexpected error occurs.
+        """
         try:
             parser: Union[RobotFileParser, None] = self.__checkRobotsParser(base_uniform_resource_locator)
             self.__robotTxtNotParsed(parser, target, index)
-            self.__notAllowedCrawl(parser, target, index)
+            self.__notAllowedCrawl(parser, target, index, user_agent)
             self.__enterTargetFirstRun(referrer, target)
             self.__enterTargetSecondRun(referrer, target)
             self.retrieveData(referrer, index)
+            return True
+        except (TimeoutException, WebDriverException, NoSuchElementException) as error:
+            self.getLogger().error(f"The current attempt on crawling has failed.\nError: {error}\nAttempt: {attempt + 1}")
+            if attempt >= retries - 1:
+                self.getLogger().error(f"Failing to navigate the current target!\nError: {error}\nAttempts: {retries}\nUniform Resource Locator: {target}")
+                del self.getData()[index]
+            return False
         except Exception as error:
-            self.getLogger().error(f"An error occurred while checking robots.txt or entering the target!\nError: {error}\nUniform Resource Locator: {target}")
+            self.getLogger().error(f"An unexpected error occurred!\nError: {error}\nUniform Resource Locator: {target}")
             del self.getData()[index]
+            return False
 
     def __robotTxtNotParsed(self, parser: Union[RobotFileParser, None], target: str, index: int) -> None:
         """
@@ -567,7 +613,7 @@ class Crawler:
         self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
         del self.getData()[index]
 
-    def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, index: int) -> None:
+    def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, index: int, user_agent: str) -> None:
         """
         Checking if the crawler is allowed to access a specific
         target based on the `robots.txt` file.  If not allowed, logs
@@ -578,11 +624,12 @@ class Crawler:
             parser (Union[RobotFileParser, None]): The parser object for the `robots.txt` file.  It should be able to check whether crawling is allowed.
             target (string): The Uniform Resource Locator that is being checked for crawling permission.
             index (int): The index of the target in the data list to be removed if crawling is not allowed.
+            user_agent (string): The user agent value that is being used to access the target.
 
         Returns:
             None
         """
-        if parser.can_fetch("ExtractioCrawlerBot/3.0", target): # type: ignore
+        if parser.can_fetch(user_agent, target): # type: ignore
             return
         self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
         del self.getData()[index]

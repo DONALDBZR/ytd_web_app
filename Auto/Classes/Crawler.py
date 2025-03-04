@@ -549,6 +549,8 @@ class Crawler:
                     return
                 sleep(delay)
                 delay *= 2
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while trying to enter the target.\nError: {error}\nUniform Resource Locator: {target}")
         finally:
             self.getDriver().close()
 
@@ -590,11 +592,9 @@ class Crawler:
             self.getLogger().error(f"The current attempt on crawling has failed.\nError: {error}\nAttempt: {attempt + 1}")
             if attempt >= retries - 1:
                 self.getLogger().error(f"Failing to navigate the current target!\nError: {error}\nAttempts: {retries}\nUniform Resource Locator: {target}")
-                del self.getData()[index]
             return False
         except Exception as error:
             self.getLogger().error(f"An unexpected error occurred!\nError: {error}\nUniform Resource Locator: {target}")
-            del self.getData()[index]
             return False
 
     def __robotTxtNotParsed(self, parser: Union[RobotFileParser, None], target: str, index: int) -> None:
@@ -614,7 +614,6 @@ class Crawler:
         if parser:
             return
         self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
-        del self.getData()[index]
 
     def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, index: int, user_agent: str) -> None:
         """
@@ -635,7 +634,6 @@ class Crawler:
         if parser.can_fetch(user_agent, target): # type: ignore
             return
         self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
-        del self.getData()[index]
 
     def __enterTargetFirstRun(self, referrer: str, target: str) -> None:
         """

@@ -17,6 +17,7 @@ from sys import path
 from bleach import clean
 from urllib.parse import ParseResult, urlparse
 from random import randint
+from urllib.robotparser import RobotFileParser
 
 
 path.append(getcwd())
@@ -337,7 +338,12 @@ class Crawler:
     def enterTarget(self, target: str, index: int = 0) -> None:
         """
         Navigating to the specified target uniform resource locator
-        and processes data based on the referrer.
+        and processes data based on the referrer.  Checks the
+        `robots.txt` file to determine if the crawler is allowed to
+        access the target.  If allowed, it navigates to the target
+        uniform resource locator.  The behavior differs depending on
+        whether the function is called from the "firstRun" or
+        "secondRun".
 
         Parameters:
             target (string): The uniform resource locator to be visited.
@@ -347,13 +353,29 @@ class Crawler:
             void
         """
         referrer: str = stack()[1][3]
-        if referrer == "firstRun":
-            self.getLogger().inform(f"Entering the target!\nTarget: {target}")
-            self.getDriver().get(target)
-        if referrer == "secondRun":
-            self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
-            self.getDriver().get(f"{target}/videos")
-        self.retrieveData(referrer, index)
+        parsed_uniform_resource_locator: ParseResult = urlparse(target)
+        base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
+        robots_uniform_resource_locator: str = f"{base_uniform_resource_locator}/robots.txt"
+        try:
+            parser: RobotFileParser = RobotFileParser()
+            parser.set_url(robots_uniform_resource_locator)
+            parser.read()
+            if not parser.can_fetch("ExtractioCrawlerBot/3.0", target):
+                self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
+                self.getData()[index]["author_channel"] = ""
+                self.getData()[index]["latest_content"] = ""
+                return
+            if referrer == "firstRun":
+                self.getLogger().inform(f"Entering the target!\nTarget: {target}")
+                self.getDriver().get(target)
+            if referrer == "secondRun":
+                self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
+                self.getDriver().get(f"{target}/videos")
+            self.retrieveData(referrer, index)
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while checking robots.txt or entering the target!\nError: {error}\nUniform Resource Locator: {target}")
+            self.getData()[index]["author_channel"] = ""
+            self.getData()[index]["latest_content"] = ""
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:
         """

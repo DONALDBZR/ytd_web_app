@@ -759,7 +759,7 @@ class Crawler:
             self.getData()[index]["latest_content"] = self.sanitizeUniformResourceLocator(latest_content_uniform_resource_locator)
         except Exception as error:
             self.getLogger().error(f"An error occurred while retrieving data for the second run!\nError: {error}")
-            self.getData()[index]["latest_content"] = ""
+            raise error
 
     def __getDataFirstRun(self, referrer: str, index: int) -> None:
         """

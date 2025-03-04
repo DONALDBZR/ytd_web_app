@@ -2,7 +2,7 @@
 The module that has the Analytical Management System.
 """
 from typing import Union, Dict, Any, Tuple, List
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Error as DatabaseHandlerError, RowType
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, RowType
 from time import mktime
 from datetime import datetime
 from user_agents import parse

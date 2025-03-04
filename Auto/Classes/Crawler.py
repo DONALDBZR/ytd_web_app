@@ -14,6 +14,7 @@ from inspect import stack
 from time import time, sleep
 from json import dumps
 from sys import path
+from bleach import clean
 
 
 path.append(getcwd())
@@ -358,3 +359,23 @@ class Crawler:
         elif referrer == "secondRun":
             self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
             self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))
+
+    def sanitizeHtml(self, html: str) -> str:
+        """
+        Sanitizing the given HTML string by removing all tags and
+        attributes.
+
+        Parameters:
+            html (string): The HTML content to be sanitized.
+
+        Returns:
+            string
+        """
+        allowed_tags: List[str] = []
+        allowed_attributes: Dict[str, List[str]] = {}
+        return clean(
+            text=html,
+            tags=allowed_tags,
+            attributes=allowed_attributes,
+            strip=True
+        )

@@ -633,10 +633,14 @@ class Crawler:
 
         Returns:
             None
+
+        Raises:
+            Exception: If the crawler is not allowed to access the target.
         """
         if parser.can_fetch(user_agent, target): # type: ignore
             return
-        self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
+        self.getLogger().error(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
+        raise Exception(f"The crawler is not allowed to accessed the target!\nUniform Resource Locator: {target}")
 
     def __enterTargetFirstRun(self, referrer: str, target: str) -> None:
         """

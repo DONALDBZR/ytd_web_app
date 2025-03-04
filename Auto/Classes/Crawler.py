@@ -512,24 +512,88 @@ class Crawler:
         base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
         try:
             parser: Union[RobotFileParser, None] = self.__checkRobotsParser(base_uniform_resource_locator)
-            if not parser:
-                self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
-                del self.getData()[index]
-                return
-            if not parser.can_fetch("ExtractioCrawlerBot/3.0", target):
-                self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
-                del self.getData()[index]
-                return
-            if referrer == "firstRun":
-                self.getLogger().inform(f"Entering the target!\nTarget: {target}")
-                self.getDriver().get(target)
-            if referrer == "secondRun":
-                self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
-                self.getDriver().get(f"{target}/videos")
+            self.__robotTxtNotParsed(parser, target, index)
+            self.__notAllowedCrawl(parser, target, index)
+            self.__enterTargetFirstRun(referrer, target)
+            self.__enterTargetSecondRun(referrer, target)
             self.retrieveData(referrer, index)
         except Exception as error:
             self.getLogger().error(f"An error occurred while checking robots.txt or entering the target!\nError: {error}\nUniform Resource Locator: {target}")
             del self.getData()[index]
+
+    def __robotTxtNotParsed(self, parser: Union[RobotFileParser, None], target: str, index: int) -> None:
+        """
+        Checking whether the `robots.txt` file has been parsed.  If
+        it has not, logs an error and removes the target uniform
+        resource locator from the data list at the given index.
+
+        Parameters:
+            parser (Union[RobotFileParser, None]): The parser object for the `robots.txt` file.  If None, the `robots.txt` file is considered not parsed.
+            target (string): The Uniform Resource Locator that is being checked.
+            index (int): The index of the target in the data list to be removed if `robots.txt` is not parsed.
+
+        Returns:
+            None
+        """
+        if parser:
+            return
+        self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
+        del self.getData()[index]
+
+    def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, index: int) -> None:
+        """
+        Checking if the crawler is allowed to access a specific
+        target based on the `robots.txt` file.  If not allowed, logs
+        a warning and removes the target uniform resource locator
+        from the data list at the given index.
+
+        Parameters:
+            parser (Union[RobotFileParser, None]): The parser object for the `robots.txt` file.  It should be able to check whether crawling is allowed.
+            target (string): The Uniform Resource Locator that is being checked for crawling permission.
+            index (int): The index of the target in the data list to be removed if crawling is not allowed.
+
+        Returns:
+            None
+        """
+        if parser.can_fetch("ExtractioCrawlerBot/3.0", target): # type: ignore
+            return
+        self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
+        del self.getData()[index]
+
+    def __enterTargetFirstRun(self, referrer: str, target: str) -> None:
+        """
+        Entering the target URL if the referrer is `"firstRun"`.
+        Logs an informational message and directs the web driver to
+        the target URL.
+
+        Parameters:
+            referrer (string): The referrer value that should be `"firstRun"` to trigger the target entry.
+            target (string): The Uniform Resource Locator (URL) to which the web driver should navigate.
+
+        Returns:
+            None
+        """
+        if referrer != "firstRun":
+            return
+        self.getLogger().inform(f"Entering the target!\nTarget: {target}")
+        self.getDriver().get(target)
+
+
+    def __enterTargetSecondRun(self, referrer: str, target: str) -> None:
+        """
+        Entering the target uniform resource locator with a `"/videos"` suffix if the referrer is `"secondRun"`.  Logs an informational message and directs the web driver to the target uniform resource locator with the `"/videos"` path.
+
+        Parameters:
+            referrer (string): The referrer value that should be `"secondRun"` to trigger the target entry.
+            target (string): The Uniform Resource Locator (URL) to which the web driver should navigate, with `"/videos"` appended.
+
+        Returns:
+            None
+        """
+        if referrer != "secondRun":
+            return
+        self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
+        self.getDriver().get(f"{target}/videos")
 
     def __checkRobotsParser(self, uniform_resource_locator: str) -> Union[RobotFileParser, None]:
         """

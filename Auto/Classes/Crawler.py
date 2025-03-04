@@ -877,14 +877,17 @@ class Crawler:
 
         Returns:
             string
+
+        Raises:
+            ValueError: If the uniform resource locator is invalid.
         """
         allowed_domains: List[str] = ["youtube.com", "youtu.be"]
         try:
             parsed_uniform_resource_locator: ParseResult = urlparse(uniform_resource_locator)
             return self.validateUniformResourceLocator(parsed_uniform_resource_locator, allowed_domains, uniform_resource_locator)
-        except Exception as error:
+        except (ValueError, Exception) as error:
             self.getLogger().error(f"Error occurred while sanitizing the Uniform Resource Locator!\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")
-            return ""
+            raise error
 
     def validateUniformResourceLocator(self, parsed_uniform_resource_locator: ParseResult, allowed_domains: List[str], uniform_resource_locator: str) -> str:
         """

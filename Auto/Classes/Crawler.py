@@ -582,8 +582,8 @@ class Crawler:
         """
         try:
             parser: Union[RobotFileParser, None] = self.__checkRobotsParser(base_uniform_resource_locator)
-            self.__robotTxtNotParsed(parser, target, index)
-            self.__notAllowedCrawl(parser, target, index, user_agent)
+            self.__robotTxtNotParsed(parser, target)
+            self.__notAllowedCrawl(parser, target, user_agent)
             self.__enterTargetFirstRun(referrer, target)
             self.__enterTargetSecondRun(referrer, target)
             self.retrieveData(referrer, index)

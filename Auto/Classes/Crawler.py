@@ -525,15 +525,19 @@ class Crawler:
         Returns:
             List[Dict[str, Union[str, int, None]]]
         """
-        if youtube:
-            data: Dict[str, str] = youtube[0] # type: ignore
-            uniform_resource_locator: str = f"https://www.youtube.com/watch?v={data['identifier']}" if data["platform"] in allowed_platforms else ""
-            dataset.append({
-                "identifier": data["identifier"],
-                "author": data["author"],
-                "uniform_resource_locator": uniform_resource_locator,
-                "author_channel": None
-            })
+        try:
+            if youtube:
+                data: Dict[str, str] = youtube[0] # type: ignore
+                uniform_resource_locator: str = f"https://www.youtube.com/watch?v={data['identifier']}" if data["platform"] in allowed_platforms else ""
+                dataset.append({
+                    "identifier": data["identifier"],
+                    "author": data["author"],
+                    "uniform_resource_locator": uniform_resource_locator,
+                    "author_channel": None
+                })
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while processing the youtube data.\nError: {error}\nyoutube: {youtube}\nallowed_platforms: {allowed_platforms}")
+            raise error
         return dataset
 
     def firstRun(self) -> None:

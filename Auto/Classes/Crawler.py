@@ -351,11 +351,9 @@ class Crawler:
         if referrer == "firstRun":
             self.getLogger().inform(f"Entering the target!\nTarget: {target}")
             self.getDriver().get(target)
-            sleep(delay)
         if referrer == "secondRun":
             self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
             self.getDriver().get(f"{target}/videos")
-            sleep(delay)
         self.retrieveData(referrer, index)
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:

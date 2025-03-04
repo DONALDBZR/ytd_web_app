@@ -711,7 +711,7 @@ class Crawler:
             None
         """
         try:
-            parser.read() # type: ignore
+            parser.read()
             self.getRobotParsers()[uniform_resource_locator] = parser
         except Exception as error:
             self.getLogger().error(f"An error occured while reading the robots.txt file.\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")

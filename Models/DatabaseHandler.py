@@ -252,7 +252,24 @@ class Database_Handler:
             self.getLogger().error(f"Failed to retrieve data from the database.\nError: {error}")
             raise
         finally:
-            self.__getStatement().close() if self.__getStatement() else self.getLogger().warn("The database statement cursor has already been closed.")
+            self._closeCursor()
+
+    def _closeCursor(self) -> None:
+        """
+        Closing the database statement cursor if it is open.  This
+        method checks if the statement cursor is open by calling the
+        private method `__getStatement()`.  If the cursor is open,
+        it will be closed using the `close()` method.  If the cursor
+        has already been closed, a warning will be logged using the
+        `getLogger().warn()` method.
+
+        Returns:
+            void
+        """
+        if self.__getStatement():
+            self.__getStatement().close()
+        else:
+            self.getLogger().warn("The database statement cursor has already been closed.")
 
     def getData(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0, group_condition: str = "") -> List[RowType]:
         """

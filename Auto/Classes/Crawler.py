@@ -429,12 +429,18 @@ class Crawler:
 
         Returns:
             void
+
+        Raises:
+            Exception: If an error occurs while saving the data.
         """
         timestamp: int = int(time())
         file_name: str = f"{self.getDirectory()}{timestamp}.json"
-        file = open(file_name, "w")
-        file.write(dumps(self.getData(), indent=4))
-        file.close()
+        try:
+            file = open(file_name, "w")
+            file.write(dumps(self.getData(), indent=4))
+            file.close()
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while saving the data!\nError: {error}\nFile name: {file_name}")
         self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
         self.getDriver().quit()
 

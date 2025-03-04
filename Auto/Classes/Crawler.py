@@ -812,7 +812,11 @@ class Crawler:
     def sanitizeUniformResourceLocator(self, uniform_resource_locator: str) -> str:
         """
         Sanitizing the given uniform resource locator by ensuring it
-        belongs to an allowed domain.
+        belongs to an allowed domain.  This function parses the
+        uniform resource locator and validates its components such
+        as scheme, domain, port, user info, and fragment.  Only
+        HTTPS uniform resource locators belonging to allowed domains
+        are considered valid.
 
         Parameters:
             uniform_resource_locator (string): The uniform resource locator to be sanitized.
@@ -823,8 +827,39 @@ class Crawler:
         allowed_domains: List[str] = ["youtube.com", "youtu.be"]
         try:
             parsed_uniform_resource_locator: ParseResult = urlparse(uniform_resource_locator)
-            return uniform_resource_locator if parsed_uniform_resource_locator.netloc in allowed_domains else ""
+            return self.validateUniformResourceLocator(parsed_uniform_resource_locator, allowed_domains, uniform_resource_locator)
         except Exception as error:
             self.getLogger().error(f"Error occurred while sanitizing the Uniform Resource Locator!\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")
             return ""
 
+    def validateUniformResourceLocator(self, parsed_uniform_resource_locator: ParseResult, allowed_domains: List[str], uniform_resource_locator: str) -> str:
+        """
+        Validating the parsed uniform resource locator against
+        security constraints.  This function checks if the scheme is
+        HTTPS, the domain is in the allowed list, and ensures that
+        ports, user info, and fragments are not present.
+
+        Parameters:
+            parsed_uniform_resource_locator (ParseResult): The parsed uniform resource locator object.
+            allowed_domains (List[str]): List of allowed domain names.
+            uniform_resource_locator (string): The original uniform resource locator string.
+
+        Returns:
+            string
+        """
+        if parsed_uniform_resource_locator.scheme != "https":
+            self.getLogger().error(f"Invalid scheme in URL. Only HTTPS is allowed.\nUniform Resource Locator: {uniform_resource_locator}")
+            return ""
+        if parsed_uniform_resource_locator.netloc not in allowed_domains:
+            self.getLogger().error(f"Invalid domain in URL. Domain is not allowed.\nUniform Resource Locator: {uniform_resource_locator}")
+            return ""
+        if parsed_uniform_resource_locator.port is not None:
+            self.getLogger().error(f"Port number is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
+            return ""
+        if parsed_uniform_resource_locator.username or parsed_uniform_resource_locator.password:
+            self.getLogger().error(f"User information is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
+            return ""
+        if parsed_uniform_resource_locator.fragment:
+            self.getLogger().error(f"Fragment is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
+            return ""
+        return uniform_resource_locator

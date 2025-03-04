@@ -14,7 +14,7 @@ from time import time, sleep
 from json import dumps
 from sys import path
 from urllib.parse import ParseResult, urlparse
-from random import randint
+from random import randint, uniform
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
 
@@ -405,7 +405,7 @@ class Crawler:
             void
         """
         for index in range(0, len(self.getData()), 1):
-            delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
+            delay: float = self.getDelay()
             self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
@@ -550,27 +550,22 @@ class Crawler:
             void
         """
         for index in range(0, len(self.getData()), 1):
-            delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
+            delay: float = self.getDelay()
             self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
 
-    def getDelay(self, uniform_resource_locator: str) -> float:
+    def getDelay(self) -> float:
         """
-        Calculating a randomized delay based on the length of the
-        uniform resource locator and ensuring the delay falls within
-        a specific range.
-
-        Parameters:
-            uniform_resource_locator (string): The uniform resource locator for which the delay is calculated.
+        Calculating a randomized delay, ensuring it falls within a
+        specific range. The calculation of the delay does not take
+        in consideration external data.
 
         Returns:
-            float
+            float: A delay between 10 and 15 seconds.
         """
-        iteration: int = randint(0, 10)
-        delay: float = (len(uniform_resource_locator) / (200 * (1.1 ** iteration))) * 60
-        return delay if delay >= 10.00 and delay < 15.00 else 12.50
+        return uniform(10.0, 15.0)
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """

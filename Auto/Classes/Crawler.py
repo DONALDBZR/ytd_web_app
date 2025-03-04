@@ -229,8 +229,7 @@ class Crawler:
             )
             dataset: List[Dict[str, Union[str, int, None]]] = self.getData()
             referrer: str = stack()[1][3]
-            if referrer == "__init__":
-                self.prepareFirstRun(identifiers)
+            self.__setUpFirstRun(referrer, identifiers)
             if referrer == "firstRun":
                 self.prepareSecondRun(dataset)
             if referrer == "__init__" and len(self.getData()) > 0:
@@ -243,6 +242,26 @@ class Crawler:
                 self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
         except Exception as error:
             self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
+
+    def __setUpFirstRun(self, referrer: str, dataset: List[RowType]) -> None:
+        """
+        Preparing the system for the first run by initializing the
+        data.  This method checks if the referrer is `"__init__"`,
+        indicating that the system is in the initialization phase.
+        If this condition is met, it proceeds to prepare the system
+        for the first run by calling `prepareFirstRun` with the
+        provided dataset.
+
+        Parameters:
+            referrer (string): The referrer string that indicates the state of the system.
+            dataset (List[RowType]): The data that needs to be processed for the first run.
+
+        Returns:
+            void
+        """
+        if referrer != "__init__":
+            return
+        self.prepareFirstRun(dataset)
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> None:
         """

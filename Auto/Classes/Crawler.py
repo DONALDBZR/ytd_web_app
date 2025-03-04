@@ -203,33 +203,46 @@ class Crawler:
 
     def setUpData(self) -> None:
         """
-        Setting up the data to be used to be used by the web
-        crawler.
+        Setting up the data to be used by the web crawler.  This
+        method retrieves the relevant data from the database
+        (with a filter for content downloaded in the past 2 weeks),
+        prepares the data for the crawling process, and invokes
+        different crawling procedures based on the state of the
+        system.  The referrer is checked to determine which phase
+        the crawler is in (first run or second run), and the
+        appropriate methods for the first and second runs are
+        invoked.  If no new data is found, a log message is
+        generated indicating no content was downloaded.  If there is
+        an error during any step, it is logged for further
+        investigation.
 
         Returns:
             void
         """
-        identifiers: List[RowType] = self.getDatabaseHandler().getData(
-            parameters=None,
-            table_name="MediaFile",
-            filter_condition="date_downloaded >= NOW() - INTERVAL 2 WEEK",
-            column_names="YouTube",
-            group_condition="YouTube"
-        )
-        dataset: List[Dict[str, Union[str, int, None]]] = self.getData()
-        referrer: str = stack()[1][3]
-        if referrer == "__init__":
-            self.prepareFirstRun(identifiers)
-        if referrer == "firstRun":
-            self.prepareSecondRun(dataset)
-        if referrer == "__init__" and len(self.getData()) > 0:
-            self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
-            self.firstRun()
-        if referrer == "firstRun" and len(self.getData()) > 0:
-            self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
-            self.secondRun()
-        self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
-        exit()
+        try:
+            identifiers: List[RowType] = self.getDatabaseHandler().getData(
+                parameters=None,
+                table_name="MediaFile",
+                filter_condition="date_downloaded >= NOW() - INTERVAL 2 WEEK",
+                column_names="YouTube",
+                group_condition="YouTube"
+            )
+            dataset: List[Dict[str, Union[str, int, None]]] = self.getData()
+            referrer: str = stack()[1][3]
+            if referrer == "__init__":
+                self.prepareFirstRun(identifiers)
+            if referrer == "firstRun":
+                self.prepareSecondRun(dataset)
+            if referrer == "__init__" and len(self.getData()) > 0:
+                self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
+                self.firstRun()
+            if referrer == "firstRun" and len(self.getData()) > 0:
+                self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
+                self.secondRun()
+            if len(identifiers) == 0:
+                self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}")
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> None:
         """

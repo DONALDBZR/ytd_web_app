@@ -442,7 +442,7 @@ class Crawler:
         except Exception as error:
             self.getLogger().error(f"An error occured while reading the robots.txt file.\nError: {error}")
             parser = None
-        self.setRobotParsers({uniform_resource_locator: parser})
+        self.getRobotParsers()[uniform_resource_locator] = parser
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:
         """

@@ -16,6 +16,7 @@ from json import dumps
 from sys import path
 from bleach import clean
 from urllib.parse import ParseResult, urlparse
+from random import randint
 
 
 path.append(getcwd())
@@ -312,10 +313,26 @@ class Crawler:
             void
         """
         for index in range(0, len(self.getData()), 1):
-            delay: float = (len(str(self.getData()[index]["uniform_resource_locator"])) / 200) * 60
+            delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
             self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
+
+    def getDelay(self, uniform_resource_locator: str) -> float:
+        """
+        Calculating a randomized delay based on the length of the
+        uniform resource locator and ensuring the delay falls within
+        a specific range.
+
+        Parameters:
+            uniform_resource_locator (string): The uniform resource locator for which the delay is calculated.
+
+        Returns:
+            float
+        """
+        iteration: int = randint(0, 10)
+        delay: float = (len(uniform_resource_locator) / (200 * (1.1 ** iteration))) * 60
+        return delay if delay >= 10.00 and delay < 15.00 else 12.50
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """

@@ -208,7 +208,7 @@ class Database_Handler:
             self.getLogger().error(f"Query Execution Failed!\nError: {error}\nQuery: {query}\nParameters: {parameters}")
             raise
         finally:
-            self.__getStatement().close() if self.__getStatement() else self.getLogger().warn("The cursor was already closed!")
+            self._closeCursor()
 
     def _execute(self) -> None:
         """

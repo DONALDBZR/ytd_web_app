@@ -175,22 +175,39 @@ class Database_Handler:
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__Logger = logger
 
-    def _query(self, query: str, parameters: Union[Tuple[Any], None]):
+    def _query(self, query: str, parameters: Union[Tuple[Any], None]) -> None:
         """
-        Preparing the SQL query that is going to be handled by the
-        database handler.
+        Executing a database query with the provided parameters.
+        This method prepares a database statement, executes the
+        query, and logs relevant debugging information.  If an error
+        occurs, it logs the error and raises an exception.  The
+        database cursor is closed in the `finally` block to ensure
+        proper resource management.
+
+        Parameters:
+            query (string): The SQL query to be executed.
+            parameters (Union[Tuple[Any], None]): The parameters to be used in the query.
+
+        Raises:
+            Relational_Database_Error: If the query execution fails.
 
         Returns:
-            Generator[MySQLCursor, None, None] | None
+            void
         """
         self.getLogger().debug(f"Query to be executed!\nQuery: {query}\nParameters: {parameters}")
-        self.__setStatement(
-            self.__getDatabaseHandler().cursor(
-                prepared=True,
-                dictionary=True
+        try:
+            self.__setStatement(
+                self.__getDatabaseHandler().cursor(
+                    prepared=True,
+                    dictionary=True
+                )
             )
-        )
-        self.__getStatement().execute(query, parameters)
+            self.__getStatement().execute(query, parameters)
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"Query Execution Failed!\nError: {error}\nQuery: {query}\nParameters: {parameters}")
+            raise
+        finally:
+            self.__getStatement().close() if self.__getStatement() else self.getLogger().warn("The cursor was already closed!")
 
     def _execute(self) -> None:
         """

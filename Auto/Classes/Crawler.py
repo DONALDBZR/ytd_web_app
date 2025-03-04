@@ -372,10 +372,7 @@ class Crawler:
         parsed_uniform_resource_locator: ParseResult = urlparse(target)
         base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
         try:
-            robots_uniform_resource_locator: str = f"{base_uniform_resource_locator}/robots.txt"
-            parser: RobotFileParser = RobotFileParser()
-            parser.set_url(robots_uniform_resource_locator)
-            self.__readRobotTxt(parser, base_uniform_resource_locator)
+            parser: Union[RobotFileParser, None] = self.__checkRobotsParser(base_uniform_resource_locator)
             if not parser.can_fetch("ExtractioCrawlerBot/3.0", target):
                 self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
                 self.getData()[index]["author_channel"] = ""
@@ -394,7 +391,28 @@ class Crawler:
             self.getData()[index]["latest_content"] = ""
 
     def __checkRobotsParser(self, uniform_resource_locator: str) -> Union[RobotFileParser, None]:
-        
+        """
+        Checking and retrieving the robots.txt parser for a given
+        uniform resource locator.  This method verifies if the
+        `robots.txt` file for the specified uniform resource locator
+        has already been parsed and stored.  If not, it fetches the
+        `robots.txt` file, parses it, and stores it for future use.
+        The parser is then returned for further checking of crawling
+        permissions.
+
+        Parameters:
+            uniform_resource_locator (string): The uniform resource locator for which the robots.txt file is being checked.
+
+        Returns:
+            Union[RobotFileParser, None]
+        """
+        parser: Union[RobotFileParser, None]
+        if uniform_resource_locator not in self.getRobotParsers():
+            robots_uniform_resource_locator: str = f"{uniform_resource_locator}/robots.txt"
+            parser = RobotFileParser()
+            parser.set_url(robots_uniform_resource_locator)
+            self.__readRobotTxt(parser, uniform_resource_locator)
+        return self.getRobotParsers().get(uniform_resource_locator)
 
 
     def __readRobotTxt(self, parser: Union[RobotFileParser, None], uniform_resource_locator: str) -> None:

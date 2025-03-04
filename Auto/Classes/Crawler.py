@@ -306,18 +306,14 @@ class Crawler:
 
     def firstRun(self) -> None:
         """
-        Preparing for the first run of crawling based on the data in
-        the cache.
+        Executes the first run of the data processing workflow.
 
         Returns:
             void
         """
-        total: int = 0
         for index in range(0, len(self.getData()), 1):
-            total += len(str(self.getData()[index]["uniform_resource_locator"]))
-        delay: float = ((total / len(self.getData())) / 200) * 60
-        self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s")
-        for index in range(0, len(self.getData()), 1):
+            delay: float = (len(str(self.getData()[index]["uniform_resource_locator"])) / 200) * 60
+            self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
 

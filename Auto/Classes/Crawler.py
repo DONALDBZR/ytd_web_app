@@ -371,8 +371,10 @@ class Crawler:
         Returns:
             string
         """
-        allowed_tags: List[str] = []
-        allowed_attributes: Dict[str, List[str]] = {}
+        allowed_tags: List[str] = ["a"]
+        allowed_attributes: Dict[str, List[str]] = {
+            "a": ["href", "title", "target", "rel"]
+        }
         return clean(
             text=html,
             tags=allowed_tags,

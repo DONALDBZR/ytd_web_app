@@ -514,13 +514,11 @@ class Crawler:
             parser: Union[RobotFileParser, None] = self.__checkRobotsParser(base_uniform_resource_locator)
             if not parser:
                 self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
-                self.getData()[index]["author_channel"] = ""
-                self.getData()[index]["latest_content"] = ""
+                del self.getData()[index]
                 return
             if not parser.can_fetch("ExtractioCrawlerBot/3.0", target):
                 self.getLogger().warn(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
-                self.getData()[index]["author_channel"] = ""
-                self.getData()[index]["latest_content"] = ""
+                del self.getData()[index]
                 return
             if referrer == "firstRun":
                 self.getLogger().inform(f"Entering the target!\nTarget: {target}")
@@ -531,8 +529,7 @@ class Crawler:
             self.retrieveData(referrer, index)
         except Exception as error:
             self.getLogger().error(f"An error occurred while checking robots.txt or entering the target!\nError: {error}\nUniform Resource Locator: {target}")
-            self.getData()[index]["author_channel"] = ""
-            self.getData()[index]["latest_content"] = ""
+            del self.getData()[index]
 
     def __checkRobotsParser(self, uniform_resource_locator: str) -> Union[RobotFileParser, None]:
         """

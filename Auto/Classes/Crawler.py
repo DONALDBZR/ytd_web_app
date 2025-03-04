@@ -124,10 +124,28 @@ class Crawler:
             raise error
 
     def __setUserAgents(self) -> None:
-        file_name: str = f"{self.getEnvironment().getDirectory()}/user_agents.txt"
-        file = open(file_name, "r")
-        self.setUserAgents([line.strip() for line in file.readlines()])
-        file.close()
+        """
+        Loading and set user agents from a file.  This method reads
+        user agent strings from a file named `user_agents.txt`
+        located in the environment's directory. The user agents are
+        then stored using `setUserAgents`.  If an error occurs while
+        reading the file, an error message is logged, and the
+        exception is raised.
+
+        Raises:
+            Exception: If the file cannot be read or processed.
+
+        Returns:
+            void
+        """
+        try:
+            file_name: str = f"{self.getEnvironment().getDirectory()}/user_agents.txt"
+            file = open(file_name, "r")
+            self.setUserAgents([line.strip() for line in file.readlines()])
+            file.close()
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while setting up the user agents.\nError: {error}")
+            raise error
 
     def getUserAgents(self) -> List[str]:
         return self.__user_agents

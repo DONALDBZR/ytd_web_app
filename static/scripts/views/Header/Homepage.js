@@ -197,6 +197,23 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Sanitizing the given uniform resource locator by ensuring it
+     * belongs to an allowed domain.
+     * @param {string} uniform_resource_locator - The URL to be sanitized.
+     * @returns {string}
+     */
+    sanitizeUniformResourceLocator(uniform_resource_locator) {
+        const allowed_domains = ["youtube.com", "youtu.be"];
+        try {
+            const url = new URL(uniform_resource_locator);
+            return (allowed_domains.includes(url.hostname)) ? uniform_resource_locator : "";
+        } catch (error) {
+            console.error("Invalid uniform resource locator!\nError: ", error);
+            return "";
+        }
+    }
+
+    /**
      * Retrieving the response of the Media API for the search
      * data.
      * @param {string} platform The platform to be searched on.

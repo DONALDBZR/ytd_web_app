@@ -334,12 +334,13 @@ class Crawler:
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """
-        Entering the targeted page.
+        Navigating to the specified target uniform resource locator
+        and processes data based on the referrer.
 
         Parameters:
-            target: string: The uniform resource locator of the targeted page.
-            delay: float: The amount of time that the Crawler will wait which is based on the average typing speed of a person
-            index: int: The identifier of the data.
+            target (string): The uniform resource locator to be visited.
+            delay (float): The waiting time before proceeding.
+            index (int): The index of the data entry being processed.
 
         Returns:
             void
@@ -349,7 +350,7 @@ class Crawler:
             self.getLogger().inform(f"Entering the target!\nTarget: {target}")
             self.getDriver().get(target)
             sleep(delay)
-        elif referrer == "secondRun":
+        if referrer == "secondRun":
             self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
             self.getDriver().get(f"{target}/videos")
             sleep(delay)

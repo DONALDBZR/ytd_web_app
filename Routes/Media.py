@@ -12,6 +12,8 @@ from json import dumps, loads, JSONDecodeError
 from os.path import isfile
 from Environment import Environment
 from html import escape
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)
@@ -89,6 +91,7 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     }
 
 @Media_Portal.route("/Search", methods=["GET"])
+@limiter.limit("100 per hour", error_message="Rate Limit Exceeded")
 def search() -> Response:
     """
     Searching for the media by the uniform resource locator that
@@ -217,3 +220,19 @@ def securityHeaders(response: Response) -> Response:
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Content-Security-Policy"] = content_security_policy
     return response
+
+@Media_Portal.errorhandler(429)
+def rateLimited(error: Exception) -> Response:
+    """
+    Handles HTTP 429 Too Many Requests errors for the
+    Media_Portal Blueprint.  This function is triggered when a
+    client exceeds the request rate limit.  It returns a JSON
+    response containing the error message.
+
+    Parameters:
+        error (Exception): The exception object representing the 429 error.
+
+    Returns:
+        Response
+    """
+    return Response(dumps({"error": str(error)}, indent=4), 429)

@@ -355,13 +355,32 @@ class Crawler:
         Returns:
             void
         """
-        if referrer == "firstRun":
-            self.setHtmlTag(self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a'))
-            author_channel_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
-            # self.getData()[index]["author_channel"] = urlparse()
+        try:
+            self.__getDataFirstRun(referrer, index)
+            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
+            self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))
+
+    def __getDataFirstRun(self, referrer: str, index: int) -> None:
+        """
+        Retrieves the author's channel uniform resource locator
+        during the first run and updates the data structure.
+
+        Parameters:
+            referrer (string): The source of the function call.  Should be "firstRun" to proceed.
+            index (int): The index in the data structure where the author's channel uniform resource locator should be stored.
+
+        Returns:
+            void
+        """
+        if referrer != "firstRun":
             return
-        self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
-        self.getData()[index]["latest_content"] = str(self.getHtmlTags()[2].get_attribute("href"))
+        try:
+            self.setHtmlTag(self.getDriver().find_element(By.XPATH, '//*[@id="text]/a'))
+            author_channel_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
+            self.getData()[index]["author_channel"] = self.sanitizeUniformResourceLocator(author_channel_uniform_resource_locator)
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while retrieving data for the first run!\nError: {error}")
+            self.getData()[index]["author_channel"] = ""
 
     def sanitizeHtml(self, html: str) -> str:
         """

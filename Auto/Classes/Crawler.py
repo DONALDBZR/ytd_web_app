@@ -107,19 +107,27 @@ class Crawler:
         """
         try:
             self.setEnvironment(Environment())
-            self.setLogger(Extractio_Logger(__name__))
-            self.__setUserAgents()
-            self.__setServices()
-            self.__setOptions()
-            self.setDriver(Chrome(self.getOption(), self.getService()))
-            self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
-            self.setDatabaseHandler(Database_Handler())
-            self.setData([])
-            self.setRobotParsers({})
-            self.setUpData()
         except Exception as error:
-            self.getLogger().error(f"An error occured while initializing the application\nError: {error}")
+            self.getLogger().error(f"An error occurred while setting the environment.\nError: {error}")
             raise error
+        try:
+            self.setLogger(Extractio_Logger(__name__))
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while setting the logger.\nError: {error}")
+            raise error
+        self.__setUserAgents()
+        self.__setServices()
+        self.__setOptions()
+        self.setDriver(Chrome(self.getOption(), self.getService()))
+        self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
+        try:
+            self.setDatabaseHandler(Database_Handler())
+        except Exception as error:
+            self.getLogger().error(f"An error occurred while setting the database handler.\nError: {error}")
+            raise error
+        self.setData([])
+        self.setRobotParsers({})
+        self.setUpData()
 
     def __setUserAgents(self) -> None:
         """

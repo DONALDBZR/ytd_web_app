@@ -247,17 +247,32 @@ class HeaderHomepage extends React.Component {
     /**
      * Sanitizing the given uniform resource locator by ensuring it
      * belongs to an allowed domain.
-     * @param {string} uniform_resource_locator - The URL to be sanitized.
+     * @param {string} uniform_resource_locator The uniform resource locator
      * @returns {string}
      */
     sanitizeUniformResourceLocator(uniform_resource_locator) {
         const allowed_domains = ["youtube.com", "youtu.be"];
+        const youtube_regular_expression = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|shorts\/|)([a-zA-Z0-9_-]{11})(&.*)?$/;
         try {
-            const url = new URL(uniform_resource_locator);
-            return (allowed_domains.includes(url.hostname)) ? url.href : "";
+            const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
+            this.__checkNotAllowedDomains(allowed_domains, parsed_uniform_resource_locator);
+            this.__checkInvalidUniformResourceLocator(youtube_regular_expression, parsed_uniform_resource_locator);
+            return parsed_uniform_resource_locator.href;
         } catch (error) {
             console.error("Invalid uniform resource locator!\nError: ", error);
             return "";
+        }
+    }
+
+    /**
+     * Checking the uniform resource locator against the regular expression.
+     * @param {RegExp} regular_expression Regular expression
+     * @param {string} uniform_resource_locator Uniform Resource Locator
+     * @returns {void}
+     */
+    __checkInvalidUniformResourceLocator(regular_expression, uniform_resource_locator) {
+        if (!(regular_expression.test(uniform_resource_locator.href))) {
+            throw new Error("Invalid YouTube uniform resource locator format!");
         }
     }
 

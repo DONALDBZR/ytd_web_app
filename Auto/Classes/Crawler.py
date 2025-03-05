@@ -555,7 +555,7 @@ class Crawler:
         if video["platform"] not in allowed_platforms:
             self.getLogger().error(f"Invalid platform!\nPlatform: {video['platform']}")
             raise ValueError("Invalid platform!")
-        uniform_resource_locator: str = f"https://www.youtube.com/watch?v={video['identifier']}"
+        uniform_resource_locator: str = f"{self.getEnvironment().getYouTubeVideoUniformResourceLocator()}{video['identifier']}"
         author: str = escape(video["author"])
         dataset.append({
             "identifier": video["identifier"],

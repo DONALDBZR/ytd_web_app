@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from Classes.Media import Media
 from mysql.connector.types import RowType
-from os import getcwd
+from os import chmod, getcwd
 from typing import List, Dict, Union, Tuple, cast
 from inspect import stack
 from time import time, sleep
@@ -436,24 +436,61 @@ class Crawler:
 
     def save(self) -> None:
         """
-        Saving the data.
+        Saving the current data to a JSON file with a timestamped
+        filename.
 
-        Returns:
-            void
+        This method validates the data before saving it, writes the
+        data to a JSON file, and sets the file permissions to
+        read-only (chmod 444).  If an error occurs during the
+        process, it logs the error and raises the exception.
 
         Raises:
-            Exception: If an error occurs while saving the data.
+            OSError: If an issue occurs while writing to the file system.
+            ValueError: If the data is invalid before saving.
+            Exception: Any other unforeseen errors.
+
+        Side Effects:
+            - Writes data to a JSON file.
+            - Sets file permissions to read-only (chmod 444).
+            - Logs success or failure messages.
+            - Closes the driver session after execution.
         """
         timestamp: int = int(time())
         file_name: str = f"{self.getDirectory()}{timestamp}.json"
         try:
+            self.__validateDataBeforeSave()
             file = open(file_name, "w")
             file.write(dumps(self.getData(), indent=4))
             file.close()
-        except Exception as error:
+            chmod(file_name, 0o444)
+        except (OSError, ValueError, Exception) as error:
             self.getLogger().error(f"An error occurred while saving the data!\nError: {error}\nFile name: {file_name}")
-        self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
-        self.getDriver().quit()
+            raise error
+        finally:
+            self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
+            self.getDriver().quit()
+
+    def __validateDataBeforeSave(self) -> None:
+        """
+        Validating the data and directory before saving.
+
+        This method checks if the data and directory are valid.  It ensures that:
+        - The data is not empty.
+        - The directory is not empty.
+        - The directory path does not contain path traversal sequences (`../` or `..\'`).
+
+        Raises:
+            ValueError: If the data is empty, the directory is empty, or if the directory contains potential path traversal attempts.
+        """
+        if not self.getData():
+            self.getLogger().error(f"The data is empty!\nData: {self.getData()}")
+            raise ValueError("The data is empty!")
+        if not self.getDirectory():
+            self.getLogger().error(f"The directory is empty!\nDirectory: {self.getDirectory()}")
+            raise ValueError("The directory is empty!")
+        if "../" in self.getDirectory() or "..\'" in self.getDirectory():
+            self.getLogger().error(f"The directory contains path traversal!\nDirectory: {self.getDirectory()}")
+            raise ValueError("The directory contains path traversal!")
 
     def prepareFirstRun(self, identifiers: List[RowType]) -> None:
         """

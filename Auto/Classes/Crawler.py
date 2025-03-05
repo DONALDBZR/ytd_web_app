@@ -18,6 +18,7 @@ from random import randint, uniform
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
 from re import search
+from html import escape
 
 
 path.append(getcwd())
@@ -531,7 +532,6 @@ class Crawler:
 
         Raises:
             ValueError: If the YouTube data, dataset, or platform format is invalid.
-            Exception: For unexpected errors during processing.
         """
         if not isinstance(youtube, list):
             self.getLogger().error(f"Invalid data from the relational database server.\nYouTube: {youtube}")
@@ -545,10 +545,10 @@ class Crawler:
         if not youtube:
             self.getLogger().debug("No YouTube data found.")
             return dataset
+        if not youtube[0]:
+            self.getLogger().error("The youtube list is empty!\nyoutube: {youtube}")
+            raise ValueError("The youtube list is empty!")
         video: Dict[str, str] = youtube[0] # type: ignore
-        if not isinstance(video, dict):
-            self.getLogger().error(f"Video metadata is not an object!\nMetadata: {metadata}")
-            raise ValueError("Video metadata is not an object!")
         if bool(search(r"^[a-zA-Z0-9_-]$", video["identifier"])) != False:
             self.getLogger().error(f"Invalid identifier format!\nIdentifier: {video['identifier']}")
             raise ValueError("Invalid identifier format!")
@@ -556,9 +556,10 @@ class Crawler:
             self.getLogger().error(f"Invalid platform!\nPlatform: {video['platform']}")
             raise ValueError("Invalid platform!")
         uniform_resource_locator: str = f"https://www.youtube.com/watch?v={video['identifier']}"
+        author: str = escape(video["author"])
         dataset.append({
             "identifier": video["identifier"],
-            "author": video["author"],
+            "author": author,
             "uniform_resource_locator": uniform_resource_locator,
             "author_channel": None
         })

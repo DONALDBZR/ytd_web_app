@@ -1,11 +1,6 @@
-from Models.DatabaseHandler import Database_Handler
-from Models.YouTubeDownloader import YouTube_Downloader
-from Models.Logger import Extractio_Logger
+from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, Union, List, Tuple
+from DatabaseHandler import Relational_Database_Error
 from datetime import datetime
-from Environment import Environment
-from mysql.connector.types import RowType
-from typing import Dict, Union, List, Tuple
-from mysql.connector import Error
 from json import dumps
 from re import match
 
@@ -196,18 +191,15 @@ class Media:
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
-        Retrieves media data from the Media table in the database
-        based on a specified value.  The function filters the data
-        by a given value and returns the status of the query along
-        with the retrieved data.  The function also captures the
-        current timestamp when the data is retrieved and returns it
-        along with the result.
+        Retrieving media data from the Media table in the database based on a specified value.
+
+        The function filters the data by a given value and returns the status of the query along with the retrieved data.  The function also captures the current timestamp when the data is retrieved and returns it along with the result.
 
         Returns:
-            {"status": int, "data": [{"identifier": int, "value": string}], "timestamp": string}
+            Dict[str, Union[int, List[RowType], str]]
 
         Raises:
-            Error: If there is an issue with the database query, an error will be logged, and the function will return a 503 status with an empty data list.
+            Relational_Database_Error: If there is an issue with the database query, an error will be logged, and the function will return a 503 status with an empty data list.
         """
         filter_data: Tuple[str] = (self.getValue(),)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
@@ -223,8 +215,8 @@ class Media:
                 "data": media,
                 "timestamp": self.getTimestamp()
             }
-        except Error as relational_database_server_error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
             return {
                 "status": 503,
                 "data": [],

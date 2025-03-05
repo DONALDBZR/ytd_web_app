@@ -6,7 +6,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from Classes.Media import Media
-from mysql.connector.types import RowType
 from os import chmod, getcwd
 from typing import List, Dict, Union, Tuple, cast
 from inspect import stack
@@ -22,7 +21,7 @@ from html import escape
 
 
 path.append(getcwd())
-from Models.DatabaseHandler import Database_Handler
+from Models.DatabaseHandler import Database_Handler, RowType, Relational_Database_Error
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from Errors.ExtractioErrors import CrawlerNotAllowedError
@@ -289,7 +288,7 @@ class Crawler:
             void
 
         Raises:
-            Exception: If an error occurs while setting up the data.
+            Relational_Database_Error: If an error occurs while setting up the data.
         """
         try:
             identifiers: List[RowType] = self.getDatabaseHandler().getData(
@@ -306,7 +305,7 @@ class Crawler:
             self.__initializeFirstRun(referrer)
             self.__initializeSecondRun(referrer)
             self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}") if len(identifiers) == 0 else exit()
-        except Exception as error:
+        except Relational_Database_Error as error:
             self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
             raise error
 

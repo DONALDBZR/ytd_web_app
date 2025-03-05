@@ -888,7 +888,7 @@ class Crawler:
         try:
             self.__getDataFirstRun(referrer, index)
             self.__getDataSecondRun(referrer, index)
-        except Exception as error:
+        except (TimeoutException, WebDriverException, NoSuchElementException) as error:
             self.getLogger().error(f"An error occurred while retrieving data!\nError: {error}")
             raise error
 

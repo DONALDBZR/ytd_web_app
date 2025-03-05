@@ -162,12 +162,13 @@ class HeaderHomepage extends React.Component {
      */
     async setMediaYouTubeIdentifier(platform, search) {
         const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
+        const identifier = this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
         this.setState((previous) => ({
             Media: {
                 ...previous.Media,
                 YouTube: {
                     ...previous.Media.YouTube,
-                    identifier: (this.state.Media.YouTube.uniform_resource_locator.includes("youtube")) ? this.state.Media.YouTube.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "").replace(/\?.*/, "") : this.state.Media.YouTube.uniform_resource_locator.replace("https://youtu.be/", "").replace(/\?.*/, ""),
+                    identifier: identifier,
                 },
             },
         }));

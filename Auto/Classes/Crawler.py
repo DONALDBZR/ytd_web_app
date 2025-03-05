@@ -669,7 +669,7 @@ class Crawler:
                 self.getLogger().debug(f"Attempting to enter the target!\nAttempt: {attempt + 1}\nUniform Resource Locator: {target}")
                 parsed_uniform_resource_locator: ParseResult = urlparse(target)
                 base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
-                if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries, user_agent):
+                if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries):
                     return
                 sleep(delay)
                 delay *= 2
@@ -678,7 +678,7 @@ class Crawler:
         finally:
             self.getDriver().close()
 
-    def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int, user_agent: str) -> bool:
+    def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int) -> bool:
         """
         Attempting to navigate to a given target uniform resource
         locator, handling crawling restrictions, and retrieving
@@ -693,7 +693,6 @@ class Crawler:
             index (int): The index of the data entry being processed.
             attempt (int): The current attempt number for crawling.
             retries (int): The total number of allowed retry attempts.
-            user_agent (string): The user agent string used for the request.
 
         Returns:
             bool
@@ -707,7 +706,7 @@ class Crawler:
         try:
             parser: Union[RobotFileParser, None] = self.__checkRobotsParser(base_uniform_resource_locator)
             self.__robotTxtNotParsed(parser, target)
-            self.__notAllowedCrawl(parser, target, user_agent)
+            self.__notAllowedCrawl(parser, target)
             self.__enterTargetFirstRun(referrer, target)
             self.__enterTargetSecondRun(referrer, target)
             self.retrieveData(referrer, index)

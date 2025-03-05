@@ -864,6 +864,7 @@ class Crawler:
         Raises:
             OSError: If an error occurs while reading the `robots.txt` file.
         """
+        start: float = time()
         try:
             parser.read()
             self.getRobotParsers()[uniform_resource_locator] = parser
@@ -872,6 +873,12 @@ class Crawler:
             if uniform_resource_locator in self.getRobotParsers():
                 del self.getRobotParsers()[uniform_resource_locator]
             raise error
+        finally:
+            end: float = time()
+            elasped: float = end - start
+            delay: float = 1.0 - elasped
+            sleep(delay) if elasped < 1.0 else self.getLogger().debug("The elapsed time is greater than 1 second.")
+
 
     def retrieveData(self, referrer: str, index: int = 0) -> None:
         """

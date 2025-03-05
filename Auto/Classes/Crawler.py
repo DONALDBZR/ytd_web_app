@@ -741,7 +741,7 @@ class Crawler:
         self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
         raise Exception("The robots.txt file has not been parsed!")
 
-    def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, user_agent: str) -> None:
+    def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str) -> None:
         """
         Checking if the crawler is allowed to access the target
         uniform resource locator.
@@ -754,7 +754,6 @@ class Crawler:
         Parameters:
             parser (Union[RobotFileParser, None]): The robots.txt parser instance. If `None`, the check is skipped.
             target (string): The uniform resource locator the crawler intends to access.
-            user_agent (string): The user agent string of the crawler.
 
         Returns:
             void
@@ -762,6 +761,7 @@ class Crawler:
         Raises:
             CrawlerNotAllowedError: If the crawler is not permitted to access the target uniform resource locator.
         """
+        user_agent: str = self.getDriver().execute_script("return navigator.userAgent;")
         if parser.can_fetch(user_agent, target): # type: ignore
             return
         self.getLogger().error(f"The crawler is not allowed to access the target.\nUniform Resource Locator: {target}")

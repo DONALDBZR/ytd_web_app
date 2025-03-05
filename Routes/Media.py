@@ -176,8 +176,7 @@ def search() -> Response:
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
 def getMedia(identifier: str) -> Response:
     """
-    Sending the data for the media that has been searched in the
-    form of JSON.
+    Sending the data for the media that has been searched in the form of JSON.
 
     Parameters:
         identifier: string: Identifier of the content.
@@ -185,12 +184,31 @@ def getMedia(identifier: str) -> Response:
     Returns:
         Response
     """
-    ENV: Environment = Environment()
-    ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
     mime_type: str = "application/json"
-    file_name: str = f"{ENV.getDirectory()}/Cache/Media/{identifier}.json"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    if not fullmatch(identifier_regex, identifier):
+        Routing_Logger.error(f"The identifier is invalid.\nIdentifier: {identifier}")
+        data: Dict[str, str] = {
+            "error": "The identifier is invalid."
+        }
+        return Response(
+            response=dumps(
+                obj=data,
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    file_name: str = f"{identifier}.json"
     response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = getMetaData(file_name)
-    return Response(dumps(response["data"], indent=4), int(str(response["status"])), mimetype=mime_type)
+    return Response(
+        response=dumps(
+            obj=response["data"],
+            indent=4
+        ),
+        status=int(str(response["status"])),
+        mimetype=mime_type
+    )
 
 @Media_Portal.route('/Download', methods=['POST'])
 def retrieveMedia() -> Response:

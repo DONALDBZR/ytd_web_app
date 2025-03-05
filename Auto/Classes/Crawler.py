@@ -25,6 +25,7 @@ path.append(getcwd())
 from Models.DatabaseHandler import Database_Handler
 from Models.Logger import Extractio_Logger
 from Environment import Environment
+from Errors.ExtractioErrors import CrawlerNotAllowedError
 
 
 class Crawler:
@@ -705,26 +706,29 @@ class Crawler:
 
     def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str, user_agent: str) -> None:
         """
-        Checking if the crawler is allowed to access a specific
-        target based on the `robots.txt` file.  If not allowed, logs
-        a warning and removes the target uniform resource locator
-        from the data list at the given index.
+        Checking if the crawler is allowed to access the target
+        uniform resource locator.
+
+        This method uses the `robots.txt` parser to determine
+        whether the specified user agent is permitted to fetch the
+        target uniform resource locator.  If access is denied, an
+        error is logged, and a `CrawlerNotAllowedError` is raised.
 
         Parameters:
-            parser (Union[RobotFileParser, None]): The parser object for the `robots.txt` file.  It should be able to check whether crawling is allowed.
-            target (string): The Uniform Resource Locator that is being checked for crawling permission.
-            user_agent (string): The user agent value that is being used to access the target.
+            parser (Union[RobotFileParser, None]): The robots.txt parser instance. If `None`, the check is skipped.
+            target (string): The uniform resource locator the crawler intends to access.
+            user_agent (string): The user agent string of the crawler.
 
         Returns:
-            None
+            void
 
         Raises:
-            Exception: If the crawler is not allowed to access the target.
+            CrawlerNotAllowedError: If the crawler is not permitted to access the target uniform resource locator.
         """
         if parser.can_fetch(user_agent, target): # type: ignore
             return
-        self.getLogger().error(f"The crawler is not allowed to accessed the target.\nUniform Resource Locator: {target}")
-        raise Exception(f"The crawler is not allowed to accessed the target!\nUniform Resource Locator: {target}")
+        self.getLogger().error(f"The crawler is not allowed to access the target.\nUniform Resource Locator: {target}")
+        raise CrawlerNotAllowedError(f"The crawler is not allowed to access the target!\nUniform Resource Locator: {target}")
 
     def __enterTargetFirstRun(self, referrer: str, target: str) -> None:
         """

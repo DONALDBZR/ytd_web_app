@@ -439,19 +439,19 @@ class Crawler:
         Saving the current data to a JSON file with a timestamped
         filename.
 
-        This method validates the data before saving it, writes the
+        This method validates the data before saving, writes the
         data to a JSON file, and sets the file permissions to
-        read-only (chmod 444).  If an error occurs during the
-        process, it logs the error and raises the exception.
+        read-only (chmod 644).  In case of an error, the exception
+        is logged and raised.
 
         Raises:
             OSError: If an issue occurs while writing to the file system.
             ValueError: If the data is invalid before saving.
-            Exception: Any other unforeseen errors.
+            Exception: Any unforeseen errors during the saving process.
 
         Side Effects:
-            - Writes data to a JSON file.
-            - Sets file permissions to read-only (chmod 444).
+            - Writes the data to a JSON file.
+            - Sets file permissions to read-only (chmod 644).
             - Logs success or failure messages.
             - Closes the driver session after execution.
         """
@@ -462,7 +462,7 @@ class Crawler:
             file = open(file_name, "w")
             file.write(dumps(self.getData(), indent=4))
             file.close()
-            chmod(file_name, 0o444)
+            chmod(file_name, 0o644)
         except (OSError, ValueError, Exception) as error:
             self.getLogger().error(f"An error occurred while saving the data!\nError: {error}\nFile name: {file_name}")
             raise error

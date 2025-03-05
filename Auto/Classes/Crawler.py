@@ -663,11 +663,9 @@ class Crawler:
         """
         referrer: str = stack()[1][3]
         retries: int = 3
-        user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
-        self.getOption().add_argument(f"user-agent={user_agent}")
         try:
             for attempt in range(0, retries, 1):
-                self.setDriver(Chrome(self.getOption(), self.getService()))
+                self.getDriver().delete_all_cookies()
                 self.getLogger().debug(f"Attempting to enter the target!\nAttempt: {attempt + 1}\nUniform Resource Locator: {target}")
                 parsed_uniform_resource_locator: ParseResult = urlparse(target)
                 base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"

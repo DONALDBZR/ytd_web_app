@@ -176,6 +176,53 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * Extracting the YouTube Identifier from the uniform resource locator.
+     * @param {string} uniform_resource_locator The uniform resource locator
+     * @returns {string}
+     */
+    extractYouTubeIdentifier(uniform_resource_locator) {
+        const allowed_domains = ["youtube.com", "youtu.be"];
+        if (!(allowed_domains.includes(uniform_resource_locator))) {
+            return "";
+        }
+        try {
+            const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
+            this.__checkNotAllowedDomains(allowed_domains, parsed_uniform_resource_locator);
+            return String(this.getYouTubeIdentifier(parsed_uniform_resource_locator));
+        } catch (error) {
+            console.error("Error extracting YouTube identifier:", error);
+            return "";
+        }
+    }
+
+    /**
+     * Retrieving the identifier of YouTube from its resource locator.
+     * @param {URL} uniform_resource_locator The uniform resource locator
+     * @returns {string | void}
+     */
+    getYouTubeIdentifier(uniform_resource_locator) {
+        if (uniform_resource_locator.hostname === "youtube.com" && uniform_resource_locator.pathname === "/watch") {
+            return uniform_resource_locator.searchParams.get("v");
+        }
+        if (uniform_resource_locator.hostname === "youtu.be") {
+            return uniform_resource_locator.pathname.slice(1);
+        }
+        throw new Error("The domain is not allowed!");
+    }
+
+    /**
+     * Checking domains that are not allowed.
+     * @param {string[]} allowed_domains The list of the domains that are not allowed
+     * @param {URL} uniform_resource_locator The parsed uniform resource locator
+     * @returns {void}
+     */
+    __checkNotAllowedDomains(allowed_domains, uniform_resource_locator) {
+        if (!(allowed_domains.includes(uniform_resource_locator.hostname))) {
+            throw new Error("The domain is not allowed!");
+        }
+    }
+
+    /**
      * Setting the uniform resource locator for a specific YouTube
      * content.
      * @param {string} platform The platform to be searched on.

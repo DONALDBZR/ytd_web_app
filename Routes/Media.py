@@ -330,10 +330,9 @@ def securityHeaders(response: Response) -> Response:
 @Media_Portal.errorhandler(429)
 def rateLimited(error: Exception) -> Response:
     """
-    Handles HTTP 429 Too Many Requests errors for the
-    Media_Portal Blueprint.  This function is triggered when a
-    client exceeds the request rate limit.  It returns a JSON
-    response containing the error message.
+    Handles HTTP 429 Too Many Requests errors for the `Media_Portal` Blueprint.
+
+    This function is triggered when a client exceeds the request rate limit.  It returns a JSON response containing the error message.
 
     Parameters:
         error (Exception): The exception object representing the 429 error.
@@ -341,4 +340,13 @@ def rateLimited(error: Exception) -> Response:
     Returns:
         Response
     """
-    return Response(dumps({"error": str(error)}, indent=4), 429)
+    data: Dict[str, str] = {
+        "error": str(error)
+    }
+    return Response(
+        response=dumps(
+            obj=data,
+            indent=4
+        ),
+        status=429
+    )

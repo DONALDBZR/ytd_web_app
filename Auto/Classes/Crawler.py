@@ -152,7 +152,7 @@ class Crawler:
             file = open(file_name, "r")
             self.setUserAgents([line.strip() for line in file.readlines()])
             file.close()
-        except Exception as error:
+        except OSError as error:
             self.getLogger().error(f"An error occurred while setting up the user agents.\nError: {error}")
             raise error
 

@@ -860,12 +860,12 @@ class Crawler:
             None
 
         Raises:
-            Exception: If an error occurs while reading the `robots.txt` file.
+            OSError: If an error occurs while reading the `robots.txt` file.
         """
         try:
             parser.read()
             self.getRobotParsers()[uniform_resource_locator] = parser
-        except Exception as error:
+        except OSError as error:
             self.getLogger().error(f"An error occured while reading the robots.txt file.\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")
             if uniform_resource_locator in self.getRobotParsers():
                 del self.getRobotParsers()[uniform_resource_locator]

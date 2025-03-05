@@ -2,7 +2,7 @@ from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extra
 from DatabaseHandler import Relational_Database_Error
 from datetime import datetime
 from json import dumps
-from re import match
+from re import match, Match
 
 
 class Media:
@@ -298,17 +298,25 @@ class Media:
 
     def _getIdentifier(self) -> str:
         """
-        Extracting the identifier from the uniform resource locator.
+        Extracting the YouTube video identifier from the search URL.
+
+        This method verifies that the search URL belongs to YouTube and extracts the video identifier (an 11-character string) from it.  If the URL is not supported or does not match the expected pattern, an error is logged and a `ValueError` is raised.
 
         Returns:
-            string
+            str
+
+        Raises:
+            ValueError: If the search URL is not a valid YouTube link or does not contain a valid video identifier.
         """
-        identifier: str
-        if "youtube" in self.getSearch():
-            identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-        else:
-            identifier = self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
-        return identifier
+        if "youtube" not in self.getSearch():
+            self.getLogger().error(f"The uniform resource locator is not supported!\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("The uniform resource locator is not supported.")
+        identifier_regex: str = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
+        match_identifier: Union[Match[str], None] = match(identifier_regex, self.getSearch())
+        if not match:
+            self.getLogger().error("The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
+        return match_identifier.group(1) # type: ignore
 
     def getRelatedContents(self, identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """

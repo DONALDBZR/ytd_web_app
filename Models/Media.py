@@ -225,19 +225,15 @@ class Media:
 
     def postMedia(self) -> int:
         """
-        Creates a record in the Media table of the database with the
-        provided media value.  The function inserts the media value
-        into the "Media" table and logs the result.  If the data is
-        successfully inserted, it returns a status code of 201
-        (Created).  In case of an error during the database
-        interaction, it returns a status code of 503
-        (Service Unavailable).
+        Creating a record in the Media table of the database with the provided media value.
+
+        The function inserts the media value into the "Media" table and logs the result.  If the data is successfully inserted, it returns a status code of 201 (Created).  In case of an error during the database interaction, it returns a status code of 503 (Service Unavailable).
 
         Returns:
             int
 
         Raises:
-            Error: If there is an error while posting the data to the database, the error is logged, and the function returns a 503 status code.
+            Relational_Database_Error: If there is an error while posting the data to the database, the error is logged, and the function returns a 503 status code.
         """
         data: Tuple[str] = (self.getValue(),)
         try:
@@ -249,7 +245,7 @@ class Media:
             )
             self.getLogger().inform("The data has been inserted in the relational database server.")
             return 201
-        except Error as relational_database_server_error:
+        except Relational_Database_Error as relational_database_server_error:
             self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
             return 503
 

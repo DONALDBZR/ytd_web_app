@@ -914,7 +914,7 @@ class Crawler:
             self.setHtmlTag(self.getHtmlTags()[2])
             latest_content_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
             self.getData()[index]["latest_content"] = self.sanitizeUniformResourceLocator(latest_content_uniform_resource_locator)
-        except Exception as error:
+        except (WebDriverException, NoSuchElementException) as error:
             self.getLogger().error(f"An error occurred while retrieving data for the second run!\nError: {error}")
             raise error
 

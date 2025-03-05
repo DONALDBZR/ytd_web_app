@@ -17,6 +17,7 @@ from urllib.parse import ParseResult, urlparse
 from random import randint, uniform
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
+from re import search
 
 
 path.append(getcwd())
@@ -508,39 +509,121 @@ class Crawler:
             dataset = self.__processYouTubeData(youtube_data, allowed_platforms, dataset)
         return dataset
 
-
     def __processYouTubeData(self, youtube: List[RowType], allowed_platforms: List[str], dataset: List[Dict[str, Union[str, int, None]]]) -> List[Dict[str, Union[str, int, None]]]:
         """
-        Processing YouTube data and adds relevant information to the
-        provided dataset.  This method checks if the YouTube data is
-        valid, processes the information to generate a dictionary
-        with the YouTube identifier, author, and the platform's
-        uniform resource locator.  If the platform is allowed, the
-        YouTube video uniform resource locator is constructed and
-        added to the dataset.
+        Processing YouTube data and append valid entries to the
+        dataset.
+
+        This method verifies and processes YouTube data retrieved from a relational database.  It ensures that:
+        - The YouTube data is a list of dictionaries.
+        - The dataset consists of valid objects.
+        - Each entry in the YouTube data has a valid identifier, platform, and metadata.
+
+        If the data is valid, a properly formatted dictionary containing the YouTube video's identifier, author, uniform resource locator, and author channel is added to the dataset.
 
         Parameters:
-            youtube (List[RowType]): The YouTube data retrieved from the database.
-            allowed_platforms (List[str]): A list of allowed platforms (e.g., "youtube", "youtu.be").
-            dataset (List[Dict[str, Union[str, int, None]]]): The list where the processed data will be appended.
+            youtube (List[Dict[string, Union[string, int, None]]]): The list of YouTube video data.
+            allowed_platforms (List[string]): A list of allowed platforms.
+            dataset (List[Dict[string, Union[string, int, None]]]): The dataset where valid video entries will be added.
 
         Returns:
-            List[Dict[str, Union[str, int, None]]]
+            List[Dict[string, Union[string, int, None]]]
+
+        Raises:
+            ValueError: If the YouTube data, dataset, or platform format is invalid.
+            Exception: For unexpected errors during processing.
         """
+        if not isinstance(youtube, list):
+            self.getLogger().error(f"Invalid data from the relational database server.\nYouTube: {youtube}")
+            raise ValueError("Invalid data from the relational database server.")
+        if not all(isinstance(data, dict) for data in dataset):
+            self.getLogger().error(f"The dataset contains non-object values!\nDataset: {dataset}")
+            raise ValueError("The dataset contains non-object values!")
+        if not all(isinstance(data, dict) for data in youtube):
+            self.getLogger().error(f"The YouTube data contains non-object values!\nYouTube: {youtube}")
+            raise ValueError("The YouTube data contains non-object values!")
+        if not youtube:
+            self.getLogger().debug("No YouTube data found.")
+            return dataset
+        video: Dict[str, str] = youtube[0] # type: ignore
         try:
-            if youtube:
-                data: Dict[str, str] = youtube[0] # type: ignore
-                uniform_resource_locator: str = f"https://www.youtube.com/watch?v={data['identifier']}" if data["platform"] in allowed_platforms else ""
-                dataset.append({
-                    "identifier": data["identifier"],
-                    "author": data["author"],
-                    "uniform_resource_locator": uniform_resource_locator,
-                    "author_channel": None
-                })
+            self.__isValidContentMetadata(video)
+            self.__isValidIdentifier(video["identifier"])
+            self.__isValidPlatform(video["platform"], allowed_platforms)
+            uniform_resource_locator: str = f"https://www.youtube.com/watch?v={video['identifier']}"
+            dataset.append({
+                "identifier": video["identifier"],
+                "author": video["author"],
+                "uniform_resource_locator": uniform_resource_locator,
+                "author_channel": None
+            })
+        except ValueError as error:
+            self.getLogger().error(f"Invalid YouTube data format!\nError: {error}\nrow: {video}")
         except Exception as error:
-            self.getLogger().error(f"An error occurred while processing the youtube data.\nError: {error}\nyoutube: {youtube}\nallowed_platforms: {allowed_platforms}")
+            self.getLogger().error(f"An unexpected error occurred while processing youtube data.\nError: {error}\nrow: {video}")
             raise error
         return dataset
+
+    def __isValidPlatform(self, platform: str, allowed_platforms: List[str]) -> None:
+        """
+        Validating whether the platform is allowed.
+
+        This method checks if the given platform is in the allowed list.  If not, an error is logged, and a ValueError is raised.
+
+        Parameters:
+            platform (string): The platform to validate.
+            allowed_platforms (List[string]): A list of allowed platforms.
+
+        Returns:
+            void
+
+        Raises:
+            ValueError: If the platform is not allowed.
+        """
+        if platform in allowed_platforms:
+            return
+        self.getLogger().error(f"Invalid platform!\nPlatform: {platform}")
+        raise ValueError("Invalid platform!")
+
+    def __isValidIdentifier(self, identifier: str) -> None:
+        """
+        Validating whether the given identifier is a properly formatted YouTube video ID.
+
+        This method ensures that the identifier follows YouTube's expected format, which consists of 11 alphanumeric characters, underscores, or dashes.
+
+        Parameters:
+            identifier (strinfr): The YouTube video identifier.
+
+        Returns:
+            void
+
+        Raises:
+            ValueError: If the identifier format is incorrect.
+        """
+        if bool(search(r"^[a-zA-Z0-9_-]$", identifier)) != False:
+            return
+        self.getLogger().error(f"Invalid identifier format!\nIdentifier: {identifier}")
+        raise ValueError("Invalid identifier format!")
+
+    def __isValidContentMetadata(self, metadata: Dict[str, str]) -> None:
+        """
+        Validating whether the given metadata is a dictionary.
+
+        This method checks if the provided metadata is an object (dictionary).  If not, an error is logged, and a ValueError is raised.
+
+        Parameters:
+            metadata (Dict[string, string]): The metadata to validate.
+
+        Returns:
+            void
+
+        Raises:
+            ValueError: If the metadata is not a dictionary.
+        """
+        if isinstance(metadata, dict):
+            return
+        self.getLogger().error(f"Video metadata is not an object!\nMetadata: {metadata}")
+        raise ValueError("Video metadata is not an object!")
 
     def firstRun(self) -> None:
         """

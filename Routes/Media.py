@@ -50,7 +50,7 @@ def loadData(contents: Union[str, None]) -> Union[Dict, List, None]:
     Loading the data from the contents.
 
     Parameters:
-        contents:  string|null: Contents to be loaded.
+        contents:  (string|null): Contents to be loaded.
 
     Returns:
         object|array|null
@@ -179,7 +179,7 @@ def getMedia(identifier: str) -> Response:
     Sending the data for the media that has been searched in the form of JSON.
 
     Parameters:
-        identifier: string: Identifier of the content.
+        identifier (string): Identifier of the content.
 
     Returns:
         Response
@@ -258,16 +258,29 @@ def retrieveMedia() -> Response:
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
 def getRelatedContents(identifier: str) -> Response:
     """
-    Retrieving the related contents of the media content that
-    has been downloaded from the application.
+    Retrieving the related contents of the media content that has been downloaded from the application.
 
     Parameters:
-        identifier: string: The identifier of the content
+        identifier (string): The identifier of the content
 
     Returns:
         Response
     """
     mime_type: str = "application/json"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    if not fullmatch(identifier_regex, identifier):
+        Routing_Logger.error(f"The format for the identifier is invalid identifier.\nIdentifier: {identifier}\nStatus: 400")
+        data: Dict[str, str] = {
+            "error": "The format for the identifier is invalid."
+        }
+        return Response(
+            response=dumps(
+                obj=data,
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
     system_request: Dict[str, Union[str, None]] = {
         "referer": None,
         "search": "",
@@ -277,7 +290,14 @@ def getRelatedContents(identifier: str) -> Response:
     }
     media: Media = Media(system_request)
     model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
-    return Response(dumps(model_response["data"], indent=4), int(str(model_response["status"])), mimetype=mime_type)
+    return Response(
+        response=dumps(
+            obj=model_response["data"],
+            indent=4
+        ),
+        status=int(str(model_response["status"])),
+        mimetype=mime_type
+    )
 
 @Media_Portal.after_request
 def securityHeaders(response: Response) -> Response:

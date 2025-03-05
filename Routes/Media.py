@@ -213,29 +213,47 @@ def getMedia(identifier: str) -> Response:
 @Media_Portal.route('/Download', methods=['POST'])
 def retrieveMedia() -> Response:
     """
-    Retrieving the media needed from the uniform resource
-    locator and stores it in the server while allowing the user
-    to download it.
+    Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
 
     Returns:
         Response
     """
     mime_type: str = "application/json"
-    if "Search" not in request.referrer:
-        return Response(dumps({}, indent=4), 403, mimetype=mime_type)
     payload: Dict[str, Dict[str, str]] = request.json  # type: ignore
     data: Dict[str, str] = payload["Media"]
+    if data.get("uniform_resource_locator") is None or data.get("platform") is None:
+        Routing_Logger.error(f"The parameters are invalid.\nData: {data}")
+        data: Dict[str, str] = {
+            "error": "The parameters are invalid."
+        }
+        return Response(
+            response=dumps(
+                obj=data,
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    uniform_resource_locator: str = escape(data["uniform_resource_locator"])
+    platform: str = escape(data["platform"])
     user_request: Dict[str, str] = {
         "referer": request.referrer,
-        "search": data["uniform_resource_locator"],
-        "platform": data["platform"],
+        "search": uniform_resource_locator,
+        "platform": platform,
         "ip_address": str(request.environ.get("REMOTE_ADDR")),
         "port": str(request.environ.get("SERVER_PORT"))
     }
     media: Media = Media(user_request) # type: ignore
     model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
     status: int = 201 if int(str(model_response["status"])) >= 200 and int(str(model_response["status"])) <= 299 else 503
-    return Response(dumps(model_response["data"], indent=4), status, mimetype=mime_type) # type: ignore
+    return Response(
+        response=dumps(
+            obj=model_response["data"],
+            indent=4
+        ),
+        status=status,
+        mimetype=mime_type
+    )
 
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
 def getRelatedContents(identifier: str) -> Response:

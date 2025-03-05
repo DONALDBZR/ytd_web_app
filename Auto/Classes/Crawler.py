@@ -546,84 +546,23 @@ class Crawler:
             self.getLogger().debug("No YouTube data found.")
             return dataset
         video: Dict[str, str] = youtube[0] # type: ignore
-        try:
-            self.__isValidContentMetadata(video)
-            self.__isValidIdentifier(video["identifier"])
-            self.__isValidPlatform(video["platform"], allowed_platforms)
-            uniform_resource_locator: str = f"https://www.youtube.com/watch?v={video['identifier']}"
-            dataset.append({
-                "identifier": video["identifier"],
-                "author": video["author"],
-                "uniform_resource_locator": uniform_resource_locator,
-                "author_channel": None
-            })
-        except ValueError as error:
-            self.getLogger().error(f"Invalid YouTube data format!\nError: {error}\nrow: {video}")
-        except Exception as error:
-            self.getLogger().error(f"An unexpected error occurred while processing youtube data.\nError: {error}\nrow: {video}")
-            raise error
+        if not isinstance(video, dict):
+            self.getLogger().error(f"Video metadata is not an object!\nMetadata: {metadata}")
+            raise ValueError("Video metadata is not an object!")
+        if bool(search(r"^[a-zA-Z0-9_-]$", video["identifier"])) != False:
+            self.getLogger().error(f"Invalid identifier format!\nIdentifier: {video['identifier']}")
+            raise ValueError("Invalid identifier format!")
+        if video["platform"] not in allowed_platforms:
+            self.getLogger().error(f"Invalid platform!\nPlatform: {video['platform']}")
+            raise ValueError("Invalid platform!")
+        uniform_resource_locator: str = f"https://www.youtube.com/watch?v={video['identifier']}"
+        dataset.append({
+            "identifier": video["identifier"],
+            "author": video["author"],
+            "uniform_resource_locator": uniform_resource_locator,
+            "author_channel": None
+        })
         return dataset
-
-    def __isValidPlatform(self, platform: str, allowed_platforms: List[str]) -> None:
-        """
-        Validating whether the platform is allowed.
-
-        This method checks if the given platform is in the allowed list.  If not, an error is logged, and a ValueError is raised.
-
-        Parameters:
-            platform (string): The platform to validate.
-            allowed_platforms (List[string]): A list of allowed platforms.
-
-        Returns:
-            void
-
-        Raises:
-            ValueError: If the platform is not allowed.
-        """
-        if platform in allowed_platforms:
-            return
-        self.getLogger().error(f"Invalid platform!\nPlatform: {platform}")
-        raise ValueError("Invalid platform!")
-
-    def __isValidIdentifier(self, identifier: str) -> None:
-        """
-        Validating whether the given identifier is a properly formatted YouTube video ID.
-
-        This method ensures that the identifier follows YouTube's expected format, which consists of 11 alphanumeric characters, underscores, or dashes.
-
-        Parameters:
-            identifier (strinfr): The YouTube video identifier.
-
-        Returns:
-            void
-
-        Raises:
-            ValueError: If the identifier format is incorrect.
-        """
-        if bool(search(r"^[a-zA-Z0-9_-]$", identifier)) != False:
-            return
-        self.getLogger().error(f"Invalid identifier format!\nIdentifier: {identifier}")
-        raise ValueError("Invalid identifier format!")
-
-    def __isValidContentMetadata(self, metadata: Dict[str, str]) -> None:
-        """
-        Validating whether the given metadata is a dictionary.
-
-        This method checks if the provided metadata is an object (dictionary).  If not, an error is logged, and a ValueError is raised.
-
-        Parameters:
-            metadata (Dict[string, string]): The metadata to validate.
-
-        Returns:
-            void
-
-        Raises:
-            ValueError: If the metadata is not a dictionary.
-        """
-        if isinstance(metadata, dict):
-            return
-        self.getLogger().error(f"Video metadata is not an object!\nMetadata: {metadata}")
-        raise ValueError("Video metadata is not an object!")
 
     def firstRun(self) -> None:
         """

@@ -7,8 +7,8 @@ Authors:
 
 from flask import Blueprint, Response, request
 from Models.Media import Media, Extractio_Logger, Environment, Dict, Union, List, dumps
-from json import loads, JSONDecodeError
-from os.path import isfile, join, realpath
+from json import loads
+from os.path import join, realpath
 from html import escape
 from index import limiter
 from re import fullmatch
@@ -28,39 +28,6 @@ ENV: Environment = Environment()
 ENV File of the application.
 """
 ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
-
-def readFile(file_name: str) -> Union[str, None]:
-    """
-    Reading the file needed.
-
-    Parameters:
-        file_name:  string: Name of the file.
-
-    Returns:
-        string|null
-    """
-    try:
-        file = open(file_name, "r")
-        return file.read().strip()
-    except FileNotFoundError:
-        return None
-
-def loadData(contents: Union[str, None]) -> Union[Dict, List, None]:
-    """
-    Loading the data from the contents.
-
-    Parameters:
-        contents:  (string|null): Contents to be loaded.
-
-    Returns:
-        object|array|null
-    """
-    if contents is None:
-        return None
-    try:
-        return loads(contents)
-    except JSONDecodeError:
-        return None
 
 def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
     """

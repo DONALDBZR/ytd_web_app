@@ -364,6 +364,11 @@ class HeaderHomepage extends React.Component {
      * @returns {Promise<number>}
      */
     async updateSession(color_scheme) {
+        const allowed_color_schemes = ["light", "dark"];
+        if (!allowed_color_schemes.includes(color_scheme)) {
+            console.error(`The color scheme is invalid.\nStatus: 400\nColor Scheme: ${color_scheme}`);
+            return 400;
+        }
         const response = await fetch("/Session/", {
             method: "PUT",
             body: JSON.stringify({

@@ -6,19 +6,28 @@ Authors:
 """
 
 from flask import Blueprint, Response, request
-from Models.Media import Media
-from typing import Dict, Union, List
-from json import dumps, loads, JSONDecodeError
-from os.path import isfile
-from Environment import Environment
+from Models.Media import Media, Extractio_Logger, Environment, Dict, Union, List, dumps
+from json import loads, JSONDecodeError
+from os.path import isfile, join, realpath
 from html import escape
 from index import limiter
+from re import fullmatch
+from typing import Any
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)
 """
 The Routing for all the Media.
 """
+Routing_Logger: Extractio_Logger = Extractio_Logger(__name__)
+"""
+The logger that will all the action of the application.
+"""
+ENV: Environment = Environment()
+"""
+ENV File of the application.
+"""
+ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
 
 def readFile(file_name: str) -> Union[str, None]:
     """
@@ -55,39 +64,81 @@ def loadData(contents: Union[str, None]) -> Union[Dict, List, None]:
 
 def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
     """
-    Retrieving the metadata.
+    Retrieving metadata from a JSON file while ensuring security measures.
+
+    This function checks the validity of the file name, prevents path traversal, and attempts to read metadata from the specified JSON file.  If the file is missing, it attempts to fetch data using the `Media` class.
 
     Parameters:
-        file_name:  string: Name of the file.
+        file_name (string): The name of the metadata file (expected to be a JSON file).
 
     Returns:
-        {status: int, data: {Media: {YouTube: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: string, video: string}}}}
+        Dict[string, Union[int, Dict[string, Union[string, int, None]]]]
     """
-    data: Dict[str, Union[str, int, None]]
-    if isfile(file_name):
-        file_data: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = loadData(readFile(file_name)) # type: ignore
-        status: int = 200 if file_data is not None else 503
-        data = file_data["Media"]["YouTube"] if status == 200 else {}
+    allowed_directory: str = f"{ENV.getDirectory()}/Cache/Media"
+    identifier: str = r"^[a-zA-Z0-9\-_]+$"
+    file_name = escape(file_name)
+    if not fullmatch(identifier, file_name.replace(".json", "").replace(f"{allowed_directory}/", "")):
+        Routing_Logger.error(f"The file name is invalid.\nFile Name: {file_name}")
+        return {
+            "status": 400,
+            "data": {}
+        }
+    file_name = join(allowed_directory, file_name)
+    file_path: str = realpath(file_name)
+    if not file_path.startswith(realpath(allowed_directory)):
+        Routing_Logger.error(f"Path traversal has been detected.\nFile Name: {file_name}")
+        return {
+            "status": 403,
+            "data": {}
+        }
+    try:
+        file = open(file_name, "r")
+        contents: str = file.read().strip()
+        file_data: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = loads(contents)
+        status: int = 200
+        data = sanitizeStringData(file_data["Media"]["YouTube"])
         return {
             "status": status,
             "data": data
         }
-    ENV: Environment = Environment()
-    ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
-    identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
-    user_request: Dict[str, Union[None, str]] = {
-        "referer": None,
-        "search": f"https://www.youtube.com/watch?v={identifier}",
-        "platform": "youtube",
-        "ip_address": str(request.environ.get("REMOTE_ADDR")),
-        "port": str(request.environ.get("SERVER_PORT"))
-    }
-    media: Media = Media(user_request)
-    model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
-    return {
-        "status": 200 if int(str(model_response["status"])) >= 200 and int(str(model_response["status"])) <= 299 else 503,
-        "data": model_response["data"]
-    }
+    except FileNotFoundError as error:
+        Routing_Logger.error(f"The file is not found.\nFile Name: {file_name}\nError: {error}")
+        identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
+        user_request: Dict[str, Union[str, None]] = {
+            "referer": None,
+            "search": f"https://www.youtube.com/watch?v={identifier}",
+            "platform": "youtube",
+            "ip_address": str(request.environ.get("REMOTE_ADDR")),
+            "port": str(request.environ.get("SERVER_PORT"))
+        }
+        media: Media = Media(user_request)
+        model_response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
+        return {
+            "status": int(str(model_response["status"])),
+            "data": model_response["data"]
+        }
+    except Exception as error:
+        Routing_Logger.error(f"The metadata cannot be retrieved.\nFile Name: {file_name}\nError: {error}")
+        return {
+            "status": 503,
+            "data": {}
+        }
+
+def sanitizeStringData(data: Dict[str, Any]):
+    """
+    Sanitizing string values in a dictionary by escaping HTML characters.
+
+    This function iterates through the dictionary and applies HTML escaping to any string values, preventing potential HTML or JavaScript injection.
+
+    Parameters:
+        data (Dict[str, Any]): A dictionary containing key-value pairs, where some values may be strings.
+
+    Returns:
+        Dict[str, Any]
+    """
+    for key, value in data.items():
+        data[key] = escape(value) if isinstance(value, str) else value
+    return data
 
 @Media_Portal.route("/Search", methods=["GET"])
 @limiter.limit("100 per day", error_message="Rate Limit Exceeded")

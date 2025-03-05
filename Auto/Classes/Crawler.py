@@ -446,7 +446,6 @@ class Crawler:
         Raises:
             OSError: If an issue occurs while writing to the file system.
             ValueError: If the data is invalid before saving.
-            Exception: Any unforeseen errors during the saving process.
 
         Side Effects:
             - Writes the data to a JSON file.
@@ -462,8 +461,11 @@ class Crawler:
             file.write(dumps(self.getData(), indent=4))
             file.close()
             chmod(file_name, 0o644)
-        except (OSError, ValueError, Exception) as error:
+        except OSError as error:
             self.getLogger().error(f"An error occurred while saving the data!\nError: {error}\nFile name: {file_name}")
+            raise error
+        except ValueError as error:
+            self.getLogger().error(f"An error occurred while trying to validate the data before saving it!\nError: {error}\nFile name: {file_name}")
             raise error
         finally:
             self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")

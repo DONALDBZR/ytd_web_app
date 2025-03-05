@@ -676,7 +676,10 @@ class Crawler:
         except (TimeoutException, WebDriverException, NoSuchElementException, Exception) as error:
             self.getLogger().error(f"An error occurred while trying to enter the target.\nError: {error}\nUniform Resource Locator: {target}")
         finally:
-            self.getDriver().quit()
+            try:
+                self.getDriver().quit()
+            except:
+                pass
 
     def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int) -> bool:
         """

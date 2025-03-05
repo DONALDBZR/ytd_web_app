@@ -936,7 +936,7 @@ class Crawler:
             self.setHtmlTag(self.getDriver().find_element(By.XPATH, '//*[@id="text]/a'))
             author_channel_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
             self.getData()[index]["author_channel"] = self.sanitizeUniformResourceLocator(author_channel_uniform_resource_locator)
-        except Exception as error:
+        except (WebDriverException, NoSuchElementException) as error:
             self.getLogger().error(f"An error occurred while retrieving data for the first run!\nError: {error}")
             raise error
 

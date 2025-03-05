@@ -350,21 +350,18 @@ class Media:
 
     def getRelatedAuthorContents(self, author: str) -> List[Dict[str, Union[str, int]]]:
         """
-        Retrieves the related content for a given author from the
-        YouTube database.  This function queries the database to
-        find content associated with the provided author's name.  It
-        returns a list of dictionaries with the content's
-        identifier, duration, channel name, title, URL, and media
-        identifier.
+        Retrieves the related content for a given author from the YouTube database.
+
+        This function queries the database to find content associated with the provided author's name.  It returns a list of dictionaries with the content's identifier, duration, channel name, title, URL, and media identifier.
 
         Parameters:
             author (string): The name of the author whose related content is being retrieved.
 
         Returns:
-            [{"identifier": string, "duration": string, "channel": string, "title": string, "uniform_resource_locator": string, "media_identifier": int}]
+            List[Dict[str, Union[str, int]]]
 
         Raises:
-            Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
+            Relational_Database_Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
         """
         response: List[Dict[str, Union[str, int]]] = []
         parameters: Tuple[str] = (f"%{author}%",)
@@ -378,7 +375,7 @@ class Media:
             response = [{"identifier": str(author_content["identifier"]), "duration": str(author_content["duration"]), "channel": str(author_content["channel"]), "title": str(author_content["title"]), "uniform_resource_locator": str(author_content["uniform_resource_locator"]), "media_identifier": str(author_content["media_identifier"])} for author_content in database_response]
             self.getLogger().inform(f"The related author contents have been successfully retrieved.\nStatus: 200\nAuthor: {author}\nAmount: {len(response)}")
             return response
-        except Error as relational_database_server_error:
+        except Relational_Database_Error as relational_database_server_error:
             self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
             return response
 

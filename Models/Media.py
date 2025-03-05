@@ -381,21 +381,18 @@ class Media:
 
     def getRelatedChannelContents(self, channel: str) -> List[Dict[str, Union[str, int]]]:
         """
-        Retrieves the related content for a given channel from the
-        YouTube database.  This function queries the database to
-        find content associated with the provided channel name.  It
-        returns a list of dictionaries with the content's
-        identifier, duration, channel name, title, URL, and media
-        identifier.
+        Retrieving the related content for a given channel from the YouTube database.
+
+        This function queries the database to find content associated with the provided channel name.  It returns a list of dictionaries with the content's identifier, duration, channel name, title, URL, and media identifier.
 
         Parameters:
             channel (string): The name of the channel whose related content is being retrieved.
 
         Returns:
-            [{"identifier": string, "duration": string, "channel": string, "title": string, "uniform_resource_locator": string, "media_identifier": int}]
+            List[Dict[str, Union[str, int]]]
 
         Raises:
-            Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
+            Relational_Database_Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
         """
         parameters: Tuple[str] = (channel,)
         response: List[Dict[str, Union[str, int]]] = []
@@ -409,7 +406,7 @@ class Media:
             response = [{"identifier": str(channel_content["identifier"]), "duration": str(channel_content["duration"]), "channel": str(channel_content["channel"]), "title": str(channel_content["title"]), "uniform_resource_locator": str(channel_content["uniform_resource_locator"]), "media_identifier": int(channel_content["media_identifier"])} for channel_content in database_response]
             self.getLogger().inform(f"The related channel contents have been successfully retrieved.\nStatus: 200\nChannel: {channel}\nAmount: {len(response)}")
             return response
-        except Error as relational_database_server_error:
+        except Relational_Database_Error as relational_database_server_error:
             self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
             return response
 

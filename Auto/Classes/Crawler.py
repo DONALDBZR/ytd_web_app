@@ -482,24 +482,36 @@ class Crawler:
 
     def __getYoutubeData(self, dataset: List[Dict[str, Union[str, int, None]]], identifiers: List[RowType], allowed_platforms: List[str]) -> List[Dict[str, Union[str, int, None]]]:
         """
-        Retrieving YouTube data based on the provided identifiers
-        and updates the dataset.  This method fetches YouTube data
-        from the database based on each identifier in the provided
-        list, processes the data using the `__processYouTubeData`
-        method, and appends relevant information to the provided
-        dataset.
+        Retrieving and process YouTube data based on provided
+        identifiers.
+
+        This method fetches YouTube data from the relational database server using provided identifiers, validates them, and appends the results to the dataset.
 
         Parameters:
-            dataset (List[Dict[str, Union[str, int, None]]]): The dataset to be updated with processed YouTube data.
-            identifiers (List[RowType]): A list of identifiers used to fetch YouTube data from the database.
-            allowed_platforms (List[str]): A list of allowed platforms for which URLs will be generated.
+            dataset (List[Dict[string, Union[string, int, None]]]): The dataset where YouTube data will be stored.
+            identifiers (List[RowType]): List of identifiers containing YouTube video references.
+            allowed_platforms (List[string]): A list of allowed platforms.
 
         Returns:
-            List[Dict[str, Union[str, int, None]]]
+            List[Dict[string, Union[string, int, None]]]
+
+        Raises:
+            ValueError: If identifiers are not a list, contain non-object values, or lack the 'YouTube' key.
         """
+        if not isinstance(identifiers, list):
+            self.getLogger().error(f"Invalid data from the relational database server.\nIdentifiers: {identifiers}")
+            raise ValueError("Invalid data from the relational database server.")
+        if not all(isinstance(data, dict) for data in identifiers):
+            self.getLogger().error(f"The dataset contains non-object values!\nIdentifiers: {identifiers}")
+            raise ValueError("The identifiers contains non-object values!")
+        if not identifiers:
+            self.getLogger().debug("No identifiers provided.")
+            return dataset
+        if "YouTube" not in identifiers[0]:
+            self.getLogger().error(f"Missing key YouTube in identifier.\nIdentifiers: {identifiers[0]}")
+            raise ValueError("Missing key YouTube in identifier.")
         for index in range(0, len(identifiers), 1):
-            media_file_dataset: Dict[str, str] = identifiers[index] # type: ignore
-            parameters: Tuple[str] = (media_file_dataset["YouTube"],)
+            parameters: Tuple[str] = (identifiers[index]["YouTube"],) # type: ignore
             youtube_data: List[RowType] = self.getDatabaseHandler().getData(
                 parameters=parameters,
                 table_name="YouTube",

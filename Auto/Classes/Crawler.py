@@ -782,14 +782,14 @@ class Crawler:
             None
 
         Raises:
-            Exception: If an error occurs while entering the first target.
+            WebDriverException: If an error occurs while entering the first target.
         """
         if referrer != "firstRun":
             return
         try:
             self.getLogger().inform(f"Entering the target!\nTarget: {target}")
             self.getDriver().get(target)
-        except Exception as error:
+        except WebDriverException as error:
             self.getLogger().error(f"An error occurred while entering the first target!\nError: {error}\nTarget: {target}")
             raise error
 

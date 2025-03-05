@@ -141,6 +141,7 @@ def search() -> Response:
     return Response(dumps(response, indent=4), status, mimetype=mime_type)
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
+@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def getMedia(identifier: str) -> Response:
     """
     Sending the data for the media that has been searched in the form of JSON.
@@ -178,6 +179,7 @@ def getMedia(identifier: str) -> Response:
     )
 
 @Media_Portal.route('/Download', methods=['POST'])
+@limiter.limit("20 per week", error_message="Rate Limit Exceeded")
 def retrieveMedia() -> Response:
     """
     Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
@@ -223,6 +225,7 @@ def retrieveMedia() -> Response:
     )
 
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
+@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def getRelatedContents(identifier: str) -> Response:
     """
     Retrieving the related contents of the media content that has been downloaded from the application.

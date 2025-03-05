@@ -56,11 +56,19 @@ class Media:
 
     def __init__(self, request: Dict[str, Union[str, None]]) -> None:
         """
-        Instantiating the media's manager which will interact with
-        the media's dataset and do the required processing.
+        Initializing the Media Management System.
+
+        This constructor sets up the necessary environment, logging, database handler, and validates the incoming request data. It also ensures that the required database table (`Media`) exists before proceeding.
 
         Parameters:
-            request: {referer: string|null, search: string, platform: string, ip_address: string, port: string}: The request from the user.
+            request (Dict[str, Union[str, None]]): A dictionary containing the request details with the following keys:
+                - "referer" (Optional[str]): The referring URL.
+                - "search" (str): The search query or target URL.
+                - "platform" (str): The media platform (e.g., "youtube").
+                - "ip_address" (str): The client's IP address.
+
+        Raises:
+            ValueError: If the request dictionary does not contain all required keys.
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
@@ -71,6 +79,9 @@ class Media:
             parameters=None
         )
         self.getDatabaseHandler()._execute()
+        if not all(key in request for key in ("referer", "search", "platform", "ip_address")):
+            self.getLogger().error(f"The request does not contain the correct keys.\nRequest: {request}")
+            raise ValueError("The request does not contain the correct keys.")
         self.setSearch(str(request["search"]))
         self.setReferer(request["referer"])
         self.setValue(str(request["platform"]))

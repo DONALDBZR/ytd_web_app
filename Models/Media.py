@@ -408,13 +408,12 @@ class Media:
             channel (string): The name of the channel whose related content is being retrieved.
 
         Returns:
-            List[Dict[str, Union[str, int]]]
+            List[Dict[string, Union[string, int]]]
 
         Raises:
             Relational_Database_Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
         """
         parameters: Tuple[str] = (channel,)
-        response: List[Dict[str, Union[str, int]]] = []
         try:
             database_response: List[Dict[str, Union[str, int]]] = self.getDatabaseHandler().getData(
                 parameters=parameters,
@@ -422,11 +421,11 @@ class Media:
                 filter_condition="author = %s",
                 column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
             ) # type: ignore
-            response = [{"identifier": str(channel_content["identifier"]), "duration": str(channel_content["duration"]), "channel": str(channel_content["channel"]), "title": str(channel_content["title"]), "uniform_resource_locator": str(channel_content["uniform_resource_locator"]), "media_identifier": int(channel_content["media_identifier"])} for channel_content in database_response]
+            response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(channel_content["identifier"])), "duration": escape(str(channel_content["duration"])), "channel": escape(str(channel_content["channel"])), "title": escape(str(channel_content["title"])), "uniform_resource_locator": escape(str(channel_content["uniform_resource_locator"])), "media_identifier": int(channel_content["media_identifier"])} for channel_content in database_response]
             self.getLogger().inform(f"The related channel contents have been successfully retrieved.\nStatus: 200\nChannel: {channel}\nAmount: {len(response)}")
             return response
-        except Relational_Database_Error as relational_database_server_error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
             return response
 
     def _getPayload(self, identifier: str) -> Dict[str, str]:

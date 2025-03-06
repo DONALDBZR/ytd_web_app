@@ -206,7 +206,7 @@ class HeaderHomepage extends React.Component {
         try {
             const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
             this.__checkNotAllowedDomains(allowed_domains, parsed_uniform_resource_locator);
-            return String(this.getYouTubeIdentifier(parsed_uniform_resource_locator));
+            return String(this.sanitize(this.getYouTubeIdentifier(parsed_uniform_resource_locator)));
         } catch (error) {
             console.error("Error extracting YouTube identifier:", error);
             return "";

@@ -1,11 +1,8 @@
-from Models.DatabaseHandler import Database_Handler
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, Union, List, Tuple, Any
 from datetime import datetime
-from Models.Logger import Extractio_Logger
-from Environment import Environment
-from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict, Union, List, Tuple, Any
+from typing import Dict
 from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
@@ -247,11 +244,9 @@ class YouTube_Downloader:
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Searches for a video on YouTube and retrieves its metadata.
-        This function uses `youtube-dl` to extract information about
-        a YouTube video based on its uniform resource locator.  If
-        metadata exists in the database, it is retrieved; otherwise,
-        new data is extracted and stored.
+        Searching for a video on YouTube and retrieves its metadata.
+
+        This function uses `youtube-dl` to extract information about a YouTube video based on its uniform resource locator.  If metadata exists in the database, it is retrieved; otherwise, new data is extracted and stored.
 
         Returns:
             {"uniform_resource_locator": string, "author": string, "title": string, "identifier": string, "author_channel": string, "views": int, "published_at": string, "thumbnail": string, "duration": string, "audio_file": string | null, "video_file": string | null}
@@ -264,39 +259,42 @@ class YouTube_Downloader:
             "skip_download": True
         }
         self.setVideo(YoutubeDL(options))
-        self.setIdentifier(self.getUniformResourceLocator())
-        identifier: str = self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
-        self.setIdentifier(identifier)
-        raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
-        youtube: Dict[str, Any] = {
-            key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
-        }
-        meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
-        self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
-        published_date: str = youtube["upload_date"] # type: ignore
-        published_at: str = str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{published_date[:4]}-{published_date[4:6]}-{published_date[6:]}" # type: ignore
-        self.setPublishedAt(published_at)
-        self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
-        self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
-        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-        file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
-        audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
-        video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
-        if meta_data["status"] != 200:
-            self.postYouTube()
-        return {
-            "uniform_resource_locator": self.getUniformResourceLocator(),
-            "author": self.getAuthor(),
-            "title": self.getTitle(),
-            "identifier": self.getIdentifier(),
-            "author_channel": str(youtube["uploader_url"]),
-            "views": int(youtube["view_count"]),
-            "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": str(youtube["thumbnail"]),
-            "duration": self.getDuration(),
-            "audio_file": audio_file,
-            "video_file": video_file
-        }
+        self.setIdentifier(self.retrieveIdentifier(self.getUniformResourceLocator().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0]))
+        try:
+            raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
+            if not raw_youtube:
+                self.getLogger().error(f"The response is invalid")
+                raise ValueError("Invalid Response")
+            youtube: Dict[str, Any] = {
+                key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
+            }
+            meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
+            self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{youtube["upload_date"][:4]}-{youtube["upload_date"][4:6]}-{youtube["upload_date"][6:]}") # type: ignore
+            self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
+            self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
+            self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
+            file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
+            audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
+            video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
+            if meta_data["status"] != 200:
+                self.postYouTube()
+            return {
+                "uniform_resource_locator": self.getUniformResourceLocator(),
+                "author": self.getAuthor(),
+                "title": self.getTitle(),
+                "identifier": self.getIdentifier(),
+                "author_channel": str(youtube["uploader_url"]),
+                "views": int(youtube["view_count"]),
+                "published_at": self.getPublishedAt(),  # type: ignore
+                "thumbnail": str(youtube["thumbnail"]),
+                "duration": self.getDuration(),
+                "audio_file": audio_file,
+                "video_file": video_file
+            }
+        except Exception as error:
+            self.getLogger().error(f"There is an error in the search function.\nError: {error}")
+            return {}
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """

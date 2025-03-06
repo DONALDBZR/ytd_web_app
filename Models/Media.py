@@ -378,7 +378,7 @@ class Media:
             author (string): The name of the author whose related content is being retrieved.
 
         Returns:
-            List[Dict[str, Union[str, int]]]
+            List[Dict[string, Union[string, int]]]
 
         Raises:
             Relational_Database_Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.

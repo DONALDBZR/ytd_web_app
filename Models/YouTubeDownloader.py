@@ -389,8 +389,10 @@ class YouTube_Downloader:
         }
         if isfile(audio_file_location) == False and isfile(video_file_location) == False:
             self.setVideo(YoutubeDL(options))
-            self.getDatabaseHandler()._execute()
-            info = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+            info = self.getVideo().extract_info(
+                url=self.getUniformResourceLocator(),
+                download=False
+            )
             self.setStreams(info["formats"]) # type: ignore
             audio_file_location = self.getAudioFile()
             video_file_location = self.getVideoFile()

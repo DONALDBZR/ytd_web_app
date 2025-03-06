@@ -459,7 +459,7 @@ class Media:
             raise IndexError("There is no data for a given identifier.")
         try:
             channel: str = escape(str(database_response["author"])) # type: ignore
-            title: str = str(database_response["title"]) # type: ignore
+            title: str = escape(str(database_response["title"])) # type: ignore
         except KeyError as error:
             self.getLogger().error(f"Missing expected keys in database response: {error}")
             raise KeyError(f"Missing expected keys in database response: {error}")

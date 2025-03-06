@@ -3,6 +3,7 @@ from DatabaseHandler import Relational_Database_Error
 from datetime import datetime
 from json import dumps
 from re import match, Match
+from html import escape
 
 
 class Media:
@@ -431,25 +432,44 @@ class Media:
 
     def _getPayload(self, identifier: str) -> Dict[str, str]:
         """
-        Retrieving the payload of the content.
+        Retrieving and processing metadata payload for a given YouTube video identifier.
+
+        This method queries the database to fetch the video's author and title using the provided video identifier.  It then extracts the channel name and author from the retrieved data.
 
         Parameters:
-            identifier: string: The identifier of the content to be looked upon.
+            identifier (string): The YouTube video identifier.
 
         Returns:
-            {channel: string, author: string}
+            Dict[string, string]: A dictionary containing:
+                - "channel" (string): The escaped channel name from the database.
+                - "author" (string): The author's name extracted from the title.
+
+        Raises:
+            KeyError: If the expected keys ("author", "title") are missing in the database response.
+            IndexError: If no data is returned from the database query.
         """
         parameters: Tuple[str] = (identifier,)
-        database_response: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
-            parameters=parameters,
-            table_name="YouTube",
-            filter_condition="identifier = %s",
-            column_names="author AS channel, title",
-            limit_condition=1
-        )[0]
+        try:
+            database_response: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
+                parameters=parameters,
+                table_name="YouTube",
+                filter_condition="identifier = %s",
+                column_names="author, title",
+                limit_condition=1
+            )[0]
+        except IndexError as error:
+            self.getLogger().error(f"There is no data for a given identifier.\nError: {error}\nIdentifier: {identifier}")
+            raise IndexError("There is no data for a given identifier.")
+        try:
+            channel: str = escape(str(database_response["author"])) # type: ignore
+            title: str = str(database_response["title"]) # type: ignore
+        except KeyError as error:
+            self.getLogger().error(f"Missing expected keys in database response: {error}")
+            raise KeyError(f"Missing expected keys in database response: {error}")
+        author: str = title.split(" - ")[0]
         return {
-            "channel": str(database_response["channel"]), # type: ignore
-            "author": str(database_response["title"]).split(" - ")[0] # type: ignore
+            "channel": channel,
+            "author": author
         }
 
     def sanitizeValue(self) -> None:

@@ -474,20 +474,29 @@ class Media:
 
     def sanitizeValue(self) -> None:
         """
-        Sanitizing the platform value.
+        Validating and sanitizing the platform value.
 
-        Raises:
-            ValueError: If the platform value is empty or contains incorrect characters.
+        This method ensures that the platform value is valid by performing the following checks:
+        1. It must not be empty.
+        2. It must be one of the allowed platforms: "youtube" or "youtu.be".
+        3. It must contain only lowercase alphabetic characters.
+
+        If any of these conditions fail, an error is logged, and a `ValueError` is raised.
 
         Returns:
             void
+
+        Raises:
+            ValueError: If the platform value is missing, unsupported, or contains invalid characters.
         """
+        allowed_platforms: List[str] = ["youtube", "youtu.be"]
         if not self.getValue():
-            self.setValue("")
             self.getLogger().error(f"Failed to sanitize the value.\nStatus: 400\nValue: {self.getValue()}")
             raise ValueError("Failed to sanitize the value.")
+        if not self.getValue() in allowed_platforms:
+            self.getLogger().error(f"The platform is not supported!\nStatus: 400\nValue: {self.getValue()}")
+            raise ValueError("The platform is not supported!")
         if not match(r"^[a-z]+$", self.getValue()):
-            self.setValue("")
             self.getLogger().error(f"Incorrect characters in value!\nStatus: 400\nValue: {self.getValue()}")
             raise ValueError("Incorrect characters in value!")
         self.setValue(self.getValue())

@@ -220,10 +220,10 @@ class HeaderHomepage extends React.Component {
      */
     getYouTubeIdentifier(uniform_resource_locator) {
         if (uniform_resource_locator.hostname === "youtube.com" && uniform_resource_locator.pathname === "/watch") {
-            return uniform_resource_locator.searchParams.get("v");
+            return this.sanitize(uniform_resource_locator.searchParams.get("v"));
         }
         if (uniform_resource_locator.hostname === "youtu.be") {
-            return uniform_resource_locator.pathname.slice(1);
+            return this.sanitize(uniform_resource_locator.pathname.slice(1));
         }
         throw new Error("The domain is not allowed!");
     }

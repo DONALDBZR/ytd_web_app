@@ -493,7 +493,7 @@ class Media:
         if not self.getValue() in allowed_platforms:
             self.getLogger().error(f"The platform is not supported!\nStatus: 400\nValue: {self.getValue()}")
             raise ValueError("The platform is not supported!")
-        if not match(r"^[a-z]+$", self.getValue()):
+        if not match(r"^[a-z.]+$", self.getValue()):
             self.getLogger().error(f"Incorrect characters in value!\nStatus: 400\nValue: {self.getValue()}")
             raise ValueError("Incorrect characters in value!")
         self.setValue(self.getValue())

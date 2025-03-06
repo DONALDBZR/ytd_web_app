@@ -503,24 +503,26 @@ class Media:
 
     def sanitizeSearch(self) -> None:
         """
-        Sanitizing the search value.
+        Validating and sanitizing the search query.
+
+        This method ensures that the search query meets the following criteria:
+        1. It must not be empty.
+        2. It must only contain valid characters.
+        3. It must not exceed 64 characters in length.
+
+        If any of these conditions fail, an error is logged, and a `ValueError` is raised.
 
         Raises:
-            ValueError: If the search value is empty, contains incorrect characters, or exceeds the maximum length.
-
-        Returns:
-            void
+            ValueError: If the search query is empty, contains invalid characters, or exceeds the allowed length.
         """
+        regular_expression: str = r"^[a-zA-Z0-9\s\-_.,:/?=&]*$"
         if not self.getSearch():
-            self.getLogger().error(f"Failed to sanitize the search value.\nStatus: 400\nSearch: {self.getSearch()}")
-            self.setSearch("")
-            raise ValueError("Failed to sanitize the search value.")
-        if not match(r"^[a-zA-Z0-9:/.?=]+$", self.getSearch()):
+            self.getLogger().error(f"The value to be searched is empty.\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("The value to be searched is empty.")
+        if not match(regular_expression, self.getSearch()):
             self.getLogger().error(f"Invalid characters in search term!\nStatus: 400\nSearch: {self.getSearch()}")
-            self.setSearch("")
             raise ValueError("Invalid characters in search term")
         if len(self.getSearch()) > 64:
-            self.getLogger().error(f"Search term is too long!\nStatus: 400\nSearch: {self.getSearch()}")
-            self.setSearch("")
+            self.getLogger().error(f"The search query is too long.\nStatus: 400\nSearch: {self.getSearch()}")
             raise ValueError("The search query is too long.")
         self.setSearch(self.getSearch())

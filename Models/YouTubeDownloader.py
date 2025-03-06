@@ -1,4 +1,4 @@
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, Union, List, Tuple, Any
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, Union, List, Tuple, Any, Relational_Database_Error
 from datetime import datetime
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
@@ -344,18 +344,26 @@ class YouTube_Downloader:
 
     def postYouTube(self) -> None:
         """
-        Creating a record for the media with its data.
+        Inserting YouTube video metadata into the database.
+
+        This method extracts relevant metadata (identifier, length, publication date, author, title, and media identifier) and inserts it into the "YouTube" table in the relational database. If an error occurs during the process, it logs the issue.
 
         Returns:
             void
+
+        Raises:
+            Relational_Database_Error: If there is an issue communicating with the database.
         """
-        data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
-        self.getDatabaseHandler().postData(
-            table="YouTube",
-            columns="identifier, length, published_at, author, title, Media",
-            values="%s, %s, %s, %s, %s, %s",
-            parameters=data # type: ignore
-        )
+        try:
+            data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
+            self.getDatabaseHandler().postData(
+                table="YouTube",
+                columns="identifier, length, published_at, author, title, Media",
+                values="%s, %s, %s, %s, %s, %s",
+                parameters=data # type: ignore
+            )
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
 
     def mediaDirectory(self) -> None:
         """

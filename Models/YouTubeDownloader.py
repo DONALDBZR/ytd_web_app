@@ -273,15 +273,15 @@ class YouTube_Downloader:
         }
         meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
         self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
-        published_date: str = youtube["upload_date"] # type: ignore
-        published_at: str = str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{published_date[:4]}-{published_date[4:6]}-{published_date[6:]}" # type: ignore
+        published_date: str = escape(youtube["upload_date"]) # type: ignore
+        published_at: str = escape(str(meta_data["data"][0]["published_at"])) if meta_data["status"] == 200 else f"{published_date[:4]}-{published_date[4:6]}-{published_date[6:]}" # type: ignore
         self.setPublishedAt(published_at)
-        self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
-        self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
+        self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else escape(str(youtube["uploader"]))) # type: ignore
+        self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else escape(str(youtube["title"]))) # type: ignore
         self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
         file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
-        audio_file: Union[str, None] = file_locations["audio_file"] if meta_data["status"] == 200 else None
-        video_file: Union[str, None] = file_locations["video_file"] if meta_data["status"] == 200 else None
+        audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
+        video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
         if meta_data["status"] != 200:
             self.postYouTube()
         return {

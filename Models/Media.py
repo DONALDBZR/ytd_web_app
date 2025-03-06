@@ -341,14 +341,13 @@ class Media:
 
     def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
-        Retrieving all of the data needed based on the related
-        contents to build the response needed for the API.
+        Retrieving all of the data needed based on the related contents to build the response needed for the API.
 
         Parameters:
-            related_contents: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]: The related contents
+            related_contents: List[Dict[str, Union[str, int]]]: The related contents
 
         Returns:
-            {status: int, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}
+            Dict[str, Union[int, List[Dict[str, str]]]]
         """
         status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
@@ -356,12 +355,12 @@ class Media:
             self._YouTubeDownloader = YouTube_Downloader(str(related_contents[index]["uniform_resource_locator"]), int(related_contents[index]["media_identifier"]))
             metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
             data.append({
-                "duration": str(related_contents[index]["duration"]),
-                "channel": str(related_contents[index]["channel"]),
-                "title": str(related_contents[index]["title"]),
-                "uniform_resource_locator": str(related_contents[index]["uniform_resource_locator"]),
-                "author_channel": str(metadata["author_channel"]),
-                "thumbnail": str(metadata["thumbnail"])
+                "duration": escape(str(related_contents[index]["duration"])),
+                "channel": escape(str(related_contents[index]["channel"])),
+                "title": escape(str(related_contents[index]["title"])),
+                "uniform_resource_locator": escape(str(related_contents[index]["uniform_resource_locator"])),
+                "author_channel": escape(str(metadata["author_channel"])),
+                "thumbnail": escape(str(metadata["thumbnail"]))
             })
         return {
             "status": status,

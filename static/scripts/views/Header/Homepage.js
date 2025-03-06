@@ -40,6 +40,22 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
+     * * Sanitizing a string by escaping special HTML characters.
+     * * This function replaces the following characters with their HTML entity equivalents:
+     * - `&` → `&amp;`
+     * - `<` → `&lt;`
+     * - `>` → `&gt;`
+     * - `"` → `&quot;`
+     * - `'` → `&#039;`
+     * - `/` → `&#x2F;`
+     * @param {string} data The input string to be sanitized.
+     * @returns {string}
+     */
+    sanitize(data) {
+        return data.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("/", "&#x2F;");
+    }
+
+    /**
      * Running the methods needed as soon as the component has been
      * successfully mounted.
      * @returns {void}
@@ -105,6 +121,8 @@ class HeaderHomepage extends React.Component {
         event.preventDefault();
         this.searchMediaMetadata(platform, this.state.Media.search, delay);
     }
+
+
 
     /**
      * Searching for the Media content and redirecting the user to
@@ -294,6 +312,16 @@ class HeaderHomepage extends React.Component {
                 data: {},
             };
         }
+        data.data.uniform_resource_locator = this.sanitize(data.data.uniform_resource_locator);
+        data.data.author = this.sanitize(data.data.author);
+        data.data.title = this.sanitize(data.data.title);
+        data.data.identifier = this.sanitize(data.data.identifier);
+        data.data.author_channel = this.sanitize(data.data.author_channel);
+        data.data.published_at = this.sanitize(data.data.published_at);
+        data.data.thumbnail = this.sanitize(data.data.thumbnail);
+        data.data.duration = this.sanitize(data.data.duration);
+        data.data.audio_file = (data.data.audio_file != null) ? this.sanitize(data.data.audio_file) : data.data.audio_file;
+        data.data.video_file = (data.data.video_file != null) ? this.sanitize(data.data.video_file) : data.data.video_file;
         return {
             status: response.status,
             data: data.data,

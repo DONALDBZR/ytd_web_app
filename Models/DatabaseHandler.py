@@ -461,8 +461,7 @@ class Database_Handler:
         This method performs the following:
         1. If the data is None, it returns an empty string.
         2. If the data is not None and is not a string, it returns the data as-is.
-        3. If the data is a string, it checks if it contains only safe characters (letters, 
-        numbers, spaces, and certain symbols). If valid, it returns the data.
+        3. If the data is a string, it checks if it contains only safe characters.  If valid, it returns the data.
         4. If the data is invalid, it logs an error and raises a ValueError.
 
         Parameters:

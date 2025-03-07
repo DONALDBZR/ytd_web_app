@@ -473,11 +473,14 @@ class Database_Handler:
         Raises:
             ValueError: If the provided string contains invalid characters.
         """
+        safe_string: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*$"
+        allowed_sql_conditions: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*(?:(?:AND|OR)\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']+)*$"
+        allowed_sql_values: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*=\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*(?:,\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*=\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*)*$"
         if data is None:
             return ""
         if data is not None and not isinstance(data, str):
             return data
-        if match(r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*$", data):
+        if match(safe_string, data) or match(allowed_sql_conditions, data) or match(allowed_sql_values, data):
             return data
         self.getLogger().error("The provided value is invalid.")
         raise ValueError("The provided value is invalid.")

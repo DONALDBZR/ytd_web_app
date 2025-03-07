@@ -304,7 +304,7 @@ class Database_Handler:
             ValueError: If the provided conditions or parameters are invalid.
         """
         self.setQuery(f"SELECT {column_names} FROM {table_name}")
-        self.setParameters(parameters)
+        self.setParameters(self.sanitize(parameters))
         self.setQuery(self.getQuery() if join_condition == "" else f"{self.getQuery()} LEFT JOIN {self.sanitize(join_condition)}")
         self.setQuery(self.getQuery() if filter_condition == "" else f"{self.getQuery()} WHERE {self.sanitize(filter_condition)}")
         self.setQuery(self.getQuery() if group_condition == "" else f"{self.getQuery()} GROUP BY {self.sanitize(group_condition)}")

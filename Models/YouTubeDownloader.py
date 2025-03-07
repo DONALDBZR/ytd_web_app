@@ -437,43 +437,68 @@ class YouTube_Downloader:
 
     def retrievingStreams(self) -> Dict[str, Union[str, int, None]]:
         """
-        Downloading the contents of the media from the platform to
-        save on the server.
+        Retrieving the available media streams (audio and video) for a given resource and provides metadata such as author, title, views, and publication date.  If the audio and video files are not already downloaded, they will be downloaded using YoutubeDL.
 
-        Return:
-            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio: string|null, video: string|null}
+        This method performs the following tasks:
+            1. Searches for the metadata of the media.
+            2. Retrieves and stores the audio and video file paths.
+            3. Downloads the media streams if the files do not exist.
+            4. Returns a dictionary containing the following metadata:
+            - uniform_resource_locator: The URL of the media.
+            - author: The author of the media.
+            - title: The title of the media.
+            - identifier: A unique identifier for the media.
+            - author_channel: The author's channel name or identifier.
+            - views: The number of views the media has received.
+            - published_at: The publication date of the media.
+            - thumbnail: The URL of the media's thumbnail image.
+            - duration: The duration of the media.
+            - audio: The file path to the downloaded audio.
+            - video: The file path to the downloaded video.
+
+        Returns:
+            Dict[string, Union[string, int, None]]
+
+        Raises:
+            NotFoundError: If the media resource cannot be found.
+            DownloadError: If there is an error while downloading the media.
+            Relational_Database_Error: If there is a database-related error.
         """
-        metadata: Dict[str, Union[str, int, None]] = self.search()
-        self.setIdentifier(str(metadata["identifier"]))
-        audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        options: Dict[str, bool] = {
-            "quiet": True,
-            "listformats": True
-        }
-        if isfile(audio_file_location) == False and isfile(video_file_location) == False:
-            self.setVideo(YoutubeDL(options))
-            info = self.getVideo().extract_info(
-                url=self.getUniformResourceLocator(),
-                download=False
-            )
-            self.setStreams(info["formats"]) # type: ignore
-            audio_file_location = self.getAudioFile()
-            video_file_location = self.getVideoFile()
-        self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
-        return {
-            "uniform_resource_locator": self.getUniformResourceLocator(),
-            "author": self.getAuthor(),
-            "title": self.getTitle(),
-            "identifier": self.getIdentifier(),
-            "author_channel": str(metadata["author_channel"]),
-            "views": int(metadata["views"]),  # type: ignore
-            "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": str(metadata["thumbnail"]),  # type: ignore
-            "duration": self.getDuration(),
-            "audio": audio_file_location,
-            "video": video_file_location
-        }
+        try:
+            metadata: Dict[str, Union[str, int, None]] = self.search()
+            self.setIdentifier(str(metadata["identifier"]))
+            audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+            video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+            options: Dict[str, bool] = {
+                "quiet": True,
+                "listformats": True
+            }
+            if isfile(audio_file_location) == False and isfile(video_file_location) == False:
+                self.setVideo(YoutubeDL(options))
+                info = self.getVideo().extract_info(
+                    url=self.getUniformResourceLocator(),
+                    download=False
+                )
+                self.setStreams(info["formats"]) # type: ignore
+                audio_file_location = self.getAudioFile()
+                video_file_location = self.getVideoFile()
+            self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
+            return {
+                "uniform_resource_locator": self.getUniformResourceLocator(),
+                "author": self.getAuthor(),
+                "title": self.getTitle(),
+                "identifier": self.getIdentifier(),
+                "author_channel": str(metadata["author_channel"]),
+                "views": int(metadata["views"]),  # type: ignore
+                "published_at": self.getPublishedAt(),  # type: ignore
+                "thumbnail": str(metadata["thumbnail"]),  # type: ignore
+                "duration": self.getDuration(),
+                "audio": audio_file_location,
+                "video": video_file_location
+            }
+        except (NotFoundError, DownloadError, Relational_Database_Error) as error:
+            self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
+            return {}
 
     def getAudioFile(self) -> str:
         """

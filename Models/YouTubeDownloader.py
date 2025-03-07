@@ -491,56 +491,45 @@ class YouTube_Downloader:
         self.setMimeType("video/mp4")
         return self.__downloadVideo(audio_stream, video_stream)
 
-    def __downloadVideo(self) -> str:
+    def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
         """
-        Recursively downloading the video data from YouTube's main
-        data center.
+        Downloading a video file with the corresponding audio stream and stores it in the specified directory.
+
+        Parameters:
+            audio (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the audio stream, including format ID.
+            video (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the video stream, including format ID.
 
         Returns:
             string
+
+        Raises:
+            DownloadError: If the video download process fails.
+            Relational_Database_Error: If there is an issue inserting data into the relational database.
         """
-        maximum_height: int = 1080
-        maximum_width: int = 1920
-        response: str = ""
-        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and "mp4a" in str(stream.get("acodec"))]
-        if len(audio_streams) == 0:
-            self.getLogger().error(f"There is not valid audio stream available.\nStatus: 503")
-            return response
-        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
-        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
-        audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
-        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("vbr") is not None and stream.get("vbr") != 0.00]
-        if len(video_streams) == 0:
-            self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")
-            return response
-        height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
-        width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
-        height = maximum_height if height >= maximum_height else height
-        width = maximum_width if width >= maximum_width else width
-        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and "avc" in str(stream.get("vcodec")) and "filesize" in stream]
-        if not video_streams:
-            self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")
-            return response
-        file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
-        self.setStream([stream for stream in video_streams if stream.get("filesize") == file_size][0])
-        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
-        file_name: str = f"{self.getIdentifier()}.mp4"
-        file_path: str = f"{self.getDirectory()}/Video/{file_name}"
+        file_path: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         options: Dict[str, str] = {
-            "format": f"{video_stream['format_id']}+{audio_stream['format_id']}",
+            "format": f"{video['format_id']}+{audio['format_id']}",
             "merge_output_format": "mp4",
             "outtmpl": file_path
         }
-        self.setVideo(YoutubeDL(options))
-        self.getVideo().download([self.getUniformResourceLocator()])
+        try:
+            self.setVideo(YoutubeDL(options))
+            self.getVideo().download([self.getUniformResourceLocator()])
+        except Exception as error:
+            self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
+            raise DownloadError("The downloading of the video file has failed.")
         data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        self.getDatabaseHandler().postData(
-            table="MediaFile",
-            columns="type, date_downloaded, location, YouTube",
-            values="%s, %s, %s, %s",
-            parameters=data # type: ignore
-        )
-        return file_path
+        try:
+            self.getDatabaseHandler().postData(
+                table="MediaFile",
+                columns="type, date_downloaded, location, YouTube",
+                values="%s, %s, %s, %s",
+                parameters=data # type: ignore
+            )
+            return file_path
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
+            raise error
 
     def handleHttpError(self, error: HTTPError, file_path: str) -> str:
         """

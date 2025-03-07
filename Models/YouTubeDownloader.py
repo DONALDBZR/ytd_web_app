@@ -8,7 +8,7 @@ from os.path import isfile, exists
 from os import makedirs
 from html import escape
 from Errors.ExtractioErrors import NotFoundError
-from yt_dlp.utils import DownloadError
+from yt_dlp.utils import DownloadError, ExtractorError
 
 
 class YouTube_Downloader:
@@ -488,7 +488,7 @@ class YouTube_Downloader:
                 "audio": audio_file_location,
                 "video": video_file_location
             }
-        except (NotFoundError, DownloadError, Relational_Database_Error) as error:
+        except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:
             self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
             return {}
 

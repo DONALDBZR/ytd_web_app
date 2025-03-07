@@ -547,8 +547,7 @@ class YouTube_Downloader:
         Raises:
             NotFoundError: If no valid audio stream is available.
         """
-        codec: str = "mp4a"
-        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and codec in stream["acodec"]] # type: ignore
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and self.getAudioCodec() in stream["acodec"]] # type: ignore
         adaptive_bitrate: float = float(max(streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in streams if stream["abr"] == adaptive_bitrate][0])
         self.setMimeType("audio/mp3")

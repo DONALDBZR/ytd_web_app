@@ -299,7 +299,7 @@ class YouTube_Downloader:
             "skip_download": True
         }
         self.setVideo(YoutubeDL(options))
-        self.setIdentifier(self.retrieveIdentifier(self.getUniformResourceLocator().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0]))
+        self.setIdentifier(self.sanitizeYouTubeIdentifier())
         try:
             raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
             if not raw_youtube:

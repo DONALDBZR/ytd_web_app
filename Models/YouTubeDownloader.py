@@ -453,18 +453,43 @@ class YouTube_Downloader:
         self.setMimeType("audio/mp3")
         if self.getStream() == None:
             raise NotFoundError("There is not valid audio stream available.")
-        return self.__downloadAudio()
+        return self.__downloadAudio(self.getStream())
 
     def getVideoFile(self) -> str:
         """
-        Retrieving the video file and saving it on the server as
-        well as adding its meta data in the database.
+        Retrieving the highest-quality video and audio streams and downloads the video file.
+
+        This method filters available streams to select the best audio and video quality, ensuring the video resolution does not exceed 1080p (1920x1080).  It then combines the selected audio and video streams and initiates the video download.
 
         Returns:
             string
+
+        Raises:
+            NotFoundError: If no valid audio or video stream is available.
         """
+        maximum_height: int = 1080
+        maximum_width: int = 1920
+        audio_codec: str = "mp4a"
+        video_codec: str = "avc"
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and audio_codec in str(stream.get("acodec"))]
+        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
+        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
+        if self.getStream() == None:
+            raise NotFoundError("There is not valid audio stream available.")
+        audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
+        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("vbr") is not None and stream.get("vbr") != 0.00]
+        height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
+        width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
+        height = maximum_height if height >= maximum_height else height
+        width = maximum_width if width >= maximum_width else width
+        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and video_codec in str(stream.get("vcodec")) and "filesize" in stream]
+        file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
+        self.setStream([stream for stream in video_streams if stream.get("filesize") == file_size][0])
+        if self.getStream() == None:
+            raise NotFoundError("There is not valid video stream available.")
+        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
         self.setMimeType("video/mp4")
-        return self.__downloadVideo()
+        return self.__downloadVideo(audio_stream, video_stream)
 
     def __downloadVideo(self) -> str:
         """

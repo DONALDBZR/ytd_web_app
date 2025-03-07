@@ -58,6 +58,10 @@ class Database_Handler:
     """
     The logger that will all the action of the application.
     """
+    __keywords: List[str]
+    """
+    The list of SQL Keywords
+    """
 
     def __init__(self):
         """
@@ -122,6 +126,12 @@ class Database_Handler:
                 connect_timeout=10
             )
         )
+
+    def getKeywords(self) -> List[str]:
+        return self.__keywords
+
+    def setKeywords(self, keywords: List[str]) -> None:
+        self.__keywords = keywords
 
     def __getHost(self) -> str:
         return self.__host
@@ -474,13 +484,16 @@ class Database_Handler:
             ValueError: If the provided string contains invalid characters.
         """
         safe_string: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*$"
-        allowed_sql_conditions: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*(?:(?:AND|OR)\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']+)*$"
-        allowed_sql_values: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*=\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*(?:,\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*=\s*[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*)*$"
+        self.setKeywords(["CREATE", "ALTER", "DROP", "TRUNCATE", "RENAME", "INSERT", "UPDATE", "DELETE", "MERGE", "SELECT", "GRANT", "REVOKE", "COMMIT", "ROLLBACK", "SAVEPOINT", "RELEASE SAVEPOINT"])
         if data is None:
             return ""
         if data is not None and not isinstance(data, str):
             return data
-        if match(safe_string, data) or match(allowed_sql_conditions, data) or match(allowed_sql_values, data):
-            return data
-        self.getLogger().error("The provided value is invalid.")
-        raise ValueError("The provided value is invalid.")
+        if not match(safe_string, data):
+            self.getLogger().error("The provided value is invalid.")
+            raise ValueError("The provided value is invalid.")
+        unchecked_data: str = data.upper()
+        if any(keyword in unchecked_data for keyword in self.getKeywords()):
+            self.getLogger().error("The provided value contains restricted SQL keywords.")
+            raise ValueError("The provided value contains restricted SQL keywords.")
+        return data

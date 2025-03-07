@@ -9,6 +9,7 @@ Authors:
 from logging.__init__ import Logger
 from logging import basicConfig, getLogger as get_logger, DEBUG, INFO, WARNING, ERROR
 from Environment import Environment
+from re import sub
 
 
 class Extractio_Logger:
@@ -55,7 +56,7 @@ class Extractio_Logger:
             void
         """
         self.getLogger().setLevel(DEBUG)
-        self.getLogger().debug(message)
+        self.getLogger().debug(self.sanitize(message))
 
     def inform(self, message: str) -> None:
         """
@@ -68,7 +69,7 @@ class Extractio_Logger:
             void
         """
         self.getLogger().setLevel(INFO)
-        self.getLogger().info(message)
+        self.getLogger().info(self.sanitize(message))
 
     def warn(self, message: str) -> None:
         """
@@ -81,7 +82,7 @@ class Extractio_Logger:
             void
         """
         self.getLogger().setLevel(WARNING)
-        self.getLogger().warning(message)
+        self.getLogger().warning(self.sanitize(message))
 
     def error(self, message: str) -> None:
         """
@@ -94,4 +95,18 @@ class Extractio_Logger:
             void
         """
         self.getLogger().setLevel(ERROR)
-        self.getLogger().error(message)
+        self.getLogger().error(self.sanitize(message))
+
+    def sanitize(self, message: str) -> str:
+        """
+        Removing control characters from the given message.
+
+        This method ensures that the input string does not contain any non-printable ASCII control characters.  These characters can cause issues in logging, databases, or user interfaces.
+
+        Parameters:
+            message (string): The input string to be sanitized.
+
+        Returns:
+            string
+        """
+        return sub(r"[\x00-\x1F\x7F-\x9F]", "", message)

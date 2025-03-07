@@ -7,6 +7,7 @@ from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
 from html import escape
+from Errors.ExtractioErrors import NotFoundError
 
 
 class YouTube_Downloader:
@@ -435,18 +436,23 @@ class YouTube_Downloader:
 
     def getAudioFile(self) -> str:
         """
-        Retrieving the audio file and saving it on the server as
-        well as adding its meta data in the database.
+        Retrieving the highest-quality audio stream from available streams.
+
+        This method filters the available streams to extract only valid audio streams, selects the one with the highest adaptive bitrate, and sets it as the current stream.  It also sets the MIME type to "audio/mp3" before initiating the download.
 
         Returns:
-            string
+            str
+
+        Raises:
+            NotFoundError: If no valid audio stream is available.
         """
         audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and "mp4a" in stream["acodec"]] # type: ignore
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
         self.setMimeType("audio/mp3")
-        response: str = self.__downloadAudio() if self.getStream() != None else ""
-        return response
+        if self.getStream() == None:
+            raise NotFoundError("There is not valid audio stream available.")
+        return self.__downloadAudio()
 
     def getVideoFile(self) -> str:
         """

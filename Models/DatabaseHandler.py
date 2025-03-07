@@ -298,6 +298,7 @@ class Database_Handler:
 
         Raises:
             ValueError: If the provided conditions or parameters are invalid.
+            Relational_Database_Error: If the query execution fails.
         """
         try:
             self.setQuery(f"SELECT {column_names} FROM {table_name}")
@@ -330,24 +331,38 @@ class Database_Handler:
         self._query(self.getQuery(), self.getParameters())
         self._execute()
 
-    def updateData(self, table: str, values: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
+    def updateData(self, table: str, values: str, parameters: Union[Tuple[Any], None], condition: str = "") -> bool:
         """
-        Updating a specific table in the database.
+        Updating data in the specified table based on the provided values and conditions.
+
+        The method performs the following:
+        1. Constructs an SQL UPDATE query with the provided table name and column-value pairs.
+        2. Optionally applies a WHERE condition to filter which records should be updated.
+        3. Executes the update operation using the given parameters.
 
         Parameters:
-            table: string: Table name
-            values: string: Columns to be modified and data to be put within
-            condition: string: Condition for the data to be modified
-            parameters: array: Data to be used for data manipulation.
+            table (string): The name of the table where data should be updated.
+            values (string): A string representing the column-value pairs to be updated.
+            parameters (Union[Tuple[Any], None]): The parameters to be used in the query.
+            condition (string, optional): The condition to filter which records should be updated.
 
         Returns:
-            void
+            bool
+
+        Raises:
+            ValueError: If the provided values or parameters are invalid.
+            Relational_Database_Error: If there is an issue with executing the database query.
         """
-        self.setQuery(f"UPDATE {table} SET {values}")
-        self.setParameters(parameters)
-        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
-        self._query(self.getQuery(), self.getParameters())
-        self._execute()
+        try:
+            self.setQuery(f"UPDATE {table} SET {self.sanitize(values)}")
+            self.setParameters(self.sanitize(parameters))
+            self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {self.sanitize(condition)}")
+            self._query(self.getQuery(), self.getParameters())
+            self._execute()
+            return True
+        except (ValueError, Relational_Database_Error) as error:
+            self.getLogger().error(f"An error occurred between the model and the relational database server.\nError: {error}")
+            return False
 
     def deleteData(self, table: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
         """

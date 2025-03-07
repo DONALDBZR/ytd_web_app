@@ -311,22 +311,37 @@ class Database_Handler:
             self.getLogger().error(f"An error occurred in the relational database server.\nError: {error}")
             return []
 
-    def postData(self, table: str, columns: str, values: str, parameters: Tuple[Any]) -> None:
+    def postData(self, table: str, columns: str, values: str, parameters: Tuple[Any]) -> bool:
         """
-        Creating records to store data into the database server.
+        Inserting new data into the specified table by constructing an SQL INSERT query with the given column names and values.
+
+        The method performs the following:
+            1. Constructs an SQL INSERT query with the specified table, columns, and values.
+            2. Uses the provided parameters for parameterized query execution.
+            3. Executes the insert operation to add new records into the table.
 
         Parameters:
-            table: string: Table Name
-            columns: string: Column names
-            values: string: Data to be inserted
+            table (string): The name of the table where data should be inserted.
+            columns (string): A string representing the columns into which the values will be inserted.
+            values (string): A string representing the values to be inserted into the respective columns.
+            parameters (Tuple[Any]): The parameters to be used in the query for inserting data.
 
         Returns:
-            void
+            bool
+
+        Raises:
+            ValueError: If the provided columns, values, or parameters are invalid.
+            Relational_Database_Error: If there is an issue with executing the database query.
         """
-        self.setQuery(f"INSERT INTO {table}({columns}) VALUES ({values})")
-        self.setParameters(parameters)
-        self._query(self.getQuery(), self.getParameters())
-        self._execute()
+        try:
+            self.setQuery(f"INSERT INTO {table}({self.sanitize(columns)}) VALUES ({self.sanitize(values)})")
+            self.setParameters(self.sanitize(parameters))
+            self._query(self.getQuery(), self.getParameters())
+            self._execute()
+            return True
+        except (ValueError, Relational_Database_Error) as error:
+            self.getLogger().error(f"An error occurred between the model and the relational database server.\nError: {error}")
+            return False
 
     def updateData(self, table: str, values: str, parameters: Union[Tuple[Any], None], condition: str = "") -> bool:
         """

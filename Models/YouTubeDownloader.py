@@ -444,17 +444,17 @@ class YouTube_Downloader:
             2. Retrieves and stores the audio and video file paths.
             3. Downloads the media streams if the files do not exist.
             4. Returns a dictionary containing the following metadata:
-            - uniform_resource_locator: The URL of the media.
-            - author: The author of the media.
-            - title: The title of the media.
-            - identifier: A unique identifier for the media.
-            - author_channel: The author's channel name or identifier.
-            - views: The number of views the media has received.
-            - published_at: The publication date of the media.
-            - thumbnail: The URL of the media's thumbnail image.
-            - duration: The duration of the media.
-            - audio: The file path to the downloaded audio.
-            - video: The file path to the downloaded video.
+                - uniform_resource_locator: The URL of the media.
+                - author: The author of the media.
+                - title: The title of the media.
+                - identifier: A unique identifier for the media.
+                - author_channel: The author's channel name or identifier.
+                - views: The number of views the media has received.
+                - published_at: The publication date of the media.
+                - thumbnail: The URL of the media's thumbnail image.
+                - duration: The duration of the media.
+                - audio: The file path to the downloaded audio.
+                - video: The file path to the downloaded video.
 
         Returns:
             Dict[string, Union[string, int, None]]

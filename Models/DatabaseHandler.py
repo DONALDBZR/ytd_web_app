@@ -5,8 +5,7 @@ object-relational mapper.
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
-from Environment import Environment
-from Models.Logger import Extractio_Logger
+from Models.Logger import Extractio_Logger, Environment
 from mysql.connector.types import RowType
 from typing import Union, Tuple, Any, List
 from mysql.connector import connect, Error as Relational_Database_Error
@@ -181,11 +180,8 @@ class Database_Handler:
     def _query(self, query: str, parameters: Union[Tuple[Any], None]) -> None:
         """
         Executing a database query with the provided parameters.
-        This method prepares a database statement, executes the
-        query, and logs relevant debugging information.  If an error
-        occurs, it logs the error and raises an exception.  The
-        database cursor is closed in the `finally` block to ensure
-        proper resource management.
+
+        This method prepares a database statement, executes the query, and logs relevant debugging information.  If an error occurs, it logs the error and raises an exception.  The database cursor is closed in the `finally` block to ensure proper resource management.
 
         Parameters:
             query (string): The SQL query to be executed.
@@ -209,7 +205,7 @@ class Database_Handler:
             self.__getStatement().execute(query, parameters)
         except Relational_Database_Error as error:
             self.getLogger().error(f"Query Execution Failed!\nError: {error}\nQuery: {query}\nParameters: {parameters}")
-            raise
+            raise error
         finally:
             self._closeCursor() if referrer != "getData" else self.getLogger().warn(f"The cursor cannot be closed at the moment as it is being called to retrieve data.\nFunction: {referrer}")
 

@@ -269,18 +269,18 @@ class YouTube_Downloader:
         """
         return identifier.rsplit("&", 1)[0] if "&" in identifier else identifier
 
-    def sanitizeYouTubeIdentifier(self) -> None:
+    def sanitizeYouTubeIdentifier(self) -> str:
         """
-        Sanitizing the identifier of the content from the platform
-        YouTube.
+        Sanitizing the YouTube identifier by removing base URLs and query parameters to return only the unique identifier of the video.
+
+        The method performs the following:
+        - If the uniform resource locator (URL) contains "youtube", it removes the base URL and then sanitizes the identifier.
+        - If the URL contains "youtu.be", it removes the base URL and any query parameters from the identifier.
 
         Returns:
-            void
+            str
         """
-        if "youtube" in self.getUniformResourceLocator():
-            self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "").rsplit("&", 1)[0]) if "&" in self.getIdentifier() else self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))
-        else:
-            self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0].rsplit("&", 1)[0]) if "&" in self.getIdentifier() else self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0]
+        return self.retrieveIdentifier(self.getIdentifier().replace(self.getBaseUniformResourceLocator(), "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """

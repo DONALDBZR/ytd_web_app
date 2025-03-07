@@ -572,26 +572,19 @@ class YouTube_Downloader:
             self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
             raise error
 
-    def handleHttpError(self, error: HTTPError, file_path: str) -> str:
+    def handleHttpError(self, error: HTTPError) -> None:
         """
-        Handling the HTTP Errors accordingly as it must be noted
-        that HTTP/403 is being caused as the application could not
-        keep track of the file path which gets lost where the back
-        end which acts the front-end of YouTube's datacenter,
-        generates the HTTP/403 which in turn generate the HTTP/500
-        into the application's front-end.
+        Handling HTTP errors that occur during requests.
 
         Parameters:
-            error: HTTPError: Raised when HTTP error occurs, but also acts like non-error return
-            file_path: string: The path of the file.
+            error (HTTPError): The HTTP error encountered.
 
-        Returns:
-            string
+        Raises:
+            HTTPError: If the error is not a 403 Forbidden error.
         """
-        if "403" in str(error):
-            return file_path
-        else:
-            return ""
+        self.getLogger().error(f"An HTTP error occurred.\nError: {error}")
+        if "403" not in str(error):
+            raise error
 
     def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
         """

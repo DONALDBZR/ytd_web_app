@@ -257,19 +257,17 @@ class YouTube_Downloader:
 
     def retrieveIdentifier(self, identifier: str) -> str:
         """
-        Retrieving the identifier of the content in the condition
-        that it is in a playlist.
+        Retrieves the identifier from a given string by removing any query parameters after the last "&" symbol.  If the string does not contain the "&" symbol, it returns the original identifier.
+
+        This method splits the identifier string at the last occurrence of the "&" symbol and returns the portion before it, effectively removing any query parameters.
 
         Parameters:
-            identifier: (string):   The ID of the content.
+            identifier (string): The identifier string, which may contain query parameters.
 
-        Return:
-            (string)
+        Returns:
+            str
         """
-        if "&" in identifier:
-            return identifier.rsplit("&", 1)[0]
-        else:
-            return identifier
+        return identifier.rsplit("&", 1)[0] if "&" in identifier else identifier
 
     def sanitizeYouTubeIdentifier(self) -> None:
         """

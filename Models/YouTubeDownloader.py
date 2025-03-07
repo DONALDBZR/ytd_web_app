@@ -531,7 +531,7 @@ class YouTube_Downloader:
                 "audio": self.getAudioFile(),
                 "video": self.getVideoFile()
             }
-        except (NotFoundError, DownloadError, Relational_Database_Error) as error:
+        except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:
             self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
             raise error
 

@@ -473,16 +473,10 @@ class YouTube_Downloader:
                 "quiet": True,
                 "listformats": True
             }
-            if isfile(audio_file_location) == False and isfile(video_file_location) == False:
-                self.setVideo(YoutubeDL(options))
-                info = self.getVideo().extract_info(
-                    url=self.getUniformResourceLocator(),
-                    download=False
-                )
-                self.setStreams(info["formats"]) # type: ignore
-                audio_file_location = self.getAudioFile()
-                video_file_location = self.getVideoFile()
+            files: Dict[str, str] = self.__getFiles(audio_file_location, video_file_location, options)
             self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
+            audio_file_location = files["audio"]
+            video_file_location = files["video"]
             return {
                 "uniform_resource_locator": self.getUniformResourceLocator(),
                 "author": self.getAuthor(),
@@ -499,6 +493,49 @@ class YouTube_Downloader:
         except (NotFoundError, DownloadError, Relational_Database_Error) as error:
             self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
             return {}
+
+    def __getFiles(self, audio: str, video: str, options: Dict[str, bool]) -> Dict[str, str]:
+        """
+        Retrieving the audio and video files for a given resource.  If the audio and video files already exist, it returns their file paths. Otherwise, it downloads the streams using YoutubeDL and returns the downloaded file paths.
+
+        This method performs the following tasks:
+            1. Checks if the audio and video files exist.
+            2. If the files exist, it returns their file paths.
+            3. If the files do not exist, it downloads the audio and video streams using YoutubeDL.
+            4. Returns a dictionary containing the paths to the audio and video files.
+
+        Parameters:
+            audio (string): The file path of the audio file.
+            video (string): The file path of the video file.
+            options (Dict[string, bool]): A dictionary of options to configure the YoutubeDL download process.
+
+        Returns:
+            Dict[string, string]
+
+        Raises:
+            NotFoundError: If the media resource cannot be found.
+            DownloadError: If there is an error while downloading the media.
+            Relational_Database_Error: If there is a database-related error.
+        """
+        if isfile(audio) and isfile(video):
+            return {
+                "audio": audio,
+                "video": video
+            }
+        try:
+            self.setVideo(YoutubeDL(options))
+            info = self.getVideo().extract_info(
+                url=self.getUniformResourceLocator(),
+                download=False
+            )
+            self.setStreams(info["formats"]) # type: ignore
+            return {
+                "audio": self.getAudioFile(),
+                "video": self.getVideoFile()
+            }
+        except (NotFoundError, DownloadError, Relational_Database_Error) as error:
+            self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
+            raise error
 
     def getAudioFile(self) -> str:
         """

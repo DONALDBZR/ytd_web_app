@@ -333,9 +333,9 @@ class Database_Handler:
         Updating data in the specified table based on the provided values and conditions.
 
         The method performs the following:
-        1. Constructs an SQL UPDATE query with the provided table name and column-value pairs.
-        2. Optionally applies a WHERE condition to filter which records should be updated.
-        3. Executes the update operation using the given parameters.
+            1. Constructs an SQL UPDATE query with the provided table name and column-value pairs.
+            2. Optionally applies a WHERE condition to filter which records should be updated.
+            3. Executes the update operation using the given parameters.
 
         Parameters:
             table (string): The name of the table where data should be updated.
@@ -361,23 +361,37 @@ class Database_Handler:
             self.getLogger().error(f"An error occurred between the model and the relational database server.\nError: {error}")
             return False
 
-    def deleteData(self, table: str, parameters: Union[Tuple[Any], None], condition: str = "") -> None:
+    def deleteData(self, table: str, parameters: Union[Tuple[Any], None], condition: str = "") -> bool:
         """
-        Deleting data from the database.
+        Deleting data from the specified table based on the given conditions.  This method constructs an SQL DELETE query to remove records from the database.
 
-        Parameters:
-            table: string: Table name
-            parameters: array: Data to be used for data manipulation.
-            condition: string: Specification
+        The method performs the following:
+            1. Constructs an SQL DELETE query for the specified table.
+            2. Optionally applies a WHERE condition to filter which records should be deleted.
+            3. Executes the delete operation using the given parameters.
+
+        Args:
+            table (string): The name of the table from which data should be deleted.
+            parameters (Union[Tuple[Any], None]): The parameters to be used in the query.
+            condition (string, optional): The condition to filter which records should be deleted.
 
         Returns:
-            void
+            bool
+
+        Raises:
+            ValueError: If the provided parameters or conditions are invalid.
+            Relational_Database_Error: If there is an issue with executing the database query.
         """
-        self.setQuery(f"DELETE FROM {table}")
-        self.setParameters(parameters)
-        self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {condition}")
-        self._query(self.getQuery(), self.getParameters())
-        self._execute()
+        try:
+            self.setQuery(f"DELETE FROM {table}")
+            self.setParameters(self.sanitize(parameters))
+            self.setQuery(self.getQuery() if condition == "" else f"{self.getQuery()} WHERE {self.sanitize(condition)}")
+            self._query(self.getQuery(), self.getParameters())
+            self._execute()
+            return True
+        except (ValueError, Relational_Database_Error) as error:
+            self.getLogger().error(f"An error occurred between the model and the relational database server.\nError: {error}")
+            return False
 
     def getLastRowIdentifier(self) -> Union[int, None]:
         """

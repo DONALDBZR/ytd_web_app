@@ -7,7 +7,8 @@ from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
 from html import escape
-from Errors.ExtractioErrors import DownloadError, NotFoundError
+from Errors.ExtractioErrors import NotFoundError
+from yt_dlp.utils import DownloadError
 
 
 class YouTube_Downloader:
@@ -515,9 +516,9 @@ class YouTube_Downloader:
         try:
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-        except Exception as error:
+        except DownloadError as error:
             self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
-            raise DownloadError("The downloading of the video file has failed.")
+            raise error
         data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
         try:
             self.getDatabaseHandler().postData(

@@ -276,28 +276,40 @@ class Database_Handler:
 
     def getData(self, parameters: Union[Tuple[Any], None], table_name: str, join_condition: str = "", filter_condition: str = "", column_names: str = "*", sort_condition: str = "", limit_condition: int = 0, group_condition: str = "") -> List[RowType]:
         """
-        Retrieving data from the database.
+        Retrieving data from the specified database table using a SQL query.  The query is dynamically constructed based on the provided parameters, such as join conditions, filter conditions, sorting, and limits.
+
+        This method constructs an SQL SELECT query with the following components:
+        - `SELECT` clause: Specifies which columns to select.
+        - `FROM` clause: Specifies the table to retrieve data from.
+        - `LEFT JOIN` clause (optional): Joins the specified tables.
+        - `WHERE` clause (optional): Filters the data based on the given conditions.
+        - `GROUP BY` clause (optional): Groups the data based on the specified columns.
+        - `ORDER BY` clause (optional): Sorts the data based on the specified columns.
+        - `LIMIT` clause (optional): Limits the number of results returned.
 
         Parameters:
-            parameters: array|null: The parameters to be passed into the query.
-            table_name: string: The name of the table.
-            column_names: string: The name of the columns.
-            join_condition: string: Joining table condition.
-            filter_condition: string: Items to be filtered with.
-            sort_condition: string: The items to be sorted.
-            limit_condition: int: The amount of items to be returned
-            group_condition: string: The items to be grouped by.
+            parameters (Union[Tuple[Any], None]): The parameters to be used in the query.
+            table_name (string): The name of the table to retrieve data from.
+            join_condition (string, optional): The condition for joining tables.
+            filter_condition (string, optional): The condition to filter results.
+            column_names (string, optional): The columns to select.
+            sort_condition (string, optional): The condition for sorting results.
+            limit_condition (int, optional): The maximum number of results to return.
+            group_condition (string, optional): The condition for grouping results.
 
         Returns:
-            [RowType]
+            List[RowType]
+
+        Raises:
+            ValueError: If the provided conditions or parameters are invalid.
         """
         self.setQuery(f"SELECT {column_names} FROM {table_name}")
         self.setParameters(parameters)
-        self.setQuery(self.getQuery() if join_condition == "" else f"{self.getQuery()} LEFT JOIN {join_condition}")
-        self.setQuery(self.getQuery() if filter_condition == "" else f"{self.getQuery()} WHERE {filter_condition}")
-        self.setQuery(self.getQuery() if group_condition == "" else f"{self.getQuery()} GROUP BY {group_condition}")
-        self.setQuery(self.getQuery() if sort_condition == "" else f"{self.getQuery()} ORDER BY {sort_condition}")
-        self.setQuery(f"{self.getQuery()} LIMIT {limit_condition}" if limit_condition > 0 else self.getQuery())
+        self.setQuery(self.getQuery() if join_condition == "" else f"{self.getQuery()} LEFT JOIN {self.sanitize(join_condition)}")
+        self.setQuery(self.getQuery() if filter_condition == "" else f"{self.getQuery()} WHERE {self.sanitize(filter_condition)}")
+        self.setQuery(self.getQuery() if group_condition == "" else f"{self.getQuery()} GROUP BY {self.sanitize(group_condition)}")
+        self.setQuery(self.getQuery() if sort_condition == "" else f"{self.getQuery()} ORDER BY {self.sanitize(sort_condition)}")
+        self.setQuery(f"{self.getQuery()} LIMIT {self.sanitize(limit_condition)}" if limit_condition > 0 else self.getQuery())
         self._query(self.getQuery(), self.getParameters())
         return self._resultSet()
 

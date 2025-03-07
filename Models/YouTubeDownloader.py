@@ -85,33 +85,73 @@ class YouTube_Downloader:
     """
     The logger that will all the action of the application.
     """
+    __base_uniform_resouce_locator: str
+    """
+    The base uniform resource locator.
+    """
+    __audio_codec: str
+    """
+    The audio codec of the video.
+    """
+    __video_codec: str
+    """
+    The video codec of the video.
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
-        Instantiating the class and launching the operations needed.
+        Initializing the YouTube Downloader class, setting up directories, logging, database tables, and default configurations.
 
         Parameters:
-            uniform_resource_locator: string: The uniform resource locator to be searched.
-            media_identifier: int: The media type for the system.
+            uniform_resource_locator (string): The URL of the YouTube video to be processed.
+            media_identifier (int): The identifier for the media type.
+
+        Raises:
+            Relational_Database_Error: If an error occurs while setting up the database.
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Public")
         self.setLogger(Extractio_Logger(__name__))
         self.mediaDirectory()
-        self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler()._query(
-            query="CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))",
-            parameters=None
-        )
-        self.getDatabaseHandler()._execute()
-        self.getDatabaseHandler()._query(
-            query="CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))",
-            parameters=None
-        )
-        self.getDatabaseHandler()._execute()
-        self.setUniformResourceLocator(uniform_resource_locator)
-        self.setMediaIdentifier(media_identifier)
-        self.getLogger().inform("The YouTube Downloader has been successfully been initialized!")
+        try:
+            self.setDatabaseHandler(Database_Handler())
+            self.getDatabaseHandler()._query(
+                query="CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))",
+                parameters=None
+            )
+            self.getDatabaseHandler()._execute()
+            self.getDatabaseHandler()._query(
+                query="CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))",
+                parameters=None
+            )
+            self.getDatabaseHandler()._execute()
+            self.setBaseUniformResourceLocator("https://www.youtube.com/watch?v=")
+            self.setAudioCodec("mp4a")
+            self.setVideoCodec("avc")
+            self.setUniformResourceLocator(uniform_resource_locator)
+            self.setMediaIdentifier(media_identifier)
+            self.getLogger().inform("The YouTube Downloader has been successfully been initialized!")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"The iniatialization of the model has failed.\nError: {error}")
+            raise error
+
+    def getVideoCodec(self) -> str:
+        return self.__video_codec
+
+    def setVideoCodec(self, video_codec: str) -> None:
+        self.__video_codec = video_codec
+
+    def getAudioCodec(self) -> str:
+        return self.__audio_codec
+
+    def setAudioCodec(self, audio_codec: str) -> None:
+        self.__audio_codec = audio_codec
+
+    def getBaseUniformResourceLocator(self) -> str:
+        return self.__base_uniform_resouce_locator
+
+    def setBaseUniformResourceLocator(self, base_uniform_resouce_locator: str) -> None:
+        self.__base_uniform_resouce_locator = base_uniform_resouce_locator
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator

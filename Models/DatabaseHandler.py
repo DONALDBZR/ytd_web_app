@@ -11,6 +11,7 @@ from mysql.connector.types import RowType
 from typing import Union, Tuple, Any, List
 from mysql.connector import connect, Error as Relational_Database_Error
 from inspect import stack
+from re import match
 
 
 class Database_Handler:
@@ -399,3 +400,32 @@ class Database_Handler:
             self.getLogger().inform("Database connection successfully closed.")
         else:
             self.getLogger().warn("Database connection is already closed or was never established.")
+
+    def sanitize(self, data: Any) -> Any:
+        """
+        Sanitizing the provided data by checking if it is a valid string or a valid non-string value.  If the data is a string, it ensures the string only contains safe characters.  If the data is invalid, it raises a ValueError.
+
+        This method performs the following:
+        1. If the data is None, it returns an empty string.
+        2. If the data is not None and is not a string, it returns the data as-is.
+        3. If the data is a string, it checks if it contains only safe characters (letters, 
+        numbers, spaces, and certain symbols). If valid, it returns the data.
+        4. If the data is invalid, it logs an error and raises a ValueError.
+
+        Parameters:
+            data (Any): The data to be sanitized.
+
+        Returns:
+            Any
+
+        Raises:
+            ValueError: If the provided string contains invalid characters.
+        """
+        if data is None:
+            return ""
+        if data is not None and not isinstance(data, str):
+            return data
+        if match(r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*$", data):
+            return data
+        self.getLogger().error("The provided value is invalid.")
+        raise ValueError("The provided value is invalid.")

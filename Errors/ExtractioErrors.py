@@ -4,3 +4,6 @@ class CrawlerNotAllowedError(Exception):
 
 class NotFoundError(Exception):
     """The file is not found externally."""
+
+class DownloadError(Exception):
+    """The download has failed."""

@@ -7,7 +7,7 @@ from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
 from html import escape
-from Errors.ExtractioErrors import NotFoundError
+from Errors.ExtractioErrors import DownloadError, NotFoundError
 
 
 class YouTube_Downloader:
@@ -563,27 +563,40 @@ class YouTube_Downloader:
         else:
             return ""
 
-    def __downloadAudio(self) -> str:
+    def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
         """
-        Recursively downloading the audio data from YouTube's main
-        data center.
+        Downloading an audio file using the provided stream details and stores it in the specified directory.
+
+        Parameters:
+            stream (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]):  A dictionary containing metadata about the audio stream, such as format ID.
 
         Returns:
             string
+
+        Raises:
+            DownloadError: If the audio download process fails.
+            Relational_Database_Error: If there is an issue inserting data into the relational database.
         """
-        file_name: str = f"{self.getIdentifier()}.mp3"
-        file_path: str = f"{self.getDirectory()}/Audio/{file_name}"
+        file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
         options: Dict[str, str] = {
-            "format": str(self.getStream()["format_id"]),
+            "format": str(stream["format_id"]),
             "outtmpl": file_path
         }
-        self.setVideo(YoutubeDL(options))
-        self.getVideo().download([self.getUniformResourceLocator()])
+        try:
+            self.setVideo(YoutubeDL(options))
+            self.getVideo().download([self.getUniformResourceLocator()])
+        except Exception as error:
+            self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
+            raise DownloadError("The downloading of the audio file has failed.")
         data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        self.getDatabaseHandler().postData(
-            table="MediaFile",
-            columns="type, date_downloaded, location, YouTube",
-            values="%s, %s, %s, %s",
-            parameters=data # type: ignore
-        )
-        return file_path
+        try:
+            self.getDatabaseHandler().postData(
+                table="MediaFile",
+                columns="type, date_downloaded, location, YouTube",
+                values="%s, %s, %s, %s",
+                parameters=data # type: ignore
+            )
+            return file_path
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
+            raise error

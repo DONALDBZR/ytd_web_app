@@ -575,9 +575,9 @@ class YouTube_Downloader:
         try:
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-        except Exception as error:
+        except DownloadError as error:
             self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
-            raise DownloadError("The downloading of the audio file has failed.")
+            raise error
         data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
         try:
             self.getDatabaseHandler().postData(

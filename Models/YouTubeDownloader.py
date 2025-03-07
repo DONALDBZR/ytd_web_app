@@ -569,9 +569,7 @@ class YouTube_Downloader:
         """
         maximum_height: int = 1080
         maximum_width: int = 1920
-        audio_codec: str = "mp4a"
-        video_codec: str = "avc"
-        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and audio_codec in str(stream.get("acodec"))]
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and self.getAudioCodec() in str(stream.get("acodec"))]
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
         if self.getStream() == None:
@@ -582,7 +580,7 @@ class YouTube_Downloader:
         width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
         height = maximum_height if height >= maximum_height else height
         width = maximum_width if width >= maximum_width else width
-        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and video_codec in str(stream.get("vcodec")) and "filesize" in stream]
+        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and self.getVideoCodec() in str(stream.get("vcodec")) and "filesize" in stream]
         file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
         self.setStream([stream for stream in video_streams if stream.get("filesize") == file_size][0])
         if self.getStream() == None:

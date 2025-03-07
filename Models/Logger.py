@@ -35,7 +35,7 @@ class Extractio_Logger:
             filename=f"{ENV.getDirectory()}/Logs/Extractio.log",
             encoding="utf-8",
             filemode="a",
-            format="\nCurrent Time: %(asctime)s\nModule: %(name)s\nLogging Level: %(levelname)s\nMessage: %(message)s"
+            format="Current Time: %(asctime)s\nModule: %(name)s\nLogging Level: %(levelname)s\nMessage: %(message)s"
         )
         self.setLogger(get_logger(name))
 

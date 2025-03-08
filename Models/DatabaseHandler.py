@@ -484,7 +484,7 @@ class Database_Handler:
             ValueError: If the provided string contains invalid characters.
         """
         safe_string: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"\']*$"
-        self.setKeywords(["CREATE", "ALTER", "DROP", "TRUNCATE", "RENAME", "INSERT", "UPDATE", "DELETE", "MERGE", "SELECT", "GRANT", "REVOKE", "COMMIT", "ROLLBACK", "SAVEPOINT", "RELEASE SAVEPOINT"])
+        self.setKeywords(["ALTER", "DROP", "TRUNCATE", "RENAME", "INSERT", "UPDATE", "DELETE", "MERGE", "SELECT", "GRANT", "REVOKE", "COMMIT", "ROLLBACK", "SAVEPOINT", "RELEASE SAVEPOINT"])
         if data is None:
             return ""
         if data is not None and not isinstance(data, str):

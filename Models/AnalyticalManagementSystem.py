@@ -969,7 +969,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]] = self.getDatabaseEventType()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str]]]]] = self.getDatabaseEventType()
         if database_response["status"] == self.ok:
             event_type: Dict[str, Union[int, str]] = database_response["data"][-1] # type: ignore
             return {
@@ -978,30 +978,27 @@ class AnalyticalManagementSystem:
             }
         return self.postEventType()
 
-    def getDatabaseEventType(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
+    def getDatabaseEventType(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]:
         """
-        Retrieving the event type data from the database.
+        Retrieving event type data from the `"EventTypes"` table based on the event name.
+
+        This method:
+        - Queries the `"EventTypes"` table in the database to retrieve event types corresponding to the provided event name.
+        - Returns a dictionary containing the status of the operation and the event type data if found.
 
         Returns:
-            {status: int, data: [{identifier: int, name: string}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]
         """
-        try:
-            parameters: Tuple[str] = (self.getEventName(),)
-            data: List[Union[RowType, Dict[str, Union[int, str]]]] = self.getDatabaseHandler().getData(
-                table_name="EventTypes",
-                filter_condition="name = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Event Types table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str] = (self.getEventName(),)
+        data: List[Dict[str, Union[int, str]]] = self.getDatabaseHandler().getData(
+            table_name="EventTypes",
+            filter_condition="name = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def postEventType(self) -> Dict[str, int]:
         """

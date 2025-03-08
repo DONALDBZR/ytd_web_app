@@ -12,6 +12,7 @@ class Tracker {
         this.headers = {
             "Content-Type": "application/json",
         };
+        this.allowed_events = ["page_view", "search_submitted", "color_scheme_updated", "click"];
         this.init();
     }
 
@@ -83,25 +84,28 @@ class Tracker {
     }
 
     /**
-     * Sending the event to the API for further processing.
-     * @param {string} event_name The name of the event. 
-     * @param {*} additional_data Additional data to be sent with the event.
+     * Sending a tracking event with additional metadata.
+     *
+     * This method validates the event name, sanitizes additional data, constructs an event object with timestamp and user details, and sends it to the tracking endpoint using a network request.
+     * @param {string} event_name The name of the event to be tracked.
+     * @param {Object} [additional_data={}] Optional additional data related to the event.
      * @returns {Promise<void>}
+     * @throws {Error} If an issue occurs while sending the event.
      */
     async sendEvent(event_name, additional_data = {}) {
+        if (!this.allowed_events.includes(event_name)) {
+            console.error(`Invalid event name: ${event_name}`);
+            return;
+        }
+        const sanitized_additional_data = Object.fromEntries(Object.entries(additional_data).map(([key, value]) => [this.sanitize(key), this.sanitize(value)]));
         const current_time = new Date();
-        const current_month = (current_time.getMonth() + 1 < 10) ? `0${current_time.getMonth() + 1}` : current_time.getMonth() + 1;
-        const current_date = (current_time.getDate() < 10) ? `0${current_time.getDate()}` : current_time.getDate();
-        const current_hour = (current_time.getHours() < 10) ? `0${current_time.getHours()}` : current_time.getHours();
-        const current_minute = (current_time.getMinutes() < 10) ? `0${current_time.getMinutes()}` : current_time.getMinutes();
-        const current_second = (current_time.getSeconds() < 10) ? `0${current_time.getSeconds()}` : current_time.getSeconds();
         const event_data = {
             event_name: event_name,
             page_url: window.location.pathname,
-            timestamp: `${current_time.getFullYear()}/${current_month}/${current_date} ${current_hour}:${current_minute}:${current_second}`,
+            timestamp: `${current_time.getFullYear()}/${String(current_time.getMonth() + 1).padStart(2, "0")}/${String(current_time.getDate() + 1).padStart(2, "0")} ${String(current_time.getHours() + 1).padStart(2, "0")}:${String(current_time.getMinutes() + 1).padStart(2, "0")}:${String(current_time.getSeconds() + 1).padStart(2, "0")}`,
             user_agent: navigator.userAgent,
             screen_resolution: `${window.screen.width}x${window.screen.height}`,
-            ...additional_data
+            ...sanitized_additional_data,
         };
         try {
             const response = await fetch(this.endpoint, {

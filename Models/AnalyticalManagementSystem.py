@@ -1136,10 +1136,22 @@ class AnalyticalManagementSystem:
 
     def sanitizeIpAddress(self) -> int:
         """
-        Sanitizing the IP Address by checking it is an IP Address.
+        Sanitizing the stored IP address for the Analytical Management System.
+
+        This function:
+        - Checks if an IP address is available.
+        - Logs an error and returns `503` if no IP address is found.
+        - Attempts to sanitize the IP address using `sanitizeRealIpAddress()`.
+        - If successful, returns `200`.
+        - Otherwise, tries to resolve the IP address using the hostname.
+        - Logs success if the IP address is successfully resolved.
+        - Logs an error and returns `503` if the IP address cannot be resolved.
 
         Returns:
             int
+
+        Raises:
+            gaierror: If the IP address is neither a valid IP nor a resolvable hostname.
         """
         if not self.getIpAddress():
             self.getLogger().error("The Analytical Management System cannot retrieve the IP Address.")
@@ -1149,7 +1161,6 @@ class AnalyticalManagementSystem:
         try:
             self.setHostname(self.getIpAddress())
             self.setIpAddress(gethostbyname(str(self.getHostname())))
-            self.setIpAddress(run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True).stdout.strip() if self.getIpAddress() == "127.0.0.1" else self.getIpAddress())
             self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
             return self.ok
         except gaierror as error:

@@ -901,30 +901,29 @@ class AnalyticalManagementSystem:
             }
         return self.postNetworkLocation()
 
-    def getDatabaseNetworkLocation(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, float]]]]]]:
+    def getDatabaseNetworkLocation(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]]:
         """
-        Retrieving the network and location data from the database.
+        Retrieving network location data from the `"NetworkLocation"` table in the database.
+
+        This method:
+        - Queries the `"NetworkLocation"` table based on the provided IP address, latitude, and longitude.
+        - Returns a dictionary containing the status and the network location data.
+        - If data is found, returns it along with a success status.
+        - If no data is found, returns an empty list and a "no content" status.
 
         Returns:
-            {status: int, data: [{identifier: int, ip_address: string, hostname: string, latitude: float, longitude: float, city: string, region: string, country: string, timezone: string, location: string}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]]
         """
-        try:
-            parameters: Tuple[str, float, float] = (self.getIpAddress(), self.getLatitude(), self.getLongitude())
-            data: List[Union[RowType, Dict[str, Union[int, str, float]]]] = self.getDatabaseHandler().getData(
-                table_name="NetworkLocation",
-                filter_condition="ip_address = %s AND latitude = %s AND longitude = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Network and Location table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str, float, float] = (self.getIpAddress(), self.getLatitude(), self.getLongitude())
+        data: List[Dict[str, Union[int, str, float]]] = self.getDatabaseHandler().getData(
+            table_name="NetworkLocation",
+            filter_condition="ip_address = %s AND latitude = %s AND longitude = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def postNetworkLocation(self) -> Dict[str, int]:
         """

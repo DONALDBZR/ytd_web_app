@@ -469,21 +469,24 @@ class Session_Manager:
             "status": service_unavailable
         }
 
-    def handleSessionData(self, session_data: Dict[str, int]) -> None:
+    def handleSessionData(self, session_data: Dict[str, int]) -> Union[SessionMixin, None]:
         """
-        Verifying that the data has not been tampered in order to
-        renew the session.
+        Handling session data based on the provided status code.
+
+        This method processes session data by checking for a `"status"` key.  If the key is missing, it logs an error and creates a new session.  If the status is 200 or 201, it renews the current session. Otherwise, it creates a new session.
 
         Parameters:
-            session_data: {status: int}: Session's data
+            session_data (Dict[str, int]): A dictionary containing session-related data, including a `"status"` key representing the session's status code.
 
         Returns:
-            void
+            Union[SessionMixin, None]
         """
-        if "status" not in session_data or (session_data["status"] == 200 or session_data["status"] == 201):
-            self.renew(self.getSession())
-        else:
-            self.createSession()
+        if "status" not in session_data:
+            self.getLogger().error("No status is provided in the data")
+            return self.createSession()
+        if session_data["status"] == 200 or session_data["status"] == 201:
+            return self.renew(self.getSession())
+        return self.createSession()
 
     def renew(self, session_data: SessionMixin) -> Union[SessionMixin, None]:
         """

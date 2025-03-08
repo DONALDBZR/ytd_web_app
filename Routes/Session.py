@@ -146,7 +146,7 @@ def setSession() -> Response:
         return Response(
             response=dumps(
                 obj={
-                    "error": str(error)
+                    "error": "Invalid Request Data"
                 },
                 indent=4
             ),

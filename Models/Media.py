@@ -1,5 +1,8 @@
-from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, Union, List, Tuple
-from DatabaseHandler import Relational_Database_Error
+"""
+The module which has the model of the Media Management
+System.
+"""
+from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, Union, List, Tuple, Relational_Database_Error
 from datetime import datetime
 from json import dumps
 from re import match, Match

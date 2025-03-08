@@ -2,7 +2,7 @@
 The module that has the routing for the analytics.
 """
 from flask import Blueprint, Response, request
-from Models.AnalyticalManagementSystem import AnalyticalManagementSystem, Dict, Union, Extractio_Logger, List
+from Models.AnalyticalManagementSystem import AnalyticalManagementSystem, Dict, Union, Extractio_Logger
 from json import JSONDecodeError
 
 
@@ -47,7 +47,7 @@ def postEvent() -> Response:
             status=status,
             mimetype=mime_type
         )
-    except JSONDecodeError as error:
+    except (JSONDecodeError, ValueError) as error:
         Logger.error(f"The payload in the request data is invalid.\nError: {error}")
         return Response(
             response=None,

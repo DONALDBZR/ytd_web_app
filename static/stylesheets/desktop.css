@@ -83,6 +83,10 @@ header nav div form {
 }
 header nav div form button {
     height: calc(var(--form-height) / 2.91);
+    font-size: var(--textSize);
+}
+header nav div form button i {
+    font-size: var(--textSize);
 }
 header nav div form input {
     border: none;
@@ -110,11 +114,15 @@ header nav div form button {
 }
 header nav div div button {
     height: calc(var(--color-scheme-height) / 2.91);
+    font-size: var(--textSize);
 }
 header nav div:nth-child(2) div button svg,
-header nav div:nth-child(2) form button svg {
+header nav div:nth-child(2) form button svg,
+header nav div:nth-child(2) div button i,
+header nav div:nth-child(2) form button i {
     height: inherit;
     width: auto;
+    font-size: inherit;
 }
 #Homepage main {
     --main-height: calc(var(--height) * 0.8);
@@ -134,10 +142,13 @@ header nav div:nth-child(2) form button svg {
     display: flex;
     height: calc(var(--main-height) / 20);
     justify-content: center;
+    font-size: var(--textSize);
 }
-#Homepage main div div svg {
+#Homepage main div div svg,
+#Homepage main div div i {
     width: auto;
     height: calc(var(--main-height) / 23.27);
+    font-size: inherit;
 }
 #Homepage main .Trend {
     --trend-height: calc(var(--main-height) * 0.85);

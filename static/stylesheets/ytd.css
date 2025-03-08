@@ -279,9 +279,13 @@ body[id*="Download"] main .YouTube #data #author a:hover {
 header nav .active a,
 header nav div div button:hover svg,
 header nav div form button:hover svg,
+header nav div div button:hover i,
+header nav div form button:hover i,
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover i,
 body[id*="Search"] main .Media .YouTube .data div button:hover,
 header nav .active button svg,
+header nav .active button i,
 body[id*="Download"] main .YouTube #data #actions #buttons .button button svg:hover {
     color: var(--color3);
 }
@@ -294,8 +298,11 @@ body[id*="Download"] main .YouTube #data #actions #buttons .button button {
 header nav div div button svg,
 header nav div form button svg,
 header nav div form input,
+header nav div div button i,
+header nav div form button i,
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a svg {
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a svg,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a i {
     color: var(--color2);
 }
 header nav div form input {
@@ -318,7 +325,8 @@ body[id*="Download"] main .YouTube #data #actions #metrics #duration div,
 body[id*="Download"] main .YouTube #data #actions #metrics #views div {
     font-family: var(--proximaNova);
 }
-#Homepage main div div svg {
+#Homepage main div div svg,
+#Homepage main div div i {
     color: var(--color4);
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(1),

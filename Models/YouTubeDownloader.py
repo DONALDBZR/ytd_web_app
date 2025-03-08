@@ -284,15 +284,20 @@ class YouTube_Downloader:
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Searching for a video on YouTube and retrieves its metadata.
+        Searching and retrieving information about a YouTube video based on the provided URL.
 
-        This function uses `youtube-dl` to extract information about a YouTube video based on its uniform resource locator.  If metadata exists in the database, it is retrieved; otherwise, new data is extracted and stored.
+        This function:
+        - Extracts the information about the video from YouTube using the `youtube-dl` (or `yt-dlp`) library.
+        - Handles both successful and failed extraction, including fetching meta-data from an internal source if needed.
+        - Sets various properties such as video length, publish date, author, and title based on the metadata.
+        - Returns a dictionary containing key information about the video, including the title, author, view count, and media file locations (audio/video).
 
         Returns:
-            {"uniform_resource_locator": string, "author": string, "title": string, "identifier": string, "author_channel": string, "views": int, "published_at": string, "thumbnail": string, "duration": string, "audio_file": string | null, "video_file": string | null}
+            Dict[str, Union[str, int, None]]
 
         Raises:
-            Error: If an issue occurs with extracting video metadata or database retrieval.
+            ValueError: If the response from YouTube is invalid or cannot be parsed.
+            Exception: If an error occurs during the search or data extraction process.
         """
         options: Dict[str, bool] = {
             "quiet": True,
@@ -310,7 +315,7 @@ class YouTube_Downloader:
             }
             meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
             self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{youtube["upload_date"][:4]}-{youtube["upload_date"][4:6]}-{youtube["upload_date"][6:]}") # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
             self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
             self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
             self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))

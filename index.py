@@ -10,12 +10,10 @@ Link:
 from flask import Flask, render_template, Request, Response, send_from_directory, request
 from flask_compress import Compress
 from flask_cors import CORS
-from Models.DatabaseHandler import Database_Handler
-from Models.SecurityManagementSystem import Security_Management_System
-from Environment import Environment
+from Models.SecurityManagementSystem import Security_Management_System, Database_Handler, Environment
 from re import match
 from os.path import join, exists, isfile, normpath, relpath, splitext
-from typing import List, Union
+from typing import List, Union, Dict
 from urllib.parse import ParseResult, urlparse
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -29,25 +27,25 @@ package of the application.  Once it is created it will act
 as a central registry for the view functions, the URL rules,
 template configuration and much more.
 """
-DatabaseHandler: Database_Handler = Database_Handler()
-"""
-The database handler that will communicate with the database
-server.
-"""
 SecurityManagementSystem: Security_Management_System = Security_Management_System()
 """
 It will be a major component that will assure the security
 of the data that will be stored across the application.
 """
-data = DatabaseHandler.getData(
+DatabaseHandler: Database_Handler = Database_Handler()
+"""
+The database handler that will communicate with the database
+server.
+"""
+data: List[Dict[str, str]] = DatabaseHandler.getData(
     parameters=None,
     table_name="Session",
     filter_condition="date_created = CURDATE()",
     column_names="hash",
     sort_condition="identifier ASC",
     limit_condition=1
-)
-key: str = str(data[0]["hash"])  # type: ignore
+) # type: ignore
+key: str = str(data[0]["hash"])
 """
 Encryption key of the application
 """

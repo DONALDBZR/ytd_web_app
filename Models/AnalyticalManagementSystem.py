@@ -346,15 +346,31 @@ class AnalyticalManagementSystem:
 
     def processEvent(self, data: Dict[str, Union[str, float]]) -> int:
         """
-        Processing the event and sending it to the relational
-        database server.
+        Processing an incoming event by validating its data and executing the corresponding handler.
 
-        Args:
-            data: {event_name: string, page_url: string, timestamp: string, user_agent: string, screen_resolution: string, referrer: string, loading_time: float, ip_address: string}: The data that will be processed.
+        This function:
+        - Verifies that all required keys are present.
+        - Checks if the event name is allowed.
+        - Logs an error and returns `503` if validation fails.
+        - Sets internal attributes such as event name, timestamp, user agent, screen resolution, referrer, and IP address.
+        - Performs additional data sanitization and enrichment.
+        - Calls the appropriate event processing function based on the event name.
+        - Logs an error and returns `503` if the event name is invalid.
+
+        Parameters:
+            data (Dict[str, Union[str, float]]): A dictionary containing event data.
 
         Returns:
             int
         """
+        required_keys: List[str] = ["event_name", "page_url", "timestamp", "user_agent", "screen_resolution"]
+        allowed_events: List[str] = ["page_view", "search_submitted", "color_scheme_updated", "click"]
+        if not all(key in data for key in required_keys):
+            self.getLogger().error(f"This request is forged as the required keys are missing and the required data will be logged.\nIP Address: {data['ip_address']}")
+            return self.service_unavailable
+        if data["event_name"] not in allowed_events:
+            self.getLogger().error(f"This request is forged as this event is not allowed and the required data will be logged.\nIP Address: {data['ip_address']}")
+            return self.service_unavailable
         self.setEventName(str(data["event_name"]))
         self.setUniformResourceLocator(str(data["page_url"]))
         self.setTimestamp(int(mktime(datetime.strptime(str(data["timestamp"]), "%Y/%m/%d %H:%M:%S").timetuple())))
@@ -375,7 +391,7 @@ class AnalyticalManagementSystem:
             return self.processSearchSubmitted(data, status)
         if self.getEventName() == "click":
             return self.processClick(data, status)
-        print(f"{self.__dict__=}")
+        self.getLogger().error(f"The event name is not within the allowed values.\nEvent: {self.getEventName()}")
         return self.service_unavailable
 
     def processClick(self, data: Dict[str, Union[str, float]], status: int) -> int:

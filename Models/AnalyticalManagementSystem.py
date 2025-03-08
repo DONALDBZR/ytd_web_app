@@ -446,30 +446,31 @@ class AnalyticalManagementSystem:
 
     def postClick(self) -> Dict[str, int]:
         """
-        Adding a new click.
+        Inserting a new click event into the `"Click"` table of the database.
+
+        This method:
+        - Retrieves the forwarded uniform resource locator.
+        - Attempts to insert the URL into the database's `"Click"` table.
+        - Logs success or failure messages.
+        - Returns a dictionary containing the status code and the last inserted row's identifier.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getForwardedUniformResourceLocator(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="Click",
-                columns="uniform_resource_locator",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Click table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Click table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="Click",
+            columns="uniform_resource_locator",
+            values="%s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Click table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Click table.\nStatus: {self.service_unavailable}")
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        return {
+            "status": status,
+            "identifier": identifier
+        }
 
     def processSearchSubmitted(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """

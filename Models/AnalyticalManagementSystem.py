@@ -385,15 +385,14 @@ class AnalyticalManagementSystem:
         status = self.sanitizeIpAddress() if status == self.ok else status
         status = self.getGeolocationData() if status == self.ok else status
         if self.getEventName() == "page_view":
-            return self.processPageView(data, status)
+            status = self.processPageView(data, status)
         if self.getEventName() == "color_scheme_updated":
-            return self.processColorSchemeUpdated(data, status)
+            status = self.processColorSchemeUpdated(data, status)
         if self.getEventName() == "search_submitted":
-            return self.processSearchSubmitted(data, status)
+            status = self.processSearchSubmitted(data, status)
         if self.getEventName() == "click":
-            return self.processClick(data, status)
-        self.getLogger().error(f"The event name is not within the allowed values.\nEvent: {self.getEventName()}")
-        return self.service_unavailable
+            status = self.processClick(data, status)
+        return status
 
     def processClick(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """

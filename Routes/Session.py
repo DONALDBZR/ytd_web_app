@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, session
+from flask import Blueprint, Response, request, session, Request
 from Models.SessionManagementSystem import Session_Manager, Extractio_Logger, Dict, Union
 from json import JSONDecodeError, dumps
 from jsonschema import validate
@@ -100,6 +100,7 @@ def setSession() -> Response:
     mime_type: str = "application/json"
     status: int = 202
     try:
+        isRequestEmpty(request)
         payload: Dict[str, Dict[str, str]] = request.json # type: ignore
         isPayloadEmpty(payload)
         validate(
@@ -141,7 +142,7 @@ def setSession() -> Response:
             status=400,
             mimetype=mime_type
         )
-    except JSONDecodeError as error:
+    except (JSONDecodeError, ValueError) as error:
         Logger.error(f"An invalid JSON has been received as payload.\nError: {error}")
         return Response(
             response=dumps(
@@ -182,3 +183,19 @@ def isPayloadEmpty(payload: Dict[str, Dict[str, str]]) -> None:
         return
     Logger.error("An invalid JSON has been received as payload.")
     raise ValueError("Invalid JSON")
+
+def isRequestEmpty(request: Request) -> None:
+    """
+    Checking if the given request contains data.
+
+    If the request has data, the function returns without doing anything.  If the request has no data, it raises a ValueError.
+
+    Parameters:
+        request (Request): The request object to check.
+
+    Raises:
+        ValueError: If the request data is empty.
+    """
+    if request.data:
+        return
+    raise ValueError("Invalid Request Data")

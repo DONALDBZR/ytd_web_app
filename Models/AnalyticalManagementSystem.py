@@ -520,7 +520,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]] = self.getSearchSubmitted()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str]]]]] = self.getSearchSubmitted()
         if database_response["status"] == self.ok:
             network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
             return {
@@ -557,30 +557,28 @@ class AnalyticalManagementSystem:
             "identifier": identifier
         }
 
-    def getSearchSubmitted(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
+    def getSearchSubmitted(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]:
         """
-        Retrieving the search submitted data from the database.
+        Retrieving search submission data from the `"SearchSubmitted"` table in the database.
+
+        This method:
+        - Retrieves all rows from the `"SearchSubmitted"` table where the `search_term` matches the current search term.
+        - Returns a dictionary containing the status code and the data fetched.
+        - If no data is found, it returns a status of `204` and an empty list.
 
         Returns:
-            {status: int, data: [{identifier: int, search_term: string}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]]
         """
-        try:
-            parameters: Tuple[str] = (self.getSearchTerm(),)
-            data: List[Union[RowType, Dict[str, Union[int, str]]]] = self.getDatabaseHandler().getData(
-                table_name="SearchSubmitted",
-                filter_condition="search_term = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Search Submitted table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str] = (self.getSearchTerm(),)
+        data: List[Dict[str, Union[int, str]]] = self.getDatabaseHandler().getData(
+            table_name="SearchSubmitted",
+            filter_condition="search_term = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def processColorSchemeUpdated(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """

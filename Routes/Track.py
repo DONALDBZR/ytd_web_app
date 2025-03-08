@@ -38,13 +38,7 @@ def postEvent() -> Response:
     mime_type: str = "application/json"
     try:
         data: Dict[str, Union[str, float]] = request.get_json()
-        if data is None:
-            Logger.error("The payload in the request data is empty.")
-            return Response(
-                response=None,
-                status=400,
-                mimetype=mime_type
-            )
+        isEmpty(data)
         data["ip_address"] = request.environ.get('REMOTE_ADDR', request.remote_addr)
         system: AnalyticalManagementSystem = AnalyticalManagementSystem()
         status: int = system.processEvent(data)
@@ -60,3 +54,23 @@ def postEvent() -> Response:
             status=400,
             mimetype=mime_type
         )
+
+def isEmpty(data: Union[Dict[str, Union[str, float]], None]) -> None:
+    """
+    Checking if the provided data is empty and logs an error if so.
+
+    This function:
+    - Verifies whether `data` is `None`.
+    - If `data` is `None`, logs an error and raises a `ValueError`.
+    - Otherwise, the function simply returns without performing any action.
+
+    Parameters:
+        data (Union[Dict[str, Union[str, float]], None]): The data to be checked. It can be either a dictionary containing string/float values or `None`.
+
+    Raises:
+        ValueError: If `data` is `None`, an error is logged, and an exception is raised.
+    """
+    if data is not None:
+        return
+    Logger.error("The payload in the request data is empty.")
+    raise ValueError("The payload in the request data is empty.")

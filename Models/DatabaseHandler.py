@@ -420,12 +420,16 @@ class Database_Handler:
 
     def getLastRowIdentifier(self) -> Union[int, None]:
         """
-        Fetching the last inserted row identifier.
+        Retrieving the identifier of the last inserted row in the database.
+
+        This method fetches the `lastrowid` attribute from the current database statement, which represents the ID of the last inserted row. After retrieving the identifier, it ensures that the cursor is closed properly.
 
         Returns:
-            int
+            Union[int, None]
         """
-        return self.__getStatement().lastrowid
+        identifier: Union[int, None] = self.__getStatement().lastrowid
+        self._closeCursor()
+        return identifier
 
     def close(self) -> None:
         """

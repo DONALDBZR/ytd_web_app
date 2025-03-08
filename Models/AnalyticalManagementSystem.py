@@ -852,30 +852,30 @@ class AnalyticalManagementSystem:
 
     def postPageView(self) -> Dict[str, int]:
         """
-        Adding a new page view.
+        Inserting a new page view record into the `"PageView"` table of the database.
+
+        This method:
+        - Inserts the page loading time into the `"PageView"` table in the database.
+        - Logs success or failure messages based on whether the insertion is successful.
+        - Returns a dictionary with the status code and the identifier of the inserted record.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[float] = (self.getLoadingTime(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="PageView",
-                columns="loading_time",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Page View table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Page View table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="PageView",
+            columns="loading_time",
+            values="%s",
+            parameters=parameters
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Page View table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Page View table.\nStatus: {self.service_unavailable}")
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        return {
+            "status": status,
+            "identifier": identifier
+        }
 
     def manageNetworkLocation(self, status: int) -> Dict[str, int]:
         """

@@ -1,6 +1,9 @@
 from flask import Blueprint, Response, request, session
 from Models.SessionManagementSystem import Session_Manager, Extractio_Logger, Dict, Union
 from json import JSONDecodeError, dumps
+from jsonschema import validate
+from typing import Any
+from jsonschema.exceptions import ValidationError
 
 
 Session_Portal: Blueprint = Blueprint("Session", __name__)
@@ -11,7 +14,22 @@ Logger: Extractio_Logger = Extractio_Logger(__name__)
 """
 The logger that will all the action of the application.
 """
-
+session_payload_schema: Dict[str, Any] = {
+    "type": "object",
+    "properties": {
+        "Client": {
+            "type": "object",
+            "properties": {
+                "color_scheme": {
+                    "type": "string",
+                    "enum": ["light", "dark"]
+                }
+            },
+            "required": ["color_scheme"]
+        }
+    },
+    "required": ["Client"]
+}
 
 @Session_Portal.route('/', methods=['GET'])
 def getSession() -> Response:
@@ -84,6 +102,10 @@ def setSession() -> Response:
     try:
         payload: Dict[str, Dict[str, str]] = request.json # type: ignore
         isPayloadEmpty(payload)
+        validate(
+            instance=payload,
+            schema=session_payload_schema
+        )
         user_request: Dict[str, str] = {
             "ip_address": str(request.environ.get('REMOTE_ADDR')),
             "http_client_ip_address": str(request.environ.get("HTTP_CLIENT_IP")),
@@ -107,7 +129,19 @@ def setSession() -> Response:
             status=status,
             mimetype=mime_type
         )
-    except ValueError as error:
+    except ValidationError as error:
+        Logger.error(f"An invalid JSON has been received as payload.\nError: {error}")
+        return Response(
+            response=dumps(
+                obj={
+                    "error": "Invalid JSON Structure"
+                },
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    except JSONDecodeError as error:
         Logger.error(f"An invalid JSON has been received as payload.\nError: {error}")
         return Response(
             response=dumps(

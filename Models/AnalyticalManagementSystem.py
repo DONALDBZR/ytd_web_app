@@ -1,8 +1,9 @@
 """
 The module that has the Analytical Management System.
 """
-from typing import Union, Dict, Any, Tuple, List
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, RowType
+from typing import Dict
+from urllib import response
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, RowType, List, Tuple, Any, Union
 from time import mktime
 from datetime import datetime
 from user_agents import parse
@@ -632,30 +633,31 @@ class AnalyticalManagementSystem:
 
     def postColorSchemeUpdated(self) -> Dict[str, int]:
         """
-        Adding a new color scheme.
+        Inserting a new color scheme update event into the `"ColorSchemeUpdated"` table of the database.
+
+        This method:
+        - Retrieves the updated color scheme.
+        - Attempts to insert the color scheme into the database's `"ColorSchemeUpdated"` table.
+        - Logs success or failure messages.
+        - Returns a dictionary containing the status code and the last inserted row's identifier.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getColorScheme(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="ColorSchemeUpdated",
-                columns="color_scheme",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="ColorSchemeUpdated",
+            columns="color_scheme",
+            values="%s",
+            parameters=parameters
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table.\nStatus: {self.service_unavailable}")
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        return {
+            "status": status,
+            "identifier": identifier
+        }
 
     def processPageView(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """

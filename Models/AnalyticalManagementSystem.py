@@ -1002,30 +1002,27 @@ class AnalyticalManagementSystem:
 
     def postEventType(self) -> Dict[str, int]:
         """
-        Adding a new event type.
+        Inserting event type data into the `"EventTypes"` table.
+
+        This method:
+        - Inserts a new event type into the `"EventTypes"` table, using the event name.
+        - Returns a dictionary containing the status of the operation and the identifier of the inserted record.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getEventName(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="EventTypes",
-                columns="name",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Event Types table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Event Types table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="EventTypes",
+            columns="name",
+            values="%s",
+            parameters=parameters
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Event Types table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event Types table.\nStatus: {self.service_unavailable}")
+        return {
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+        }
 
     def manageDevice(self, status: int) -> Dict[str, int]:
         """

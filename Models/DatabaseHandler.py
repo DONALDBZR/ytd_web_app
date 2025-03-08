@@ -217,7 +217,7 @@ class Database_Handler:
             self.getLogger().error(f"Query Execution Failed!\nError: {error}\nQuery: {query}\nParameters: {parameters}")
             raise error
         finally:
-            self._closeCursor() if referrer != "getData" else self.getLogger().warn(f"The cursor cannot be closed at the moment as it is being called to retrieve data.\nFunction: {referrer}")
+            self._closeCursor() if referrer not in ["getData", "postData"] else self.getLogger().warn(f"The cursor cannot be closed at the moment as it is being called to retrieve data.\nFunction: {referrer}")
 
     def _execute(self) -> None:
         """

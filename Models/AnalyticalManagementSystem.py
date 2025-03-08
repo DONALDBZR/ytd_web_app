@@ -1050,30 +1050,27 @@ class AnalyticalManagementSystem:
 
     def postDevice(self) -> Dict[str, int]:
         """
-        Adding a new device.
+        Inserting device information into the `"Devices"` table.
+
+        This method:
+        - Inserts a new device record into the `"Devices"` table using various device details.
+        - Returns a dictionary containing the status of the operation and the identifier of the inserted device record.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
-        try:
-            self.getDatabaseHandler().postData(
-                table="Devices",
-                columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
-                values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="Devices",
+            columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
+            values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nStatus: {self.service_unavailable}")
+        return {
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+        }
 
     def getDatabaseDevice(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]]:
         """

@@ -198,4 +198,5 @@ def isRequestEmpty(request: Request) -> None:
     """
     if request.data:
         return
+    Logger.error("The request data is empty.")
     raise ValueError("Invalid Request Data")

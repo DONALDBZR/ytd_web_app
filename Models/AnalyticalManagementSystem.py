@@ -531,30 +531,31 @@ class AnalyticalManagementSystem:
 
     def postSearchSubmitted(self) -> Dict[str, int]:
         """
-        Adding a new search term.
+        Inserting a new search submission event into the `"SearchSubmitted"` table of the database.
+
+        This method:
+        - Retrieves the search term entered by the user.
+        - Attempts to insert the search term into the database's `"SearchSubmitted"` table.
+        - Logs success or failure messages.
+        - Returns a dictionary containing the status code and the last inserted row's identifier.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getSearchTerm(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="SearchSubmitted",
-                columns="search_term",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Search Submitted table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Search Submitted table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="SearchSubmitted",
+            columns="search_term",
+            values="%s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Search Submitted table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Search Submitted table.\nStatus: {self.service_unavailable}")
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        return {
+            "status": status,
+            "identifier": identifier
+        }
 
     def getSearchSubmitted(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
         """

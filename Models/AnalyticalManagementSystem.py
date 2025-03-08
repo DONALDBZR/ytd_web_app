@@ -807,30 +807,31 @@ class AnalyticalManagementSystem:
 
     def postEventPageView(self, device: int, event_type: int, network_location: int, page_view: int) -> int:
         """
-        Adding the event that is specifically page view.
+        Inserting a new page view event record into the `"Events"` table of the database.
+
+        This method:
+        - Inserts data related to the page view event into the `"Events"` table.
+        - Logs success or failure messages.
+        - Returns a status code representing the result of the operation.
 
         Parameters:
-            device: int: The identifier of the device.
-            event_type: int: The identifier of the event type.
-            network_location: int: The identifier of the network location.
-            page_view: int: The identifier of the page view.
+            device (int): The device identifier where the event occurred.
+            event_type (int): The type of the event.
+            network_location (int): The network location identifier.
+            page_view (int): The page view identifier.
 
         Returns:
             int
         """
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, page_view)
-        try:
-            self.getDatabaseHandler().postData(
-                table="Events",
-                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, PageView",
-                values="%s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
-            return self.created
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
-            return self.service_unavailable
+        response: bool = self.getDatabaseHandler().postData(
+            table="Events",
+            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, PageView",
+            values="%s, %s, %s, %s, %s, %s, %s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        return self.created if response else self.service_unavailable
 
     def managePageView(self, status: int) -> Dict[str, int]:
         """

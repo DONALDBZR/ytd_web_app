@@ -867,11 +867,9 @@ class AnalyticalManagementSystem:
             parameters=parameters
         )
         self.getLogger().inform(f"The data has been successfully inserted in the Page View table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Page View table.\nStatus: {self.service_unavailable}")
-        status: int = self.created if response else self.service_unavailable
-        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
         return {
-            "status": status,
-            "identifier": identifier
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
         }
 
     def manageNetworkLocation(self, status: int) -> Dict[str, int]:

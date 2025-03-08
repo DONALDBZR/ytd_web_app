@@ -36,9 +36,8 @@ class Trend extends React.Component {
 
     /**
      * Updating the component state with trend data from localStorage.
-     *
+     * 
      * This method retrieves trend data from localStorage (if available) and updates the component state. If trend data exists, it hides the loading icon.
-     *
      * @returns {void}
      */
     setData() {
@@ -72,11 +71,14 @@ class Trend extends React.Component {
     }
 
     /**
-     * Handles the click event on a media card.
-     * @param {MouseEvent} event The click event.
+     * Handling click events, tracking the event and opening the link in a new tab.
+     *
+     * This method prevents the default behavior of the event, extracts the URL from the clicked anchor (`<a>`) element or its parent, and sends a tracking event.  If the tracking event is successfully sent, the URL is opened in a new tab.  If an error occurs, it logs the error and refreshes the page after a delay.
+     * @param {MouseEvent} event The click event object.
      * @returns {void}
+     * @throws {Error} If an issue occurs while sending the tracking event.
      */
-    handleClick = (event) => {
+    handleClick(event) {
         event.preventDefault();
         const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
         this.tracker.sendEvent("click", {

@@ -35,8 +35,10 @@ class Trend extends React.Component {
     }
 
     /**
-     * Setting the data for the weekly trend in the state for the
-     * component.
+     * Updating the component state with trend data from localStorage.
+     *
+     * This method retrieves trend data from localStorage (if available) and updates the component state. If trend data exists, it hides the loading icon.
+     *
      * @returns {void}
      */
     setData() {

@@ -892,7 +892,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, float]]]]]] = self.getDatabaseNetworkLocation()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]] = self.getDatabaseNetworkLocation()
         if database_response["status"] == self.ok:
             network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
             return {
@@ -927,32 +927,32 @@ class AnalyticalManagementSystem:
 
     def postNetworkLocation(self) -> Dict[str, int]:
         """
-        Adding a new network and location.
+        Posting network location data to the `"NetworkLocation"` table in the database.
+
+        This method:
+        - Collects information regarding the network location.
+        - Inserts the collected data into the `"NetworkLocation"` table in the database.
+        - Returns a dictionary containing the status and the identifier of the inserted row.
+        - The method conditionally includes the hostname based on whether the `AnalyticalManagementSystem` class has the 
+        attribute `__hostname`.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Union[Tuple[str, Union[str, None], float, float, str, str, str, str, str], Tuple[str, float, float, str, str, str, str, str]] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})") if hasattr(AnalyticalManagementSystem, "__hostname") else (self.getIpAddress(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})")
-        try:
-            columns: str = "ip_address, hostname, latitude, longitude, city, region, country, timezone, location" if hasattr(AnalyticalManagementSystem, "__hostname") else "ip_address, latitude, longitude, city, region, country, timezone, location"
-            values: str = "%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)" if hasattr(AnalyticalManagementSystem, "__hostname") else "%s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)"
-            self.getDatabaseHandler().postData(
-                table="NetworkLocation",
-                columns=columns,
-                values=values,
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Network and Location table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        columns: str = "ip_address, hostname, latitude, longitude, city, region, country, timezone, location" if hasattr(AnalyticalManagementSystem, "__hostname") else "ip_address, latitude, longitude, city, region, country, timezone, location"
+        values: str = "%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)" if hasattr(AnalyticalManagementSystem, "__hostname") else "%s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)"
+        response: bool = self.getDatabaseHandler().postData(
+            table="NetworkLocation",
+            columns=columns,
+            values=values,
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Network and Location table.\nStatus: {self.service_unavailable}")
+        return {
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+        }
 
     def manageEventType(self, status: int) -> Dict[str, int]:
         """

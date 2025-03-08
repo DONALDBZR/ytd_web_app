@@ -7,3 +7,7 @@ class NotFoundError(Exception):
 
 class DownloadError(Exception):
     """The download has failed."""
+
+class ForgedRequestError(Exception):
+    """The request is forged."""
+    pass

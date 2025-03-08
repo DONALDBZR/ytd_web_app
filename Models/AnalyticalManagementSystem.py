@@ -1039,7 +1039,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]] = self.getDatabaseDevice()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]] = self.getDatabaseDevice()
         if database_response["status"] == self.ok:
             device: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
             return {
@@ -1072,30 +1072,27 @@ class AnalyticalManagementSystem:
             "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
         }
 
-    def getDatabaseDevice(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]]:
+    def getDatabaseDevice(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]]:
         """
-        Retrieving the device data from the database.
+        Retrieving device information from the `"Devices"` table based on the user agent and screen resolution.
+
+        This method:
+        - Queries the `"Devices"` table to retrieve records where the user agent and screen resolution match the provided values.
+        - Returns a dictionary containing the status of the operation and the retrieved device data.
 
         Returns:
-            {status: int, data: [{identifier: int, user_agent: string, browser: string, browser_version: string, operating_system: string, operating_system_version: string, device: string, screen_resolution: string, width: int, height: int, aspect_ratio: float}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]]
         """
-        try:
-            parameters: Tuple[str, str] = (self.getUserAgent(), self.getScreenResolution())
-            data: List[Union[RowType, Dict[str, Union[int, str, None, float]]]] = self.getDatabaseHandler().getData(
-                table_name="Devices",
-                filter_condition="user_agent = %s AND screen_resolution = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Devices table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str, str] = (self.getUserAgent(), self.getScreenResolution())
+        data: List[Dict[str, Union[int, str, None, float]]] = self.getDatabaseHandler().getData(
+            table_name="Devices",
+            filter_condition="user_agent = %s AND screen_resolution = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def getGeolocationData(self) -> int:
         """

@@ -70,7 +70,7 @@ def getTrend():
             mimetype=mime_type
         )
     except ValueError as error:
-        Logger.error(f"There is an unexpected error on the API's cache data.\nError: {error}")
+        Logger.error(f"There is an unexpected error on the API's cache data.\nError: {error}\nFile Name: {file_name}")
         return Response(
             response={},
             status=503,
@@ -100,6 +100,7 @@ def isValidFileName(file_name: str) -> None:
     allowed_characters: str = r"^[0-9]+$"
     if not file_name.endswith(".json"):
         raise ValueError("The request has been forged.")
+    file_name = file_name.replace(".json", "")
     if not match(allowed_characters, file_name):
         raise ValueError("Invalid file name.")
     if ".." in file_name or "\'" in file_name or "/" in file_name:

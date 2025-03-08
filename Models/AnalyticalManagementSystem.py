@@ -418,14 +418,13 @@ class AnalyticalManagementSystem:
         click_response: Dict[str, int] = self.manageClick(status)
         status = int(click_response["status"])
         click_identifier: int = int(click_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             click=click_identifier
         )
-        return status
 
     def manageClick(self, status: int) -> Dict[str, int]:
         """
@@ -496,14 +495,13 @@ class AnalyticalManagementSystem:
         search_submitted_response: Dict[str, int] = self.manageSearchSubmitted(status)
         status = int(search_submitted_response["status"])
         search_submitted_identifier: int = int(search_submitted_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             search_submitted=search_submitted_identifier
         )
-        return status
 
     def manageSearchSubmitted(self, status: int) -> Dict[str, int]:
         """
@@ -604,14 +602,13 @@ class AnalyticalManagementSystem:
         color_scheme_updated_response: Dict[str, int] = self.manageColorSchemeUpdated(status)
         status = int(color_scheme_updated_response["status"])
         color_scheme_updated_identifier: int = int(color_scheme_updated_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             color_scheme=color_scheme_updated_identifier
         )
-        return status
 
     def manageColorSchemeUpdated(self, status: int) -> Dict[str, int]:
         """
@@ -682,28 +679,29 @@ class AnalyticalManagementSystem:
         page_view_response: Dict[str, int] = self.managePageView(status)
         status = int(page_view_response["status"])
         page_view_identifier: int = int(page_view_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             page_view=page_view_identifier
         )
-        return status
 
     def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int = 0, color_scheme: int = 0, search_submitted: int = 0, click: int = 0) -> int:
         """
-        Adding a new event.
+        Posting an event based on the given parameters to the appropriate event handler.
+
+        This function checks the status and other parameters to determine which specific event function should be triggered.  If the event is successfully processed, it will return a corresponding status, otherwise, it will return the status code indicating an error or an unavailable service.
 
         Parameters:
-            status: int: The status of the previous processing.
-            device: int: The identifier of the device.
-            event_type: int: The identifier of the event type.
-            network_location: int: The identifier of the network location.
-            page_view: int: The identifier of the page view.
-            color_scheme: int: The identifier of the color scheme.
-            search_submitted: int: The identifier of the search submitted.
-            click: int: The identifier of the click.
+            status (int): The status of the event.
+            device (int): The device identifier.
+            event_type (int): The type of the event.
+            network_location (int): The network location identifier.
+            page_view (int, optional): The page view event identifier.
+            color_scheme (int, optional): The color scheme event identifier.
+            search_submitted (int, optional): The search submission event identifier.
+            click (int, optional): The click event identifier.
 
         Returns:
             int

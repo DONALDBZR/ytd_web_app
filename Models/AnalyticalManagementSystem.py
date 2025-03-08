@@ -1119,11 +1119,19 @@ class AnalyticalManagementSystem:
 
     def sanitizeRealIpAddress(self) -> int:
         """
-        Sanitizing the IP Address by checking it is an IP Address or
-        a hostname.
+        Validating and sanitizing the stored IP address.
+
+        This function:
+        - Retrieves the stored IP address and attempts to validate it as either an IPv4 or IPv6 address.
+        - If valid, updates the stored IP address in string format.
+        - Logs success if the IP address is properly sanitized.
+        - Logs an error and returns `self.service_unavailable` if the IP address is invalid.
 
         Returns:
             int
+
+        Raises:
+            ValueError: If the stored IP address is not a valid IPv4 or IPv6 address.
         """
         try:
             real_ip_address: Union[IPv4Address, IPv6Address] = ip_address(self.getIpAddress())

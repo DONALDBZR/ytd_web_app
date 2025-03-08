@@ -118,6 +118,26 @@ class Tracker {
             console.error(`Error Tracking Event: ${error.message}`);
         }
     }
+
+    /**
+     * Sanitizing input data by removing unwanted characters while preserving safe URL components.
+     *
+     * This method ensures that:
+     * - The input is a string before applying sanitization.
+     * - Strings retain only alphanumeric characters, dashes (`-`), underscores (`_`), 
+     *   colons (`:`), slashes (`/`), periods (`.`), ampersands (`&`), question marks (`?`), and equal signs (`=`).
+     * - The string is truncated to a maximum length of 256 characters.
+     * - The sanitized string is further processed using `encodeURI()` to ensure proper URL encoding.
+     * @param {*} data The data to be sanitized. If not a string, it is returned as is.
+     * @returns {*}
+     */
+    sanitize(data) {
+        if (typeof data !== "string") {
+            return data;
+        }
+        const sanitized_data = data.replace(/[^a-zA-Z0-9-_:/.&?=]/g, "").substring(0, 256);
+        return encodeURI(sanitized_data);
+    }
 }
 
 window.Tracker = new Tracker();

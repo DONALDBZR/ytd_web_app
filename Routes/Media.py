@@ -27,8 +27,6 @@ ENV: Environment = Environment()
 """
 ENV File of the application.
 """
-ENV.setDirectory(int(str(request.environ.get("SERVER_PORT"))))
-
 def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
     """
     Retrieving metadata from a JSON file while ensuring security measures.

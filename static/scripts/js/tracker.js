@@ -102,7 +102,7 @@ class Tracker {
         const event_data = {
             event_name: event_name,
             page_url: window.location.pathname,
-            timestamp: `${current_time.getFullYear()}/${String(current_time.getMonth() + 1).padStart(2, "0")}/${String(current_time.getDate() + 1).padStart(2, "0")} ${String(current_time.getHours() + 1).padStart(2, "0")}:${String(current_time.getMinutes() + 1).padStart(2, "0")}:${String(current_time.getSeconds() + 1).padStart(2, "0")}`,
+            timestamp: `${current_time.getFullYear()}/${String(current_time.getMonth() + 1).padStart(2, "0")}/${String(current_time.getDate()).padStart(2, "0")} ${String(current_time.getHours()).padStart(2, "0")}:${String(current_time.getMinutes()).padStart(2, "0")}:${String(current_time.getSeconds()).padStart(2, "0")}`,
             user_agent: navigator.userAgent,
             screen_resolution: `${window.screen.width}x${window.screen.height}`,
             ...sanitized_additional_data,

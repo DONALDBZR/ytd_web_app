@@ -1007,12 +1007,9 @@ class Crawler:
 
     def sanitizeUniformResourceLocator(self, uniform_resource_locator: str) -> str:
         """
-        Sanitizing the given uniform resource locator by ensuring it
-        belongs to an allowed domain.  This function parses the
-        uniform resource locator and validates its components such
-        as scheme, domain, port, user info, and fragment.  Only
-        HTTPS uniform resource locators belonging to allowed domains
-        are considered valid.
+        Sanitizing the given uniform resource locator by ensuring it belongs to an allowed domain.
+
+        This function parses the uniform resource locator and validates its components such as scheme, domain, port, user info, and fragment.  Only HTTPS uniform resource locators belonging to allowed domains are considered valid.
 
         Parameters:
             uniform_resource_locator (string): The uniform resource locator to be sanitized.
@@ -1023,7 +1020,7 @@ class Crawler:
         Raises:
             ValueError: If the uniform resource locator is invalid.
         """
-        allowed_domains: List[str] = ["youtube.com", "youtu.be"]
+        allowed_domains: List[str] = ["youtube.com", "youtu.be", "www.youtube.com"]
         try:
             parsed_uniform_resource_locator: ParseResult = urlparse(uniform_resource_locator)
             return self.validateUniformResourceLocator(parsed_uniform_resource_locator, allowed_domains, uniform_resource_locator)

@@ -742,7 +742,7 @@ class Crawler:
             parser: Union[RobotFileParser, None] = self.__checkRobotsParser(base_uniform_resource_locator)
             self.__robotTxtNotParsed(parser, target)
             self.__notAllowedCrawl(parser, target)
-            self.__enterTargetFirstRun(referrer, target)
+            self.__enterTargetFirstRun(referrer, target, delay)
             self.__enterTargetSecondRun(referrer, target)
             self.retrieveData(referrer, delay, index)
             return True
@@ -802,7 +802,7 @@ class Crawler:
         self.getLogger().error(f"The crawler is not allowed to access the target.\nUniform Resource Locator: {target}")
         raise CrawlerNotAllowedError(f"The crawler is not allowed to access the target!\nUniform Resource Locator: {target}")
 
-    def __enterTargetFirstRun(self, referrer: str, target: str) -> None:
+    def __enterTargetFirstRun(self, referrer: str, target: str, delay: float) -> None:
         """
         Entering the target URL if the referrer is `"firstRun"`.
         Logs an informational message and directs the web driver to
@@ -811,6 +811,7 @@ class Crawler:
         Parameters:
             referrer (string): The referrer value that should be `"firstRun"` to trigger the target entry.
             target (string): The Uniform Resource Locator (URL) to which the web driver should navigate.
+            delay (float): The amount of seconds that the crawler should wait before proceeding.
 
         Returns:
             None
@@ -823,11 +824,29 @@ class Crawler:
         try:
             self.getLogger().inform(f"Entering the target!\nTarget: {target}")
             self.getDriver().get(target)
-            self.getLogger().inform(f"Entering the correct target!\nTarget: {target}") if self.getDriver().current_url == target else self.getDriver().get(target)
+            sleep(delay)
+            self.isDriverOnTarget(target, delay)
+            self.getLogger().inform(f"Entering the correct target!\nTarget: {target}")
         except WebDriverException as error:
             self.getLogger().error(f"An error occurred while entering the first target!\nError: {error}\nTarget: {target}")
             raise error
 
+    def isDriverOnTarget(self, target: str, delay: float) -> None:
+        """
+        Checking if the Selenium WebDriver's current URL matches the target URL.  If not, it navigates to the target URL and waits for a specified delay.
+
+        Parameters:
+            target (string): The URL to check against the WebDriver's current URL.
+            delay (float): The time to wait (in seconds) after navigating to the target URL.  The delay is increased by 10% before applying.
+
+        Returns:
+            void
+        """
+        if self.getDriver().current_url == target:
+            return
+        delay *= 1.1
+        self.getDriver().get(target)
+        sleep(delay)
 
     def __enterTargetSecondRun(self, referrer: str, target: str) -> None:
         """
@@ -1034,7 +1053,7 @@ class Crawler:
             self.getLogger().error(f"Invalid scheme in URL. Only HTTPS is allowed.\nUniform Resource Locator: {uniform_resource_locator}")
             raise ValueError("Invalid scheme in URL. Only HTTPS is allowed.")
         if parsed_uniform_resource_locator.netloc not in allowed_domains:
-            self.getLogger().error(f"Invalid domain in URL. Domain is not allowed.\nUniform Resource Locator: {uniform_resource_locator}")
+            self.getLogger().error(f"Invalid domain in URL. Domain is not allowed.\nUniform Resource Locator: {uniform_resource_locator}\nDomain: {parsed_uniform_resource_locator.netloc}")
             raise ValueError("Invalid domain in URL. Domain is not allowed.")
         if parsed_uniform_resource_locator.port is not None:
             self.getLogger().error(f"Port number is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")

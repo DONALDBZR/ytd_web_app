@@ -706,11 +706,6 @@ class Crawler:
                 delay *= 2
         except (TimeoutException, WebDriverException, NoSuchElementException, Exception) as error:
             self.getLogger().error(f"An error occurred while trying to enter the target.\nError: {error}\nUniform Resource Locator: {target}")
-        finally:
-            try:
-                self.getDriver().quit()
-            except:
-                pass
 
     def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int, delay: float) -> bool:
         """
@@ -743,7 +738,7 @@ class Crawler:
             self.__robotTxtNotParsed(parser, target)
             self.__notAllowedCrawl(parser, target)
             self.__enterTargetFirstRun(referrer, target, delay)
-            self.__enterTargetSecondRun(referrer, target)
+            self.__enterTargetSecondRun(referrer, target, delay)
             self.retrieveData(referrer, delay, index)
             return True
         except (TimeoutException, WebDriverException, NoSuchElementException) as error:
@@ -848,13 +843,14 @@ class Crawler:
         self.getDriver().get(target)
         sleep(delay)
 
-    def __enterTargetSecondRun(self, referrer: str, target: str) -> None:
+    def __enterTargetSecondRun(self, referrer: str, target: str, delay: float) -> None:
         """
         Entering the target uniform resource locator with a `"/videos"` suffix if the referrer is `"secondRun"`.  Logs an informational message and directs the web driver to the target uniform resource locator with the `"/videos"` path.
 
         Parameters:
             referrer (string): The referrer value that should be `"secondRun"` to trigger the target entry.
             target (string): The Uniform Resource Locator (URL) to which the web driver should navigate, with `"/videos"` appended.
+            delay (float): The amount of seconds that the crawler wait before proceeding.
 
         Returns:
             None
@@ -864,9 +860,13 @@ class Crawler:
         """
         if referrer != "secondRun":
             return
+        uniform_resource_locator: str = f"{target}/videos"
         try:
-            self.getLogger().inform(f"Entering the target!\nTarget: {target}/videos")
-            self.getDriver().get(f"{target}/videos")
+            self.getLogger().inform(f"Entering the target!\nTarget: {uniform_resource_locator}")
+            self.getDriver().get(f"{uniform_resource_locator}")
+            sleep(delay)
+            self.isDriverOnTarget(uniform_resource_locator, delay)
+            self.getLogger().inform(f"Entering the correct target!\nTarget: {uniform_resource_locator}")
         except WebDriverException as error:
             self.getLogger().error(f"An error occurred while entering the second target!\nError: {error}\nTarget: {target}")
             raise error

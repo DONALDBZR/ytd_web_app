@@ -13,17 +13,17 @@ from time import time, sleep
 from json import dumps
 from sys import path
 from urllib.parse import ParseResult, urlparse
-from random import randint, uniform
+from random import randint
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
 from re import search
 from html import escape
+from shutil import rmtree
+from tempfile import mkdtemp
 
 
 path.append(getcwd())
-from Models.DatabaseHandler import Database_Handler, RowType, Relational_Database_Error
-from Models.Logger import Extractio_Logger
-from Environment import Environment
+from Models.DatabaseHandler import Database_Handler, RowType, Relational_Database_Error, Extractio_Logger, Environment
 from Errors.ExtractioErrors import CrawlerNotAllowedError
 
 
@@ -94,6 +94,10 @@ class Crawler:
     """
     The list of user agents.
     """
+    __temporary_user_data_directory: Union[str, None]
+    """
+    The temporary user data directory of the crawler.
+    """
 
     def __init__(self) -> None:
         """
@@ -107,29 +111,34 @@ class Crawler:
         Raises:
             Exception: If an error occurs during the initialization process.
         """
+        self.setLogger(Extractio_Logger(__name__))
+        self.setTemporaryUserDataDirectory(None)
         try:
             self.setEnvironment(Environment())
-        except Exception as error:
-            self.getLogger().error(f"An error occurred while setting the environment.\nError: {error}")
-            raise error
-        try:
-            self.setLogger(Extractio_Logger(__name__))
-        except Exception as error:
-            self.getLogger().error(f"An error occurred while setting the logger.\nError: {error}")
-            raise error
-        self.__setUserAgents()
-        self.__setServices()
-        self.__setOptions()
-        self.setDriver(Chrome(self.getOption(), self.getService()))
-        self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
-        try:
+            self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
+            self.__setUserAgents()
+            self.__setServices()
+            self.__setOptions()
+            self.setDriver(Chrome(
+                options=self.getOption(),
+                service=self.getService()
+            ))
             self.setDatabaseHandler(Database_Handler())
+            self.setData([])
+            self.setRobotParsers({})
+            self.setUpData()
         except Exception as error:
-            self.getLogger().error(f"An error occurred while setting the database handler.\nError: {error}")
+            self.getLogger().error(f"An error occurred while setting the crawler.\nError: {error}")
             raise error
-        self.setData([])
-        self.setRobotParsers({})
-        self.setUpData()
+
+    def __del__(self) -> None:
+        """
+        Cleaning up the temporary user directory when deleting the crawler instance.
+
+        Returns:
+            None
+        """
+        self.cleanTemporaryUserDataDirectory()
 
     def __setUserAgents(self) -> None:
         """
@@ -154,6 +163,12 @@ class Crawler:
         except OSError as error:
             self.getLogger().error(f"An error occurred while setting up the user agents.\nError: {error}")
             raise error
+
+    def getTemporaryUserDataDirectory(self) -> Union[str, None]:
+        return self.__temporary_user_data_directory
+
+    def setTemporaryUserDataDirectory(self, temporary_user_data_directory: Union[str, None]) -> None:
+        self.__temporary_user_data_directory = temporary_user_data_directory
 
     def getUserAgents(self) -> List[str]:
         return self.__user_agents
@@ -265,11 +280,24 @@ class Crawler:
         """
         user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
         self.setOption(Options())
-        self.getOption().add_argument('--headless')
+        self.getOption().add_argument(f"user-agent={user_agent}")
         self.getOption().add_argument('--no-sandbox')
         self.getOption().add_argument('--disable-dev-shm-usage')
+        self.setTemporaryUserDataDirectory(mkdtemp())
+        self.getOption().add_argument(f"--user-data-dir={self.getTemporaryUserDataDirectory()}")
         self.getLogger().inform("The Crawler has been configured!")
-        self.getOption().add_argument(f"user-agent={user_agent}")
+
+    def cleanTemporaryUserDataDirectory(self) -> None:
+        """
+        Cleaning the temporary user data directory.
+
+        Returns:
+            void
+        """
+        rmtree(
+            path=str(self.getTemporaryUserDataDirectory()),
+            ignore_errors=True
+        )
 
     def setUpData(self) -> None:
         """
@@ -409,7 +437,7 @@ class Crawler:
             void
         """
         for index in range(0, len(self.getData()), 1):
-            delay: float = self.getDelay()
+            delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
             self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
@@ -472,6 +500,7 @@ class Crawler:
         finally:
             self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
             self.getDriver().quit()
+            self.cleanTemporaryUserDataDirectory()
 
     def __validateDataBeforeSave(self) -> None:
         """
@@ -626,22 +655,25 @@ class Crawler:
             void
         """
         for index in range(0, len(self.getData()), 1):
-            delay: float = self.getDelay()
+            delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
             self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
 
-    def getDelay(self) -> float:
+    def getDelay(self, uniform_resource_locator: str) -> float:
         """
         Calculating a randomized delay, ensuring it falls within a
         specific range. The calculation of the delay does not take
         in consideration external data.
 
+        Parameters:
+            uniform_resource_locator (string): The URL
+
         Returns:
-            float: A delay between 10 and 15 seconds.
+            float
         """
-        return uniform(10.0, 15.0)
+        return (len(uniform_resource_locator) / 200) * 60
 
     def enterTarget(self, target: str, delay: float, index: int = 0) -> None:
         """
@@ -665,11 +697,10 @@ class Crawler:
         retries: int = 3
         try:
             for attempt in range(0, retries, 1):
-                self.getDriver().delete_all_cookies()
                 self.getLogger().debug(f"Attempting to enter the target!\nAttempt: {attempt + 1}\nUniform Resource Locator: {target}")
                 parsed_uniform_resource_locator: ParseResult = urlparse(target)
                 base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
-                if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries):
+                if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries, delay):
                     return
                 sleep(delay)
                 delay *= 2
@@ -681,7 +712,7 @@ class Crawler:
             except:
                 pass
 
-    def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int) -> bool:
+    def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int, delay: float) -> bool:
         """
         Attempting to navigate to a given target uniform resource
         locator, handling crawling restrictions, and retrieving
@@ -696,6 +727,7 @@ class Crawler:
             index (int): The index of the data entry being processed.
             attempt (int): The current attempt number for crawling.
             retries (int): The total number of allowed retry attempts.
+            delay (float): The delay for the lock.
 
         Returns:
             bool
@@ -712,7 +744,7 @@ class Crawler:
             self.__notAllowedCrawl(parser, target)
             self.__enterTargetFirstRun(referrer, target)
             self.__enterTargetSecondRun(referrer, target)
-            self.retrieveData(referrer, index)
+            self.retrieveData(referrer, delay, index)
             return True
         except (TimeoutException, WebDriverException, NoSuchElementException) as error:
             self.getLogger().error(f"The current attempt on crawling has failed.\nError: {error}\nAttempt: {attempt + 1}")
@@ -791,6 +823,7 @@ class Crawler:
         try:
             self.getLogger().inform(f"Entering the target!\nTarget: {target}")
             self.getDriver().get(target)
+            self.getLogger().inform(f"Entering the correct target!\nTarget: {target}") if self.getDriver().current_url == target else self.getDriver().get(target)
         except WebDriverException as error:
             self.getLogger().error(f"An error occurred while entering the first target!\nError: {error}\nTarget: {target}")
             raise error
@@ -877,16 +910,16 @@ class Crawler:
             end: float = time()
             elasped: float = end - start
             delay: float = 1.0 - elasped
-            sleep(delay) if elasped < 1.0 else self.getLogger().debug("The elapsed time is greater than 1 second.")
+            sleep(delay) if elasped < 1.0 else self.getLogger().debug(f"The elapsed time is greater than 1 second.\nTime Elasped: {elasped} s")
 
-
-    def retrieveData(self, referrer: str, index: int = 0) -> None:
+    def retrieveData(self, referrer: str, delay: float, index: int = 0) -> None:
         """
         Retrieving the data needed from the target page.
 
         Parameters:
-            referrer: string: Referrer of the function.
-            index: int: The identifier of the data.
+            referrer (string): Referrer of the function.
+            delay (float): The delay for the lock.
+            index (int): The identifier of the data.
 
         Returns:
             void
@@ -895,7 +928,7 @@ class Crawler:
             Exception: If an error occurs while retrieving data.
         """
         try:
-            self.__getDataFirstRun(referrer, index)
+            self.__getDataFirstRun(referrer, index, delay)
             self.__getDataSecondRun(referrer, index)
         except (TimeoutException, WebDriverException, NoSuchElementException) as error:
             self.getLogger().error(f"An error occurred while retrieving data!\nError: {error}")
@@ -927,7 +960,7 @@ class Crawler:
             self.getLogger().error(f"An error occurred while retrieving data for the second run!\nError: {error}")
             raise error
 
-    def __getDataFirstRun(self, referrer: str, index: int) -> None:
+    def __getDataFirstRun(self, referrer: str, index: int, delay: float) -> None:
         """
         Retrieves the author's channel uniform resource locator
         during the first run and updates the data structure.
@@ -935,18 +968,22 @@ class Crawler:
         Parameters:
             referrer (string): The source of the function call.  Should be "firstRun" to proceed.
             index (int): The index in the data structure where the author's channel uniform resource locator should be stored.
+            delay (float): The delay for the lock.
 
         Returns:
             void
         """
         if referrer != "firstRun":
             return
+        xpath: str = "//*[@id='text']/a"
+        self.setHtmlTag(None) # type: ignore
         try:
-            self.setHtmlTag(self.getDriver().find_element(By.XPATH, '//*[@id="text"]/a'))
+            sleep(delay)
+            self.setHtmlTag(self.getDriver().find_element(By.XPATH, xpath))
             author_channel_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
             self.getData()[index]["author_channel"] = self.sanitizeUniformResourceLocator(author_channel_uniform_resource_locator)
-        except (WebDriverException, NoSuchElementException) as error:
-            self.getLogger().error(f"An error occurred while retrieving data for the first run!\nError: {error}")
+        except (TimeoutException, WebDriverException, NoSuchElementException) as error:
+            self.getLogger().error(f"An error occurred while retrieving data for the first run!\nError: {error}\nX-PATH: {xpath}\nHTML Tag: {self.getHtmlTag()}\nDelay: {delay:.3f} s")
             raise error
 
     def sanitizeUniformResourceLocator(self, uniform_resource_locator: str) -> str:

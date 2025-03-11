@@ -276,11 +276,10 @@ class Crawler:
         Returns:
             void
         """
-        # user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
         self.setOption(Options())
-        # self.getOption().add_argument(f"user-agent={user_agent}")
-        self.getOption().add_argument('--no-sandbox')
-        self.getOption().add_argument('--disable-dev-shm-usage')
+        self.getOption().add_argument("--no-sandbox")
+        self.getOption().add_argument("--headless")
+        self.getOption().add_argument("--disable-dev-shm-usage")
         self.setTemporaryUserDataDirectory(mkdtemp())
         self.getOption().add_argument(f"--user-data-dir={self.getTemporaryUserDataDirectory()}")
         self.getLogger().inform("The Crawler has been configured!")

@@ -280,7 +280,7 @@ class YouTube_Downloader:
         Returns:
             str
         """
-        return self.retrieveIdentifier(self.getIdentifier().replace(self.getBaseUniformResourceLocator(), "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
+        return self.retrieveIdentifier(self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0])
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """

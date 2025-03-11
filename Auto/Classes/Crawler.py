@@ -1,19 +1,17 @@
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from Classes.Media import Media
 from os import chmod, getcwd
-from typing import List, Dict, Union, Tuple, cast
+from typing import cast
 from inspect import stack
 from time import time, sleep
 from json import dumps
 from sys import path
 from urllib.parse import ParseResult, urlparse
-from random import randint
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
 from re import search
@@ -23,7 +21,7 @@ from tempfile import mkdtemp
 
 
 path.append(getcwd())
-from Models.DatabaseHandler import Database_Handler, RowType, Relational_Database_Error, Extractio_Logger, Environment
+from Models.Media import Media, Database_Handler, RowType, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Union, Tuple
 from Errors.ExtractioErrors import CrawlerNotAllowedError
 
 
@@ -278,9 +276,9 @@ class Crawler:
         Returns:
             void
         """
-        user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
+        # user_agent: str = self.getUserAgents()[randint(0, len(self.getUserAgents()))]
         self.setOption(Options())
-        self.getOption().add_argument(f"user-agent={user_agent}")
+        # self.getOption().add_argument(f"user-agent={user_agent}")
         self.getOption().add_argument('--no-sandbox')
         self.getOption().add_argument('--disable-dev-shm-usage')
         self.setTemporaryUserDataDirectory(mkdtemp())
@@ -438,7 +436,7 @@ class Crawler:
         """
         for index in range(0, len(self.getData()), 1):
             delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
-            self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
+            self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay:.3f} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
@@ -454,9 +452,15 @@ class Crawler:
         try:
             for index in range(0, len(self.getData()), 1):
                 self.getLogger().inform(f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}")
-                self.setMedia(Media(str(self.getData()[index]["latest_content"]), "youtube"))
-                response: Union[Dict[str, Union[int, Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]], Dict[str, Union[int, str]]] = self.getMedia().verifyPlatform()
-                data: Dict[str, Union[str, int, None]] = response["data"]["data"] # type: ignore
+                request: Dict[str, Union[None, str]] = {
+                    "referer": None,
+                    "search": str(self.getData()[index]["latest_content"]),
+                    "platform": "youtube",
+                    "ip_address": "127.0.0.1"
+                }
+                self.setMedia(Media(request))
+                response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = self.getMedia().verifyPlatform()
+                data: Dict[str, Union[str, int, None]] = response["data"] # type: ignore
                 new_data.append(data)
             self.setData(new_data)
         except Exception as error:
@@ -656,7 +660,7 @@ class Crawler:
         """
         for index in range(0, len(self.getData()), 1):
             delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
-            self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
+            self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay:.3f} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
@@ -703,7 +707,7 @@ class Crawler:
                 if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries, delay):
                     return
                 sleep(delay)
-                delay *= 2
+                delay *= 1.1
         except (TimeoutException, WebDriverException, NoSuchElementException, Exception) as error:
             self.getLogger().error(f"An error occurred while trying to enter the target.\nError: {error}\nUniform Resource Locator: {target}")
 
@@ -929,7 +933,7 @@ class Crawler:
             end: float = time()
             elasped: float = end - start
             delay: float = 1.0 - elasped
-            sleep(delay) if elasped < 1.0 else self.getLogger().debug(f"The elapsed time is greater than 1 second.\nTime Elasped: {elasped} s")
+            sleep(delay) if elasped < 1.0 else self.getLogger().debug(f"The elapsed time is greater than 1 second.\nTime Elasped: {elasped:.3f} s")
 
     def retrieveData(self, referrer: str, delay: float, index: int = 0) -> None:
         """

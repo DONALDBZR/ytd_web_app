@@ -447,6 +447,7 @@ class Crawler:
         Returns:
             void
         """
+        self.setData([content for content in self.getData() if content["latest_content"] != None])
         new_data: List[Dict[str, Union[str, int, None]]] = []
         try:
             for index in range(0, len(self.getData()), 1):
@@ -462,6 +463,7 @@ class Crawler:
                 data: Dict[str, Union[str, int, None]] = response["data"] # type: ignore
                 new_data.append(data)
             self.setData(new_data)
+            self.save()
         except Exception as error:
             self.getLogger().error(f"An error occurred while building the data!\nError: {error}")
             raise error

@@ -84,8 +84,8 @@ class YouTubeDownloader extends React.Component {
             duration: (media) ? media.duration : this.state.duration,
             File: {
                 ...previous.File,
-                audio: (media) ? media.audio : this.state.File.audio,
-                video: (media) ? media.video : this.state.File.video,
+                audio: (media) ? media.audio_file : this.state.File.audio,
+                video: (media) ? media.video_file : this.state.File.video,
             },
             data_loaded: data_loaded,
         }));

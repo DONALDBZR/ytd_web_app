@@ -1,11 +1,9 @@
 """
-The module that has the logger of the application.
+The module for the custom logger of the application.
 
 Authors:
     Darkness4869
 """
-
-
 from logging.__init__ import Logger
 from logging import basicConfig, getLogger as get_logger, DEBUG, INFO, WARNING, ERROR
 from Environment import Environment
@@ -14,21 +12,23 @@ from re import sub
 
 class Extractio_Logger:
     """
-    The logger that will all the action of the application.
+    A custom logger class for the Extractio application.
+
+    This class provides methods for logging messages at different levels and sanitizes log messages to remove control characters.  It utilizes Python's built-in logging module and is configured to write log messages to a file specified in the application's environment.
     """
     __logger: Logger
     """
-    It is responsible for logging all of the actions done by the
-    application.
+    The underlying logger instance from Python's logging module.
     """
 
     def __init__(self, name: str):
         """
-        Instantiating the Logger which will keep track of everything
-        that the application does.
+        Initializing the Extractio_Logger.
+
+        It configures the basic logging settings, including the log file location, encoding, file mode, and log message format.  Retrieves the log file directory from the application's environment.
 
         Parameters:
-            name: string: The name of the logger.
+            name (str): The name of the logger.
         """
         ENV = Environment()
         basicConfig(
@@ -47,52 +47,48 @@ class Extractio_Logger:
 
     def debug(self, message: str) -> None:
         """
-        Logging the data for debugging
+        Logging a debug message.
+
+        This method logs a message at the DEBUG level after sanitizing it.  It also prints the message to the console.
 
         Parameters:
-            message: string: The action done.
-
-        Returns:
-            void
+            message (str): The message to log.
         """
         self.getLogger().setLevel(DEBUG)
         self.getLogger().debug(self.sanitize(message))
 
     def inform(self, message: str) -> None:
         """
-        Logging informational data.
+        Logging an informational message.
+
+        This method logs a message at the INFO level after sanitizing it.  It also prints the message to the console.
 
         Parameters:
-            message: string: The action done.
-
-        Returns:
-            void
+            message (str): The message to log.
         """
         self.getLogger().setLevel(INFO)
         self.getLogger().info(self.sanitize(message))
 
     def warn(self, message: str) -> None:
         """
-        Logging the data for a warning.
+        Logging a warning message.
+
+        This method logs a message at the WARNING level after sanitizing it.  It also prints the message to the console.
 
         Parameters:
-            message: string: The action done.
-
-        Returns:
-            void
+            message (str): The message to log.
         """
         self.getLogger().setLevel(WARNING)
         self.getLogger().warning(self.sanitize(message))
 
     def error(self, message: str) -> None:
         """
-        Logging the data for an error.
+        Logging an error message.
+
+        This method logs a message at the ERROR level after sanitizing it.  It also prints the message to the console.
 
         Parameters:
-            message: string: The action done.
-
-        Returns:
-            void
+            message (str): The message to log.
         """
         self.getLogger().setLevel(ERROR)
         self.getLogger().error(self.sanitize(message))

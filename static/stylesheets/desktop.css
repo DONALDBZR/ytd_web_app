@@ -606,3 +606,6 @@ body[id*="Download"] main .YouTube #data #actions #buttons .button button svg {
 #Homepage main #loading {
     height: var(--height);
 }
+#Homepage main #loading i {
+    font-size: calc(var(--textSize) * 17.455);
+}

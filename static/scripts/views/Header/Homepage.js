@@ -220,16 +220,16 @@ class HeaderHomepage extends React.Component {
     /**
      * Retrieving the identifier of YouTube from its resource locator.
      * @param {URL} uniform_resource_locator The uniform resource locator
-     * @returns {string | void}
+     * @returns {string}
      */
     getYouTubeIdentifier(uniform_resource_locator) {
-        if (uniform_resource_locator.hostname === "youtube.com" && uniform_resource_locator.pathname === "/watch") {
+        if ((uniform_resource_locator.hostname === "youtube.com" && uniform_resource_locator.pathname === "/watch") || (uniform_resource_locator.hostname === "www.youtube.com" && uniform_resource_locator.pathname === "/watch")) {
             return this.sanitize(uniform_resource_locator.searchParams.get("v"));
         }
         if (uniform_resource_locator.hostname === "youtu.be") {
             return this.sanitize(uniform_resource_locator.pathname.slice(1));
         }
-        throw new Error("The domain is not allowed!");
+        throw new Error(`Error while retrieving the YouTube identifier!\nHost Name: ${uniform_resource_locator.hostname}`);
     }
 
     /**

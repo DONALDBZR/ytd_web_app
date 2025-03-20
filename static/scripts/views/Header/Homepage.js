@@ -297,9 +297,10 @@ class HeaderHomepage extends React.Component {
      * @returns {void}
      */
     __checkInvalidUniformResourceLocator(regular_expression, uniform_resource_locator) {
-        if (!(regular_expression.test(uniform_resource_locator.href))) {
-            throw new Error("Invalid YouTube uniform resource locator format!");
+        if (regular_expression.test(uniform_resource_locator.href)) {
+            return;
         }
+        throw new Error(`Invalid YouTube uniform resource locator format!\nUniform Resource Locator: ${uniform_resource_locator.href}`);
     }
 
     /**

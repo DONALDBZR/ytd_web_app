@@ -282,7 +282,7 @@ class HeaderHomepage extends React.Component {
      * @returns {string}
      */
     sanitizeUniformResourceLocator(uniform_resource_locator) {
-        const allowed_domains = ["youtube.com", "youtu.be"];
+        const allowed_domains = ["www.youtube.com", "youtu.be"];
         const youtube_regular_expression = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|shorts\/|)([a-zA-Z0-9_-]{11})(&.*)?$/;
         const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
         try {

@@ -207,17 +207,13 @@ class HeaderHomepage extends React.Component {
      * @returns {string}
      */
     extractYouTubeIdentifier(uniform_resource_locator) {
-        const allowed_domains = ["youtube.com", "youtu.be"];
-        if (!(allowed_domains.includes(uniform_resource_locator))) {
-            return "";
-        }
         try {
             const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
-            this.__checkNotAllowedDomains(allowed_domains, parsed_uniform_resource_locator);
+            this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
             return String(this.sanitize(this.getYouTubeIdentifier(parsed_uniform_resource_locator)));
         } catch (error) {
             console.error("Error extracting YouTube identifier:", error);
-            return "";
+            throw new Error(error);
         }
     }
 
@@ -238,11 +234,11 @@ class HeaderHomepage extends React.Component {
 
     /**
      * Checking domains that are not allowed.
-     * @param {string[]} allowed_domains The list of the domains that are not allowed
      * @param {URL} uniform_resource_locator The parsed uniform resource locator
      * @returns {void}
      */
-    __checkNotAllowedDomains(allowed_domains, uniform_resource_locator) {
+    __checkNotAllowedDomains(uniform_resource_locator) {
+        const allowed_domains = ["www.youtube.com", "youtu.be"];
         if (!(allowed_domains.includes(uniform_resource_locator.hostname))) {
             throw new Error("The domain is not allowed!");
         }
@@ -281,11 +277,10 @@ class HeaderHomepage extends React.Component {
      * @returns {string}
      */
     sanitizeUniformResourceLocator(uniform_resource_locator) {
-        const allowed_domains = ["www.youtube.com", "youtu.be"];
         const youtube_regular_expression = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|shorts\/|)([a-zA-Z0-9_-]{11})(&.*)?$/;
         const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
         try {
-            this.__checkNotAllowedDomains(allowed_domains, parsed_uniform_resource_locator);
+            this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
             this.__checkInvalidUniformResourceLocator(youtube_regular_expression, parsed_uniform_resource_locator);
             return parsed_uniform_resource_locator.href;
         } catch (error) {

@@ -4,7 +4,6 @@ The Endpoint for the Media Management System.
 Authors:
     Darkness4869
 """
-
 from flask import Blueprint, Response, request
 from Models.Media import Media, Extractio_Logger, Environment, Dict, Union, List, dumps
 from json import loads
@@ -109,8 +108,19 @@ def sanitizeStringData(data: Dict[str, Any]):
 @limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def search() -> Response:
     """
-    Searching for the media by the uniform resource locator that
-    has been retrieved from the client.
+    Handling media search requests by validating parameters and forwarding the request to the appropriate media verification and retrieval system.
+
+    Routes:
+        - GET /Search
+
+    Query Parameters:
+        - platform (str): The name of the platform to search on.
+        - search (str): The search query string.
+
+    Response Codes:
+        - 200: Successful response with search results.
+        - 400: Bad request due to missing or invalid parameters.
+        - 429: Rate limit exceeded.
 
     Returns:
         Response
@@ -119,13 +129,28 @@ def search() -> Response:
     search: str = escape(str(request.args.get("search")))
     mime_type: str = "application/json"
     if not platform or not search:
-        return Response(dumps({
-            "error": "The parameters are missing."
-        }, indent=4), 400, mimetype=mime_type)
+        Routing_Logger.error("The parameters are missing.")
+        return Response(
+            response=dumps(
+                obj={
+                    "error": "The parameters are missing."
+                },
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
     if len(search) > 64:
-        return Response(dumps({
-            "error": "The search query is too long."
-        }, indent=4), 400, mimetype=mime_type)
+        Routing_Logger.error("The search query is too long.")
+        return Response(
+            response=dumps(
+                obj={
+                    "error": "The search query is too long."
+                },
+                indent=4),
+            status=400,
+            mimetype=mime_type
+        )
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,
         "search": search,
@@ -136,7 +161,15 @@ def search() -> Response:
     media: Media = Media(user_request)
     response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
     status: int = int(response["status"])  # type: ignore
-    return Response(dumps(response, indent=4), status, mimetype=mime_type)
+    Routing_Logger.inform(f"The response has been sent.\nStatus: {status}\nData: {response['data']}")
+    return Response(
+        response=dumps(
+            obj=response,
+            indent=4
+        ),
+        status=status,
+        mimetype=mime_type
+    )
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
 @limiter.limit("100 per day", error_message="Rate Limit Exceeded")

@@ -160,16 +160,20 @@ class HeaderHomepage extends React.Component {
      * @returns {Promise<number>}
      */
     async setRoute(platform, search) {
-        let status = await this.setMediaYouTubeIdentifier(platform, search);
-        status = (this.state.Media.YouTube.identifier.length <= 16) ? status : 403;
-        this.setState((previous) => ({
-            ...previous,
-            System: {
-                ...previous.System,
-                view_route: (this.state.Media.YouTube.identifier.length <= 16) ? `/Search/${this.state.Media.YouTube.identifier}` : "/",
-            },
-        }));
-        return status;
+        try {
+            const status = await this.setMediaYouTubeIdentifier(platform, search);
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    view_route: (this.state.Media.YouTube.identifier.length <= 16) ? `/Search/${this.state.Media.YouTube.identifier}` : "/",
+                },
+            }));
+            return status;
+        } catch (error) {
+            console.error("An error occurred while setting the route!\nError: ", error);
+            throw new Error(error);
+        }
     }
 
     /**
@@ -179,18 +183,23 @@ class HeaderHomepage extends React.Component {
      * @returns {Promise<number>}
      */
     async setMediaYouTubeIdentifier(platform, search) {
-        const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
-        const identifier = this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
-        this.setState((previous) => ({
-            Media: {
-                ...previous.Media,
-                YouTube: {
-                    ...previous.Media.YouTube,
-                    identifier: identifier,
+        try {
+            const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
+            const identifier = this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        identifier: identifier,
+                    },
                 },
-            },
-        }));
-        return status;
+            }));
+            return status;
+        } catch (error) {
+            console.error("An error occurred while setting the YouTube identifier.\nError: ", error);
+            throw new Error(error);
+        }
     }
 
     /**
@@ -249,17 +258,22 @@ class HeaderHomepage extends React.Component {
      */
     async setMediaYouTubeUniformResourceLocator(platform, search) {
         const response = await this.getSearchMedia(platform, search);
-        const uniform_resource_locator = this.sanitizeUniformResourceLocator(response.data.uniform_resource_locator);
-        this.setState((previous) => ({
-            Media: {
-                ...previous.Media,
-                YouTube: {
-                    ...previous.Media.YouTube,
-                    uniform_resource_locator: uniform_resource_locator,
+        try {
+            const uniform_resource_locator = this.sanitizeUniformResourceLocator(decodeURIComponent(response.data.uniform_resource_locator));
+            this.setState((previous) => ({
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator: uniform_resource_locator,
+                    },
                 },
-            },
-        }));
-        return response.status;
+            }));
+            return response.status;
+        } catch (error) {
+            console.error("Failed to set the uniform resource locator.\nError: ", error);
+            throw new Error(error);
+        }
     }
 
     /**
@@ -277,7 +291,7 @@ class HeaderHomepage extends React.Component {
             return parsed_uniform_resource_locator.href;
         } catch (error) {
             console.error(`Invalid uniform resource locator!\nUniform Resource Locator: ${parsed_uniform_resource_locator}\nError: `, error);
-            return "";
+            throw new Error(error);
         }
     }
 
@@ -311,16 +325,6 @@ class HeaderHomepage extends React.Component {
                 data: {},
             };
         }
-        data.data.uniform_resource_locator = this.sanitize(data.data.uniform_resource_locator);
-        data.data.author = this.sanitize(data.data.author);
-        data.data.title = this.sanitize(data.data.title);
-        data.data.identifier = this.sanitize(data.data.identifier);
-        data.data.author_channel = this.sanitize(data.data.author_channel);
-        data.data.published_at = this.sanitize(data.data.published_at);
-        data.data.thumbnail = this.sanitize(data.data.thumbnail);
-        data.data.duration = this.sanitize(data.data.duration);
-        data.data.audio_file = (data.data.audio_file != null) ? this.sanitize(data.data.audio_file) : data.data.audio_file;
-        data.data.video_file = (data.data.video_file != null) ? this.sanitize(data.data.video_file) : data.data.video_file;
         return {
             status: response.status,
             data: data.data,

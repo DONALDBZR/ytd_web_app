@@ -239,9 +239,10 @@ class HeaderHomepage extends React.Component {
      */
     __checkNotAllowedDomains(uniform_resource_locator) {
         const allowed_domains = ["www.youtube.com", "youtu.be"];
-        if (!(allowed_domains.includes(uniform_resource_locator.hostname))) {
-            throw new Error("The domain is not allowed!");
+        if (allowed_domains.includes(uniform_resource_locator.hostname)) {
+            return;
         }
+        throw new Error(`The domain is not allowed!\nHost Name: ${uniform_resource_locator.hostname}`);
     }
 
     /**

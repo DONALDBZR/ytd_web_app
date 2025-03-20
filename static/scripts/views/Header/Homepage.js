@@ -263,8 +263,7 @@ class HeaderHomepage extends React.Component {
     }
 
     /**
-     * Sanitizing the given uniform resource locator by ensuring it
-     * belongs to an allowed domain.
+     * Sanitizing the given uniform resource locator by ensuring it belongs to an allowed domain.
      * @param {string} uniform_resource_locator The uniform resource locator
      * @returns {string}
      */
@@ -277,7 +276,7 @@ class HeaderHomepage extends React.Component {
             this.__checkInvalidUniformResourceLocator(youtube_regular_expression, parsed_uniform_resource_locator);
             return parsed_uniform_resource_locator.href;
         } catch (error) {
-            console.error("Invalid uniform resource locator!\nError: ", error);
+            console.error(`Invalid uniform resource locator!\nUniform Resource Locator: ${parsed_uniform_resource_locator}\nError: `, error);
             return "";
         }
     }

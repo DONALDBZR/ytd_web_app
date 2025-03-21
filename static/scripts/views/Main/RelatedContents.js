@@ -122,7 +122,7 @@ class RelatedContents extends React.Component {
 
     /**
      * Rendering the component
-     * @returns {React.Component}
+     * @returns {React.JSX.Component}
      */
     render() {
         return (this.state.Media.RelatedContents.length > 0) ? (

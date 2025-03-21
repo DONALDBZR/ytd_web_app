@@ -40,6 +40,22 @@ class HeaderSearch extends React.Component {
     }
 
     /**
+     * * Sanitizing a string by escaping special HTML characters.
+     * * This function replaces the following characters with their HTML entity equivalents:
+     * - `&` → `&amp;`
+     * - `<` → `&lt;`
+     * - `>` → `&gt;`
+     * - `"` → `&quot;`
+     * - `'` → `&#039;`
+     * - `/` → `&#x2F;`
+     * @param {string} data The input string to be sanitized.
+     * @returns {string}
+     */
+    sanitize(data) {
+        return data.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("/", "&#x2F;");
+    }
+
+    /**
      * Running the methods needed as soon as the component has been
      * successfully mounted.
      * @returns {void}

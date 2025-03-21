@@ -162,7 +162,7 @@ class HeaderSearch extends React.Component {
                 ...previous,
                 System: {
                     ...previous.System,
-                    view_route: `/Search/${this.state.Media.YouTube.identifier}`,
+                    view_route: (status == 200) ? `/Search/${this.state.Media.YouTube.identifier}` : "/",
                 },
             }));
             return status;

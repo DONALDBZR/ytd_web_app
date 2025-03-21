@@ -223,7 +223,7 @@ class YouTube extends React.Component {
 
     /**
      * Rendering the component
-     * @returns {React.Component}
+     * @returns {React.JSX.Component}
      */
     render() {
         if (this.state.System.data_loaded) {

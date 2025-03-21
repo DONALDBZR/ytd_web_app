@@ -11,7 +11,7 @@ class HeaderSearch extends React.Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {data_loaded: boolean}}}
+         * @type {{Session: {Client: {timestamp: number, color_scheme: string}}, Media: {search: string, YouTube: {uniform_resource_locator: string, identifier: string}}, System: {view_route: string, data_loaded: boolean}}}
          */
         this.state = {
             Session: {
@@ -156,15 +156,20 @@ class HeaderSearch extends React.Component {
      * @returns {Promise<number>}
      */
     async setRoute(platform, search) {
-        const status = await this.setMediaYouTubeIdentifier(platform, search);
-        this.setState((previous) => ({
-            ...previous,
-            System: {
-                ...previous.System,
-                view_route: `/Search/${this.state.Media.YouTube.identifier}`,
-            },
-        }));
-        return status;
+        try {
+            const status = await this.setMediaYouTubeIdentifier(platform, search);
+            this.setState((previous) => ({
+                ...previous,
+                System: {
+                    ...previous.System,
+                    view_route: `/Search/${this.state.Media.YouTube.identifier}`,
+                },
+            }));
+            return status;
+        } catch (error) {
+            console.error("An error occurred while setting the route!\nError: ", error);
+            throw new Error(error);
+        }
     }
 
     /**

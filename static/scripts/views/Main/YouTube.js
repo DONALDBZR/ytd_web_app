@@ -119,8 +119,13 @@ class YouTube extends React.Component {
      * @returns {void}
      */
     manageResponse(response, delay) {
-        const uniform_resource_locator = (response.status == 201) ? response.uniform_resource_locator : window.location.href;
-        this.redirector(delay, uniform_resource_locator);
+        try {
+            const uniform_resource_locator = (response.status == 201) ? response.uniform_resource_locator : window.location.href;
+            this.redirector(delay, uniform_resource_locator);
+        } catch (error) {
+            console.error("There is an error while processing the response.\nError: ", error);
+            throw new Error(error);
+        }
     }
 
     /**

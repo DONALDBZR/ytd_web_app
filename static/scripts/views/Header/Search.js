@@ -183,6 +183,7 @@ class HeaderSearch extends React.Component {
             const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
             const identifier = this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
             this.setState((previous) => ({
+                ...previous,
                 Media: {
                     ...previous.Media,
                     YouTube: {
@@ -243,24 +244,30 @@ class HeaderSearch extends React.Component {
     }
 
     /**
-     * Setting the uniform resource locator for a specific YouTube
-     * content.
+     * Setting the uniform resource locator for a specific YouTube content.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
      * @returns {Promise<number>}
      */
     async setMediaYouTubeUniformResourceLocator(platform, search) {
         const response = await this.getSearchMedia(platform, search);
-        this.setState((previous) => ({
-            Media: {
-                ...previous.Media,
-                YouTube: {
-                    ...previous.Media.YouTube,
-                    uniform_resource_locator: response.data.uniform_resource_locator,
+        try {
+            const uniform_resource_locator = this.sanitizeUniformResourceLocator(decodeURIComponent(response.data.uniform_resource_locator));
+            this.setState((previous) => ({
+                ...previous,
+                Media: {
+                    ...previous.Media,
+                    YouTube: {
+                        ...previous.Media.YouTube,
+                        uniform_resource_locator: uniform_resource_locator,
+                    },
                 },
-            },
-        }));
-        return response.status;
+            }));
+            return response.status;
+        } catch (error) {
+            console.error("Failed to set the uniform resource locator.\nError: ", error);
+            throw new Error(error);
+        }
     }
 
     /**

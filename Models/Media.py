@@ -325,8 +325,8 @@ class Media:
         related_channel_contents: List[Dict[str, Union[str, int]]] = self.getRelatedChannelContents(payload["channel"])
         related_author_contents: List[Dict[str, Union[str, int]]] = []
         payload["author"] = payload["author"].split(", ") # type: ignore
-        for index in range(0, len(payload["author"]), 1):
-            related_author_contents = list({value["identifier"]: value for value in related_author_contents + self.getRelatedAuthorContents(payload["author"][index])}.values())
+        for author in payload["author"]:
+            related_author_contents = list({value["identifier"]: value for value in related_author_contents + self.getRelatedAuthorContents(author)}.values())
         related_contents: List[Dict[str, Union[str, int]]] = list({value["identifier"]: value for value in related_author_contents + related_channel_contents}.values())
         return self._getRelatedContents(related_contents)
 

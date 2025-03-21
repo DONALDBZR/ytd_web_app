@@ -353,7 +353,7 @@ class HeaderHomepage extends React.Component {
      */
     setColorScheme(event) {
         const delay = 200;
-        const color_scheme = (String(event.target.parentElement.parentElement.value) == "light") ? "dark" : "light";
+        const color_scheme = (String(event.target.parentElement.value) == "light") ? "dark" : "light";
         event.preventDefault();
         this.updateColorScheme(color_scheme, delay);
     }

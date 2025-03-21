@@ -230,6 +230,19 @@ class HeaderSearch extends React.Component {
     }
 
     /**
+     * Checking domains that are not allowed.
+     * @param {URL} uniform_resource_locator The parsed uniform resource locator
+     * @returns {void}
+     */
+    __checkNotAllowedDomains(uniform_resource_locator) {
+        const allowed_domains = ["www.youtube.com", "youtu.be"];
+        if (allowed_domains.includes(uniform_resource_locator.hostname)) {
+            return;
+        }
+        throw new Error(`The domain is not allowed!\nHost Name: ${uniform_resource_locator.hostname}`);
+    }
+
+    /**
      * Setting the uniform resource locator for a specific YouTube
      * content.
      * @param {string} platform The platform to be searched on.

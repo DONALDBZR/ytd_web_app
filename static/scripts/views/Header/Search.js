@@ -173,35 +173,29 @@ class HeaderSearch extends React.Component {
     }
 
     /**
-     * Extracting the identifier of a specific YouTube content.
+     * Setting the identifier of a specific YouTube content.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
      * @returns {Promise<number>}
      */
     async setMediaYouTubeIdentifier(platform, search) {
-        const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
-        if (this.state.Media.YouTube.uniform_resource_locator.includes("youtube")) {
+        try {
+            const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
+            const identifier = this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
             this.setState((previous) => ({
                 Media: {
                     ...previous.Media,
                     YouTube: {
                         ...previous.Media.YouTube,
-                        identifier: this.state.Media.YouTube.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "").replace(/\?.*/, ""),
+                        identifier: identifier,
                     },
                 },
             }));
-        } else {
-            this.setState((previous) => ({
-                Media: {
-                    ...previous.Media,
-                    YouTube: {
-                        ...previous.Media.YouTube,
-                        identifier: this.state.Media.YouTube.uniform_resource_locator.replace("https://youtu.be/", "").replace(/\?.*/, ""),
-                    },
-                },
-            }));
+            return status;
+        } catch (error) {
+            console.error("An error occurred while setting the YouTube identifier.\nError: ", error);
+            throw new Error(error);
         }
-        return status;
     }
 
     /**

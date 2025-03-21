@@ -215,6 +215,21 @@ class HeaderSearch extends React.Component {
     }
 
     /**
+     * Retrieving the identifier of YouTube from its uniform resource locator.
+     * @param {URL} uniform_resource_locator The uniform resource locator
+     * @returns {string}
+     */
+    getYouTubeIdentifier(uniform_resource_locator) {
+        if ((uniform_resource_locator.hostname === "youtube.com" && uniform_resource_locator.pathname === "/watch") || (uniform_resource_locator.hostname === "www.youtube.com" && uniform_resource_locator.pathname === "/watch")) {
+            return this.sanitize(uniform_resource_locator.searchParams.get("v"));
+        }
+        if (uniform_resource_locator.hostname === "youtu.be") {
+            return this.sanitize(uniform_resource_locator.pathname.slice(1));
+        }
+        throw new Error(`Error while retrieving the YouTube identifier!\nHost Name: ${uniform_resource_locator.hostname}`);
+    }
+
+    /**
      * Setting the uniform resource locator for a specific YouTube
      * content.
      * @param {string} platform The platform to be searched on.

@@ -1,7 +1,5 @@
 /**
- * The component that will render the contents that are related
- * to the content that is currently being displayed where the
- * identifier of content is related to them.
+ * The component that will render the contents that are related to the content that is currently being displayed where the identifier of content is related to them.
  */
 class RelatedContents extends React.Component {
     /**

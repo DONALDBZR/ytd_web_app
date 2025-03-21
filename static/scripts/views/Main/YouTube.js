@@ -106,9 +106,7 @@ class YouTube extends React.Component {
         .then((response) => this.manageResponse(response, delay))
         .catch((error) => {
             console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
+            this.redirector(delay, window.location.href);
         });
     }
 

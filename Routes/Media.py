@@ -213,7 +213,18 @@ def getMedia(identifier: str) -> Response:
 @limiter.limit("20 per week", error_message="Rate Limit Exceeded")
 def retrieveMedia() -> Response:
     """
-    Retrieving the media needed from the uniform resource locator and stores it in the server while allowing the user to download it.
+    Handling media retrieval requests.
+
+    This function processes a POST request to download media.  It expects a JSON payload containing media information, verifies the request parameters, and checks if the specified platform is supported.
+
+    Routes:
+        - POST /Download
+
+    Response Codes:
+        - 201: Successful response with file downloaded on the server.
+        - 400: Bad request due to missing or invalid parameters.
+        - 503: Service unavailable due to platform verification failure.
+        - 429: Rate limit exceeded.
 
     Returns:
         Response

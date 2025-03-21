@@ -1,11 +1,9 @@
 /**
- * The component that is the YouTube component given that it
- * will only be rendered only when the data corresponds to it.
+ * The component that is the YouTube component given that it will only be rendered only when the data corresponds to it.
  */
 class YouTube extends React.Component {
     /**
-     * Constructing the YouTube component which will render the
-     * data of the video from YouTube.
+     * Constructing the YouTube component which will render the data of the video from YouTube.
      * @param {*} props
      */
     constructor(props) {
@@ -35,16 +33,14 @@ class YouTube extends React.Component {
             },
         };
         /**
-         * The tracker class which will track the user's activity on
-         * the application.
+         * The tracker class which will track the user's activity on the application.
          * @type {Tracker}
          */
         this.tracker = window.Tracker;
     }
 
     /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
+     * Running the methods needed as soon as the component has been successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
@@ -53,8 +49,7 @@ class YouTube extends React.Component {
     }
 
     /**
-     * The methods to be executed when the component has been
-     * updated.
+     * The methods to be executed when the component has been updated.
      * @returns {void}
      */
     componentDidUpdate() {
@@ -62,7 +57,7 @@ class YouTube extends React.Component {
             setTimeout(() => {
                 this.setData();
                 console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update`);
-            }, 2000);
+            }, 1000);
         }
     }
 
@@ -79,7 +74,7 @@ class YouTube extends React.Component {
             ...previous,
             Media: {
                 ...previous.Media,
-                YouTube: (media) ? media : this.state.Media.YouTube,
+                YouTube: (data_loaded) ? media : this.state.Media.YouTube,
             },
             System: {
                 data_loaded: data_loaded,
@@ -91,8 +86,7 @@ class YouTube extends React.Component {
     }
 
     /**
-     * Retrieving Media from the server by using its uniform
-     * resource locator.
+     * Retrieving Media from the server by using its uniform resource locator.
      * @param {MouseEvent} event The event that is to be handled
      * @returns {void}
      */
@@ -119,8 +113,7 @@ class YouTube extends React.Component {
     }
 
     /**
-     * Managing the flow of the application based on the response
-     * of the back-end.
+     * Managing the flow of the application based on the response of the back-end.
      * @param {{status: number, uniform_resource_locator: string}} response The response from the back-end.
      * @param {number} delay The delay before the application.
      * @returns {void}
@@ -131,8 +124,7 @@ class YouTube extends React.Component {
     }
 
     /**
-     * Sending the request to the server to download the media file
-     * needed for the application.
+     * Sending the request to the server to download the media file needed for the application.
      * @param {string} uniform_resource_locator The uniform resource locator of the content.
      * @param {string} platform The platform of the application needed.
      * @returns {Promise<{status: number, uniform_resource_locator: string}>}
@@ -151,7 +143,7 @@ class YouTube extends React.Component {
             },
         });
         const data = await response.json();
-        const response_uniform_resource_locator = (response.status == 201) ? `/Download/YouTube/${data.identifier}` : "";
+        const response_uniform_resource_locator = (response.status == 201) ? `/Download/YouTube/${data.identifier}` : "/";
         return {
             status: response.status,
             uniform_resource_locator: response_uniform_resource_locator,
@@ -159,8 +151,7 @@ class YouTube extends React.Component {
     }
 
     /**
-     * Redirecting the user to an intended uniform resource
-     * locator.
+     * Redirecting the user to an intended uniform resource locator.
      * @param {number} delay The amount of time in milliseconds before firing the method
      * @param {string} uniform_resource_locator The route
      * @returns {void}

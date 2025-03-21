@@ -302,8 +302,7 @@ class HeaderSearch extends React.Component {
     }
 
     /**
-     * Retrieving the response of the Media API for the search
-     * data.
+     * Retrieving the response of the Media API for the search data.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
      * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string | null, thumbnail: string, duration: string, audio_file: string | null, video_file: string | null}}>}
@@ -313,6 +312,13 @@ class HeaderSearch extends React.Component {
             method: "GET",
         });
         const data = await response.json();
+        if (!data.data || typeof data.data !== "object") {
+            console.error("Invalid data received from the server.");
+            return {
+                status: 400,
+                data: {},
+            };
+        }
         return {
             status: response.status,
             data: data.data,

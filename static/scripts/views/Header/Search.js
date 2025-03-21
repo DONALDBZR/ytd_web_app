@@ -271,6 +271,24 @@ class HeaderSearch extends React.Component {
     }
 
     /**
+     * Sanitizing the given uniform resource locator by ensuring that it belongs to an allowed domain.
+     * @param {string} uniform_resource_locator The uniform resource locator
+     * @returns {string}
+     */
+    sanitizeUniformResourceLocator(uniform_resource_locator) {
+        const youtube_regular_expression = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|shorts\/|)([a-zA-Z0-9_-]{11})(&.*)?$/;
+        const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
+        try {
+            this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
+            this.__checkInvalidUniformResourceLocator(youtube_regular_expression, parsed_uniform_resource_locator);
+            return parsed_uniform_resource_locator.href;
+        } catch (error) {
+            console.error(`Invalid uniform resource locator!\nUniform Resource Locator: ${parsed_uniform_resource_locator}\nError: `, error);
+            throw new Error(error);
+        }
+    }
+
+    /**
      * Retrieving the response of the Media API for the search
      * data.
      * @param {string} platform The platform to be searched on.

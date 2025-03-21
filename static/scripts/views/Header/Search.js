@@ -94,6 +94,7 @@ class HeaderSearch extends React.Component {
             ...previous,
             Session: (data_loaded) ? session : this.state.Session,
             System: {
+                ...previous.System,
                 data_loaded: data_loaded,
             },
         }));

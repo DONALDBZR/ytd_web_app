@@ -37,8 +37,7 @@ class RelatedContents extends React.Component {
     }
 
     /**
-     * The methods to be executed when the component has been
-     * updated.
+     * The methods to be executed when the component has been updated.
      * @returns {void}
      */
     componentDidUpdate() {
@@ -65,6 +64,7 @@ class RelatedContents extends React.Component {
                 RelatedContents: (data_loaded) ? related_content : this.state.Media.RelatedContents,
             },
             System: {
+                ...previous.System,
                 data_loaded: data_loaded,
             },
         }));

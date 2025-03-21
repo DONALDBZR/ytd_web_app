@@ -3,8 +3,7 @@
  */
 class RelatedContents extends React.Component {
     /**
-     * Constructing the component given that it will only render
-     * the related contents.
+     * Constructing the component given that it will only render the related contents.
      * @param {*} props The properties of the component.
      */
     constructor(props) {
@@ -22,8 +21,7 @@ class RelatedContents extends React.Component {
             },
         };
         /**
-         * The tracker class which will track the user's activity on
-         * the application.
+         * The tracker class which will track the user's activity on the application.
          * @type {Tracker}
          */
         this.tracker = window.Tracker;

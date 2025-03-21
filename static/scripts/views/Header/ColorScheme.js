@@ -74,7 +74,11 @@ class ColorScheme extends React.Component {
      * @returns {void}
      */
     setSvgSvgElement(svg) {
-        svg.setAttribute("class", (this.state.Session.Client.color_scheme == "dark") ? "svg-inline--fa fa-toggle-on" : "svg-inline--fa fa-toggle-off");
+        const lookup = {
+            "dark": "svg-inline--fa fa-toggle-on",
+            "light": "svg-inline--fa fa-toggle-off"
+        };
+        svg.setAttribute("class", lookup[this.state.Session.Client.color_scheme]);
         svg.setAttribute("data-icon", (this.state.Session.Client.color_scheme == "dark") ? "toggle-on" : "toggle-off");
     }
 

@@ -497,7 +497,7 @@ class Database_Handler:
             self.getLogger().error("The provided value is invalid.")
             raise ValueError("The provided value is invalid.")
         unchecked_data: str = data.upper()
-        if any(keyword in unchecked_data for keyword in self.getKeywords()):
-            self.getLogger().error("The provided value contains restricted SQL keywords.")
+        if any(f" {keyword} " in f" {unchecked_data} " for keyword in self.getKeywords()):
+            self.getLogger().error(f"The provided value contains restricted SQL keywords.\nData: {data}")
             raise ValueError("The provided value contains restricted SQL keywords.")
         return data

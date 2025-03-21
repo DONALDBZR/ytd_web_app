@@ -175,10 +175,21 @@ def search() -> Response:
 @limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def getMedia(identifier: str) -> Response:
     """
-    Sending the data for the media that has been searched in the form of JSON.
+    Retrieving media metadata based on a unique identifier.
+
+    This function processes a GET request to fetch metadata for a specific media entry.  It verifies the identifier format, ensuring it contains only alphanumeric characters, dashes, or underscores. If valid, it retrieves metadata from a JSON file.
+
+    Routes:
+        - GET /
 
     Parameters:
-        identifier (string): Identifier of the content.
+        identifier (string): A unique media identifier consisting of letters, numbers, dashes, or underscores.
+
+    Response Codes:
+        - 200: Successful response with media metadata.
+        - 400: Bad request due to invalid identifier format.
+        - 404: Not found if the media metadata is not found.
+        - 429: Rate limit exceeded.
 
     Returns:
         Response

@@ -71,7 +71,7 @@ class RelatedContents extends React.Component {
     }
 
     /**
-     * Handles the click event on a component.
+     * Handling the click event on a component.
      * @param {MouseEvent} event The click event.
      * @returns {void}
      */

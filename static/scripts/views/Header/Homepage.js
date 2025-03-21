@@ -52,7 +52,15 @@ class HeaderHomepage extends React.Component {
      * @returns {string}
      */
     sanitize(data) {
-        return data.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("/", "&#x2F;");
+        const lookup = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;",
+            "/": "&#x2F;"
+        };
+        return data.replaceAll(/[&<>"'\/]/g, (character) => lookup[character]);
     }
 
     /**

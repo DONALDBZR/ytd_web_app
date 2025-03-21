@@ -77,6 +77,7 @@ class YouTube extends React.Component {
                 YouTube: (data_loaded) ? media : this.state.Media.YouTube,
             },
             System: {
+                ...previous.System,
                 data_loaded: data_loaded,
             },
         }));

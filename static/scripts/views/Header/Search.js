@@ -199,6 +199,22 @@ class HeaderSearch extends React.Component {
     }
 
     /**
+     * Extracting the YouTube Identifier from the uniform resource locator.
+     * @param {string} uniform_resource_locator The uniform resource locator
+     * @returns {string}
+     */
+    extractYouTubeIdentifier(uniform_resource_locator) {
+        try {
+            const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
+            this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
+            return String(this.sanitize(this.getYouTubeIdentifier(parsed_uniform_resource_locator)));
+        } catch (error) {
+            console.error("There is an error while extracting the YouTube identifier.\nError: ", error);
+            throw new Error(error);
+        }
+    }
+
+    /**
      * Setting the uniform resource locator for a specific YouTube
      * content.
      * @param {string} platform The platform to be searched on.

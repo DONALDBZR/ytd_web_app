@@ -1,6 +1,8 @@
 """
-The module which has the model of the Media Management
-System.
+The module which has the model of the Media Management System.
+
+Authors:
+    Darkness4869
 """
 from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, Union, List, Tuple, Relational_Database_Error
 from datetime import datetime
@@ -23,14 +25,11 @@ class Media:
     """
     __referer: Union[str, None]
     """
-    The http referrer which is the uniform resource locator that
-    is needed to be able to allow the user to download the
-    required media.
+    The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the required media.
     """
     __database_handler: Database_Handler
     """
-    It is the object relational mapper that will be used to
-    simplify the process to entering queries.
+    It is the object relational mapper that will be used to simplify the process to entering queries.
     """
     __identifier: int
     """
@@ -38,8 +37,7 @@ class Media:
     """
     __value: str
     """
-    The value of the required media which have to correspond to
-    the name of the platform from which the media comes from.
+    The value of the required media which have to correspond to the name of the platform from which the media comes from.
     """
     __timestamp: str
     """
@@ -148,14 +146,15 @@ class Media:
 
     def __verifyPlatform(self, status: int) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Verifying that the media platform data has been sucessfully
-        inserted in order to process the data needed.
+        Handling platform verification based on the provided status code.
+
+        This private method checks if the provided status code is `503` (Service Unavailable).  If so, it returns a response indicating failure. Otherwise, it re-attempts platform verification by calling `verifyPlatform()`.
 
         Parameters:
-            status: int: The status of the HTTP request.
+            status (int): The HTTP status code from a previous media verification attempt.
 
         Returns:
-            {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         """
         if status == 503:
             return {
@@ -166,20 +165,15 @@ class Media:
 
     def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Verifies the uniform resource locator to determine the
-        correct system and selects the appropriate response based on
-        the platform. It ensures that the uniform resource locator
-        is valid, sanitizes the input, and processes the media
-        information accordingly.  If the platform is recognized, it
-        handles the platform-specific logic. If the platform is
-        unsupported or the uniform resource locator is invalid, an
-        error response is returned.
+        Verifying the media platform and process the request accordingly.
+
+        This method sanitizes input values, retrieves media information, and determines whether the requested platform is supported.  If the media is not found, it attempts to post the media and verify its platform again. Currently, only YouTube links are processed.
 
         Returns:
-            {"status": int, "data": {"status": int, "data": {"uniform_resource_locator": string, "author": string, "title": string, "identifier": string, "author_channel": string, "views": int, "published_at": string | Datetime | null, "thumbnail": string, "duration": string, "audio_file": string, "video_file": string}}}
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
 
         Raises:
-            ValueError: If there is an error while verifying the platform.
+            ValueError: The platform cannot be verified.
         """
         try:
             self.sanitizeValue()

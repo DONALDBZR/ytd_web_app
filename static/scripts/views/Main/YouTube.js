@@ -130,24 +130,29 @@ class YouTube extends React.Component {
      * @returns {Promise<{status: number, uniform_resource_locator: string}>}
      */
     async postMediaDownload(uniform_resource_locator, platform) {
-        const response = await fetch("/Media/Download", {
-            method: "POST",
-            body: JSON.stringify({
-                Media: {
-                    uniform_resource_locator: uniform_resource_locator,
-                    platform: platform,
+        try {
+            const response = await fetch("/Media/Download", {
+                method: "POST",
+                body: JSON.stringify({
+                    Media: {
+                        uniform_resource_locator: uniform_resource_locator,
+                        platform: platform,
+                    },
+                }),
+                headers: {
+                    "Content-Type": "application/json",
                 },
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        const data = await response.json();
-        const response_uniform_resource_locator = (response.status == 201) ? `/Download/YouTube/${data.identifier}` : "/";
-        return {
-            status: response.status,
-            uniform_resource_locator: response_uniform_resource_locator,
-        };
+            });
+            const data = await response.json();
+            const response_uniform_resource_locator = (response.status == 201) ? `/Download/YouTube/${data.identifier}` : "/";
+            return {
+                status: response.status,
+                uniform_resource_locator: response_uniform_resource_locator,
+            };
+        } catch (error) {
+            console.error("There is an issue while downloading the file.\nError: ", error);
+            throw new Error(error);
+        }
     }
 
     /**

@@ -93,10 +93,9 @@ class RelatedContents extends React.Component {
     };
 
     /**
-     * Rendering the media content that are related with the main
-     * content.
+     * Rendering the media content that are related with the main content.
      * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}} media The metadata of the media content.
-     * @returns {React.Component}
+     * @returns {React.JSX.Component}
      */
     renderRelatedContents(media) {
         const identifier = media.uniform_resource_locator.replaceAll("https://www.youtube.com/watch?v=", "");

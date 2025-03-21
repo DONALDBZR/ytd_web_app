@@ -66,8 +66,7 @@ class HeaderSearch extends React.Component {
     }
 
     /**
-     * Running the methods needed whenever the component is
-     * updated.
+     * Running the methods needed whenever the component is updated.
      * @returns {void}
      */
     componentDidUpdate() {
@@ -75,7 +74,7 @@ class HeaderSearch extends React.Component {
             setTimeout(() => {
                 this.setData();
                 console.info("Component: Search.Header.HeaderSearch\nStatus: Update");
-            }, 2000);
+            }, 1000);
         }
     }
 

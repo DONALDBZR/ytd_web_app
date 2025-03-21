@@ -400,11 +400,11 @@ class YTD {
     loadData() {
         this.setSession();
         if (window.location.pathname.includes("Search")) {
-            this.loadDataSearchPage();
+            setTimeout(() => this.loadDataSearchPage(), 100);
         } else if (window.location.pathname.includes("Download/YouTube")) {
-            this.loadDataDownloadPage();
+            setTimeout(() => this.loadDataDownloadPage(), 100);
         } else {
-            this.loadDataHomepage();
+            setTimeout(() => this.loadDataHomepage(), 100);
         }
         setTimeout(() => this.optimize(), 1000);
     }

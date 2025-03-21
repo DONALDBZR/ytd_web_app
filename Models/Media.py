@@ -332,24 +332,26 @@ class Media:
 
     def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
-        Retrieving all of the data needed based on the related contents to build the response needed for the API.
+        Processing and returning metadata for related media content.
+
+        This method takes a list of related media entries, retrieves additional metadata using `YouTube_Downloader`, and formats the response.
 
         Parameters:
-            related_contents: List[Dict[str, Union[str, int]]]: The related contents
+            related_contents (List[Dict[str, Union[str, int]]]): A list of dictionaries containing media details, including `uniform_resource_locator`, `media_identifier`, `duration`, `channel`, and `title`.
 
         Returns:
             Dict[str, Union[int, List[Dict[str, str]]]]
         """
         status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
-        for index in range(0, len(related_contents), 1):
-            self._YouTubeDownloader = YouTube_Downloader(str(related_contents[index]["uniform_resource_locator"]), int(related_contents[index]["media_identifier"]))
+        for related_content in related_contents:
+            self._YouTubeDownloader = YouTube_Downloader(str(related_content["uniform_resource_locator"]), int(related_content["media_identifier"]))
             metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
             data.append({
-                "duration": escape(str(related_contents[index]["duration"])),
-                "channel": escape(str(related_contents[index]["channel"])),
-                "title": escape(str(related_contents[index]["title"])),
-                "uniform_resource_locator": escape(str(related_contents[index]["uniform_resource_locator"])),
+                "duration": escape(str(related_content["duration"])),
+                "channel": escape(str(related_content["channel"])),
+                "title": escape(str(related_content["title"])),
+                "uniform_resource_locator": escape(str(related_content["uniform_resource_locator"])),
                 "author_channel": escape(str(metadata["author_channel"])),
                 "thumbnail": escape(str(metadata["thumbnail"]))
             })

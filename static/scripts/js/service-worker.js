@@ -14,6 +14,7 @@ const uniform_resource_locators_to_cache = [
     "/static/stylesheets/desktop.css",
     "/static/stylesheets/desktop/Homepage.css",
     "/static/stylesheets/tablet.css",
+    "/static/stylesheets/tablet/Homepage.css",
     "/static/stylesheets/mobile.css",
     "/static/stylesheets/mobile/Homepage.css",
     "/static/scripts/js/react.production.min.js",

@@ -10,6 +10,7 @@ const main_cache_name = "extractio-app-cache-v3";
 const uniform_resource_locators_to_cache = [
     "/",
     "/static/stylesheets/ytd.css",
+    "/static/stylesheets/ytd/Homepage.css",
     "/static/stylesheets/desktop.css",
     "/static/stylesheets/desktop/Homepage.css",
     "/static/stylesheets/tablet.css",

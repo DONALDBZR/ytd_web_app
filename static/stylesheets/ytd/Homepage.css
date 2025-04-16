@@ -1,0 +1,317 @@
+@font-face {
+    font-family: "Pacifico";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Pacifico"),
+        url("https://fonts.cdnfonts.com/s/12846/Pacifico.woff") format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Regular Italic.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Regular.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 250;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Thin Italic.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 250;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Thin.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 300;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Light.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: italic;
+    font-weight: 300;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Light Italic.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 600;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Semibold Italic.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 600;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Semibold.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 700;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Bold Italic.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 700;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Bold.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 800;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Extrabold Italic.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 800;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Extrabold.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 900;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Black Italic.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Proxima Nova";
+    font-style: normal;
+    font-weight: 900;
+    src: local("Proxima Nova"),
+        url("https://fonts.cdnfonts.com/s/27118/Mark Simonson  Proxima Nova Black.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-Regular.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: italic;
+    font-weight: 400;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-It.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: normal;
+    font-weight: 200;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-ExtraLight.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: italic;
+    font-weight: 200;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-ExtraLightIt.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: normal;
+    font-weight: 300;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-Light.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: italic;
+    font-weight: 300;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-LightIt.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: normal;
+    font-weight: 600;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-Semibold.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: italic;
+    font-weight: 600;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-SemiboldIt.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: normal;
+    font-weight: 700;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-Bold.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: italic;
+    font-weight: 700;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-BoldIt.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: normal;
+    font-weight: 900;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-Black.woff")
+            format("woff");
+}
+@font-face {
+    font-family: "Source Code Pro";
+    font-style: italic;
+    font-weight: 900;
+    src: local("Source Code Pro"),
+        url("https://fonts.cdnfonts.com/s/12183/SourceSansPro-BlackIt.woff")
+            format("woff");
+}
+:root {
+    --percentage: 100%;
+    --sourceCodePro: "Source Code Pro";
+    --pacifico: "Pacifico";
+    --proximaNova: "Proxima Nova";
+    --color1: rgb(
+        calc(var(--percentage) * (250 / 255)),
+        calc(var(--percentage) * (250 / 255)),
+        calc(var(--percentage) * (90 / 255))
+    );
+    --color2: rgb(
+        calc(var(--percentage) * (27 / 255)),
+        calc(var(--percentage) * (54 / 255)),
+        calc(var(--percentage) * (92 / 255))
+    );
+    --color3: rgb(
+        calc(var(--percentage) * (250 / 255)),
+        calc(var(--percentage) * (69 / 255)),
+        calc(var(--percentage) * (65 / 255))
+    );
+    --color4: rgb(
+        var(--percentage),
+        calc(var(--percentage) * 0),
+        calc(var(--percentage) * 0)
+    );
+}
+body {
+    font-family: sans-serif;
+    background-color: var(--color1);
+    color: var(--color2);
+}
+footer div {
+    text-decoration: none;
+    font-family: var(--pacifico);
+    color: var(--color2);
+}
+main #loading {
+    color: var(--color3);
+    background-color: var(--color5);
+}
+header nav div a {
+    font-family: var(--pacifico);
+    color: var(--color2);
+    text-decoration: none;
+}
+header nav .active a,
+header nav div div button:hover svg,
+header nav div form button:hover svg,
+header nav div div button:hover i,
+header nav div form button:hover i,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover i,
+header nav .active button svg,
+header nav .active button i {
+    color: var(--color3);
+}
+header nav div div button,
+header nav div form button {
+    background: transparent;
+    cursor: pointer;
+}
+header nav div div button svg,
+header nav div form button svg,
+header nav div form input,
+header nav div div button i,
+header nav div form button i,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a svg,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a i {
+    color: var(--color2);
+}
+header nav div form input {
+    background: transparent;
+}
+header nav div form input::placeholder {
+    opacity: calc(var(--percentage) / 2);
+    color: var(--color2);
+}
+#Homepage main p,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(1),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a {
+    font-family: var(--proximaNova);
+}
+#Homepage main div div svg,
+#Homepage main div div i {
+    color: var(--color4);
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(1),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
+    font-weight: 600;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a {
+    text-decoration: none;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover {
+    text-decoration: underline;
+}
+#Homepage main .Trend div .card div:nth-child(1) a:hover img {
+    opacity: calc(var(--percentage) / 2);
+}

@@ -1,0 +1,232 @@
+:root {
+    --textSize: calc(var(--percentage) * 1.4641);
+    --height: 0px;
+    --width: 0px;
+}
+body {
+    height: var(--height);
+    width: var(--width);
+    margin: calc(var(--height) * 0) calc(var(--width) * 0);
+    padding: calc(var(--height) * 0) calc(var(--width) * 0);
+    font-size: var(--textSize);
+}
+footer {
+    height: calc(var(--height) / 10);
+    display: flex;
+    justify-content: center;
+}
+main {
+    height: calc(var(--height) * 0.8);
+    --component-height: calc(var(--height) * 0.8);
+}
+#Homepage main p {
+    margin: calc(var(--height) * 0) calc(var(--width) / 25);
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: calc(var(--textSize) / 2);
+    height: calc(var(--component-height) / 3);
+}
+#Homepage main div {
+    display: flex;
+    height: calc(var(--component-height) / 10);
+    justify-content: space-evenly;
+}
+#Homepage main div div {
+    height: inherit;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 1);
+}
+footer div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+main #loading {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--width) * 0);
+    top: calc(var(--height) * 0);
+    width: var(--width);
+    height: var(--height);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 6.727499949);
+}
+#Homepage main .Trend {
+    height: calc(var(--component-height) * (17 / 30));
+    justify-content: normal;
+    align-items: normal;
+    width: var(--width);
+    overflow: hidden;
+}
+#Homepage main .Trend .card {
+    --card-height: calc(var(--component-height) * (17 / 30));
+    --card-width: calc(var(--width) * 0.9);
+    height: var(--card-height);
+    width: var(--card-width);
+    justify-content: normal;
+    flex: 0 0 auto;
+    flex-direction: column;
+    margin: calc(var(--card-height) * 0) calc(var(--card-width) / 20);
+    animation: none;
+}
+#Homepage main .Trend .card div {
+    width: var(--card-width);
+    height: calc(var(--card-height) / 2);
+    overflow: unset;
+    animation: none;
+}
+#Homepage main .Trend .card div:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#Homepage main .Trend .card div:nth-child(1) a {
+    height: calc(var(--card-height) / 2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+}
+#Homepage main .Trend .card div:nth-child(1) a img {
+    width: auto;
+    height: calc(var(--card-height) / 2);
+}
+#Homepage main .Trend .card div:nth-child(2) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: normal;
+    overflow: unset;
+}
+#Homepage main .Trend .card div:nth-child(2) div {
+    height: calc(var(--card-height) / 10);
+    font-size: calc(var(--textSize) / 7);
+    overflow: unset;
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(1) {
+    align-items: center;
+    justify-content: normal;
+    word-wrap: break-word;
+    font-size: calc(var(--textSize) / 10);
+    width: var(--card-width);
+    animation: none;
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) {
+    justify-content: normal;
+    font-size: calc(var(--textSize) / 3);
+    align-items: center;
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(2) a {
+    font-size: calc(var(--textSize) * 0.315338531);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(3),
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) {
+    width: calc(var(--card-width) / 2);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div,
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div {
+    --stats-width: calc(var(--card-width) / 2);
+    font-size: calc(var(--textSize) / 2);
+    width: calc(var(--card-width) / 4);
+    align-items: center;
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) a {
+    font-size: calc(var(--textSize) * 1.121);
+}
+#Homepage main .Trend div {
+    height: calc(var(--component-height) * (17 / 30));
+    justify-content: normal;
+    align-items: normal;
+    flex-wrap: nowrap;
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
+    width: calc(var(--stats-width) / 2);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(2),
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(2) {
+    width: calc(var(--stats-width) / 2);
+}
+#Homepage main .Trend .card div:nth-child(2) div:nth-child(5) {
+    justify-content: center;
+    align-items: center;
+}
+@keyframes trend-scroll {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+header {
+    width: inherit;
+    height: calc(var(--height) / 10);
+}
+header nav {
+    height: inherit;
+    width: inherit;
+    display: flex;
+}
+header nav div {
+    height: inherit;
+}
+header nav div:nth-child(1) {
+    width: calc(var(--width) / 3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+header nav div:nth-child(1) a {
+    font-size: calc(var(--textSize) * 0.81);
+    letter-spacing: calc(var(--width) / 1000);
+}
+header nav div:nth-child(2) {
+    width: calc(var(--width) * (2 / 3));
+    display: flex;
+    flex-wrap: wrap;
+}
+header nav div:nth-child(2) form {
+    --search-form-height: calc(var(--height) / 20);
+    --search-form-width: calc(var(--width) * (2 / 3));
+    height: var(--search-form-height);
+    width: var(--search-form-width);
+    display: flex;
+    align-items: center;
+}
+header nav div:nth-child(2) form button {
+    border: none;
+    height: calc(var(--search-form-height) * 0.75);
+    width: calc(var(--search-form-width) / 7.5);
+    padding: unset;
+}
+header nav div:nth-child(2) form button svg {
+    height: auto;
+    width: calc(var(--search-form-width) / 10);
+}
+header nav div:nth-child(2) form input {
+    height: calc(var(--search-form-height) * 0.75);
+    width: calc(var(--search-form-width) * (6.5 / 7.5));
+    border: unset;
+    border-bottom: solid 1px;
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: calc(var(--textSize) * 0.43);
+}
+header nav div:nth-child(2) div {
+    height: calc(var(--height) / 20);
+    width: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+header nav div:nth-child(2) div button {
+    border: none;
+    height: inherit;
+    padding: unset;
+    width: auto;
+}
+header nav div:nth-child(2) div button svg {
+    width: auto;
+    height: calc(var(--height) / (80 / 3));
+}

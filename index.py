@@ -210,7 +210,6 @@ def serveViews(file: str) -> Response:
     response.cache_control.public = True
     return response
 
-
 @Application.route('/static/stylesheets/<path:file>', methods=['GET'])
 def serveStylesheets(file: str) -> Response:
     """
@@ -223,11 +222,14 @@ def serveStylesheets(file: str) -> Response:
         Response
     """
     response: Response
-    if not validateFileName(file):
-        return Response("Invalid Filename Format", 400)
-    if not match(r"^[a-zA-Z0-9-_.]+\.css$", file):
-        return Response("Invalid File Name or Format", 403)
-    response = send_from_directory('static/stylesheets', file)
+    allowed_stylesheet_root: str = "static/stylesheets"
+    full_path: str = normpath(join(Application.root_path, allowed_stylesheet_root, file))
+    if not full_path.startswith(normpath(join(Application.root_path, allowed_stylesheet_root))):
+        return Response("Access Denied!", 403)
+    if not exists(full_path) or not isfile(full_path):
+        return Response("File Not Found!", 404)
+    relative_path: str = relpath(full_path, Application.root_path)
+    response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800
     response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True

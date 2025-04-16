@@ -211,7 +211,7 @@ def serveViews(file: str) -> Response:
     return response
 
 
-@Application.route('/static/stylesheets/<string:file>', methods=['GET'])
+@Application.route('/static/stylesheets/<path:file>', methods=['GET'])
 def serveStylesheets(file: str) -> Response:
     """
     Serving the stylesheets.

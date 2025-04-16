@@ -120,21 +120,28 @@ class Trend extends React.Component {
     renderMediaCard(content) {
         const width = (window.innerWidth < 640) ? 179 : 1280;
         const height = (window.innerWidth < 640) ? 101 : 720;
+        const identifier = this.decodeHtmlEntities(content.identifier);
+        const uniform_resource_locator = this.decodeHtmlEntities(content.uniform_resource_locator);
+        const thumbnail = this.decodeHtmlEntities(content.thumbnail);
+        const title = this.decodeHtmlEntities(content.title);
+        const author_channel = this.decodeHtmlEntities(content.author_channel);
+        const author = this.decodeHtmlEntities(content.author);
+        const duration = this.decodeHtmlEntities(content.duration);
         return (
-            <div className="card" key={content.identifier}>
+            <div className="card" key={identifier}>
                 <div>
-                    <a href={content.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
-                        <img src={content.thumbnail} loading="lazy" alt={`Thumbnail for ${content.title}`}  width={width} height={height} sizes="(max-width: 640px) 179px, (min-width: 641px) 1280px" />
+                    <a href={uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
+                        <img src={thumbnail} loading="lazy" alt={`Thumbnail for ${title}`}  width={width} height={height} sizes="(max-width: 640px) 179px, (min-width: 641px) 1280px" />
                     </a>
                 </div>
                 <div>
-                    <div>{content.title}</div>
+                    <div>{title}</div>
                     <div>
-                        <a href={content.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{content.author}</a>
+                        <a href={author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{author}</a>
                     </div>
                     <div>
                         <div>Duration:</div>
-                        <div>{content.duration}</div>
+                        <div>{duration}</div>
                     </div>
                     <div>
                         <div>Views:</div>
@@ -143,7 +150,7 @@ class Trend extends React.Component {
                         </div>
                     </div>
                     <div>
-                        <a href={`/Download/YouTube/${content.identifier}`} target="__blank" onClick={this.handleClick.bind(this)}>
+                        <a href={`/Download/YouTube/${identifier}`} target="__blank" onClick={this.handleClick.bind(this)}>
                             <i className="fa-solid fa-download"></i>
                         </a>
                     </div>

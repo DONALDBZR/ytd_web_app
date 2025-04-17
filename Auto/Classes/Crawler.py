@@ -18,9 +18,10 @@ from re import search
 from html import escape
 from shutil import rmtree
 from tempfile import mkdtemp
+from os.path import abspath, join, dirname
 
 
-path.append(getcwd())
+path.append(abspath(join(dirname(__file__), "../../")))
 from Models.Media import Media, Database_Handler, RowType, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Union, Tuple
 from Errors.ExtractioErrors import CrawlerNotAllowedError
 

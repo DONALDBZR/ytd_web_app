@@ -1,7 +1,13 @@
+import React, { Component } from "react";
+import HeaderHomepage from "./Header/Homepage";
+import HeaderDownload from "./Header/Download";
+import HeaderSearch from "./Header/Search";
+
+
 /**
  * The component for the header.
  */
-class Header extends React.Component {
+class Header extends Component {
     /**
      * The consturctor of the components.
      * @param {*} props 
@@ -24,3 +30,5 @@ class Header extends React.Component {
         }
     }
 }
+
+export default Header;

@@ -1,7 +1,11 @@
+import React, { Component } from "react";
+import Downloader from "./Downloader";
+
+
 /**
  * The component to be rendered for the Download page
  */
-class MainDownload extends React.Component {
+class MainDownload extends Component {
     /**
      * Constructing the application from React's Component
      * @param {*} props The properties of the component
@@ -12,7 +16,7 @@ class MainDownload extends React.Component {
 
     /**
      * Rendering the component for the download page.
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         return (
@@ -25,3 +29,5 @@ class MainDownload extends React.Component {
         );
     }
 }
+
+export default MainDownload;

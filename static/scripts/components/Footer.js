@@ -1,7 +1,10 @@
+import React, { Component } from "react";
+
+
 /**
  * The component that is the footer for all of the pages
  */
-class Footer extends React.Component {
+class Footer extends Component {
     /**
      * Rendering the component
      * @returns {React.JSX.Element}
@@ -14,3 +17,5 @@ class Footer extends React.Component {
         );
     }
 }
+
+export default Footer;

@@ -1,7 +1,10 @@
+import React, { Component } from "react";
+
+
 /**
  * The component to be rendered for the trends.
  */
-class Trend extends React.Component {
+class Trend extends Component {
     /**
      * Constructing the Trend component which is will render the
      * trend list.
@@ -161,7 +164,7 @@ class Trend extends React.Component {
 
     /**
      * Rendering the component
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         const delay = 8;
@@ -176,3 +179,5 @@ class Trend extends React.Component {
         );
     }
 }
+
+export default Trend;

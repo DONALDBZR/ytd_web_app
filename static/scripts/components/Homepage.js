@@ -1,9 +1,15 @@
+import React, { Component } from "react";
+import Header from "./Header";
+import Main from "./Main";
+import Footer from "./Footer";
+
+
 /**
- * The component for the search pages.
+ * The component for the homepage.
  */
-class Search extends React.Component {
+class Homepage extends Component {
     /**
-     * The constructor of the component.
+     * Constructing the homepage.
      * @param {*} props The properties of the component
      */
     constructor(props) {
@@ -42,4 +48,4 @@ class Search extends React.Component {
     }
 }
 
-ReactDOM.render(<Search />, document.body);
+export default Homepage;

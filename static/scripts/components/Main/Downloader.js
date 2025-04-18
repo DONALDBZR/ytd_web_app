@@ -1,7 +1,11 @@
+import React, { Component } from "react";
+import YouTubeDownloader from "./YouTubeDownloader";
+
+
 /**
  * The component to be rendered for the Download portal
  */
-class Downloader extends React.Component {
+class Downloader extends Component {
     /**
      * Constructing the application from React's Component
      * @param {*} props The properties of the component
@@ -12,7 +16,7 @@ class Downloader extends React.Component {
 
     /**
      * Rendering the component for the download portal.
-     * @returns {React.Component}
+     * @returns {React.JSX.Element | undefined}
      */
     render() {
         if (window.location.pathname.includes("YouTube")) {
@@ -20,3 +24,5 @@ class Downloader extends React.Component {
         }
     }
 }
+
+export default Downloader;

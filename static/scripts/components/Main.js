@@ -1,7 +1,13 @@
+import React, { Component } from "react";
+import MainHomepage from "./Main/Homepage";
+import MainSearch from "./Main/Search";
+import MainDownload from "./Main/Download";
+
+
 /**
  * The component that is the main for all of the pages
  */
-class Main extends React.Component {
+class Main extends Component {
     /**
      * Constructing the Main component of the application.
      * @param {*} props The properties of the component
@@ -24,3 +30,5 @@ class Main extends React.Component {
         }
     }
 }
+
+export default Main;

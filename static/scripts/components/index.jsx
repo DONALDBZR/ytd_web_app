@@ -1,0 +1,19 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Homepage from "./Homepage";
+import Search from "./Search";
+import Download from "./Download";
+
+
+const root = ReactDOM.createRoot(document.body);
+
+root.render(
+    <Router>
+        <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/Search" element={<Search />} />
+            <Route path="/Download/YouTube/" element={<Download />} />
+        </Routes>
+    </Router>
+);

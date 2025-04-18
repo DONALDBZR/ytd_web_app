@@ -1,7 +1,10 @@
+import React, { Component } from "react";
+
+
 /**
  * The component that is the YouTube component given that it will only be rendered only when the data corresponds to it.
  */
-class YouTube extends React.Component {
+class YouTube extends Component {
     /**
      * Constructing the YouTube component which will render the data of the video from YouTube.
      * @param {*} props
@@ -262,3 +265,5 @@ class YouTube extends React.Component {
         }
     }
 }
+
+export default YouTube;

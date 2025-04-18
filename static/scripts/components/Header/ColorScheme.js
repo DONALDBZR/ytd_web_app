@@ -1,8 +1,10 @@
+import React, { Component } from "react";
+
+
 /**
- * It allows the component to be change on interaction of the
- * user to change its color scheme
+ * It allows the component to be change on interaction of the user to change its color scheme.
  */
-class ColorScheme extends React.Component {
+class ColorScheme extends Component {
     /**
      * Constructing the color scheme's component from the header.
      * @param {*} props The properties of the component
@@ -96,9 +98,11 @@ class ColorScheme extends React.Component {
     /**
      * Rendering the component which allows the user to change the
      * color scheme.
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         return (this.state.Session.Client.color_scheme == "dark") ? <i class="fa-solid fa-toggle-on"></i> : <i class="fa-solid fa-toggle-off"></i>;
     }
 }
+
+export default ColorScheme;

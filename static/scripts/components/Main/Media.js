@@ -1,7 +1,12 @@
+import React, { Component } from "react";
+import YouTube from "./YouTube";
+import RelatedContents from "./RelatedContents";
+
+
 /**
  * The component that will be used for the Search page that will have the data for the Media.
  */
-class Media extends React.Component {
+class Media extends Component {
     /**
      * Constructing the component that will be used for the Media data type.
      * @param {*} props
@@ -12,7 +17,7 @@ class Media extends React.Component {
 
     /**
      * Rendering the component
-     * @returns {React.JSX.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         return (
@@ -23,3 +28,5 @@ class Media extends React.Component {
         );
     }
 }
+
+export default Media;

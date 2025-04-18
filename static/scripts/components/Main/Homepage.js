@@ -1,7 +1,11 @@
+import React, { Component } from "react";
+import Trend from "./Trend";
+
+
 /**
  * The component to be rendered for the homepage
  */
-class MainHomepage extends React.Component {
+class MainHomepage extends Component {
     /**
      * Constructing the Homepage component which is based on the
      * Main component.
@@ -13,7 +17,7 @@ class MainHomepage extends React.Component {
 
     /**
      * Rendering the component
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         return (
@@ -37,3 +41,5 @@ class MainHomepage extends React.Component {
         );
     }
 }
+
+export default MainHomepage;

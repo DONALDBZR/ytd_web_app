@@ -1,7 +1,11 @@
+import React, { Component } from "react";
+import ColorScheme from "./ColorScheme";
+
+
 /**
  * The component to be rendered for the header of the homepage.
  */
-class HeaderHomepage extends React.Component {
+class HeaderHomepage extends Component {
     /**
      * Constructing the header of the homepage.
      * @param {*} props The properties of the component
@@ -423,7 +427,7 @@ class HeaderHomepage extends React.Component {
 
     /**
      * Rendering the component
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         return (
@@ -461,3 +465,5 @@ class HeaderHomepage extends React.Component {
         );
     }
 }
+
+export default HeaderHomepage;

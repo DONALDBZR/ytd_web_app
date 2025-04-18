@@ -1,7 +1,11 @@
+import React, { Component } from "react";
+import Media from "./Media";
+
+
 /**
  * The component to be rendered for the search page
  */
-class MainSearch extends React.Component {
+class MainSearch extends Component {
     /**
      * Constructing the Search component of the application.
      * @param {*} props The properties of the component
@@ -25,3 +29,5 @@ class MainSearch extends React.Component {
         );
     }
 }
+
+export default MainSearch;

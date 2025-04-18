@@ -1,7 +1,10 @@
+import React, { Component } from "react";
+
+
 /**
  * The component that will render the contents that are related to the content that is currently being displayed where the identifier of content is related to them.
  */
-class RelatedContents extends React.Component {
+class RelatedContents extends Component {
     /**
      * Constructing the component given that it will only render the related contents.
      * @param {*} props The properties of the component.
@@ -132,3 +135,5 @@ class RelatedContents extends React.Component {
         ) : (<div className="RelatedContents" style={{display: "none"}}></div>);
     }
 }
+
+export default RelatedContents;

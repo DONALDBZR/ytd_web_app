@@ -1,7 +1,13 @@
+import React, { Component } from "react";
+import Header from "./Header";
+import Main from "./Main";
+import Footer from "./Footer";
+
+
 /**
  * The component for the download pages.
  */
-class Download extends React.Component {
+class Download extends Component {
     /**
      * The constructor of the component.
      * @param {*} props The properties of the component
@@ -13,11 +19,11 @@ class Download extends React.Component {
 
     /**
      * Rendering the component.
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         return [<Header />, <Main />, <Footer />];
     }
 }
 
-ReactDOM.render(<Download />, document.body);
+export default Download;

@@ -1,8 +1,11 @@
+import React, { Component } from "react";
+
+
 /**
  * The component to be rendered for the Download page but only
  * when it is for media from YouTube.
  */
-class YouTubeDownloader extends React.Component {
+class YouTubeDownloader extends Component {
     /**
      * Constructing the downloader component for YouTube media.
      * @param {*} props The properties of the component
@@ -240,7 +243,7 @@ class YouTubeDownloader extends React.Component {
 
     /**
      * Rendering the component for the YouTube downloader.
-     * @returns {React.Component}
+     * @returns {React.JSX.Element}
      */
     render() {
         if (this.state.data_loaded) {
@@ -286,3 +289,5 @@ class YouTubeDownloader extends React.Component {
         }
     }
 }
+
+export default YouTubeDownloader;

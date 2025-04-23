@@ -84,7 +84,7 @@ class YouTube extends Component {
                 data_loaded: data_loaded,
             },
         }));
-        this.tracker = (window.Tracker) ? new window.Tracker() : null;
+        this.tracker = (window.Tracker) ? new window.Tracker : null;
         if (data_loaded) {
             loading_icon.style.display = "none";
         }

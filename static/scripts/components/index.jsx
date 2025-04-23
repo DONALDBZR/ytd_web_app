@@ -12,8 +12,8 @@ root.render(
     <Router>
         <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/Search" element={<Search />} />
-            <Route path="/Download/YouTube/" element={<Download />} />
+            <Route path="/Search/:id" element={<Search />} />
+            <Route path="/Download/YouTube/:id" element={<Download />} />
         </Routes>
     </Router>
 );

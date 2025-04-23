@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { route } from "./Router";
+import routeComponent from "./Router";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -27,4 +27,4 @@ class Download extends Component {
     }
 }
 
-export default route(Download);
+export default routeComponent(Download);

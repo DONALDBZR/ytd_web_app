@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
  * @param {React.ComponentType<any>} Component - The component to enhance with route parameters.
  * @returns {React.FC<any>}
  */
-function route(Component) {
+function routeComponent(Component) {
     return function renderComponent(properties) {
         return <WrappedComponent {...properties} Component={Component} />;
     };
@@ -24,4 +24,4 @@ function WrappedComponent({ Component, ...props }) {
     return <Component {...props} parameters={parameters} />;
 }
 
-export default route;
+export default routeComponent;

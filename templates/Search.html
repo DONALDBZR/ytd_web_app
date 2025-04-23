@@ -5,32 +5,44 @@
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="author" content="Darkness4869" />
         <link rel="manifest" href="/manifest.json" />
-        <script async src="/static/scripts/js/tracker.js"></script>
         <link rel="preconnect" href="https://fonts.cdnfonts.com" />
         <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
         <link rel="preconnect" href="https://i.ytimg.com" />
-        <link id="ytd-css" rel="preload" as="style" href="/static/stylesheets/ytd.css" />
-        <link id="desktop-css" rel="preload" as="style" href="/static/stylesheets/desktop.css" media="screen and (min-width: 1024px)" />
-        <link id="mobile-css" rel="preload" as="style" href="/static/stylesheets/mobile.css" media="screen and (max-width: 639px)" />
-        <link id="tablet-css" rel="preload" as="style" href="/static/stylesheets/tablet.css" media="screen and (min-width: 640px) and (max-width: 1023px)" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <script src="/static/scripts/js/react.production.min.js" defer></script>
-        <script src="/static/scripts/js/react-dom.production.min.js" defer></script>
-        <script src="/static/scripts/js/babel.min.js" defer></script>
+        <link id="ytd-css" rel="preload" as="style" href="/static/stylesheets/ytd/Search.css" nonce="{{ nonce }}" />
+        <link
+            id="desktop-css"
+            rel="preload"
+            as="style"
+            href="/static/stylesheets/desktop/Search.css"
+            media="screen and (min-width: 1024px)"
+            nonce="{{ nonce }}"
+        />
+        <link
+            id="mobile-css"
+            rel="preload"
+            as="style"
+            href="/static/stylesheets/mobile/Search.css"
+            media="screen and (max-width: 639px)"
+            nonce="{{ nonce }}"
+        />
+        <link
+            id="tablet-css"
+            rel="preload"
+            as="style"
+            href="/static/stylesheets/tablet/Search.css"
+            media="screen and (min-width: 640px) and (max-width: 1023px)"
+            nonce="{{ nonce }}"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+            nonce="{{ nonce }}"
+        />
         <link rel="icon" href="/static/images/icons/Extractio.png" type="image/png" />
-        <script src="/static/scripts/js/ytd.js" defer="defer"></script>
+        <script async src="/static/scripts/js/tracker.js" nonce="{{ nonce }}"></script>
+        <script src="/static/scripts/js/ytd.js" defer="defer" nonce="{{ nonce }}"></script>
     </head>
     <body>
-        <script src="/static/scripts/views/Main/RelatedContents.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Main/YouTube.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Main/Media.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Header/ColorScheme.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Main/Search.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Header/Search.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Footer.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Main.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Header.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/views/Search.js" type="text/babel" nonce="{{ nonce }}"></script>
-        <script src="/static/scripts/js/service-worker.js" defer="defer" nonce="{{ nonce }}"></script>
+        <script src="/static/scripts/views/bundle.js" nonce="{{ nonce }}"></script>
     </body>
 </html>

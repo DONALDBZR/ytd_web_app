@@ -262,7 +262,8 @@ body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-c
 body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg,
 body[id*="Download"] main .YouTube #data #title a,
 body[id*="Download"] main .YouTube #data #author a,
-body[id*="Download"] main .YouTube #data #actions #buttons .button button svg {
+body[id*="Download"] main .YouTube #data #actions #buttons .button button svg,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button i {
     color: var(--color2);
 }
 header nav div a {
@@ -286,7 +287,8 @@ header nav div form button:hover i,
 body[id*="Search"] main .Media .YouTube .data div button:hover,
 header nav .active button svg,
 header nav .active button i,
-body[id*="Download"] main .YouTube #data #actions #buttons .button button svg:hover {
+body[id*="Download"] main .YouTube #data #actions #buttons .button button svg:hover,
+body[id*="Download"] main .YouTube #data #actions #buttons .button button i:hover {
     color: var(--color3);
 }
 header nav div div button,

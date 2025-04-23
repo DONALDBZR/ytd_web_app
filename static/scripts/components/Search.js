@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { route } from "./Router";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -48,4 +49,4 @@ class Search extends Component {
     }
 }
 
-export default Search;
+export default route(Search);

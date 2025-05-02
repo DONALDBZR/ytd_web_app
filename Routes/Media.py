@@ -221,7 +221,7 @@ def getMedia(identifier: str) -> Response:
     )
 
 @Media_Portal.route('/Download', methods=['POST'])
-@limiter.limit("20 per week", error_message="Rate Limit Exceeded")
+@limiter.limit("20 per 7 days", error_message="Rate Limit Exceeded")
 def retrieveMedia() -> Response:
     """
     Handling media retrieval requests.

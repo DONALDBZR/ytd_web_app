@@ -27,7 +27,7 @@ class RelatedContents extends Component {
          * The tracker class which will track the user's activity on the application.
          * @type {Tracker}
          */
-        this.tracker = window.Tracker;
+        this.tracker = null;
     }
 
     /**

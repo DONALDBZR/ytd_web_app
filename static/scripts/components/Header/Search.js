@@ -183,12 +183,13 @@ class HeaderSearch extends Component {
      * Setting the identifier of a specific YouTube content.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
-     * @returns {Promise<number>}
+     * @returns {Promise<{status: number, identifier: string}>}
      */
     async setMediaYouTubeIdentifier(platform, search) {
         try {
-            const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
-            const identifier = this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
+            const response = await this.setMediaYouTubeUniformResourceLocator(platform, search);
+            const status = response.status;
+            const identifier = this.extractYouTubeIdentifier(response.uniform_resource_locator);
             this.setState((previous) => ({
                 ...previous,
                 Media: {
@@ -199,7 +200,10 @@ class HeaderSearch extends Component {
                     },
                 },
             }));
-            return status;
+            return {
+                status: status,
+                identifier: identifier,
+            };
         } catch (error) {
             console.error("An error occurred while setting the YouTube identifier.\nError: ", error);
             throw new Error(error);

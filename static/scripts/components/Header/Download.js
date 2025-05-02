@@ -160,17 +160,18 @@ class HeaderDownload extends Component {
      * Extracting the identifier of a specific YouTube content.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
-     * @returns {Promise<number>}
+     * @returns {Promise<{status: number, identifier: string}>}
      */
     async setMediaYouTubeIdentifier(platform, search) {
-        const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
-        if (this.state.Media.YouTube.uniform_resource_locator.includes("youtube")) {
+        const response = await this.setMediaYouTubeUniformResourceLocator(platform, search);
+        const identifier = (response.uniform_resource_locator.includes("youtube")) ? response.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "").replace(/\?.*/, "") : response.uniform_resource_locator.replace("https://youtu.be/", "").replace(/\?.*/, "");
+        if (response.uniform_resource_locator.includes("youtube")) {
             this.setState((previous) => ({
                 Media: {
                     ...previous.Media,
                     YouTube: {
                         ...previous.Media.YouTube,
-                        identifier: this.state.Media.YouTube.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "").replace(/\?.*/, ""),
+                        identifier: response.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "").replace(/\?.*/, ""),
                     },
                 },
             }));
@@ -180,12 +181,15 @@ class HeaderDownload extends Component {
                     ...previous.Media,
                     YouTube: {
                         ...previous.Media.YouTube,
-                        identifier: this.state.Media.YouTube.uniform_resource_locator.replace("https://youtu.be/", "").replace(/\?.*/, ""),
+                        identifier: response.uniform_resource_locator.replace("https://youtu.be/", "").replace(/\?.*/, ""),
                     },
                 },
             }));
         }
-        return status;
+        return {
+            status: response.status,
+            identifier: identifier,
+        };
     }
 
     /**

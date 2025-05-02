@@ -73,7 +73,7 @@ class YouTubeDownloader extends Component {
         const loading_icon = document.querySelector("#loading");
         const local_storage_data = localStorage.getItem("media");
         const media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-        const data_loaded = (media != null);
+        const data_loaded = (media != null && window.Tracker);
         this.setState((previous) => ({
             ...previous,
             uniform_resource_locator: (media) ? media.uniform_resource_locator : this.state.uniform_resource_locator,
@@ -92,6 +92,7 @@ class YouTubeDownloader extends Component {
             },
             data_loaded: data_loaded,
         }));
+        this.tracker = (window.Tracker) ? window.Tracker : null;
         if (data_loaded) {
             loading_icon.style.display = "none";
             this.verifyFile();

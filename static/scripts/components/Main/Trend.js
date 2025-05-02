@@ -48,12 +48,17 @@ class Trend extends Component {
     setData() {
         const loading_icon = document.querySelector("#loading");
         const trend = (localStorage.getItem("trend") != null) ? JSON.parse(localStorage.getItem("trend")).data : null;
-        const data_loaded
+        const data_loaded = (trend != null && window.Tracker);
         this.setState((previous) => ({
             ...previous,
             Trend: (trend) ? trend : this.state.Trend,
+            System: {
+                ...previous.System,
+                data_loaded: data_loaded,
+            },
         }));
-        if (trend) {
+        this.tracker = (window.Tracker) ? window.Tracker : null;
+        if (data_loaded) {
             loading_icon.style.display = "none";
         }
     }

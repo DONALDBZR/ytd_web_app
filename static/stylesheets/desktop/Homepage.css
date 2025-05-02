@@ -82,7 +82,7 @@ header nav div form {
 }
 header nav div form button {
     height: calc(var(--form-height) / 2.91);
-    font-size: var(--textSize);
+    font-size: calc(var(--textSize) * 1.25);
 }
 header nav div form button i {
     font-size: var(--textSize);
@@ -113,7 +113,7 @@ header nav div form button {
 }
 header nav div div button {
     height: calc(var(--color-scheme-height) / 2.91);
-    font-size: var(--textSize);
+    font-size: calc(var(--textSize) * 1.111);
 }
 header nav div:nth-child(2) div button svg,
 header nav div:nth-child(2) form button svg,
@@ -147,7 +147,7 @@ header nav div:nth-child(2) form button i {
 #Homepage main div div i {
     width: auto;
     height: calc(var(--main-height) / 23.27);
-    font-size: inherit;
+    font-size: calc(var(--textSize) * 1.111);
 }
 #Homepage main .Trend {
     --trend-height: calc(var(--main-height) * 0.85);
@@ -178,6 +178,7 @@ header nav div:nth-child(2) form button i {
     width: calc(var(--card-width) / 2);
     overflow: unset;
     height: inherit;
+    --detail-width: calc(var(--card-width) / 2);
 }
 #Homepage main .Trend div .card div:nth-child(1) a {
     width: inherit;
@@ -197,12 +198,17 @@ header nav div:nth-child(2) form button i {
     height: calc(var(--card-height) / 4);
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(1) {
-    width: inherit;
-    font-size: calc(var(--textSize) * 0.66);
+    width: calc(var(--detail-width) * 0.98);
+    font-size: calc(var(--textSize) * 0.625);
     letter-spacing: calc(var(--width) / 2000);
+    margin-inline: calc(var(--detail-width) / 100);
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) {
+    width: calc(var(--detail-width) * 0.98);
+    margin-inline: calc(var(--detail-width) / 100);
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a {
-    font-size: calc(var(--textSize) * 0.81);
+    font-size: calc(var(--textSize) * 0.625);
     letter-spacing: calc(var(--width) / 2000);
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) {
@@ -211,8 +217,19 @@ header nav div:nth-child(2) form button i {
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) div,
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) div {
-    width: calc(var(--card-width) / 8);
+    width: calc(var(--detail-width) / 4);
     font-size: calc(var(--textSize) * 0.66);
+    margin-inline: unset;
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
+    margin-left: calc(var(--detail-width) / 100);
+    width: calc(var(--detail-width) * 0.24);
+    font-size: calc(var(--textSize) * 0.625);
+}
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) div:nth-child(2),
+#Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) div:nth-child(2) {
+    font-size: calc(var(--textSize) * 0.625);
 }
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) {
     width: calc(var(--card-width) / 4);
@@ -227,6 +244,7 @@ header nav div:nth-child(2) form button i {
 #Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a {
     width: auto;
     height: inherit;
+    font-size: calc(var(--textSize) * 1.126);
 }
 main #loading {
     display: flex;

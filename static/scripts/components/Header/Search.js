@@ -100,6 +100,7 @@ class HeaderSearch extends Component {
             Session: (data_loaded) ? session : this.state.Session,
             System: {
                 ...previous.System,
+                view_route: window.location.pathname,
                 data_loaded: data_loaded,
             },
         }));

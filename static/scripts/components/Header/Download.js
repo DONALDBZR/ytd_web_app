@@ -150,7 +150,7 @@ class HeaderDownload extends Component {
             ...previous,
             System: {
                 ...previous.System,
-                view_route: `/Search/${this.state.Media.YouTube.identifier}`,
+                view_route: (status == 200) ? `/Search/${this.state.Media.YouTube.identifier}` : window.location.href,
             },
         }));
         return status;

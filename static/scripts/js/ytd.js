@@ -1,6 +1,5 @@
 /**
- * The main script that will initialize the application as
- * needed
+ * The main script that will initialize the application as needed.
  */
 class YTD {
     /**
@@ -460,7 +459,6 @@ class YTD {
         status = ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) ? 304 : 204;
         if ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) {
             related_content.timestamp = current_time + 3600;
-            related_content.data = this.sanitizeRelatedContentList(related_content.data);
             localStorage.setItem(data_object, JSON.stringify(related_content));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
             return;
@@ -469,27 +467,6 @@ class YTD {
         console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
         this.getRelatedContents(route, request_method, data_object, identifier)
         .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
-    }
-
-    /**
-     * Sanitizing the data of the related contents.
-     * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}[]} related_contents The related content list to sanitize.
-     * @returns {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}[]}
-     */
-    sanitizeRelatedContentList(related_contents) {
-        const sanitized_related_contents = [];
-        for (let index = 0; index < related_contents.length; index++) {
-            const related_content = related_contents[index];
-            sanitized_related_contents.push({
-                duration: this.escapeHtml(related_content.duration),
-                channel: this.escapeHtml(related_content.channel),
-                title: this.escapeHtml(related_content.title),
-                uniform_resource_locator: this.escapeHtml(related_content.uniform_resource_locator),
-                author_channel: this.escapeHtml(related_content.author_channel),
-                thumbnail: this.escapeHtml(related_content.thumbnail),
-            });
-        }
-        return sanitized_related_contents;
     }
 
     /**
@@ -523,16 +500,6 @@ class YTD {
         status = ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) ? 304 : 204;
         if ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) {
             media.timestamp = current_time + 3600;
-            media.data.uniform_resource_locator = this.escapeHtml(media.data.uniform_resource_locator);
-            media.data.author = this.escapeHtml(media.data.author);
-            media.data.title = this.escapeHtml(media.data.title);
-            media.data.identifier = this.escapeHtml(media.data.identifier);
-            media.data.author_channel = this.escapeHtml(media.data.author_channel);
-            media.data.published_at = this.escapeHtml(media.data.published_at);
-            media.data.thumbnail = this.escapeHtml(media.data.thumbnail);
-            media.data.duration = this.escapeHtml(media.data.duration);
-            media.data.audio_file = (media.data.audio_file != null) ? this.escapeHtml(media.data.audio_file) : null;
-            media.data.video_file = (media.data.video_file != null) ? this.escapeHtml(media.data.video_file) : null;
             localStorage.setItem(data_object, JSON.stringify(media));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
             return;
@@ -651,7 +618,6 @@ class YTD {
         status = (current_time < trend.timestamp + 86400) ? 304 : 204;
         if (current_time < trend.timestamp + 86400) {
             trend.timestamp = current_time + 86400;
-            trend.data = this.sanitizeTrendList(trend.data);
             localStorage.setItem(data_object, JSON.stringify(trend));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
             return;
@@ -660,32 +626,6 @@ class YTD {
         console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
         this.getTrend(route, request_method, data_object)
         .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
-    }
-
-    /**
-     * Sanitizing the trend list.
-     * @param {{audio_file: string|null, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video_file: string|null, views: number}[]} trend_list The trend list to sanitize.
-     * @returns {{audio_file: string|null, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video_file: string|null, views: number}[]}
-     */
-    sanitizeTrendList(trend_list) {
-        const sanitized_trend_list = [];
-        for (let index = 0; index < trend_list.length; index++) {
-            const trend = trend_list[index];
-            sanitized_trend_list.push({
-                audio_file: (trend.audio_file != null) ? this.escapeHtml(trend.audio_file) : null,
-                author: this.escapeHtml(trend.author),
-                author_channel: this.escapeHtml(trend.author_channel),
-                duration: this.escapeHtml(trend.duration),
-                identifier: this.escapeHtml(trend.identifier),
-                published_at: this.escapeHtml(trend.published_at),
-                thumbnail: this.escapeHtml(trend.thumbnail),
-                title: this.escapeHtml(trend.title),
-                uniform_resource_locator: this.escapeHtml(trend.uniform_resource_locator),
-                video_file: (trend.video_file != null) ? this.escapeHtml(trend.video_file) : null,
-                views: trend.views,
-            });
-        }
-        return sanitized_trend_list;
     }
 
     /**
@@ -707,7 +647,6 @@ class YTD {
         status = (current_time < session.Client.timestamp + 3600) ? 304 : 204;
         if (current_time < session.Client.timestamp + 3600) {
             session.Client.timestamp = current_time + 3600;
-            session.Client.color_scheme = this.escapeHtml(session.Client.color_scheme);
             localStorage.setItem(data_object, JSON.stringify(session));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
         }
@@ -715,25 +654,6 @@ class YTD {
         console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
         this.getSession(route, request_method, data_object)
         .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
-    }
-
-    /**
-     * Sanitizing the HTML content.
-     * @param {string} unsafe The unsafe HTML content.
-     * @returns {string}
-     */
-    escapeHtml(unsafe) {
-        if (unsafe === null || unsafe === undefined) {
-            return "";
-        }
-        const lookup = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;",
-        };
-        return String(unsafe).replace(/[&<>"']/g, (character) => lookup[character]);
     }
 }
 

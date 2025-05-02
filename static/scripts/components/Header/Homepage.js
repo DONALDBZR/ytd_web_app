@@ -174,13 +174,13 @@ class HeaderHomepage extends Component {
      */
     async setRoute(platform, search) {
         try {
-            const status = await this.setMediaYouTubeIdentifier(platform, search);
-            console.log(`Function: setRoute\nStatus: ${status}\nIdentifier: ${this.state.Media.YouTube.identifier}`);
+            const response = await this.setMediaYouTubeIdentifier(platform, search);
+            const status = response.status;
             this.setState((previous) => ({
                 ...previous,
                 System: {
                     ...previous.System,
-                    view_route: (status == 200) ? `/Search/${this.state.Media.YouTube.identifier}` : window.location.href,
+                    view_route: (status == 200) ? `/Search/${response.identifier}` : window.location.href,
                 },
             }));
             return status;

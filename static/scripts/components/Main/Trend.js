@@ -139,7 +139,7 @@ class Trend extends Component {
     /**
      * Rendering the media card.
      * @param {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}} content
-     * @return {React.Component}
+     * @return {React.JSX.Element}
      */
     renderMediaCard(content) {
         const width = (window.innerWidth < 640) ? 179 : 1280;
@@ -151,6 +151,7 @@ class Trend extends Component {
         const author_channel = this.decodeHtmlEntities(content.author_channel);
         const author = this.decodeHtmlEntities(content.author);
         const duration = this.decodeHtmlEntities(content.duration);
+        console.log(`Identifier: ${identifier}\nUniform Resource Locator: ${uniform_resource_locator}\nThumbnail: ${thumbnail}\nTitle: ${title}\nAuthor Channel: ${author_channel}\nAuthor: ${author}\nDuration: ${duration}`);
         return (
             <div className="card" key={identifier}>
                 <div>

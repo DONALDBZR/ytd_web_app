@@ -59,7 +59,7 @@ class RelatedContents extends Component {
     setData() {
         const local_storage_data = localStorage.getItem("related_content");
         const related_content = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("related_content")).data : null;
-        const data_loaded = (related_content != null);
+        const data_loaded = (related_content != null && window.Tracker);
         this.setState((previous) => ({
             ...previous,
             Media: {
@@ -71,6 +71,7 @@ class RelatedContents extends Component {
                 data_loaded: data_loaded,
             },
         }));
+        this.tracker = (window.Tracker) ? window.Tracker : null;
     }
 
     /**

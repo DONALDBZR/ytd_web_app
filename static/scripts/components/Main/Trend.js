@@ -40,6 +40,19 @@ class Trend extends Component {
     }
 
     /**
+     * Updating the component as soon as there is an update in the states.
+     * @returns {void}
+     */
+    componentDidUpdate() {
+        if (!this.state.System.data_loaded) {
+            setTimeout(() => {
+                this.setData();
+                console.log("Component: Homepage.Main.MainHomepage.Trend\nStatus: Updated");
+            }, 1000);
+        }
+    }
+
+    /**
      * Updating the component state with trend data from localStorage.
      * 
      * This method retrieves trend data from localStorage (if available) and updates the component state. If trend data exists, it hides the loading icon.

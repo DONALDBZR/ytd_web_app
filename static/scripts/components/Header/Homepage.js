@@ -109,6 +109,7 @@ class HeaderHomepage extends Component {
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,
+                view_route: (data_loaded) ? window.location.pathname : "/",
             },
         }));
         this.tracker = (window.Tracker) ? window.Tracker : null;

@@ -175,6 +175,7 @@ class HeaderHomepage extends Component {
     async setRoute(platform, search) {
         try {
             const status = await this.setMediaYouTubeIdentifier(platform, search);
+            console.log(`Function: setRoute\nStatus: ${status}\nIdentifier: ${this.state.Media.YouTube.identifier}`);
             this.setState((previous) => ({
                 ...previous,
                 System: {
@@ -193,7 +194,7 @@ class HeaderHomepage extends Component {
      * Extracting the identifier of a specific YouTube content.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
-     * @returns {Promise<number>}
+     * @returns {Promise<{status: number, identifier: string}>}
      */
     async setMediaYouTubeIdentifier(platform, search) {
         try {
@@ -209,7 +210,10 @@ class HeaderHomepage extends Component {
                     },
                 },
             }));
-            return status;
+            return {
+                status: status,
+                identifier: identifier,
+            };
         } catch (error) {
             console.error("An error occurred while setting the YouTube identifier.\nError: ", error);
             throw new Error(error);

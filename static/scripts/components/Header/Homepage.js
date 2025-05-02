@@ -197,10 +197,9 @@ class HeaderHomepage extends Component {
      */
     async setMediaYouTubeIdentifier(platform, search) {
         try {
-            const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
-            const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
-            console.log(`Function: setMediaYouTubeIdentifier\nStatus: ${status}\nUniform Resource Locator: ${uniform_resource_locator}`);
-            const identifier = await this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
+            const response = await this.setMediaYouTubeUniformResourceLocator(platform, search);
+            const status = response.status;
+            const identifier = await this.extractYouTubeIdentifier(response.uniform_resource_locator);
             this.setState((previous) => ({
                 Media: {
                     ...previous.Media,

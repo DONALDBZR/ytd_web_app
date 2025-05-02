@@ -13,10 +13,13 @@ class Trend extends Component {
         super(props);
         /**
          * The states of the component.
-         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}]}}
+         * @type {{Trend: [{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}], System: {data_loaded: boolean}}}
          */
         this.state = {
             Trend: [],
+            System: {
+                data_loaded: false,
+            },
         };
         /**
          * The tracker class which will track the user's activity on
@@ -45,6 +48,7 @@ class Trend extends Component {
     setData() {
         const loading_icon = document.querySelector("#loading");
         const trend = (localStorage.getItem("trend") != null) ? JSON.parse(localStorage.getItem("trend")).data : null;
+        const data_loaded
         this.setState((previous) => ({
             ...previous,
             Trend: (trend) ? trend : this.state.Trend,

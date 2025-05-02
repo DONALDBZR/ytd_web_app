@@ -32,6 +32,7 @@ class HeaderSearch extends Component {
                 },
             },
             System: {
+                view_route: "",
                 data_loaded: false,
             },
         };

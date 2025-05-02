@@ -198,7 +198,9 @@ class HeaderHomepage extends Component {
     async setMediaYouTubeIdentifier(platform, search) {
         try {
             const status = await this.setMediaYouTubeUniformResourceLocator(platform, search);
-            const identifier = this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
+            const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
+            console.log(`Function: setMediaYouTubeIdentifier\nStatus: ${status}\nUniform Resource Locator: ${uniform_resource_locator}`);
+            const identifier = await this.extractYouTubeIdentifier(this.state.Media.YouTube.uniform_resource_locator);
             this.setState((previous) => ({
                 Media: {
                     ...previous.Media,
@@ -218,9 +220,9 @@ class HeaderHomepage extends Component {
     /**
      * Extracting the YouTube Identifier from the uniform resource locator.
      * @param {string} uniform_resource_locator The uniform resource locator
-     * @returns {string}
+     * @returns {Promise<string>}
      */
-    extractYouTubeIdentifier(uniform_resource_locator) {
+    async extractYouTubeIdentifier(uniform_resource_locator) {
         try {
             const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
             this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
@@ -260,11 +262,10 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Setting the uniform resource locator for a specific YouTube
-     * content.
+     * Setting the uniform resource locator for a specific YouTube content.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
-     * @returns {Promise<number>}
+     * @returns {Promise<{status: number, uniform_resource_locator: string}>}
      */
     async setMediaYouTubeUniformResourceLocator(platform, search) {
         const response = await this.getSearchMedia(platform, search);
@@ -279,7 +280,10 @@ class HeaderHomepage extends Component {
                     },
                 },
             }));
-            return response.status;
+            return {
+                status: response.status,
+                uniform_resource_locator: uniform_resource_locator,
+            };
         } catch (error) {
             console.error("Failed to set the uniform resource locator.\nError: ", error);
             throw new Error(error);

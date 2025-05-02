@@ -169,7 +169,7 @@ class HeaderSearch extends Component {
                 ...previous,
                 System: {
                     ...previous.System,
-                    view_route: (response.status == 200) ? `/Search/${response.YouTube.identifier}` : "/",
+                    view_route: (response.status == 200) ? `/Search/${response.YouTube.identifier}` : window.location.href,
                 },
             }));
             return response.status;

@@ -40,7 +40,7 @@ class HeaderSearch extends Component {
          * the application.
          * @type {Tracker}
          */
-        this.tracker = window.Tracker;
+        this.tracker = null;
     }
 
     /**

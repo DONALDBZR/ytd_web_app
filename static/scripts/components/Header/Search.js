@@ -254,7 +254,7 @@ class HeaderSearch extends Component {
      * Setting the uniform resource locator for a specific YouTube content.
      * @param {string} platform The platform to be searched on.
      * @param {string} search The search data to be searched.
-     * @returns {Promise<number>}
+     * @returns {Promise<{status: number, uniform_resource_locator: string}>}
      */
     async setMediaYouTubeUniformResourceLocator(platform, search) {
         const response = await this.getSearchMedia(platform, search);
@@ -270,7 +270,10 @@ class HeaderSearch extends Component {
                     },
                 },
             }));
-            return response.status;
+            return {
+                status: response.status,
+                uniform_resource_locator: uniform_resource_locator,
+            };
         } catch (error) {
             console.error("Failed to set the uniform resource locator.\nError: ", error);
             throw new Error(error);

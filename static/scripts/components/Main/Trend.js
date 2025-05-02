@@ -6,8 +6,7 @@ import React, { Component } from "react";
  */
 class Trend extends Component {
     /**
-     * Constructing the Trend component which is will render the
-     * trend list.
+     * Constructing the Trend component which is will render the trend list.
      * @param {*} props The properties of the component
      */
     constructor(props) {
@@ -24,7 +23,7 @@ class Trend extends Component {
          * the application.
          * @type {Tracker}
          */
-        this.tracker = window.Tracker;
+        this.tracker = null;
     }
 
     /**

@@ -1143,7 +1143,7 @@ class AnalyticalManagementSystem:
             self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
             return self.ok
         except ValueError as error:
-            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
+            self.getLogger().warn(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
             return self.service_unavailable
 
     def sanitizeIpAddress(self) -> int:

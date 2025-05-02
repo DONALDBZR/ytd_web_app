@@ -145,15 +145,15 @@ class HeaderDownload extends Component {
      * @returns {Promise<number>}
      */
     async setRoute(platform, search) {
-        const status = await this.setMediaYouTubeIdentifier(platform, search);
+        const response = await this.setMediaYouTubeIdentifier(platform, search);
         this.setState((previous) => ({
             ...previous,
             System: {
                 ...previous.System,
-                view_route: (status == 200) ? `/Search/${this.state.Media.YouTube.identifier}` : window.location.href,
+                view_route: (response.status == 200) ? `/Search/${response.identifier}` : window.location.href,
             },
         }));
-        return status;
+        return response.status;
     }
 
     /**

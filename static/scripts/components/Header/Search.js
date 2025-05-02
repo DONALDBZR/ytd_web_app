@@ -164,15 +164,15 @@ class HeaderSearch extends Component {
      */
     async setRoute(platform, search) {
         try {
-            const status = await this.setMediaYouTubeIdentifier(platform, search);
+            const response = await this.setMediaYouTubeIdentifier(platform, search);
             this.setState((previous) => ({
                 ...previous,
                 System: {
                     ...previous.System,
-                    view_route: (status == 200) ? `/Search/${this.state.Media.YouTube.identifier}` : "/",
+                    view_route: (response.status == 200) ? `/Search/${response.YouTube.identifier}` : "/",
                 },
             }));
-            return status;
+            return response.status;
         } catch (error) {
             console.error("An error occurred while setting the route!\nError: ", error);
             throw new Error(error);

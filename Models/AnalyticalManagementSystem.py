@@ -378,7 +378,7 @@ class AnalyticalManagementSystem:
         self.setUserAgent(str(data["user_agent"]))
         self.setScreenResolution(str(data["screen_resolution"]))
         self.setReferrer(str(data["referrer"]) if "referrer" in data and data["referrer"] != "" else None)
-        self.setIpAddress(str(data["ip_address"]) if data["ip_address"] != "127.0.0.1" else "omnitechbros.ddns.net")
+        self.setIpAddress("omnitechbros.ddns.net" if data["ip_address"] == "127.0.0.1" or str(data["ip_address"]).startswith("192.168.") else str(data["ip_address"]))
         status: int = self.getUserAgentData()
         status = self.getScreenResolutionData() if status == self.ok else status
         status = self.setDeviceType() if status == self.ok else status

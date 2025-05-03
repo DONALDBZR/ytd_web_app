@@ -151,7 +151,6 @@ class Trend extends Component {
         const author_channel = this.decodeHtmlEntities(content.author_channel);
         const author = this.decodeHtmlEntities(content.author);
         const duration = this.decodeHtmlEntities(content.duration);
-        console.log(`Identifier: ${identifier}\nUniform Resource Locator: ${uniform_resource_locator}\nThumbnail: ${thumbnail}\nTitle: ${title}\nAuthor Channel: ${author_channel}\nAuthor: ${author}\nDuration: ${duration}`);
         return (
             <div className="card" key={identifier}>
                 <div>

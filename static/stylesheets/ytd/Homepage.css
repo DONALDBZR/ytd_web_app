@@ -3,7 +3,8 @@
     font-style: normal;
     font-weight: 400;
     src: local("Pacifico"),
-        url("https://fonts.cdnfonts.com/s/12846/Pacifico.woff") format("woff");
+        url("https://fonts.cdnfonts.com/s/12846/Pacifico.woff")
+            format("woff");
 }
 @font-face {
     font-family: "Proxima Nova";
@@ -259,13 +260,9 @@ header nav div a {
     text-decoration: none;
 }
 header nav .active a,
-header nav div div button:hover svg,
-header nav div form button:hover svg,
 header nav div div button:hover i,
 header nav div form button:hover i,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover svg,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover i,
-header nav .active button svg,
+main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover i,
 header nav .active button i {
     color: var(--color3);
 }
@@ -274,14 +271,11 @@ header nav div form button {
     background: transparent;
     cursor: pointer;
 }
-header nav div div button svg,
-header nav div form button svg,
 header nav div form input,
 header nav div div button i,
 header nav div form button i,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a svg,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(5) a i {
+main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+main .Trend div .card div:nth-child(2) div:nth-child(5) a i {
     color: var(--color2);
 }
 header nav div form input {
@@ -291,27 +285,26 @@ header nav div form input::placeholder {
     opacity: calc(var(--percentage) / 2);
     color: var(--color2);
 }
-#Homepage main p,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(1),
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a {
+main p,
+main .Trend div .card div:nth-child(2) div:nth-child(1),
+main .Trend div .card div:nth-child(2) div:nth-child(2) a {
     font-family: var(--proximaNova);
 }
-#Homepage main div div svg,
-#Homepage main div div i {
+main div div i {
     color: var(--color4);
 }
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(1),
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a,
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
+main .Trend div .card div:nth-child(2) div:nth-child(1),
+main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+main .Trend div .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
+main .Trend div .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
     font-weight: 600;
 }
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a {
+main .Trend div .card div:nth-child(2) div:nth-child(2) a {
     text-decoration: none;
 }
-#Homepage main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover {
+main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover {
     text-decoration: underline;
 }
-#Homepage main .Trend div .card div:nth-child(1) a:hover img {
+main .Trend div .card div:nth-child(1) a:hover img {
     opacity: calc(var(--percentage) / 2);
 }

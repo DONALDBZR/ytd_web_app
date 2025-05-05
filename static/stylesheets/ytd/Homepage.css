@@ -243,47 +243,44 @@
 body {
     font-family: sans-serif;
     background-color: var(--color1);
-    color: var(--color2);
 }
-footer div {
-    text-decoration: none;
-    font-family: var(--pacifico);
-    color: var(--color2);
-}
-main #loading {
-    color: var(--color3);
-    background-color: var(--color5);
-}
+footer div,
 header nav div a {
     font-family: var(--pacifico);
-    color: var(--color2);
-    text-decoration: none;
+}
+main #loading {
+    background-color: var(--color5);
 }
 header nav .active a,
 header nav div div button:hover i,
 header nav div form button:hover i,
 main .Trend div .card div:nth-child(2) div:nth-child(5) a:hover i,
-header nav .active button i {
+header nav .active button i,
+main #loading {
     color: var(--color3);
 }
 header nav div div button,
 header nav div form button {
-    background: transparent;
     cursor: pointer;
 }
+body,
+footer div,
 header nav div form input,
 header nav div div button i,
 header nav div form button i,
+header nav div a,
 main .Trend div .card div:nth-child(2) div:nth-child(2) a,
-main .Trend div .card div:nth-child(2) div:nth-child(5) a i {
+main .Trend div .card div:nth-child(2) div:nth-child(5) a i,
+header nav div form input::placeholder {
     color: var(--color2);
 }
-header nav div form input {
+header nav div form input,
+header nav div div button,
+header nav div form button {
     background: transparent;
 }
 header nav div form input::placeholder {
     opacity: calc(var(--percentage) / 2);
-    color: var(--color2);
 }
 main p,
 main .Trend div .card div:nth-child(2) div:nth-child(1),
@@ -299,7 +296,9 @@ main .Trend div .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
 main .Trend div .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
     font-weight: 600;
 }
-main .Trend div .card div:nth-child(2) div:nth-child(2) a {
+main .Trend div .card div:nth-child(2) div:nth-child(2) a,
+header nav div a,
+footer div {
     text-decoration: none;
 }
 main .Trend div .card div:nth-child(2) div:nth-child(2) a:hover {

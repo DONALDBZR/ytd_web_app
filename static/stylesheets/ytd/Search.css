@@ -4,7 +4,8 @@
     font-style: normal;
     font-weight: 400;
     src: local("Pacifico"),
-        url("https://fonts.cdnfonts.com/s/12846/Pacifico.woff") format("woff");
+        url("https://fonts.cdnfonts.com/s/12846/Pacifico.woff")
+            format("woff");
 }
 /* Importing all the font's files needed for Proxima Nova */
 @font-face {
@@ -246,96 +247,82 @@
 body {
     font-family: sans-serif;
     background-color: var(--color1);
-    color: var(--color2);
 }
-footer div {
-    text-decoration: none;
-    font-family: var(--pacifico);
-}
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg:hover,
-main #loading {
-    color: var(--color3);
-}
-footer div,
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg {
-    color: var(--color2);
-}
-header nav div a {
-    font-family: var(--pacifico);
-    color: var(--color2);
-    text-decoration: none;
-}
-header nav div a:hover {
-    text-decoration: underline;
-    color: var(--color3);
-}
+main #loading,
 header nav .active a,
-header nav div div button:hover svg,
-header nav div form button:hover svg,
 header nav div div button:hover i,
 header nav div form button:hover i,
-body[id*="Search"] main .Media .YouTube .data div button:hover,
-header nav .active button svg,
-header nav .active button i {
+main .Media .YouTube .data div button:hover,
+header nav .active button i,
+header nav div a:hover {
     color: var(--color3);
+}
+body,
+footer div,
+main .Media .YouTube .data .metadata div:nth-child(2) a,
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a,
+header nav div a,
+header nav div form input,
+header nav div div button i,
+header nav div form button i,
+header nav div form input::placeholder,
+main .Media .YouTube .data div button {
+    color: var(--color2);
+}
+header nav div a,
+footer div {
+    font-family: var(--pacifico);
 }
 header nav div div button,
 header nav div form button {
     background: transparent;
     cursor: pointer;
 }
-header nav div div button svg,
-header nav div form button svg,
-header nav div form input,
-header nav div div button i,
-header nav div form button i {
-    color: var(--color2);
-}
 header nav div form input {
     background: transparent;
+    font-family: var(--sourceCodePro);
 }
 header nav div form input::placeholder {
     opacity: calc(var(--percentage) / 2);
-    color: var(--color2);
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(1),
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(3) div:nth-child(2),
-body[id*="Search"] main .Media .YouTube .data .metadata div {
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(1),
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(2) a,
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(3) div:nth-child(2),
+main .Media .YouTube .data .metadata div {
     font-family: var(--proximaNova);
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(1),
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) {
+main .Media .YouTube .data .metadata div:nth-child(1),
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) {
     font-weight: 600;
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a {
+main .Media .YouTube .data .metadata div:nth-child(2) a,
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a,
+header nav div a,
+footer div {
     text-decoration: none;
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a:hover,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a:hover {
+main .Media .YouTube .data .metadata div:nth-child(2) a:hover,
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(2) a:hover,
+header nav div a:hover {
     text-decoration: underline;
 }
-body[id*="Search"] main .Media .YouTube div a:hover,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a:hover img {
+main .Media .YouTube div a:hover,
+main .Media .RelatedContents .card div:nth-child(1) a:hover img {
     opacity: calc(var(--percentage) / 2);
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a:hover {
+main .Media .YouTube .data .metadata div:nth-child(2) a:hover {
     opacity: var(--percentage);
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) div div:nth-child(2),
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(2) a,
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(3) div:nth-child(2) {
+main .Media .YouTube .data .metadata div:nth-child(3) div div:nth-child(2),
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(2) a,
+main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) div:nth-child(3) div:nth-child(2) {
     font-weight: 400;
 }
-body[id*="Search"] main .Media .YouTube .data div button {
-    color: var(--color2);
+main .Media .YouTube .data div button {
     background-color: var(--color1);
     cursor: pointer;
 }
-body[id*="Search"] header nav .active input {
+header nav .active input {
     border-bottom: var(--color3) solid calc(var(--search-bar-height) / 58.2);
 }
 main #loading {

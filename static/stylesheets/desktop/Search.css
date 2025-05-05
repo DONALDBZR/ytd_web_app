@@ -12,39 +12,6 @@ body {
     padding: calc(var(--height) * 0) calc(var(--width) * 0);
     font-size: var(--textSize);
 }
-footer {
-    height: calc(var(--height) / 10);
-}
-main {
-    --component-height: calc(var(--height) * 0.8);
-    --component-width: var(--width);
-    height: var(--component-height);
-    width: var(--component-width);
-}
-footer {
-    display: flex;
-    justify-content: space-evenly;
-}
-footer div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: calc(var(--textSize) * 1.61051);
-    width: calc(var(--width) / 10);
-    height: inherit;
-}
-main #loading {
-    position: fixed;
-    z-index: 1;
-    left: calc(var(--width) * 0);
-    top: calc(var(--height) * 0);
-    width: var(--width);
-    height: var(--height);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    font-size: calc(var(--textSize) * 6.727499949);
-}
 header {
     --header-height: calc(var(--height) / 10);
     --header-width: var(--width);
@@ -52,14 +19,14 @@ header {
     height: var(--header-height);
 }
 header nav {
-    width: inherit;
-    height: inherit;
+    width: var(--header-width);
+    height: var(--header-height);
     display: flex;
 }
 header nav div {
     --navigation-bar-height: var(--header-height);
     --navigation-bar-width: calc(var(--header-width) / 3);
-    height: inherit;
+    height: var(--navigation-bar-height);
     width: var(--navigation-bar-width);
     display: flex;
     align-items: center;
@@ -82,15 +49,10 @@ header nav div form {
     align-items: center;
 }
 header nav div form button {
-    height: calc(var(--form-height) / 2.91);
-    font-size: var(--textSize);
-}
-header nav div form button i {
-    font-size: var(--textSize);
+    font-size: calc(var(--textSize) * 1.25);
 }
 header nav div form input {
     border: none;
-    font-family: var(--sourceCodePro);
     letter-spacing: calc(var(--width) / 2000);
     padding-block: unset;
     height: calc(var(--form-height) / 2.91);
@@ -105,193 +67,208 @@ header nav div div {
     --color-scheme-width: calc(var(--navigation-bar-width) / 2);
     height: var(--color-scheme-height);
     width: var(--color-scheme-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-header nav div div button,
-header nav div form button {
+header nav div div button, header nav div form button {
     border: none;
     padding: unset;
-    width: auto;
 }
 header nav div div button {
-    height: calc(var(--color-scheme-height) / 2.91);
-    font-size: var(--textSize);
+    font-size: calc(var(--textSize) * 1.25);
 }
-header nav div:nth-child(2) div button svg,
-header nav div:nth-child(2) form button svg,
-header nav div:nth-child(2) div button i,
-header nav div:nth-child(2) form button i {
-    height: inherit;
-    width: auto;
-    font-size: inherit;
+main {
+    --main-height: calc(var(--height) * 0.8);
+    --main-width: var(--width);
+    height: var(--main-height);
+    width: var(--main-width);
 }
-body[id*="Search"] main .Media .RelatedContents::-webkit-scrollbar {
+main #loading {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--width) * 0);
+    top: calc(var(--height) * 0);
+    width: var(--width);
+    height: var(--height);
     display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 10);
 }
 main #loading {
     display: flex;
 }
-body[id*="Search"] main .Media {
-    height: inherit;
-    width: inherit;
+main .Media .RelatedContents::-webkit-scrollbar {
+    display: none;
+}
+main .Media {
+    --media-height: var(--main-height);
+    --media-width: var(--main-width);
+    height: var(--media-height);
+    width: var(--media-width);
     display: flex;
 }
-body[id*="Search"] main .Media .YouTube {
-    --youtube-height: var(--component-height);
-    --youtube-width: calc(var(--component-width) * (2 / 3));
+main .Media .YouTube {
+    --youtube-height: var(--media-height);
+    --youtube-width: calc(var(--media-width) * (2 / 3));
     height: var(--youtube-height);
-    width: calc(var(--youtube-width) * 0.76962);
-    margin-left: calc(var(--youtube-width) * 0.18);
+    width: calc(var(--youtube-width) * 0.77462);
+    margin-left: calc(var(--youtube-width) * 0.175);
     margin-right: calc(var(--youtube-width) * 0.05038);
 }
-body[id*="Search"] main .Media .RelatedContents {
-    --related-contents-height: var(--component-height);
-    --related-contents-width: calc(var(--component-width) / 3);
+main .Media .RelatedContents {
+    --related-contents-height: var(--media-height);
+    --related-contents-width: calc(var(--media-width) / 3);
     height: var(--related-contents-height);
     width: var(--related-contents-width);
     overflow: scroll;
 }
-body[id*="Search"] main .Media .YouTube div {
+main .Media .YouTube div {
     height: calc(var(--youtube-height) * (4 / 5));
-    width: auto;
+    width: calc(var(--youtube-width) * 0.825);
     display: flex;
 }
-body[id*="Search"] main .Media .YouTube div a {
+main .Media .YouTube div a {
     display: block;
     height: calc(var(--youtube-height) * (4 / 5));
     width: calc(var(--youtube-height) * (4 / 5) * var(--aspect-ratio));
 }
-body[id*="Search"] main .Media .YouTube div a img {
+main .Media .YouTube div a img {
     width: auto;
     height: calc(var(--youtube-height) * (4 / 5));
 }
-body[id*="Search"] main .Media .YouTube .data {
+main .Media .YouTube .data {
     --youtube-data-height: calc(var(--youtube-height) / 5);
-    --youtube-data-width: calc(var(--youtube-width) * 0.76962);
+    --youtube-data-width: calc(var(--youtube-height) * (4 / 5) * var(--aspect-ratio));
     height: var(--youtube-data-height);
     width: var(--youtube-data-width);
     display: flex;
     justify-content: normal;
 }
-body[id*="Search"] main .Media .YouTube .data .metadata {
+main .Media .YouTube .data .metadata {
     height: var(--youtube-data-height);
     width: calc(var(--youtube-data-width) * (4 / 5));
     justify-content: normal;
     display: block;
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) {
+main .Media .YouTube .data .metadata div {
+    display: flex;
+    justify-content: normal;
+    align-items: center;
+    width: calc(var(--youtube-data-width) * (4 / 5));
+    height: calc(var(--youtube-data-height) / 4);
+}
+main .Media .YouTube .data .metadata div:nth-child(1) {
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: var(--textSize);
+}
+main .Media .YouTube .data .metadata div:nth-child(2) {
+    height: calc(var(--youtube-data-height) / 4);
+    width: calc(var(--youtube-data-width) * (4 / 5));
+    justify-content: normal;
+}
+main .Media .YouTube .data .metadata div:nth-child(2) a {
+    display: block;
+    height: auto;
+    width: auto;
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: calc(var(--textSize) * (14 / 16));
+}
+main .Media .YouTube .data .metadata div:nth-child(3) {
+    flex-wrap: wrap;
+    height: calc(var(--youtube-data-height) / 2);
+    font-size: calc(var(--textSize) * (14 / 16));
+}
+main .Media .YouTube .data .metadata div:nth-child(3) #duration div,
+main .Media .YouTube .data .metadata div:nth-child(3) #views div {
+    height: calc(var(--youtube-data-height) / 4);
+    letter-spacing: calc(var(--width) / 2000);
+}
+main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(1),
+main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(1) {
+    width: calc(var(--youtube-data-width) / 8);
+}
+main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(2),
+main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(2) {
+    width: calc(var(--youtube-data-width) * (7 / 8));
+}
+main .Media .YouTube .data div:nth-child(2) {
     height: var(--youtube-data-height);
     width: calc(var(--youtube-data-width) / 5);
     justify-content: center;
     align-items: center;
 }
-body[id*="Search"] main .Media .YouTube .data .metadata div {
-    justify-content: normal;
-    width: calc(var(--youtube-data-width) * (4 / 5));
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(1) {
-    height: calc(var(--youtube-data-height) / 4);
-    align-items: center;
-    letter-spacing: calc(var(--width) / 2000);
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) {
-    height: calc(var(--youtube-data-height) / 4);
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(2) a {
-    display: flex;
-    height: calc(var(--youtube-data-height) / 4);
-    display: flex;
-    align-items: center;
-    letter-spacing: calc(var(--width) / 2000);
-    width: auto;
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) {
-    flex-wrap: wrap;
-    height: calc(var(--youtube-data-height) / 2);
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #duration,
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #views {
-    height: calc(var(--youtube-data-height) / 4);
-    align-items: normal;
-    letter-spacing: normal;
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #duration div,
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #views div {
-    height: inherit;
-    align-items: center;
-    letter-spacing: calc(var(--width) / 2000);
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(1),
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(1) {
-    width: calc(var(--youtube-data-width) / 6);
-}
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(2),
-body[id*="Search"] main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(2) {
-    width: calc(var(--youtube-data-width) * (5 / 6));
-}
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) button {
+main .Media .YouTube .data div:nth-child(2) button {
     width: auto;
     height: auto;
     border: none;
     padding: unset;
+    font-size: calc(var(--textSize) * 1.25);
 }
-body[id*="Search"] main .Media .YouTube .data div:nth-child(2) button svg {
-    width: auto;
-    height: calc(var(--youtube-data-height) / 3.438);
-}
-body[id*="Search"] main .Media .RelatedContents .card {
+main .Media .RelatedContents .card {
     width: calc(var(--related-contents-width) * (4 / 5));
     height: calc(var(--related-contents-height) / 1.8953);
     margin-block: calc(var(--related-contents-height) / 100);
     margin-left: calc(var(--related-contents-width) / 5);
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) {
+main .Media .RelatedContents .card .thumbnail {
     height: calc(var(--related-contents-height) / 1.8953 * (16 / 26));
     width: fit-content;
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) {
+main .Media .RelatedContents .card .metadata {
     width: calc(var(--related-contents-width) * (4 / 5));
     height: calc(var(--related-contents-height) / 1.8953 * (10 / 26));
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a {
+main .Media .RelatedContents .card .thumbnail a {
     display: block;
+    height: calc(var(--related-contents-height) / 2.0532 * (16 / 24));
+    width: calc(var(--related-contents-height) / 2.0532 * (16 / 24) * var(--aspect-ratio));
+}
+main .Media .RelatedContents .card .thumbnail a img {
     height: calc(var(--related-contents-height) / 2.0532 * (16 / 24));
     width: auto;
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(1) a img {
-    width: auto;
-    height: inherit;
-}
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div {
+main .Media .RelatedContents .card .metadata div {
     height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
-    font-size: calc(var(--textSize) * 0.6561);
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(1) {
+main .Media .RelatedContents .card .metadata .title {
     letter-spacing: calc(var(--width) / 2000);
     height: calc(var(--related-contents-height) / 1.8953 * (4 / 26));
+    font-size: calc(var(--textSize) * (11 / 16));
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(3) {
-    display: flex;
-}
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(3) div {
-    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
-    font-size: unset;
+main .Media .RelatedContents .card .metadata .author {
     display: flex;
     align-items: center;
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(3) div:nth-child(1) {
-    width: calc(var(--related-contents-width) * (4 / 5) / 6);
+main .Media .RelatedContents .card .metadata .author a {
+    font-size: calc(var(--textSize) * (10 / 16));
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(3) div:nth-child(2) {
-    width: calc(var(--related-contents-width) * (4 / 5) * (5 / 6));
+main .Media .RelatedContents .card .metadata .duration {
+    display: flex;
 }
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) {
+main .Media .RelatedContents .card .metadata .duration div {
+    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
+    display: flex;
+    align-items: center;
+    font-size: calc(var(--textSize) * (10 / 16));
+}
+main .Media .RelatedContents .card .metadata .duration div:nth-child(1) {
+    width: calc(var(--related-contents-width) * (4 / 5) / 8);
+}
+main .Media .RelatedContents .card .metadata .duration div:nth-child(2) {
+    width: calc(var(--related-contents-width) * (4 / 5) * (7 / 8));
+}
+footer {
+    height: calc(var(--height) / 10);
+    display: flex;
+    justify-content: space-evenly;
+}
+footer div {
     display: flex;
     justify-content: center;
-}
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a {
-    font-size: unset;
-}
-body[id*="Search"] main .Media .RelatedContents .card div:nth-child(2) div:nth-child(4) a svg {
-    width: auto;
-    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
+    align-items: center;
+    font-size: calc(var(--textSize) * 1.5);
+    width: calc(var(--width) / 10);
+    height: inherit;
 }

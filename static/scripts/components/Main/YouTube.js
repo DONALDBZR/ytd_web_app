@@ -191,7 +191,7 @@ class YouTube extends Component {
         if (window.outerWidth >= 640 && window.outerWidth < 1024) {
             return "calc(var(--data-height) / 4)";
         }
-        return `calc(var(--metadata-height) * ${height_coefficient})`;
+        return `calc(var(--metadata-height) / ${height_coefficient})`;
     }
 
     /**

@@ -181,8 +181,8 @@ class YouTube extends Component {
      * @returns {string}
      */
     getTitleHeight(title) {
-        const limit = 56;
-        const component_height_coefficient = 8.8;
+        const limit = 51;
+        const component_height_coefficient = 8.98;
         const coefficient = (title.length <= limit) ? 1 : Math.ceil(title.length / limit);
         const height_coefficient = component_height_coefficient / coefficient;
         if (window.outerWidth >= 1024) {
@@ -191,18 +191,7 @@ class YouTube extends Component {
         if (window.outerWidth >= 640 && window.outerWidth < 1024) {
             return "calc(var(--data-height) / 4)";
         }
-        return `calc(var(--metadata-height) / ${height_coefficient})`;
-    }
-
-    /**
-     * Retrieving the font size of the title.
-     * @param {string} title The title of the media content.
-     * @returns {string}
-     */
-    getTitleFontSize(title) {
-        const limit = 51;
-        const coefficient = (title.length <= limit) ? 1 : 0.9 - (((title.length - limit) / limit) * 0.1);
-        return `calc(var(--textSize) * ${coefficient})`;
+        return `calc(var(--metadata-height) * ${height_coefficient})`;
     }
 
     /**
@@ -240,7 +229,7 @@ class YouTube extends Component {
                     </div>
                     <div class="data">
                         <div class="metadata">
-                            <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title), fontSize: this.getTitleFontSize(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
+                            <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
                             <div>
                                 <a href={this.state.Media.YouTube.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.Media.YouTube.author}</a>
                             </div>

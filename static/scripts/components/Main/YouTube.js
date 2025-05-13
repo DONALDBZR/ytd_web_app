@@ -181,10 +181,6 @@ class YouTube extends Component {
      * @returns {string}
      */
     getTitleHeight(title) {
-        const limit = 51;
-        const component_height_coefficient = 8.98;
-        const coefficient = (title.length <= limit) ? 1 : Math.ceil(title.length / limit);
-        const height_coefficient = component_height_coefficient / coefficient;
         if (window.outerWidth >= 1024) {
             return "calc(var(--youtube-data-height) / 4)";
         }

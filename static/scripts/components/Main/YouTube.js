@@ -181,13 +181,13 @@ class YouTube extends Component {
      * @returns {string}
      */
     getTitleHeight(title) {
-        if (window.outerWidth >= 1024) {
-            return "calc(var(--youtube-data-height) / 4)";
+        if (window.outerWidth < 640) {
+            return this.__getTitleHeight(51, 8.98, title);
         }
         if (window.outerWidth >= 640 && window.outerWidth < 1024) {
             return this.__getTitleHeight(82, 6.495, title);
         }
-        return this.__getTitleHeight(51, 8.98, title);
+        return "calc(var(--youtube-data-height) / 4)";
     }
 
     /**

@@ -189,8 +189,21 @@ class YouTube extends Component {
             return "calc(var(--youtube-data-height) / 4)";
         }
         if (window.outerWidth >= 640 && window.outerWidth < 1024) {
-            return "calc(var(--data-height) / 4)";
+            return this.__getTitleHeight(82, 6.495, title);
         }
+        return this.__getTitleHeight(51, 8.98, title);
+    }
+
+    /**
+     * Calculating the height of the title based on its length and the height of the component.
+     * @param {number} limit The amount of characters per line.
+     * @param {number} component_height_coefficient The height co-efficient of the component.
+     * @param {string} title The title of the component.
+     * @returns {string}
+     */
+    __getTitleHeight(limit, component_height_coefficient, title) {
+        const coefficient = (title.length <= limit) ? 1 : Math.ceil(title.length / limit);
+        const height_coefficient = component_height_coefficient / coefficient;
         return `calc(var(--metadata-height) / ${height_coefficient})`;
     }
 

@@ -282,7 +282,7 @@ class YouTubeDownloader extends Component {
                         <video src={this.state.File.uniform_resource_locator} controls autoplay></video>
                     </div>
                     <div id="data">
-                        <div id="title">
+                        <div id="title" style={{"--title-height": this.getTitleHeight(this.state.title)}}>
                             <a href={this.state.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.title}</a>
                         </div>
                         <div id="author">

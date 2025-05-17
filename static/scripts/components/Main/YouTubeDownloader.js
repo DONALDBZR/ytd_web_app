@@ -243,6 +243,19 @@ class YouTubeDownloader extends Component {
     };
 
     /**
+     * Calculating the height of the title based on its length and the height of the component.
+     * @param {number} limit The amount of characters per line.
+     * @param {number} component_height_coefficient The height co-efficient of the component.
+     * @param {string} title The title of the component.
+     * @returns {string}
+     */
+    __getTitleHeight(limit, component_height_coefficient, title) {
+        const coefficient = (title.length <= limit) ? 1 : Math.ceil(title.length / limit);
+        const height_coefficient = component_height_coefficient / coefficient;
+        return `calc(var(--data-height) / ${height_coefficient})`;
+    }
+
+    /**
      * Rendering the component for the YouTube downloader.
      * @returns {React.JSX.Element}
      */

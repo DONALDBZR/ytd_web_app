@@ -265,7 +265,7 @@ class YouTubeDownloader extends Component {
             return this.__getTitleHeight(51, 7.782, title);
         }
         if (window.outerWidth >= 640 && window.outerWidth < 1024) {
-            return this.__getTitleHeight(82, 6.495, title);
+            return this.__getTitleHeight(82, 12.79, title);
         }
         return "calc(var(--data-height) / 4)";
     }

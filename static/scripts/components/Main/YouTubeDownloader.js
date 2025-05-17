@@ -256,6 +256,21 @@ class YouTubeDownloader extends Component {
     }
 
     /**
+     * Retrieving the height of the component for the title.
+     * @param {string} title The title of the media content.
+     * @returns {string}
+     */
+    getTitleHeight(title) {
+        if (window.outerWidth < 640) {
+            return this.__getTitleHeight(51, 7.782, title);
+        }
+        if (window.outerWidth >= 640 && window.outerWidth < 1024) {
+            return this.__getTitleHeight(82, 6.495, title);
+        }
+        return "calc(var(--data-height) / 4)";
+    }
+
+    /**
      * Rendering the component for the YouTube downloader.
      * @returns {React.JSX.Element}
      */

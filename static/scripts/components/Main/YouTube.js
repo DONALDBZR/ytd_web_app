@@ -187,7 +187,7 @@ class YouTube extends Component {
         if (window.outerWidth >= 640 && window.outerWidth < 1024) {
             return this.__getTitleHeight(82, 6.495, title);
         }
-        return "calc(var(--youtube-data-height) / 4)";
+        return this.__getTitleHeight(62, 8.38, title);
     }
 
     /**

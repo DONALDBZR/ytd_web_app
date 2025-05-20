@@ -125,47 +125,53 @@ main .Media .RelatedContents {
     overflow: scroll;
 }
 main .Media .YouTube div {
-    height: calc(var(--youtube-height) * (4 / 5));
-    width: calc(var(--youtube-width) * 0.825);
+    --video-height: calc(var(--youtube-height) * 0.64);
+    --video-width: calc(var(--youtube-width) * 0.825);
+    height: var(--video-height);
+    width: var(--video-width);
     display: flex;
+    justify-content: center;
 }
 main .Media .YouTube div a {
     display: block;
-    height: calc(var(--youtube-height) * (4 / 5));
-    width: calc(var(--youtube-height) * (4 / 5) * var(--aspect-ratio));
+    height: var(--video-height);
+    width: calc(var(--video-height) * var(--aspect-ratio));
 }
 main .Media .YouTube div a img {
     width: auto;
-    height: calc(var(--youtube-height) * (4 / 5));
+    height: var(--video-height);
 }
 main .Media .YouTube .data {
-    --youtube-data-height: calc(var(--youtube-height) / 5);
-    --youtube-data-width: calc(var(--youtube-height) * (4 / 5) * var(--aspect-ratio));
-    height: var(--youtube-data-height);
+    --youtube-data-height: calc(var(--youtube-height) - var(--video-height));
+    --youtube-data-width: calc(var(--youtube-width) * 0.825);
+    max-height: var(--youtube-data-height);
+    height: auto;
     width: var(--youtube-data-width);
     display: flex;
     justify-content: normal;
 }
 main .Media .YouTube .data .metadata {
-    height: var(--youtube-data-height);
-    width: calc(var(--youtube-data-width) * (4 / 5));
-    justify-content: normal;
+    --metadata-height: var(--youtube-data-height);
+    --metadata-width: calc(var(--youtube-data-width) * (4 / 5));
+    max-height: var(--metadata-height);
+    height: auto;
+    width: var(--metadata-width);
     display: block;
 }
 main .Media .YouTube .data .metadata div {
     display: flex;
     justify-content: normal;
     align-items: center;
-    width: calc(var(--youtube-data-width) * (4 / 5));
-    height: calc(var(--youtube-data-height) / 4);
+    width: var(--metadata-width);
+    height: calc(var(--metadata-height) / 8.38);
 }
 main .Media .YouTube .data .metadata div:nth-child(1) {
     letter-spacing: calc(var(--width) / 2000);
     font-size: var(--textSize);
 }
 main .Media .YouTube .data .metadata div:nth-child(2) {
-    height: calc(var(--youtube-data-height) / 4);
-    width: calc(var(--youtube-data-width) * (4 / 5));
+    height: calc(var(--metadata-height) / 8.38);
+    width: var(--metadata-width);
     justify-content: normal;
 }
 main .Media .YouTube .data .metadata div:nth-child(2) a {
@@ -177,25 +183,26 @@ main .Media .YouTube .data .metadata div:nth-child(2) a {
 }
 main .Media .YouTube .data .metadata div:nth-child(3) {
     flex-wrap: wrap;
-    height: calc(var(--youtube-data-height) / 2);
+    height: calc(var(--metadata-height) / 4.19);
     font-size: calc(var(--textSize) * (14 / 16));
 }
 main .Media .YouTube .data .metadata div:nth-child(3) #duration div,
 main .Media .YouTube .data .metadata div:nth-child(3) #views div {
-    height: calc(var(--youtube-data-height) / 4);
+    height: calc(var(--metadata-height) / 8.38);
     letter-spacing: calc(var(--width) / 2000);
 }
 main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(1),
 main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(1) {
-    width: calc(var(--youtube-data-width) / 8);
+    width: calc(var(--metadata-width) / 8);
 }
 main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(2),
 main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(2) {
-    width: calc(var(--youtube-data-width) * (7 / 8));
+    width: calc(var(--metadata-width) * (7 / 8));
 }
 main .Media .YouTube .data div:nth-child(2) {
-    height: var(--youtube-data-height);
-    width: calc(var(--youtube-data-width) / 5);
+    max-height: var(--youtube-data-height);
+    height: auto;
+    width: calc(var(--youtube-data-width) * 0.36);
     justify-content: center;
     align-items: center;
 }

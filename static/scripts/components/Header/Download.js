@@ -200,6 +200,10 @@ class HeaderDownload extends Component {
      */
     async setMediaYouTubeUniformResourceLocator(platform, search) {
         const response = await this.getSearchMedia(platform, search);
+        if (response.status == 200) {
+            localStorage.removeItem("media");
+            localStorage.removeItem("related_content");
+        }
         this.setState((previous) => ({
             Media: {
                 ...previous.Media,

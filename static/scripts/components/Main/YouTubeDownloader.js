@@ -206,7 +206,7 @@ class YouTubeDownloader extends Component {
      * @returns {void}
      */
     getFile(event) {
-        const button = event.target.parentElement.parentElement;
+        const button = event.target.parentElement;
         const file_location = button.value;
         const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
         const uniform_resource_locator = (file_location.includes("/Public/Audio/")) ? `/Public/Audio/${this.state.identifier}.mp3` : `/Public/Video/${this.state.identifier}.mp4`;

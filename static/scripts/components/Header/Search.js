@@ -263,6 +263,10 @@ class HeaderSearch extends Component {
     async setMediaYouTubeUniformResourceLocator(platform, search) {
         const response = await this.getSearchMedia(platform, search);
         try {
+            if (response.status == 200) {
+                localStorage.removeItem("media");
+                localStorage.removeItem("related_content");
+            }
             const uniform_resource_locator = this.sanitizeUniformResourceLocator(decodeURIComponent(response.data.uniform_resource_locator));
             this.setState((previous) => ({
                 ...previous,

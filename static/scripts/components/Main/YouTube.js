@@ -246,6 +246,7 @@ class YouTube extends Component {
      */
     render() {
         if (this.state.System.data_loaded) {
+            const title = this.decodeHtmlEntities(this.state.Media.YouTube.title);
             return (
                 <div className="YouTube">
                     <div>
@@ -255,7 +256,7 @@ class YouTube extends Component {
                     </div>
                     <div class="data">
                         <div class="metadata">
-                            <div style={{height: this.getTitleHeight(this.state.Media.YouTube.title)}}>{this.state.Media.YouTube.title}</div>
+                            <div style={{height: this.getTitleHeight(title)}}>{title}</div>
                             <div>
                                 <a href={this.state.Media.YouTube.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.Media.YouTube.author}</a>
                             </div>

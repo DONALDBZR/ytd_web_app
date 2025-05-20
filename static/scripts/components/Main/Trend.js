@@ -64,13 +64,13 @@ class Trend extends Component {
         const data_loaded = (trend != null && window.Tracker);
         this.setState((previous) => ({
             ...previous,
-            Trend: (trend) ? trend : this.state.Trend,
+            Trend: (data_loaded) ? trend : this.state.Trend,
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,
             },
         }));
-        this.tracker = (window.Tracker) ? window.Tracker : null;
+        this.tracker = (data_loaded) ? window.Tracker : null;
         if (data_loaded) {
             loading_icon.style.display = "none";
         }

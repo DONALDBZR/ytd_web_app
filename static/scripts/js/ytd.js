@@ -444,6 +444,9 @@ class YTD {
      * @returns {void}
      */
     setRelatedContents() {
+        if (!this.getRequestURI().includes("Search") && window.outerWidth < 1024) {
+            return;
+        }
         const identifier = this._getRelatedContentsIdentifier();
         const data_object = "related_content";
         const related_content = JSON.parse(localStorage.getItem(data_object));

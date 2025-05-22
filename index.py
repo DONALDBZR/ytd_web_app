@@ -7,19 +7,16 @@ Link:
 """
 
 
-from flask import Flask, render_template, request, Response, send_from_directory
+from flask import Flask, render_template, Request, Response, send_from_directory, request
 from flask_compress import Compress
 from flask_cors import CORS
-from Models.DatabaseHandler import Database_Handler
-from Models.SecurityManagementSystem import Security_Management_System
-from Routes.Session import Session_Portal
-from Routes.Search import Search_Portal
-from Routes.Media import Media_Portal
-from Routes.Download import Download_Portal
-from Routes.Video import Video_Portal
-from Routes.Trend import Trend_Portal
-from Routes.Track import Track_Portal
-from Environment import Environment
+from Models.SecurityManagementSystem import Security_Management_System, Database_Handler, Environment
+from re import match
+from os.path import join, exists, isfile, normpath, relpath, splitext
+from typing import List, Union, Dict
+from urllib.parse import ParseResult, urlparse
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 
 Application: Flask = Flask(__name__)
@@ -30,25 +27,25 @@ package of the application.  Once it is created it will act
 as a central registry for the view functions, the URL rules,
 template configuration and much more.
 """
-DatabaseHandler: Database_Handler = Database_Handler()
-"""
-The database handler that will communicate with the database
-server.
-"""
 SecurityManagementSystem: Security_Management_System = Security_Management_System()
 """
 It will be a major component that will assure the security
 of the data that will be stored across the application.
 """
-data = DatabaseHandler.getData(
+DatabaseHandler: Database_Handler = Database_Handler()
+"""
+The database handler that will communicate with the database
+server.
+"""
+data: List[Dict[str, str]] = DatabaseHandler.getData(
     parameters=None,
     table_name="Session",
     filter_condition="date_created = CURDATE()",
     column_names="hash",
     sort_condition="identifier ASC",
     limit_condition=1
-)
-key: str = str(data[0]["hash"])  # type: ignore
+) # type: ignore
+key: str = str(data[0]["hash"])
 """
 Encryption key of the application
 """
@@ -56,6 +53,23 @@ ENV: Environment = Environment()
 """
 ENV File of the application
 """
+limiter: Limiter = Limiter(
+    app=Application,
+    key_func=get_remote_address,
+    default_limits=["100 per second"],
+)
+"""
+The Limiter class initializes the Flask-Limiter extension.
+"""
+from Routes.Session import Session_Portal
+from Routes.Search import Search_Portal
+from Routes.Media import Media_Portal
+from Routes.Download import Download_Portal
+from Routes.Video import Video_Portal
+from Routes.Trend import Trend_Portal
+from Routes.Track import Track_Portal
+
+
 Application.secret_key = key
 Application.config["SESSION_TYPE"] = 'filesystem'
 Application.config["COMPRESS_ALGORITHM"] = "gzip"
@@ -71,26 +85,58 @@ Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Application.register_blueprint(Track_Portal, url_prefix="/Track")
 Compress(Application)
-CORS(Application)
+CORS(Application, origins=ENV.getAllowedOrigins())
+limiter.init_app(Application)
 
+
+@Application.before_request
+def before_request() -> None:
+    """
+    Preparing the data before the request is made.
+
+    Returns:
+        void
+    """
+    SecurityManagementSystem.generateNonce()
 
 @Application.route('/', methods=['GET'])
 def homepage() -> Response:
     """
-    Rendering the template needed which will import the
-    web-worker.
+    Rendering the homepage.
 
     Returns:
         Response
     """
-    template: str = render_template(
-        'Homepage.html',
-        google_analytics_key=ENV.getGoogleAnalyticsKey()
-    )
+    is_embedded: bool = isEmbeddedRequest(request)
+    status: int = 403 if is_embedded else 200
     mime_type: str = "text/html"
-    status: int = 200
-    response: Response = Response(template, status, mimetype=mime_type)
-    response.headers["Cache-Control"] = "public, max-age=604800"
+    response: Response
+    if isEmbeddedRequest(request):
+        response = Response("Forbidden", status, mimetype=mime_type)
+        return response
+    nonce: str = SecurityManagementSystem.getNonce()
+    template: str = render_template(
+        template_name_or_list="Homepage.html",
+        nonce=nonce
+    )
+    content_security_policy: str = "; ".join([
+        "default-src 'self'",
+        f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com",
+        "style-src 'self' https://fonts.cdnfonts.com https://cdnjs.cloudflare.com",
+        "img-src 'self' data: https://i.ytimg.com",
+        "font-src 'self' https://fonts.cdnfonts.com https://cdnjs.cloudflare.com",
+        "connect-src 'self'",
+        "frame-src 'none'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'"
+    ])
+    response = Response(template, status, mimetype=mime_type)
+    response.cache_control.max_age = 604800
+    response.cache_control.no_cache = False  # type: ignore
+    response.cache_control.public = True
+    response.content_security_policy = content_security_policy
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
     return response
 
 
@@ -127,9 +173,14 @@ def serveScripts(file: str) -> Response:
     Returns:
         Response
     """
+    response: Response
+    if not validateFileName(file):
+        return Response("Invalid Filename Format", 400)
+    if not match(r"^[a-zA-Z0-9-_.]+\.js$", file):
+        return Response("Invalid File Name or Format", 403)
     response = send_from_directory('static/scripts/js', file)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False # type: ignore
+    response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True
     return response
 
@@ -145,14 +196,21 @@ def serveViews(file: str) -> Response:
     Returns:
         Response
     """
-    response = send_from_directory('static/scripts/views', file)
+    response: Response
+    allowed_view_root: str = "static/scripts/views"
+    full_path: str = normpath(join(Application.root_path, allowed_view_root, file))
+    if not full_path.startswith(normpath(join(Application.root_path, allowed_view_root))):
+        return Response("Access Denied!", 403)    
+    if not exists(full_path) or not isfile(full_path):
+        return Response("File Not Found!", 404)
+    relative_path: str = relpath(full_path, Application.root_path)
+    response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False # type: ignore
+    response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True
     return response
 
-
-@Application.route('/static/stylesheets/<string:file>', methods=['GET'])
+@Application.route('/static/stylesheets/<path:file>', methods=['GET'])
 def serveStylesheets(file: str) -> Response:
     """
     Serving the stylesheets.
@@ -163,8 +221,82 @@ def serveStylesheets(file: str) -> Response:
     Returns:
         Response
     """
-    response = send_from_directory('static/stylesheets', file)
+    response: Response
+    allowed_stylesheet_root: str = "static/stylesheets"
+    full_path: str = normpath(join(Application.root_path, allowed_stylesheet_root, file))
+    if not full_path.startswith(normpath(join(Application.root_path, allowed_stylesheet_root))):
+        return Response("Access Denied!", 403)
+    if not exists(full_path) or not isfile(full_path):
+        return Response("File Not Found!", 404)
+    relative_path: str = relpath(full_path, Application.root_path)
+    response = send_from_directory(Application.root_path, relative_path)
     response.cache_control.max_age = 604800
-    response.cache_control.no_cache = False # type: ignore
+    response.cache_control.no_cache = False  # type: ignore
     response.cache_control.public = True
     return response
+
+def validateFileName(file_name: str) -> bool:
+    """
+    Validating the file name based on the characters that are
+    allowed.
+
+    Parameters:
+        file_name: string: The name of the file.
+
+    Returns:
+        boolean
+    """
+    allowed_characters: str = r"^[a-zA-Z0-9-_.]+$"
+    allowed_extensions: List[str] = [".js", ".css"]
+    file_extension: str = splitext(file_name)[1]
+    if not match(allowed_characters, file_name):
+        return False
+    if ".." in file_name or "\\" in file_name or "/" in file_name:
+        return False
+    if file_name.startswith("/") or file_name.startswith("\\"):
+        return False
+    if file_extension not in allowed_extensions:
+        return False
+    return True
+
+def isPathAllowed(filepath: str, allowed_view_root: str) -> bool:
+    """
+    Recursively checks that a path is within the allowed
+    directory.
+
+    Parameters:
+        filepath: string: The path to check.
+        allowed_view_root: string: The root directory to check
+
+    Returns:
+        boolean
+    """
+    full_path: str = join(Application.root_path, allowed_view_root, filepath)
+    if not exists(full_path) or not isfile(full_path):
+        return False
+    normalized_path: str = normpath(full_path)
+    allowed_root_path: str = join(Application.root_path, allowed_view_root)
+    if not normalized_path.startswith(allowed_root_path):
+        return False
+    return True
+
+def isEmbeddedRequest(request: Request) -> bool:
+    """
+    Checks if the request is an embedded request.
+
+    Parameters:
+        request: Request: The request object.
+
+    Returns:
+        boolean
+    """
+    referrer: Union[str, None] = request.headers.get("Referer")
+    origin: Union[str, None] = request.headers.get("Origin")
+    if referrer:
+        parsed_referrer: ParseResult = urlparse(referrer)
+        referrer_domain: str = f"{parsed_referrer.scheme}://{parsed_referrer.netloc}"
+        if referrer_domain not in ENV.getAllowedOrigins():
+            return True
+    if origin and origin not in ENV.getAllowedOrigins():
+        return True
+    return False

@@ -39,15 +39,20 @@ Ensure you have the following installed on your system:
 2. Click the "Download" button to retrieve the media.
 
 ## Commit History (Latest Major Updates)
-- **[UPDATE 3.3.153]** Download functionality improved.
-- **[UPDATE 3.3.152]** Enhanced state management in the main component.
-- **[UPDATE 3.3.151]** Constructed a dedicated YouTube downloader component.
-- **[UPDATE 3.3.146]** Improved media retrieval process from the server.
-- **[UPDATE 3.3.140]** Switched from Google Analytics to a custom analytical tool.
-- **[UPDATE 3.3.133]** Built a new YouTube video rendering component.
-- **[UPDATE 3.3.131]** Added trending videos list.
-- **[UPDATE 3.3.126]** Redesigned homepage header.
-- **[UPDATE 3.3.125]** Integrated a new analytics system.
+- **[UPDATE 3.6.102]** Uniform URL handling standardized across versions.
+- **[UPDATE 3.6.98]** File download logic streamlined.
+- **[UPDATE 3.6.96]** Dynamic title height adjustment, rendering logic improved.
+- **[UPDATE 3.6.75]** Dedicated layout redesigns for mobile, tablet, and desktop.
+- **[UPDATE 3.6.66]** Fine-grained route control and redirects added for media content paths.
+- **[UPDATE 3.6.50]** Modular rendering of media cards, YouTube downloaders, search headers.
+- **[UPDATE 3.6.43]** Trend component built with localStorage support.
+- **[UPDATE 3.6.32]** Enhanced asset caching & stylesheet splitting for performance.
+- **[UPDATE 3.5.1]** Changing from WSGI to ASGI for better performance.
+- **[UPDATE 3.4.124]** Parsing and sanitizing URLs, extracting identifiers.
+- **[UPDATE 3.4.107]** Input sanitization, CSP headers, and rate-limiting were progressively added.
+- **[UPDATE 3.4.104]** Metadata scraping with `youtube-dl`.
+- **[UPDATE 3.4.100]** Handling related content by author/channel
+- **[UPDATE 3.4.91]** Media platform validation and response control.
 
 ## Contributing
 Contributions, feedback, and testing are welcome! Please open a pull request or issue for any modifications. The main branch is reserved for production; development should be done in separate branches.

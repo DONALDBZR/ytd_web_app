@@ -5,15 +5,12 @@ application.
 
 
 from flask.sessions import SessionMixin
-from Models.DatabaseHandler import Database_Handler
-from Models.Logger import Extractio_Logger
-from Environment import Environment
-from typing import List, Dict, Union, Tuple
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Union, Tuple
+from typing import Dict
 from json import JSONDecodeError, load, dumps
 from os import remove
 from time import time
 import os
-import logging
 
 
 class Session_Manager:
@@ -407,13 +404,19 @@ class Session_Manager:
 
     def getData(self, file_path: str) -> Union[Dict[str, Dict[str, Union[str, int]]], None]:
         """
-        Retrieving the data that is in the file.
+        Reading and parsing a JSON file, returning its contents as a dictionary.
+
+        This method attempts to open and load a JSON file. If successful, it logs a success message and returns the parsed data.  If an error occurs, it logs the error and returns None.
 
         Parameters:
-            file_path: string: The path of the file.
+            file_path (string): The path to the JSON file.
 
         Returns:
-            {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null
+            Union[Dict[string, Dict[string, Union[string, int]]], None]
+
+        Raises:
+            JSONDecodeError: If the JSON file cannot be decoded.
+            Exception: If an unexpected error occurs.
         """
         try:
             file = open(file_path, "r")
@@ -423,6 +426,9 @@ class Session_Manager:
             return data
         except JSONDecodeError as error:
             self.getLogger().error(f"Failed to decode the JSON file.\nFile Path: {file_path}\nError: {error}")
+            return None
+        except Exception as error:
+            self.getLogger().error(f"An unexpected error has occurred.\nFile Path: {file_path}\nError: {error}")
             return None
 
     def handleSession(self, status: int, name: str) -> Dict[str, int]:
@@ -463,21 +469,24 @@ class Session_Manager:
             "status": service_unavailable
         }
 
-    def handleSessionData(self, session_data: Dict[str, int]) -> None:
+    def handleSessionData(self, session_data: Dict[str, int]) -> Union[SessionMixin, None]:
         """
-        Verifying that the data has not been tampered in order to
-        renew the session.
+        Handling session data based on the provided status code.
+
+        This method processes session data by checking for a `"status"` key.  If the key is missing, it logs an error and creates a new session.  If the status is 200 or 201, it renews the current session. Otherwise, it creates a new session.
 
         Parameters:
-            session_data: {status: int}: Session's data
+            session_data (Dict[str, int]): A dictionary containing session-related data, including a `"status"` key representing the session's status code.
 
         Returns:
-            void
+            Union[SessionMixin, None]
         """
-        if "status" not in session_data or (session_data["status"] == 200 or session_data["status"] == 201):
-            self.renew(self.getSession())
-        else:
-            self.createSession()
+        if "status" not in session_data:
+            self.getLogger().error("No status is provided in the data")
+            return self.createSession()
+        if session_data["status"] == 200 or session_data["status"] == 201:
+            return self.renew(self.getSession())
+        return self.createSession()
 
     def renew(self, session_data: SessionMixin) -> Union[SessionMixin, None]:
         """

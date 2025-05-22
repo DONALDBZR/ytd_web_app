@@ -1,14 +1,14 @@
-from Models.DatabaseHandler import Database_Handler
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, Union, List, Tuple, Any, Relational_Database_Error
 from datetime import datetime
-from Models.Logger import Extractio_Logger
-from Environment import Environment
-from mysql.connector.types import RowType
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict, Union, List, Tuple
+from typing import Dict
 from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
+from html import escape
+from Errors.ExtractioErrors import NotFoundError
+from yt_dlp.utils import DownloadError, ExtractorError
 
 
 class YouTube_Downloader:
@@ -85,33 +85,73 @@ class YouTube_Downloader:
     """
     The logger that will all the action of the application.
     """
+    __base_uniform_resouce_locator: str
+    """
+    The base uniform resource locator.
+    """
+    __audio_codec: str
+    """
+    The audio codec of the video.
+    """
+    __video_codec: str
+    """
+    The video codec of the video.
+    """
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
-        Instantiating the class and launching the operations needed.
+        Initializing the YouTube Downloader class, setting up directories, logging, database tables, and default configurations.
 
         Parameters:
-            uniform_resource_locator: string: The uniform resource locator to be searched.
-            media_identifier: int: The media type for the system.
+            uniform_resource_locator (string): The URL of the YouTube video to be processed.
+            media_identifier (int): The identifier for the media type.
+
+        Raises:
+            Relational_Database_Error: If an error occurs while setting up the database.
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Public")
         self.setLogger(Extractio_Logger(__name__))
         self.mediaDirectory()
-        self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler()._query(
-            query="CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))",
-            parameters=None
-        )
-        self.getDatabaseHandler()._execute()
-        self.getDatabaseHandler()._query(
-            query="CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))",
-            parameters=None
-        )
-        self.getDatabaseHandler()._execute()
-        self.setUniformResourceLocator(uniform_resource_locator)
-        self.setMediaIdentifier(media_identifier)
-        self.getLogger().inform("The YouTube Downloader has been successfully been initialized!")
+        try:
+            self.setDatabaseHandler(Database_Handler())
+            self.getDatabaseHandler()._query(
+                query="CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))",
+                parameters=None
+            )
+            self.getDatabaseHandler()._execute()
+            self.getDatabaseHandler()._query(
+                query="CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))",
+                parameters=None
+            )
+            self.getDatabaseHandler()._execute()
+            self.setBaseUniformResourceLocator("https://www.youtube.com/watch?v=")
+            self.setAudioCodec("mp4a")
+            self.setVideoCodec("avc")
+            self.setUniformResourceLocator(uniform_resource_locator)
+            self.setMediaIdentifier(media_identifier)
+            self.getLogger().inform("The YouTube Downloader has been successfully been initialized!")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"The iniatialization of the model has failed.\nError: {error}")
+            raise error
+
+    def getVideoCodec(self) -> str:
+        return self.__video_codec
+
+    def setVideoCodec(self, video_codec: str) -> None:
+        self.__video_codec = video_codec
+
+    def getAudioCodec(self) -> str:
+        return self.__audio_codec
+
+    def setAudioCodec(self, audio_codec: str) -> None:
+        self.__audio_codec = audio_codec
+
+    def getBaseUniformResourceLocator(self) -> str:
+        return self.__base_uniform_resouce_locator
+
+    def setBaseUniformResourceLocator(self, base_uniform_resouce_locator: str) -> None:
+        self.__base_uniform_resouce_locator = base_uniform_resouce_locator
 
     def getUniformResourceLocator(self) -> str:
         return self.__uniform_resource_locator
@@ -217,75 +257,89 @@ class YouTube_Downloader:
 
     def retrieveIdentifier(self, identifier: str) -> str:
         """
-        Retrieving the identifier of the content in the condition
-        that it is in a playlist.
+        Retrieves the identifier from a given string by removing any query parameters after the last "&" symbol.  If the string does not contain the "&" symbol, it returns the original identifier.
+
+        This method splits the identifier string at the last occurrence of the "&" symbol and returns the portion before it, effectively removing any query parameters.
 
         Parameters:
-            identifier: (string):   The ID of the content.
-
-        Return:
-            (string)
-        """
-        if "&" in identifier:
-            return identifier.rsplit("&", 1)[0]
-        else:
-            return identifier
-
-    def sanitizeYouTubeIdentifier(self) -> None:
-        """
-        Sanitizing the identifier of the content from the platform
-        YouTube.
+            identifier (string): The identifier string, which may contain query parameters.
 
         Returns:
-            void
+            str
         """
-        if "youtube" in self.getUniformResourceLocator():
-            self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "").rsplit("&", 1)[0]) if "&" in self.getIdentifier() else self.setIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", ""))
-        else:
-            self.setIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0].rsplit("&", 1)[0]) if "&" in self.getIdentifier() else self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0]
+        return identifier.rsplit("&", 1)[0] if "&" in identifier else identifier
+
+    def sanitizeYouTubeIdentifier(self) -> str:
+        """
+        Sanitizing the YouTube identifier by removing base URLs and query parameters to return only the unique identifier of the video.
+
+        The method performs the following:
+        - If the uniform resource locator (URL) contains "youtube", it removes the base URL and then sanitizes the identifier.
+        - If the URL contains "youtu.be", it removes the base URL and any query parameters from the identifier.
+
+        Returns:
+            str
+        """
+        return self.retrieveIdentifier(self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0])
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Searching for the video in YouTube.
+        Searching and retrieving information about a YouTube video based on the provided URL.
+
+        This function:
+        - Extracts the information about the video from YouTube using the `youtube-dl` (or `yt-dlp`) library.
+        - Handles both successful and failed extraction, including fetching meta-data from an internal source if needed.
+        - Sets various properties such as video length, publish date, author, and title based on the metadata.
+        - Returns a dictionary containing key information about the video, including the title, author, view count, and media file locations (audio/video).
 
         Returns:
-            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio_file: string|null, video_file: string|null}
+            Dict[str, Union[str, int, None]]
+
+        Raises:
+            ValueError: If the response from YouTube is invalid or cannot be parsed.
+            Exception: If an error occurs during the search or data extraction process.
         """
         options: Dict[str, bool] = {
             "quiet": True,
             "skip_download": True
         }
         self.setVideo(YoutubeDL(options))
-        self.setIdentifier(self.getUniformResourceLocator())
-        identifier: str = self.retrieveIdentifier(self.getIdentifier().replace("https://www.youtube.com/watch?v=", "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getIdentifier().replace("https://youtu.be/", "").rsplit("?")[0])
-        self.setIdentifier(identifier)
-        youtube = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
-        meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
-        self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
-        published_date: str = youtube["upload_date"] # type: ignore
-        published_at: str = str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{published_date[:4]}-{published_date[4:6]}-{published_date[6:]}" # type: ignore
-        self.setPublishedAt(published_at)
-        self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
-        self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
-        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-        file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
-        audio_file: Union[str, None] = file_locations["audio_file"] if meta_data["status"] == 200 else None
-        video_file: Union[str, None] = file_locations["video_file"] if meta_data["status"] == 200 else None
-        if meta_data["status"] != 200:
-            self.postYouTube()
-        return {
-            "uniform_resource_locator": self.getUniformResourceLocator(),
-            "author": self.getAuthor(),
-            "title": self.getTitle(),
-            "identifier": self.getIdentifier(),
-            "author_channel": str(youtube["uploader_url"]),  # type: ignore
-            "views": int(youtube["view_count"]),  # type: ignore
-            "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": str(youtube["thumbnail"]),  # type: ignore
-            "duration": self.getDuration(),
-            "audio_file": audio_file,
-            "video_file": video_file
-        }
+        self.setIdentifier(self.sanitizeYouTubeIdentifier())
+        try:
+            raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
+            if not raw_youtube:
+                self.getLogger().error(f"The response is invalid")
+                raise ValueError("Invalid Response")
+            youtube: Dict[str, Any] = {
+                key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
+            }
+            meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
+            self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
+            self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
+            self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
+            self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
+            file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
+            audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
+            video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
+            if meta_data["status"] != 200:
+                self.postYouTube()
+            return {
+                "uniform_resource_locator": self.getUniformResourceLocator(),
+                "author": self.getAuthor(),
+                "title": self.getTitle(),
+                "identifier": self.getIdentifier(),
+                "author_channel": str(youtube["uploader_url"]),
+                "views": int(youtube["view_count"]),
+                "published_at": self.getPublishedAt(),  # type: ignore
+                "thumbnail": str(youtube["thumbnail"]),
+                "duration": self.getDuration(),
+                "audio_file": audio_file,
+                "video_file": video_file
+            }
+        except Exception as error:
+            self.getLogger().error(f"There is an error in the search function.\nError: {error}")
+            return {}
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """
@@ -310,43 +364,67 @@ class YouTube_Downloader:
 
     def getYouTube(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
-        Retrieving the metadata from the YouTube table.
+        Retrieving YouTube video metadata from the database.
+
+        This method queries the relational database to fetch metadata related to a YouTube video based on its identifier.  It performs a join operation with the `MediaFile` table to retrieve associated media files.  The results are sorted in ascending order by the `MediaFile.identifier` column and limited to 2 entries.
 
         Returns:
-            {status: int, data: [{author: string, title: string, identifier: string, published_at: string, length: int, location: string|null}, timestamp: string]}
+            Dict[str, Union[int, List[RowType], str]]: A dictionary containing:
+                - `"status"` (int): HTTP-like status code (200 if data exists, 204 if no data).
+                - `"data"` (List[RowType]): A list of database rows containing the video metadata.
+                - `"timestamp"` (str): The timestamp of when the data retrieval occurred.
+
+        Raises:
+            Relational_Database_Error: If there is an issue communicating with the database.
         """
         filter_parameters: Tuple[str] = (self.getIdentifier(),)
-        media: List[RowType] = self.getDatabaseHandler().getData(
-            parameters=filter_parameters, # type: ignore
-            table_name="YouTube",
-            join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
-            filter_condition="YouTube.identifier = %s",
-            column_names="author, title, YouTube.identifier, published_at, length, location",
-            sort_condition="MediaFile.identifier ASC",
-            limit_condition=2
-        )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        status: int = 200 if len(media) != 0 else 204
-        return {
-            "status": status,
-            "data": media,
-            "timestamp": self.getTimestamp()
-        }
+        try:
+            media: List[RowType] = self.getDatabaseHandler().getData(
+                parameters=filter_parameters, # type: ignore
+                table_name="YouTube",
+                join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
+                filter_condition="YouTube.identifier = %s",
+                column_names="author, title, YouTube.identifier, published_at, length, location",
+                sort_condition="MediaFile.identifier ASC",
+                limit_condition=2
+            )
+            status: int = 200 if len(media) != 0 else 204
+            return {
+                "status": status,
+                "data": media,
+                "timestamp": self.getTimestamp()
+            }
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            return {
+                "status": 503,
+                "data": [],
+                "timestamp": self.getTimestamp()
+            }
 
     def postYouTube(self) -> None:
         """
-        Creating a record for the media with its data.
+        Inserting YouTube video metadata into the database.
+
+        This method extracts relevant metadata (identifier, length, publication date, author, title, and media identifier) and inserts it into the "YouTube" table in the relational database. If an error occurs during the process, it logs the issue.
 
         Returns:
             void
+
+        Raises:
+            Relational_Database_Error: If there is an issue communicating with the database.
         """
-        data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
-        self.getDatabaseHandler().postData(
-            table="YouTube",
-            columns="identifier, length, published_at, author, title, Media",
-            values="%s, %s, %s, %s, %s, %s",
-            parameters=data # type: ignore
-        )
+        try:
+            data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
+            self.getDatabaseHandler().postData(
+                table="YouTube",
+                columns="identifier, length, published_at, author, title, Media",
+                values="%s, %s, %s, %s, %s, %s",
+                parameters=data # type: ignore
+            )
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
 
     def mediaDirectory(self) -> None:
         """
@@ -362,161 +440,248 @@ class YouTube_Downloader:
 
     def retrievingStreams(self) -> Dict[str, Union[str, int, None]]:
         """
-        Downloading the contents of the media from the platform to
-        save on the server.
+        Retrieving the available media streams (audio and video) for a given resource and provides metadata such as author, title, views, and publication date.  If the audio and video files are not already downloaded, they will be downloaded using YoutubeDL.
 
-        Return:
-            {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string, thumbnail: string, duration: string, audio: string|null, video: string|null}
+        This method performs the following tasks:
+            1. Searches for the metadata of the media.
+            2. Retrieves and stores the audio and video file paths.
+            3. Downloads the media streams if the files do not exist.
+            4. Returns a dictionary containing the following metadata:
+                - uniform_resource_locator: The URL of the media.
+                - author: The author of the media.
+                - title: The title of the media.
+                - identifier: A unique identifier for the media.
+                - author_channel: The author's channel name or identifier.
+                - views: The number of views the media has received.
+                - published_at: The publication date of the media.
+                - thumbnail: The URL of the media's thumbnail image.
+                - duration: The duration of the media.
+                - audio: The file path to the downloaded audio.
+                - video: The file path to the downloaded video.
+
+        Returns:
+            Dict[string, Union[string, int, None]]
+
+        Raises:
+            NotFoundError: If the media resource cannot be found.
+            DownloadError: If there is an error while downloading the media.
+            Relational_Database_Error: If there is a database-related error.
         """
-        metadata: Dict[str, Union[str, int, None]] = self.search()
-        self.setIdentifier(str(metadata["identifier"]))
-        audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        options: Dict[str, bool] = {
-            "quiet": True,
-            "listformats": True
-        }
-        if isfile(audio_file_location) == False and isfile(video_file_location) == False:
+        try:
+            metadata: Dict[str, Union[str, int, None]] = self.search()
+            self.setIdentifier(str(metadata["identifier"]))
+            audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+            video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
+            options: Dict[str, bool] = {
+                "quiet": True,
+                "listformats": True
+            }
+            files: Dict[str, str] = self.__getFiles(audio_file_location, video_file_location, options)
+            self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
+            audio_file_location = files["audio"]
+            video_file_location = files["video"]
+            return {
+                "uniform_resource_locator": self.getUniformResourceLocator(),
+                "author": self.getAuthor(),
+                "title": self.getTitle(),
+                "identifier": self.getIdentifier(),
+                "author_channel": str(metadata["author_channel"]),
+                "views": int(metadata["views"]),  # type: ignore
+                "published_at": self.getPublishedAt(),  # type: ignore
+                "thumbnail": str(metadata["thumbnail"]),  # type: ignore
+                "duration": self.getDuration(),
+                "audio": audio_file_location,
+                "video": video_file_location
+            }
+        except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:
+            self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
+            return {}
+
+    def __getFiles(self, audio: str, video: str, options: Dict[str, bool]) -> Dict[str, str]:
+        """
+        Retrieving the audio and video files for a given resource.  If the audio and video files already exist, it returns their file paths. Otherwise, it downloads the streams using YoutubeDL and returns the downloaded file paths.
+
+        This method performs the following tasks:
+            1. Checks if the audio and video files exist.
+            2. If the files exist, it returns their file paths.
+            3. If the files do not exist, it downloads the audio and video streams using YoutubeDL.
+            4. Returns a dictionary containing the paths to the audio and video files.
+
+        Parameters:
+            audio (string): The file path of the audio file.
+            video (string): The file path of the video file.
+            options (Dict[string, bool]): A dictionary of options to configure the YoutubeDL download process.
+
+        Returns:
+            Dict[string, string]
+
+        Raises:
+            NotFoundError: If the media resource cannot be found.
+            DownloadError: If there is an error while downloading the media.
+            Relational_Database_Error: If there is a database-related error.
+        """
+        if isfile(audio) and isfile(video):
+            return {
+                "audio": audio,
+                "video": video
+            }
+        try:
             self.setVideo(YoutubeDL(options))
-            self.getDatabaseHandler()._execute()
-            info = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False)
+            info = self.getVideo().extract_info(
+                url=self.getUniformResourceLocator(),
+                download=False
+            )
             self.setStreams(info["formats"]) # type: ignore
-            audio_file_location = self.getAudioFile()
-            video_file_location = self.getVideoFile()
-        self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
-        return {
-            "uniform_resource_locator": self.getUniformResourceLocator(),
-            "author": self.getAuthor(),
-            "title": self.getTitle(),
-            "identifier": self.getIdentifier(),
-            "author_channel": str(metadata["author_channel"]),
-            "views": int(metadata["views"]),  # type: ignore
-            "published_at": self.getPublishedAt(),  # type: ignore
-            "thumbnail": str(metadata["thumbnail"]),  # type: ignore
-            "duration": self.getDuration(),
-            "audio": audio_file_location,
-            "video": video_file_location
-        }
+            return {
+                "audio": self.getAudioFile(),
+                "video": self.getVideoFile()
+            }
+        except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:
+            self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
+            raise error
 
     def getAudioFile(self) -> str:
         """
-        Retrieving the audio file and saving it on the server as
-        well as adding its meta data in the database.
+        Retrieving the highest-quality audio stream from available streams.
+
+        This method filters the available streams to extract only valid audio streams, selects the one with the highest adaptive bitrate, and sets it as the current stream.  It also sets the MIME type to "audio/mp3" before initiating the download.
 
         Returns:
-            string
+            str
+
+        Raises:
+            NotFoundError: If no valid audio stream is available.
         """
-        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and "mp4a" in stream["acodec"]] # type: ignore
-        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
-        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and self.getAudioCodec() in stream["acodec"]] # type: ignore
+        adaptive_bitrate: float = float(max(streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
+        self.setStream([stream for stream in streams if stream["abr"] == adaptive_bitrate][0])
         self.setMimeType("audio/mp3")
-        response: str = self.__downloadAudio() if self.getStream() != None else ""
-        return response
+        if self.getStream() == None:
+            raise NotFoundError("There is not valid audio stream available.")
+        return self.__downloadAudio(self.getStream())
 
     def getVideoFile(self) -> str:
         """
-        Retrieving the video file and saving it on the server as
-        well as adding its meta data in the database.
+        Retrieving the highest-quality video and audio streams and downloads the video file.
+
+        This method filters available streams to select the best audio and video quality, ensuring the video resolution does not exceed 1080p (1920x1080).  It then combines the selected audio and video streams and initiates the video download.
 
         Returns:
             string
-        """
-        self.setMimeType("video/mp4")
-        return self.__downloadVideo()
 
-    def __downloadVideo(self) -> str:
-        """
-        Recursively downloading the video data from YouTube's main
-        data center.
-
-        Returns:
-            string
+        Raises:
+            NotFoundError: If no valid audio or video stream is available.
         """
         maximum_height: int = 1080
         maximum_width: int = 1920
-        response: str = ""
-        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and "mp4a" in str(stream.get("acodec"))]
-        if len(audio_streams) == 0:
-            self.getLogger().error(f"There is not valid audio stream available.\nStatus: 503")
-            return response
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and self.getAudioCodec() in str(stream.get("acodec"))]
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
+        if self.getStream() == None:
+            raise NotFoundError("There is not valid audio stream available.")
         audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
         video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("vbr") is not None and stream.get("vbr") != 0.00]
-        if len(video_streams) == 0:
-            self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")
-            return response
         height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
         width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
         height = maximum_height if height >= maximum_height else height
         width = maximum_width if width >= maximum_width else width
-        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and "avc" in str(stream.get("vcodec")) and "filesize" in stream]
-        if not video_streams:
-            self.getLogger().error(f"There is not valid video stream available.\nStatus: 503")
-            return response
+        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and self.getVideoCodec() in str(stream.get("vcodec")) and "filesize" in stream]
         file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
         self.setStream([stream for stream in video_streams if stream.get("filesize") == file_size][0])
+        if self.getStream() == None:
+            raise NotFoundError("There is not valid video stream available.")
         video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
-        file_name: str = f"{self.getIdentifier()}.mp4"
-        file_path: str = f"{self.getDirectory()}/Video/{file_name}"
+        self.setMimeType("video/mp4")
+        return self.__downloadVideo(audio_stream, video_stream)
+
+    def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
+        """
+        Downloading a video file with the corresponding audio stream and stores it in the specified directory.
+
+        Parameters:
+            audio (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the audio stream, including format ID.
+            video (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the video stream, including format ID.
+
+        Returns:
+            string
+
+        Raises:
+            DownloadError: If the video download process fails.
+            Relational_Database_Error: If there is an issue inserting data into the relational database.
+        """
+        file_path: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
         options: Dict[str, str] = {
-            "format": f"{video_stream['format_id']}+{audio_stream['format_id']}",
+            "format": f"{video['format_id']}+{audio['format_id']}",
             "merge_output_format": "mp4",
             "outtmpl": file_path
         }
-        self.setVideo(YoutubeDL(options))
-        self.getVideo().download([self.getUniformResourceLocator()])
+        try:
+            self.setVideo(YoutubeDL(options))
+            self.getVideo().download([self.getUniformResourceLocator()])
+        except DownloadError as error:
+            self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
+            raise error
         data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        self.getDatabaseHandler().postData(
-            table="MediaFile",
-            columns="type, date_downloaded, location, YouTube",
-            values="%s, %s, %s, %s",
-            parameters=data # type: ignore
-        )
-        return file_path
+        try:
+            self.getDatabaseHandler().postData(
+                table="MediaFile",
+                columns="type, date_downloaded, location, YouTube",
+                values="%s, %s, %s, %s",
+                parameters=data # type: ignore
+            )
+            return file_path
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
+            raise error
 
-    def handleHttpError(self, error: HTTPError, file_path: str) -> str:
+    def handleHttpError(self, error: HTTPError) -> None:
         """
-        Handling the HTTP Errors accordingly as it must be noted
-        that HTTP/403 is being caused as the application could not
-        keep track of the file path which gets lost where the back
-        end which acts the front-end of YouTube's datacenter,
-        generates the HTTP/403 which in turn generate the HTTP/500
-        into the application's front-end.
+        Handling HTTP errors that occur during requests.
 
         Parameters:
-            error: HTTPError: Raised when HTTP error occurs, but also acts like non-error return
-            file_path: string: The path of the file.
+            error (HTTPError): The HTTP error encountered.
+
+        Raises:
+            HTTPError: If the error is not a 403 Forbidden error.
+        """
+        self.getLogger().error(f"An HTTP error occurred.\nError: {error}")
+        if "403" not in str(error):
+            raise error
+
+    def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
+        """
+        Downloading an audio file using the provided stream details and stores it in the specified directory.
+
+        Parameters:
+            stream (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]):  A dictionary containing metadata about the audio stream, such as format ID.
 
         Returns:
             string
-        """
-        if "403" in str(error):
-            return file_path
-        else:
-            return ""
 
-    def __downloadAudio(self) -> str:
+        Raises:
+            DownloadError: If the audio download process fails.
+            Relational_Database_Error: If there is an issue inserting data into the relational database.
         """
-        Recursively downloading the audio data from YouTube's main
-        data center.
-
-        Returns:
-            string
-        """
-        file_name: str = f"{self.getIdentifier()}.mp3"
-        file_path: str = f"{self.getDirectory()}/Audio/{file_name}"
+        file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
         options: Dict[str, str] = {
-            "format": str(self.getStream()["format_id"]),
+            "format": str(stream["format_id"]),
             "outtmpl": file_path
         }
-        self.setVideo(YoutubeDL(options))
-        self.getVideo().download([self.getUniformResourceLocator()])
+        try:
+            self.setVideo(YoutubeDL(options))
+            self.getVideo().download([self.getUniformResourceLocator()])
+        except DownloadError as error:
+            self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
+            raise error
         data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        self.getDatabaseHandler().postData(
-            table="MediaFile",
-            columns="type, date_downloaded, location, YouTube",
-            values="%s, %s, %s, %s",
-            parameters=data # type: ignore
-        )
-        return file_path
+        try:
+            self.getDatabaseHandler().postData(
+                table="MediaFile",
+                columns="type, date_downloaded, location, YouTube",
+                values="%s, %s, %s, %s",
+                parameters=data # type: ignore
+            )
+            return file_path
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
+            raise error

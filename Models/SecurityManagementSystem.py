@@ -15,6 +15,8 @@ from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
 from typing import Union, Tuple
+from base64 import b64encode
+from hashlib import sha256
 
 
 class Security_Management_System:
@@ -51,6 +53,12 @@ class Security_Management_System:
     """
     The logger that will all the action of the application.
     """
+    __nonce: str
+    """
+    It is often a random or pseudo-random number issued in an
+    authentication protocol to ensure that old communications
+    cannot be reused in replay attacks.
+    """
 
     def __init__(self) -> None:
         """
@@ -70,6 +78,12 @@ class Security_Management_System:
         self.getDatabaseHandler()._execute()
         self.getLogger().inform("The Security Management System has been successfully been initialized!")
         self.hash()
+
+    def getNonce(self) -> str:
+        return self.__nonce
+
+    def setNonce(self, nonce: str) -> None:
+        self.__nonce = nonce
 
     def getDatabaseHandler(self) -> Database_Handler:
         return self.__Database_Handler
@@ -139,3 +153,17 @@ class Security_Management_System:
             condition="date_created < CURDATE()"
         )
         self.getLogger().inform("The older keys are deleted!")
+
+    def generateNonce(self) -> None:
+        """
+        It will generate a random nonce that will be used to
+        authenticate the user.
+
+        Returns:
+            void
+        """
+        self.setPasswordHasher(PasswordHasher())
+        self.setApplicationName(f"{self.getApplicationName()}{int(time())}")
+        self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
+        self.setNonce(b64encode(self.getHash().encode("utf-8")).decode("utf-8"))
+        self.getLogger().inform("The nonce has been generated!")

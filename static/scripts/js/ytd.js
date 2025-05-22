@@ -1,6 +1,5 @@
 /**
- * The main script that will initialize the application as
- * needed
+ * The main script that will initialize the application as needed.
  */
 class YTD {
     /**
@@ -84,6 +83,11 @@ class YTD {
          * @type {string}
          */
         this.__origin;
+        /**
+         * The identifiers of the stylsheets.
+         * @type {string[]}
+         */
+        this._stylesheetIdentifiers = ["ytd-css", "desktop-css", "mobile-css", "tablet-css"];
         this.init();
     }
 
@@ -256,6 +260,26 @@ class YTD {
     }
 
     /**
+     * Adding the stylesheets needed for the application.
+     * @returns {void}
+     */
+    addStylesheets() {
+        this._stylesheetIdentifiers.forEach((identifier) => this.addStylesheet(identifier));
+    }
+
+    /**
+     * Adding the stylesheet based on its identifier.
+     * @param {string} identifier The identifier of the stylesheet.
+     * @returns {void}
+     */
+    addStylesheet(identifier) {
+        let link = document.getElementById(identifier);
+        if (link) {
+            link.rel = "stylesheet";
+        }
+    }
+
+    /**
      * Defining the title of the page for the application.
      * @returns {void}
      */
@@ -375,11 +399,11 @@ class YTD {
     loadData() {
         this.setSession();
         if (window.location.pathname.includes("Search")) {
-            this.loadDataSearchPage();
+            setTimeout(() => this.loadDataSearchPage(), 100);
         } else if (window.location.pathname.includes("Download/YouTube")) {
-            this.loadDataDownloadPage();
+            setTimeout(() => this.loadDataDownloadPage(), 100);
         } else {
-            this.loadDataHomepage();
+            setTimeout(() => this.loadDataHomepage(), 100);
         }
         setTimeout(() => this.optimize(), 1000);
     }
@@ -420,6 +444,9 @@ class YTD {
      * @returns {void}
      */
     setRelatedContents() {
+        if (!this.getRequestURI().includes("Search") && window.outerWidth < 1024) {
+            return;
+        }
         const identifier = this._getRelatedContentsIdentifier();
         const data_object = "related_content";
         const related_content = JSON.parse(localStorage.getItem(data_object));
@@ -432,18 +459,17 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
+        status = ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) ? 304 : 204;
         if ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) {
-            status = 304;
             related_content.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(related_content));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-        } else {
-            status = 204;
-            localStorage.removeItem(data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-            this.getRelatedContents(route, request_method, data_object, identifier)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
         }
+        localStorage.removeItem(data_object);
+        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getRelatedContents(route, request_method, data_object, identifier)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 
     /**
@@ -474,18 +500,17 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
+        status = ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) ? 304 : 204;
         if ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) {
-            status = 304;
             media.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(media));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-        } else {
-            status = 204;
-            localStorage.removeItem(data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-            this.getMedia(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
         }
+        localStorage.removeItem(data_object);
+        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getMedia(route, request_method, data_object)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 
     /**
@@ -593,18 +618,17 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
+        status = (current_time < trend.timestamp + 86400) ? 304 : 204;
         if (current_time < trend.timestamp + 86400) {
-            status = 304;
             trend.timestamp = current_time + 86400;
             localStorage.setItem(data_object, JSON.stringify(trend));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-        } else {
-            status = 204;
-            localStorage.removeItem(data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-            this.getTrend(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            return;
         }
+        localStorage.removeItem(data_object);
+        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getTrend(route, request_method, data_object)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 
     /**
@@ -623,31 +647,32 @@ class YTD {
             .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
+        status = (current_time < session.Client.timestamp + 3600) ? 304 : 204;
         if (current_time < session.Client.timestamp + 3600) {
-            status = 304;
             session.Client.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(session));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-        } else {
-            status = 204;
-            localStorage.removeItem(data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
-            this.getSession(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
         }
+        localStorage.removeItem(data_object);
+        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getSession(route, request_method, data_object)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 }
+
+/**
+ * Loading the service worker.
+ * @returns {void}
+ */
+const load = () => {
+    navigator.serviceWorker.register('/static/scripts/js/service-worker.js')
+    .then((registration) => console.log('ServiceWorker registration successful with scope: ', registration.scope))
+    .catch((error) => console.error('ServiceWorker registration failed: ', error));
+};
 
 const application = new YTD();
 window.addEventListener("resize", () => application.resizeApplication(), true);
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/static/scripts/js/service-worker.js')
-            .then(registration => {
-                console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            })
-            .catch(error => {
-                console.log('ServiceWorker registration failed: ', error);
-            });
-    });
+    window.addEventListener('load', () => load());
 }
+document.addEventListener("DOMContentLoaded", () => application.addStylesheets(), true);

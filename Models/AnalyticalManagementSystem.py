@@ -1,8 +1,9 @@
 """
 The module that has the Analytical Management System.
 """
-from typing import Union, Dict, Any, Tuple, List
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Error as DatabaseHandlerError, RowType
+from typing import Dict
+from urllib import response
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, RowType, List, Tuple, Any, Union
 from time import mktime
 from datetime import datetime
 from user_agents import parse
@@ -346,37 +347,52 @@ class AnalyticalManagementSystem:
 
     def processEvent(self, data: Dict[str, Union[str, float]]) -> int:
         """
-        Processing the event and sending it to the relational
-        database server.
+        Processing an incoming event by validating its data and executing the corresponding handler.
 
-        Args:
-            data: {event_name: string, page_url: string, timestamp: string, user_agent: string, screen_resolution: string, referrer: string, loading_time: float, ip_address: string}: The data that will be processed.
+        This function:
+        - Verifies that all required keys are present.
+        - Checks if the event name is allowed.
+        - Logs an error and returns `503` if validation fails.
+        - Sets internal attributes such as event name, timestamp, user agent, screen resolution, referrer, and IP address.
+        - Performs additional data sanitization and enrichment.
+        - Calls the appropriate event processing function based on the event name.
+        - Logs an error and returns `503` if the event name is invalid.
+
+        Parameters:
+            data (Dict[str, Union[str, float]]): A dictionary containing event data.
 
         Returns:
             int
         """
+        required_keys: List[str] = ["event_name", "page_url", "timestamp", "user_agent", "screen_resolution"]
+        allowed_events: List[str] = ["page_view", "search_submitted", "color_scheme_updated", "click"]
+        if not all(key in data for key in required_keys):
+            self.getLogger().error(f"This request is forged as the required keys are missing and the required data will be logged.\nIP Address: {data['ip_address']}")
+            return self.service_unavailable
+        if data["event_name"] not in allowed_events:
+            self.getLogger().error(f"This request is forged as this event is not allowed and the required data will be logged.\nIP Address: {data['ip_address']}")
+            return self.service_unavailable
         self.setEventName(str(data["event_name"]))
         self.setUniformResourceLocator(str(data["page_url"]))
         self.setTimestamp(int(mktime(datetime.strptime(str(data["timestamp"]), "%Y/%m/%d %H:%M:%S").timetuple())))
         self.setUserAgent(str(data["user_agent"]))
         self.setScreenResolution(str(data["screen_resolution"]))
         self.setReferrer(str(data["referrer"]) if "referrer" in data and data["referrer"] != "" else None)
-        self.setIpAddress(str(data["ip_address"]) if data["ip_address"] != "127.0.0.1" else "omnitechbros.ddns.net")
+        self.setIpAddress("omnitechbros.ddns.net" if data["ip_address"] == "127.0.0.1" or str(data["ip_address"]).startswith("192.168.") else str(data["ip_address"]))
         status: int = self.getUserAgentData()
         status = self.getScreenResolutionData() if status == self.ok else status
         status = self.setDeviceType() if status == self.ok else status
         status = self.sanitizeIpAddress() if status == self.ok else status
         status = self.getGeolocationData() if status == self.ok else status
         if self.getEventName() == "page_view":
-            return self.processPageView(data, status)
+            status = self.processPageView(data, status)
         if self.getEventName() == "color_scheme_updated":
-            return self.processColorSchemeUpdated(data, status)
+            status = self.processColorSchemeUpdated(data, status)
         if self.getEventName() == "search_submitted":
-            return self.processSearchSubmitted(data, status)
+            status = self.processSearchSubmitted(data, status)
         if self.getEventName() == "click":
-            return self.processClick(data, status)
-        print(f"{self.__dict__=}")
-        return self.service_unavailable
+            status = self.processClick(data, status)
+        return status
 
     def processClick(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
@@ -402,14 +418,13 @@ class AnalyticalManagementSystem:
         click_response: Dict[str, int] = self.manageClick(status)
         status = int(click_response["status"])
         click_identifier: int = int(click_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             click=click_identifier
         )
-        return status
 
     def manageClick(self, status: int) -> Dict[str, int]:
         """
@@ -430,30 +445,31 @@ class AnalyticalManagementSystem:
 
     def postClick(self) -> Dict[str, int]:
         """
-        Adding a new click.
+        Inserting a new click event into the `"Click"` table of the database.
+
+        This method:
+        - Retrieves the forwarded uniform resource locator.
+        - Attempts to insert the URL into the database's `"Click"` table.
+        - Logs success or failure messages.
+        - Returns a dictionary containing the status code and the last inserted row's identifier.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getForwardedUniformResourceLocator(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="Click",
-                columns="uniform_resource_locator",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Click table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Click table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="Click",
+            columns="uniform_resource_locator",
+            values="%s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Click table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Click table.\nStatus: {self.service_unavailable}")
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        return {
+            "status": status,
+            "identifier": identifier
+        }
 
     def processSearchSubmitted(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
@@ -479,14 +495,13 @@ class AnalyticalManagementSystem:
         search_submitted_response: Dict[str, int] = self.manageSearchSubmitted(status)
         status = int(search_submitted_response["status"])
         search_submitted_identifier: int = int(search_submitted_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             search_submitted=search_submitted_identifier
         )
-        return status
 
     def manageSearchSubmitted(self, status: int) -> Dict[str, int]:
         """
@@ -503,7 +518,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]] = self.getSearchSubmitted()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str]]]]] = self.getSearchSubmitted()
         if database_response["status"] == self.ok:
             network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
             return {
@@ -514,55 +529,54 @@ class AnalyticalManagementSystem:
 
     def postSearchSubmitted(self) -> Dict[str, int]:
         """
-        Adding a new search term.
+        Inserting a new search submission event into the `"SearchSubmitted"` table of the database.
+
+        This method:
+        - Retrieves the search term entered by the user.
+        - Attempts to insert the search term into the database's `"SearchSubmitted"` table.
+        - Logs success or failure messages.
+        - Returns a dictionary containing the status code and the last inserted row's identifier.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getSearchTerm(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="SearchSubmitted",
-                columns="search_term",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Search Submitted table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Search Submitted table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="SearchSubmitted",
+            columns="search_term",
+            values="%s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Search Submitted table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Search Submitted table.\nStatus: {self.service_unavailable}")
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        return {
+            "status": status,
+            "identifier": identifier
+        }
 
-    def getSearchSubmitted(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
+    def getSearchSubmitted(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]:
         """
-        Retrieving the search submitted data from the database.
+        Retrieving search submission data from the `"SearchSubmitted"` table in the database.
+
+        This method:
+        - Retrieves all rows from the `"SearchSubmitted"` table where the `search_term` matches the current search term.
+        - Returns a dictionary containing the status code and the data fetched.
+        - If no data is found, it returns a status of `204` and an empty list.
 
         Returns:
-            {status: int, data: [{identifier: int, search_term: string}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]]
         """
-        try:
-            parameters: Tuple[str] = (self.getSearchTerm(),)
-            data: List[Union[RowType, Dict[str, Union[int, str]]]] = self.getDatabaseHandler().getData(
-                table_name="SearchSubmitted",
-                filter_condition="search_term = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Search Submitted table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str] = (self.getSearchTerm(),)
+        data: List[Dict[str, Union[int, str]]] = self.getDatabaseHandler().getData(
+            table_name="SearchSubmitted",
+            filter_condition="search_term = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def processColorSchemeUpdated(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
@@ -588,14 +602,13 @@ class AnalyticalManagementSystem:
         color_scheme_updated_response: Dict[str, int] = self.manageColorSchemeUpdated(status)
         status = int(color_scheme_updated_response["status"])
         color_scheme_updated_identifier: int = int(color_scheme_updated_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             color_scheme=color_scheme_updated_identifier
         )
-        return status
 
     def manageColorSchemeUpdated(self, status: int) -> Dict[str, int]:
         """
@@ -616,30 +629,31 @@ class AnalyticalManagementSystem:
 
     def postColorSchemeUpdated(self) -> Dict[str, int]:
         """
-        Adding a new color scheme.
+        Inserting a new color scheme update event into the `"ColorSchemeUpdated"` table of the database.
+
+        This method:
+        - Retrieves the updated color scheme.
+        - Attempts to insert the color scheme into the database's `"ColorSchemeUpdated"` table.
+        - Logs success or failure messages.
+        - Returns a dictionary containing the status code and the last inserted row's identifier.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getColorScheme(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="ColorSchemeUpdated",
-                columns="color_scheme",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="ColorSchemeUpdated",
+            columns="color_scheme",
+            values="%s",
+            parameters=parameters
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table.\nStatus: {self.service_unavailable}")
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        return {
+            "status": status,
+            "identifier": identifier
+        }
 
     def processPageView(self, data: Dict[str, Union[str, float]], status: int) -> int:
         """
@@ -665,28 +679,29 @@ class AnalyticalManagementSystem:
         page_view_response: Dict[str, int] = self.managePageView(status)
         status = int(page_view_response["status"])
         page_view_identifier: int = int(page_view_response["identifier"])
-        status = self.postEvent(
+        return self.postEvent(
             status=status,
             device=device_identifier,
             event_type=event_type_identifier,
             network_location=network_location_identifier,
             page_view=page_view_identifier
         )
-        return status
 
     def postEvent(self, status: int, device: int, event_type: int, network_location: int, page_view: int = 0, color_scheme: int = 0, search_submitted: int = 0, click: int = 0) -> int:
         """
-        Adding a new event.
+        Posting an event based on the given parameters to the appropriate event handler.
+
+        This function checks the status and other parameters to determine which specific event function should be triggered.  If the event is successfully processed, it will return a corresponding status, otherwise, it will return the status code indicating an error or an unavailable service.
 
         Parameters:
-            status: int: The status of the previous processing.
-            device: int: The identifier of the device.
-            event_type: int: The identifier of the event type.
-            network_location: int: The identifier of the network location.
-            page_view: int: The identifier of the page view.
-            color_scheme: int: The identifier of the color scheme.
-            search_submitted: int: The identifier of the search submitted.
-            click: int: The identifier of the click.
+            status (int): The status of the event.
+            device (int): The device identifier.
+            event_type (int): The type of the event.
+            network_location (int): The network location identifier.
+            page_view (int, optional): The page view event identifier.
+            color_scheme (int, optional): The color scheme event identifier.
+            search_submitted (int, optional): The search submission event identifier.
+            click (int, optional): The click event identifier.
 
         Returns:
             int
@@ -705,111 +720,115 @@ class AnalyticalManagementSystem:
 
     def postEventClick(self, device: int, event_type: int, network_location: int, click: int) -> int:
         """
-        Adding the event that is specifically click.
+        Inserting a new event click record into the `"Events"` table of the database.
+
+        This method:
+        - Inserts data related to the click event into the `"Events"` table.
+        - Logs success or failure messages.
+        - Returns a status code representing the result of the operation.
 
         Parameters:
-            device: int: The identifier of the device.
-            event_type: int: The identifier of the event type.
-            network_location: int: The identifier of the network location.
-            click: int: The identifier of the click.
+            device (int): The device identifier where the event occurred.
+            event_type (int): The type of the event.
+            network_location (int): The network location identifier.
+            click (int): The identifier for the event.
 
         Returns:
             int
         """
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, click)
-        try:
-            self.getDatabaseHandler().postData(
-                table="Events",
-                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, Click",
-                values="%s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
-            return self.created
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
-            return self.service_unavailable
+        response: bool = self.getDatabaseHandler().postData(
+            table="Events",
+            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, Click",
+            values="%s, %s, %s, %s, %s, %s, %s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        return self.created if response else self.service_unavailable
 
     def postEventSearchSubmitted(self, device: int, event_type: int, network_location: int, search_submitted: int) -> int:
         """
-        Adding the event that is specifically search submitted.
+        Inserting a new event search submitted record into the `"Events"` table of the database.
+
+        This method:
+        - Inserts data related to the search submitted event into the `"Events"` table.
+        - Logs success or failure messages.
+        - Returns a status code representing the result of the operation.
 
         Parameters:
-            device: int: The identifier of the device.
-            event_type: int: The identifier of the event type.
-            network_location: int: The identifier of the network location.
-            search_submitted: int: The identifier of the search submitted.
+            device (int): The device identifier where the event occurred.
+            event_type (int): The type of the event.
+            network_location (int): The network location identifier.
+            search_submitted (int): The identifier for the event.
 
         Returns:
             int
         """
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, search_submitted)
-        try:
-            self.getDatabaseHandler().postData(
-                table="Events",
-                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, SearchSubmitted",
-                values="%s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
-            return self.created
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
-            return self.service_unavailable
+        response: bool = self.getDatabaseHandler().postData(
+            table="Events",
+            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, SearchSubmitted",
+            values="%s, %s, %s, %s, %s, %s, %s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        return self.created if response else self.service_unavailable
 
     def postEventColorSchemeUpdated(self, device: int, event_type: int, network_location: int, color_scheme: int) -> int:
         """
-        Adding the event that is specifically color scheme updated.
+        Inserting a new event color scheme updated record into the `"Events"` table of the database.
+
+        This method:
+        - Inserts data related to the color scheme updated event into the `"Events"` table.
+        - Logs success or failure messages.
+        - Returns a status code representing the result of the operation.
 
         Parameters:
-            device: int: The identifier of the device.
-            event_type: int: The identifier of the event type.
-            network_location: int: The identifier of the network location.
-            color_scheme: int: The identifier of the color scheme.
+            device (int): The device identifier where the event occurred.
+            event_type (int): The type of the event.
+            network_location (int): The network location identifier.
+            color_scheme (int): The color scheme identifier.
 
         Returns:
             int
         """
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, color_scheme)
-        try:
-            self.getDatabaseHandler().postData(
-                table="Events",
-                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, color_scheme_updated",
-                values="%s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
-            return self.created
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
-            return self.service_unavailable
+        response: bool = self.getDatabaseHandler().postData(
+            table="Events",
+            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, color_scheme_updated",
+            values="%s, %s, %s, %s, %s, %s, %s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        return self.created if response else self.service_unavailable
 
     def postEventPageView(self, device: int, event_type: int, network_location: int, page_view: int) -> int:
         """
-        Adding the event that is specifically page view.
+        Inserting a new page view event record into the `"Events"` table of the database.
+
+        This method:
+        - Inserts data related to the page view event into the `"Events"` table.
+        - Logs success or failure messages.
+        - Returns a status code representing the result of the operation.
 
         Parameters:
-            device: int: The identifier of the device.
-            event_type: int: The identifier of the event type.
-            network_location: int: The identifier of the network location.
-            page_view: int: The identifier of the page view.
+            device (int): The device identifier where the event occurred.
+            event_type (int): The type of the event.
+            network_location (int): The network location identifier.
+            page_view (int): The page view identifier.
 
         Returns:
             int
         """
         parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, page_view)
-        try:
-            self.getDatabaseHandler().postData(
-                table="Events",
-                columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, PageView",
-                values="%s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}")
-            return self.created
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Event table.\nError: {error}")
-            return self.service_unavailable
+        response: bool = self.getDatabaseHandler().postData(
+            table="Events",
+            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, PageView",
+            values="%s, %s, %s, %s, %s, %s, %s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        return self.created if response else self.service_unavailable
 
     def managePageView(self, status: int) -> Dict[str, int]:
         """
@@ -830,30 +849,28 @@ class AnalyticalManagementSystem:
 
     def postPageView(self) -> Dict[str, int]:
         """
-        Adding a new page view.
+        Inserting a new page view record into the `"PageView"` table of the database.
+
+        This method:
+        - Inserts the page loading time into the `"PageView"` table in the database.
+        - Logs success or failure messages based on whether the insertion is successful.
+        - Returns a dictionary with the status code and the identifier of the inserted record.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[float] = (self.getLoadingTime(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="PageView",
-                columns="loading_time",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Page View table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Page View table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="PageView",
+            columns="loading_time",
+            values="%s",
+            parameters=parameters
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Page View table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Page View table.\nStatus: {self.service_unavailable}")
+        return {
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        }
 
     def manageNetworkLocation(self, status: int) -> Dict[str, int]:
         """
@@ -870,7 +887,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, float]]]]]] = self.getDatabaseNetworkLocation()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]] = self.getDatabaseNetworkLocation()
         if database_response["status"] == self.ok:
             network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
             return {
@@ -879,59 +896,58 @@ class AnalyticalManagementSystem:
             }
         return self.postNetworkLocation()
 
-    def getDatabaseNetworkLocation(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, float]]]]]]:
+    def getDatabaseNetworkLocation(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]]:
         """
-        Retrieving the network and location data from the database.
+        Retrieving network location data from the `"NetworkLocation"` table in the database.
+
+        This method:
+        - Queries the `"NetworkLocation"` table based on the provided IP address, latitude, and longitude.
+        - Returns a dictionary containing the status and the network location data.
+        - If data is found, returns it along with a success status.
+        - If no data is found, returns an empty list and a "no content" status.
 
         Returns:
-            {status: int, data: [{identifier: int, ip_address: string, hostname: string, latitude: float, longitude: float, city: string, region: string, country: string, timezone: string, location: string}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]]
         """
-        try:
-            parameters: Tuple[str, float, float] = (self.getIpAddress(), self.getLatitude(), self.getLongitude())
-            data: List[Union[RowType, Dict[str, Union[int, str, float]]]] = self.getDatabaseHandler().getData(
-                table_name="NetworkLocation",
-                filter_condition="ip_address = %s AND latitude = %s AND longitude = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Network and Location table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str, float, float] = (self.getIpAddress(), self.getLatitude(), self.getLongitude())
+        data: List[Dict[str, Union[int, str, float]]] = self.getDatabaseHandler().getData(
+            table_name="NetworkLocation",
+            filter_condition="ip_address = %s AND latitude = %s AND longitude = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def postNetworkLocation(self) -> Dict[str, int]:
         """
-        Adding a new network and location.
+        Posting network location data to the `"NetworkLocation"` table in the database.
+
+        This method:
+        - Collects information regarding the network location.
+        - Inserts the collected data into the `"NetworkLocation"` table in the database.
+        - Returns a dictionary containing the status and the identifier of the inserted row.
+        - The method conditionally includes the hostname based on whether the `AnalyticalManagementSystem` class has the 
+        attribute `__hostname`.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Union[Tuple[str, Union[str, None], float, float, str, str, str, str, str], Tuple[str, float, float, str, str, str, str, str]] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})") if hasattr(AnalyticalManagementSystem, "__hostname") else (self.getIpAddress(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})")
-        try:
-            columns: str = "ip_address, hostname, latitude, longitude, city, region, country, timezone, location" if hasattr(AnalyticalManagementSystem, "__hostname") else "ip_address, latitude, longitude, city, region, country, timezone, location"
-            values: str = "%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)" if hasattr(AnalyticalManagementSystem, "__hostname") else "%s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)"
-            self.getDatabaseHandler().postData(
-                table="NetworkLocation",
-                columns=columns,
-                values=values,
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Network and Location table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        columns: str = "ip_address, hostname, latitude, longitude, city, region, country, timezone, location" if hasattr(AnalyticalManagementSystem, "__hostname") else "ip_address, latitude, longitude, city, region, country, timezone, location"
+        values: str = "%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)" if hasattr(AnalyticalManagementSystem, "__hostname") else "%s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)"
+        response: bool = self.getDatabaseHandler().postData(
+            table="NetworkLocation",
+            columns=columns,
+            values=values,
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Network and Location table.\nStatus: {self.service_unavailable}")
+        return {
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+        }
 
     def manageEventType(self, status: int) -> Dict[str, int]:
         """
@@ -948,7 +964,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]] = self.getDatabaseEventType()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str]]]]] = self.getDatabaseEventType()
         if database_response["status"] == self.ok:
             event_type: Dict[str, Union[int, str]] = database_response["data"][-1] # type: ignore
             return {
@@ -957,57 +973,51 @@ class AnalyticalManagementSystem:
             }
         return self.postEventType()
 
-    def getDatabaseEventType(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str]]]]]]:
+    def getDatabaseEventType(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]:
         """
-        Retrieving the event type data from the database.
+        Retrieving event type data from the `"EventTypes"` table based on the event name.
+
+        This method:
+        - Queries the `"EventTypes"` table in the database to retrieve event types corresponding to the provided event name.
+        - Returns a dictionary containing the status of the operation and the event type data if found.
 
         Returns:
-            {status: int, data: [{identifier: int, name: string}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]
         """
-        try:
-            parameters: Tuple[str] = (self.getEventName(),)
-            data: List[Union[RowType, Dict[str, Union[int, str]]]] = self.getDatabaseHandler().getData(
-                table_name="EventTypes",
-                filter_condition="name = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Event Types table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str] = (self.getEventName(),)
+        data: List[Dict[str, Union[int, str]]] = self.getDatabaseHandler().getData(
+            table_name="EventTypes",
+            filter_condition="name = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def postEventType(self) -> Dict[str, int]:
         """
-        Adding a new event type.
+        Inserting event type data into the `"EventTypes"` table.
+
+        This method:
+        - Inserts a new event type into the `"EventTypes"` table, using the event name.
+        - Returns a dictionary containing the status of the operation and the identifier of the inserted record.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str] = (self.getEventName(),)
-        try:
-            self.getDatabaseHandler().postData(
-                table="EventTypes",
-                columns="name",
-                values="%s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Event Types table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Event Types table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="EventTypes",
+            columns="name",
+            values="%s",
+            parameters=parameters
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Event Types table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event Types table.\nStatus: {self.service_unavailable}")
+        return {
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+        }
 
     def manageDevice(self, status: int) -> Dict[str, int]:
         """
@@ -1024,7 +1034,7 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]] = self.getDatabaseDevice()
+        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]] = self.getDatabaseDevice()
         if database_response["status"] == self.ok:
             device: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
             return {
@@ -1035,55 +1045,49 @@ class AnalyticalManagementSystem:
 
     def postDevice(self) -> Dict[str, int]:
         """
-        Adding a new device.
+        Inserting device information into the `"Devices"` table.
+
+        This method:
+        - Inserts a new device record into the `"Devices"` table using various device details.
+        - Returns a dictionary containing the status of the operation and the identifier of the inserted device record.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]
         """
         parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
-        try:
-            self.getDatabaseHandler().postData(
-                table="Devices",
-                columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
-                values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-                parameters=parameters # type: ignore
-            )
-            self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}")
-            return {
-                "status": self.created,
-                "identifier": int(self.getDatabaseHandler().getLastRowIdentifier()), # type: ignore
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "identifier": 0
-            }
+        response: bool = self.getDatabaseHandler().postData(
+            table="Devices",
+            columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
+            values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
+            parameters=parameters # type: ignore
+        )
+        self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nStatus: {self.service_unavailable}")
+        return {
+            "status": self.created if response else self.service_unavailable,
+            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+        }
 
-    def getDatabaseDevice(self) -> Dict[str, Union[int, List[Union[RowType, Dict[str, Union[int, str, None, float]]]]]]:
+    def getDatabaseDevice(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]]:
         """
-        Retrieving the device data from the database.
+        Retrieving device information from the `"Devices"` table based on the user agent and screen resolution.
+
+        This method:
+        - Queries the `"Devices"` table to retrieve records where the user agent and screen resolution match the provided values.
+        - Returns a dictionary containing the status of the operation and the retrieved device data.
 
         Returns:
-            {status: int, data: [{identifier: int, user_agent: string, browser: string, browser_version: string, operating_system: string, operating_system_version: string, device: string, screen_resolution: string, width: int, height: int, aspect_ratio: float}]}
+            Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]]
         """
-        try:
-            parameters: Tuple[str, str] = (self.getUserAgent(), self.getScreenResolution())
-            data: List[Union[RowType, Dict[str, Union[int, str, None, float]]]] = self.getDatabaseHandler().getData(
-                table_name="Devices",
-                filter_condition="user_agent = %s AND screen_resolution = %s",
-                parameters=parameters # type: ignore
-            )
-            return {
-                "status": self.ok if len(data) > 0 else self.no_content,
-                "data": data if len(data) > 0 else []
-            }
-        except DatabaseHandlerError as error:
-            self.getLogger().error(f"An error occurred while retrieving data from the Devices table.\nError: {error}")
-            return {
-                "status": self.service_unavailable,
-                "data": []
-            }
+        parameters: Tuple[str, str] = (self.getUserAgent(), self.getScreenResolution())
+        data: List[Dict[str, Union[int, str, None, float]]] = self.getDatabaseHandler().getData(
+            table_name="Devices",
+            filter_condition="user_agent = %s AND screen_resolution = %s",
+            parameters=parameters # type: ignore
+        )
+        return {
+            "status": self.ok if len(data) > 0 else self.no_content,
+            "data": data if len(data) > 0 else []
+        }
 
     def getGeolocationData(self) -> int:
         """
@@ -1119,11 +1123,19 @@ class AnalyticalManagementSystem:
 
     def sanitizeRealIpAddress(self) -> int:
         """
-        Sanitizing the IP Address by checking it is an IP Address or
-        a hostname.
+        Validating and sanitizing the stored IP address.
+
+        This function:
+        - Retrieves the stored IP address and attempts to validate it as either an IPv4 or IPv6 address.
+        - If valid, updates the stored IP address in string format.
+        - Logs success if the IP address is properly sanitized.
+        - Logs an error and returns `self.service_unavailable` if the IP address is invalid.
 
         Returns:
             int
+
+        Raises:
+            ValueError: If the stored IP address is not a valid IPv4 or IPv6 address.
         """
         try:
             real_ip_address: Union[IPv4Address, IPv6Address] = ip_address(self.getIpAddress())
@@ -1131,15 +1143,27 @@ class AnalyticalManagementSystem:
             self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
             return self.ok
         except ValueError as error:
-            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
+            self.getLogger().warn(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
             return self.service_unavailable
 
     def sanitizeIpAddress(self) -> int:
         """
-        Sanitizing the IP Address by checking it is an IP Address.
+        Sanitizing the stored IP address for the Analytical Management System.
+
+        This function:
+        - Checks if an IP address is available.
+        - Logs an error and returns `503` if no IP address is found.
+        - Attempts to sanitize the IP address using `sanitizeRealIpAddress()`.
+        - If successful, returns `200`.
+        - Otherwise, tries to resolve the IP address using the hostname.
+        - Logs success if the IP address is successfully resolved.
+        - Logs an error and returns `503` if the IP address cannot be resolved.
 
         Returns:
             int
+
+        Raises:
+            gaierror: If the IP address is neither a valid IP nor a resolvable hostname.
         """
         if not self.getIpAddress():
             self.getLogger().error("The Analytical Management System cannot retrieve the IP Address.")

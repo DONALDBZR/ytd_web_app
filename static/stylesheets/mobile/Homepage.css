@@ -1,0 +1,233 @@
+:root {
+    --textSize: var(--percentage);
+    --height: 0px;
+    --width: 0px;
+}
+body {
+    height: var(--height);
+    width: var(--width);
+    margin: calc(var(--height) * 0) calc(var(--width) * 0);
+    padding: calc(var(--height) * 0) calc(var(--width) * 0);
+    font-size: var(--textSize);
+}
+footer {
+    height: calc(var(--height) / 10);
+    display: flex;
+    justify-content: center;
+}
+main {
+    --main-height: calc(var(--height) * 0.8);
+    --main-width: var(--width);
+    height: var(--main-height);
+}
+main p {
+    margin: calc(var(--main-height) * 0) calc(var(--main-width) / 50);
+    letter-spacing: calc(var(--width) / 2000);
+    height: calc(var(--main-height) / 3);
+}
+main div {
+    display: flex;
+    height: calc(var(--main-height) / 10);
+    justify-content: space-evenly;
+}
+main div div {
+    height: calc(var(--main-height) / 10);
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 1.111);
+}
+footer div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 1.5);
+}
+main #loading {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--width) * 0);
+    top: calc(var(--height) * 0);
+    width: var(--width);
+    height: var(--height);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 12);
+}
+main .Trend {
+    height: calc(var(--main-height) * (17 / 30));
+    justify-content: normal;
+    align-items: normal;
+    width: var(--main-width);
+    overflow: hidden;
+}
+main .Trend .card {
+    --card-height: calc(var(--main-height) * (17 / 30));
+    --card-width: calc(var(--main-width) * 0.9);
+    height: var(--card-height);
+    width: var(--card-width);
+    justify-content: normal;
+    flex: 0 0 auto;
+    flex-direction: column;
+    margin: calc(var(--card-height) * 0) calc(var(--card-width) / 20);
+    animation: none;
+}
+main .Trend .card div {
+    width: var(--card-width);
+    height: calc(var(--card-height) / 2);
+    overflow: unset;
+    animation: none;
+}
+main .Trend .card div:nth-child(1) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+main .Trend .card div:nth-child(1) a {
+    height: calc(var(--card-height) / 2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+}
+main .Trend .card div:nth-child(1) a img {
+    width: auto;
+    height: calc(var(--card-height) / 2);
+}
+main .Trend .card div:nth-child(2) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: normal;
+    overflow: unset;
+}
+main .Trend .card div:nth-child(2) div {
+    height: calc(var(--card-height) / 10);
+    overflow: unset;
+}
+main .Trend .card div:nth-child(2) div:nth-child(1) {
+    width: var(--card-width);
+    align-items: center;
+    justify-content: normal;
+    word-wrap: break-word;
+    animation: none;
+    font-size: calc(var(--textSize) * 0.455762);
+}
+main .Trend .card div:nth-child(2) div:nth-child(2) {
+    justify-content: normal;
+    align-items: center;
+}
+main .Trend .card div:nth-child(2) div:nth-child(2) a {
+    font-size: calc(var(--textSize) * 0.369204);
+}
+main .Trend .card div:nth-child(2) div:nth-child(3),
+main .Trend .card div:nth-child(2) div:nth-child(4) {
+    width: calc(var(--card-width) / 2);
+}
+main .Trend .card div:nth-child(2) div:nth-child(3) div,
+main .Trend .card div:nth-child(2) div:nth-child(4) div {
+    --stats-width: calc(var(--card-width) / 2);
+    width: calc(var(--card-width) / 4);
+    align-items: center;
+    font-size: calc(var(--textSize) * 0.369204);
+}
+main .Trend .card div:nth-child(2) div:nth-child(5) a {
+    font-size: calc(var(--textSize) * 0.821);
+    padding: unset;
+    margin: unset;
+}
+main .Trend div {
+    height: calc(var(--component-height) * (17 / 30));
+    justify-content: normal;
+    align-items: normal;
+    flex-wrap: nowrap;
+}
+main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(1),
+main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(1) {
+    width: calc(var(--stats-width) / 2);
+}
+main .Trend .card div:nth-child(2) div:nth-child(3) div:nth-child(2),
+main .Trend .card div:nth-child(2) div:nth-child(4) div:nth-child(2) {
+    width: calc(var(--stats-width) / 2);
+}
+main .Trend .card div:nth-child(2) div:nth-child(5) {
+    justify-content: center;
+    align-items: center;
+}
+@keyframes trend-scroll {
+    0% {
+        transform: translateX(0%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+header {
+    --header-width: var(--width);
+    --header-height: calc(var(--height) / 10);
+    width: var(--header-width);
+    height: var(--header-height);
+}
+header nav div {
+    height: calc(var(--header-height) / 2);
+    width: var(--header-width);
+    display: flex;
+}
+header nav div:nth-child(1) {
+    align-items: center;
+    justify-content: center;
+}
+header nav div:nth-child(1) a {
+    font-size: calc(var(--textSize) * 1.5);
+    letter-spacing: calc(var(--width) / 1000);
+}
+header nav div:nth-child(2) {
+    display: flex;
+}
+header nav div:nth-child(2) form {
+    --search-form-height: calc(var(--header-height) / 2);
+    --search-form-width: calc(var(--header-width) * 0.9);
+    width: var(--search-form-width);
+    display: flex;
+    align-items: center;
+}
+header nav div:nth-child(2) form button {
+    border: none;
+    height: calc(var(--search-form-height) * 0.9);
+    width: calc(var(--search-form-width) / 9);
+    padding: unset;
+    font-size: calc(var(--textSize) * 1.25);
+    padding-block: calc(var(--search-form-height) / 20);
+}
+header nav div:nth-child(2) form button svg {
+    height: auto;
+    width: calc(var(--search-form-width) / 10);
+}
+header nav div:nth-child(2) form input {
+    height: calc(var(--search-form-height) * 0.9);
+    width: calc(var(--search-form-width) * (8 / 9));
+    border: unset;
+    border-bottom: solid 1px;
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: calc(var(--textSize) * 1);
+}
+header nav div:nth-child(2) div {
+    --color-scheme-height: calc(var(--header-height) / 2);
+    --color-scheme-width: calc(var(--header-width) / 10);
+    height: var(--color-scheme-height);
+    width: var(--color-scheme-width);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+header nav div:nth-child(2) div button {
+    border: none;
+    height: calc(var(--color-scheme-height) * 0.9);
+    padding: unset;
+    width: var(--color-scheme-width);
+    padding-block: calc(var(--color-scheme-height) / 20);
+    font-size: calc(var(--textSize) * 1.25);
+}
+header nav div:nth-child(2) div button svg {
+    width: auto;
+    height: calc(var(--height) / (80 / 3));
+}

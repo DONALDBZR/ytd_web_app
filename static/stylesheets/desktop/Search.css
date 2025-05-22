@@ -1,0 +1,281 @@
+/* Declaring all the variables that are going to be used */
+:root {
+    --textSize: var(--percentage);
+    --height: 0px;
+    --width: 0px;
+    --aspect-ratio: calc(16 / 9);
+}
+body {
+    height: var(--height);
+    width: var(--width);
+    margin: calc(var(--height) * 0) calc(var(--width) * 0);
+    padding: calc(var(--height) * 0) calc(var(--width) * 0);
+    font-size: var(--textSize);
+}
+header {
+    --header-height: calc(var(--height) / 10);
+    --header-width: var(--width);
+    width: var(--header-width);
+    height: var(--header-height);
+}
+header nav {
+    width: var(--header-width);
+    height: var(--header-height);
+    display: flex;
+}
+header nav div {
+    --navigation-bar-height: var(--header-height);
+    --navigation-bar-width: calc(var(--header-width) / 3);
+    height: var(--navigation-bar-height);
+    width: var(--navigation-bar-width);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+header nav div a {
+    font-size: calc(var(--textSize) * 2);
+    letter-spacing: calc(var(--width) / 1000);
+}
+header nav div:nth-child(2) {
+    --navigation-bar-width: calc(var(--header-width) * (2 / 3));
+}
+header nav div form {
+    --form-height: var(--navigation-bar-height);
+    --form-width: calc(var(--navigation-bar-width) / 2);
+    width: var(--form-width);
+    height: var(--form-height);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+header nav div form button {
+    font-size: calc(var(--textSize) * 1.25);
+}
+header nav div form input {
+    border: none;
+    letter-spacing: calc(var(--width) / 2000);
+    padding-block: unset;
+    height: calc(var(--form-height) / 2.91);
+    padding-bottom: calc(var(--form-height) / 58.2);
+    border-bottom: var(--color2) solid calc(var(--form-height) / 58.2);
+    margin-left: calc(var(--form-width) / 227.7);
+    font-size: var(--textSize);
+    width: calc(var(--form-width) / 1.19);
+}
+header nav div div {
+    --color-scheme-height: var(--navigation-bar-height);
+    --color-scheme-width: calc(var(--navigation-bar-width) / 2);
+    height: var(--color-scheme-height);
+    width: var(--color-scheme-width);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+header nav div div button, header nav div form button {
+    border: none;
+    padding: unset;
+}
+header nav div div button {
+    font-size: calc(var(--textSize) * 1.25);
+}
+main {
+    --main-height: calc(var(--height) * 0.8);
+    --main-width: var(--width);
+    height: var(--main-height);
+    width: var(--main-width);
+}
+main #loading {
+    position: fixed;
+    z-index: 1;
+    left: calc(var(--width) * 0);
+    top: calc(var(--height) * 0);
+    width: var(--width);
+    height: var(--height);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 10);
+}
+main #loading {
+    display: flex;
+}
+main .Media .RelatedContents::-webkit-scrollbar {
+    display: none;
+}
+main .Media {
+    --media-height: var(--main-height);
+    --media-width: var(--main-width);
+    height: var(--media-height);
+    width: var(--media-width);
+    display: flex;
+}
+main .Media .YouTube {
+    --youtube-height: var(--media-height);
+    --youtube-width: calc(var(--media-width) * (2 / 3));
+    height: var(--youtube-height);
+    width: calc(var(--youtube-width) * 0.77462);
+    margin-left: calc(var(--youtube-width) * 0.175);
+    margin-right: calc(var(--youtube-width) * 0.05038);
+}
+main .Media .RelatedContents {
+    --related-contents-height: var(--media-height);
+    --related-contents-width: calc(var(--media-width) / 3);
+    height: var(--related-contents-height);
+    width: var(--related-contents-width);
+    overflow: scroll;
+}
+main .Media .YouTube div {
+    --video-height: calc(var(--youtube-height) * 0.64);
+    --video-width: calc(var(--youtube-width) * 0.825);
+    height: var(--video-height);
+    width: var(--video-width);
+    display: flex;
+    justify-content: center;
+}
+main .Media .YouTube div a {
+    display: block;
+    height: var(--video-height);
+    width: calc(var(--video-height) * var(--aspect-ratio));
+}
+main .Media .YouTube div a img {
+    width: auto;
+    height: var(--video-height);
+}
+main .Media .YouTube .data {
+    --youtube-data-height: calc(var(--youtube-height) - var(--video-height));
+    --youtube-data-width: calc(var(--youtube-width) * 0.825);
+    max-height: var(--youtube-data-height);
+    height: auto;
+    width: var(--youtube-data-width);
+    display: flex;
+    justify-content: normal;
+}
+main .Media .YouTube .data .metadata {
+    --metadata-height: var(--youtube-data-height);
+    --metadata-width: calc(var(--youtube-data-width) * (4 / 5));
+    max-height: var(--metadata-height);
+    height: auto;
+    width: var(--metadata-width);
+    display: block;
+}
+main .Media .YouTube .data .metadata div {
+    display: flex;
+    justify-content: normal;
+    align-items: center;
+    width: var(--metadata-width);
+    height: calc(var(--metadata-height) / 8.38);
+}
+main .Media .YouTube .data .metadata div:nth-child(1) {
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: var(--textSize);
+}
+main .Media .YouTube .data .metadata div:nth-child(2) {
+    height: calc(var(--metadata-height) / 8.38);
+    width: var(--metadata-width);
+    justify-content: normal;
+}
+main .Media .YouTube .data .metadata div:nth-child(2) a {
+    display: block;
+    height: auto;
+    width: auto;
+    letter-spacing: calc(var(--width) / 2000);
+    font-size: calc(var(--textSize) * (14 / 16));
+}
+main .Media .YouTube .data .metadata div:nth-child(3) {
+    flex-wrap: wrap;
+    height: calc(var(--metadata-height) / 4.19);
+    font-size: calc(var(--textSize) * (14 / 16));
+}
+main .Media .YouTube .data .metadata div:nth-child(3) #duration div,
+main .Media .YouTube .data .metadata div:nth-child(3) #views div {
+    height: calc(var(--metadata-height) / 8.38);
+    letter-spacing: calc(var(--width) / 2000);
+}
+main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(1),
+main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(1) {
+    width: calc(var(--metadata-width) / 8);
+}
+main .Media .YouTube .data .metadata div:nth-child(3) #duration div:nth-child(2),
+main .Media .YouTube .data .metadata div:nth-child(3) #views div:nth-child(2) {
+    width: calc(var(--metadata-width) * (7 / 8));
+}
+main .Media .YouTube .data div:nth-child(2) {
+    max-height: var(--youtube-data-height);
+    height: auto;
+    width: calc(var(--youtube-data-width) * 0.36);
+    justify-content: center;
+    align-items: center;
+}
+main .Media .YouTube .data div:nth-child(2) button {
+    width: auto;
+    height: auto;
+    border: none;
+    padding: unset;
+    font-size: calc(var(--textSize) * 1.25);
+}
+main .Media .RelatedContents .card {
+    width: calc(var(--related-contents-width) * (4 / 5));
+    height: calc(var(--related-contents-height) / 1.8953);
+    margin-block: calc(var(--related-contents-height) / 100);
+    margin-left: calc(var(--related-contents-width) / 5);
+}
+main .Media .RelatedContents .card .thumbnail {
+    height: calc(var(--related-contents-height) / 1.8953 * (16 / 26));
+    width: fit-content;
+}
+main .Media .RelatedContents .card .metadata {
+    width: calc(var(--related-contents-width) * (4 / 5));
+    height: calc(var(--related-contents-height) / 1.8953 * (10 / 26));
+}
+main .Media .RelatedContents .card .thumbnail a {
+    display: block;
+    height: calc(var(--related-contents-height) / 2.0532 * (16 / 24));
+    width: calc(var(--related-contents-height) / 2.0532 * (16 / 24) * var(--aspect-ratio));
+}
+main .Media .RelatedContents .card .thumbnail a img {
+    height: calc(var(--related-contents-height) / 2.0532 * (16 / 24));
+    width: auto;
+}
+main .Media .RelatedContents .card .metadata div {
+    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
+}
+main .Media .RelatedContents .card .metadata .title {
+    letter-spacing: calc(var(--width) / 2000);
+    height: calc(var(--related-contents-height) / 1.8953 * (4 / 26));
+    font-size: calc(var(--textSize) * (11 / 16));
+}
+main .Media .RelatedContents .card .metadata .author {
+    display: flex;
+    align-items: center;
+}
+main .Media .RelatedContents .card .metadata .author a {
+    font-size: calc(var(--textSize) * (10 / 16));
+}
+main .Media .RelatedContents .card .metadata .duration {
+    display: flex;
+}
+main .Media .RelatedContents .card .metadata .duration div {
+    height: calc(var(--related-contents-height) / 1.8953 * (2 / 26));
+    display: flex;
+    align-items: center;
+    font-size: calc(var(--textSize) * (10 / 16));
+}
+main .Media .RelatedContents .card .metadata .duration div:nth-child(1) {
+    width: calc(var(--related-contents-width) * (4 / 5) / 8);
+}
+main .Media .RelatedContents .card .metadata .duration div:nth-child(2) {
+    width: calc(var(--related-contents-width) * (4 / 5) * (7 / 8));
+}
+footer {
+    height: calc(var(--height) / 10);
+    display: flex;
+    justify-content: space-evenly;
+}
+footer div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: calc(var(--textSize) * 1.5);
+    width: calc(var(--width) / 10);
+    height: inherit;
+}

@@ -1,12 +1,14 @@
-from Models.DatabaseHandler import Database_Handler
-from Models.YouTubeDownloader import YouTube_Downloader
-from Models.Logger import Extractio_Logger
+"""
+The module which has the model of the Media Management System.
+
+Authors:
+    Darkness4869
+"""
+from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, Union, List, Tuple, Relational_Database_Error
 from datetime import datetime
-from Environment import Environment
-from mysql.connector.types import RowType
-from typing import Dict, Union, List, Tuple
-from mysql.connector import Error
 from json import dumps
+from re import match, Match
+from html import escape
 
 
 class Media:
@@ -23,14 +25,11 @@ class Media:
     """
     __referer: Union[str, None]
     """
-    The http referrer which is the uniform resource locator that
-    is needed to be able to allow the user to download the
-    required media.
+    The http referrer which is the uniform resource locator that is needed to be able to allow the user to download the required media.
     """
     __database_handler: Database_Handler
     """
-    It is the object relational mapper that will be used to
-    simplify the process to entering queries.
+    It is the object relational mapper that will be used to simplify the process to entering queries.
     """
     __identifier: int
     """
@@ -38,8 +37,7 @@ class Media:
     """
     __value: str
     """
-    The value of the required media which have to correspond to
-    the name of the platform from which the media comes from.
+    The value of the required media which have to correspond to the name of the platform from which the media comes from.
     """
     __timestamp: str
     """
@@ -60,11 +58,19 @@ class Media:
 
     def __init__(self, request: Dict[str, Union[str, None]]) -> None:
         """
-        Instantiating the media's manager which will interact with
-        the media's dataset and do the required processing.
+        Initializing the Media Management System.
+
+        This constructor sets up the necessary environment, logging, database handler, and validates the incoming request data. It also ensures that the required database table (`Media`) exists before proceeding.
 
         Parameters:
-            request: {referer: string|null, search: string, platform: string, ip_address: string, port: string}: The request from the user.
+            request (Dict[str, Union[str, None]]): A dictionary containing the request details with the following keys:
+                - "referer" (Optional[str]): The referring URL.
+                - "search" (str): The search query or target URL.
+                - "platform" (str): The media platform (e.g., "youtube").
+                - "ip_address" (str): The client's IP address.
+
+        Raises:
+            ValueError: If the request dictionary does not contain all required keys.
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
@@ -75,6 +81,9 @@ class Media:
             parameters=None
         )
         self.getDatabaseHandler()._execute()
+        if not all(key in request for key in ("referer", "search", "platform", "ip_address")):
+            self.getLogger().error(f"The request does not contain the correct keys.\nRequest: {request}")
+            raise ValueError("The request does not contain the correct keys.")
         self.setSearch(str(request["search"]))
         self.setReferer(request["referer"])
         self.setValue(str(request["platform"]))
@@ -137,14 +146,15 @@ class Media:
 
     def __verifyPlatform(self, status: int) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Verifying that the media platform data has been sucessfully
-        inserted in order to process the data needed.
+        Handling platform verification based on the provided status code.
+
+        This private method checks if the provided status code is `503` (Service Unavailable).  If so, it returns a response indicating failure. Otherwise, it re-attempts platform verification by calling `verifyPlatform()`.
 
         Parameters:
-            status: int: The status of the HTTP request.
+            status (int): The HTTP status code from a previous media verification attempt.
 
         Returns:
-            {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         """
         if status == 503:
             return {
@@ -155,54 +165,84 @@ class Media:
 
     def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Verifying the uniform resource locator in order to switch to
-        the correct system as well as select and return the correct
-        response.
+        Verifying the media platform and process the request accordingly.
+
+        This method sanitizes input values, retrieves media information, and determines whether the requested platform is supported.  If the media is not found, it attempts to post the media and verify its platform again. Currently, only YouTube links are processed.
 
         Returns:
-            {status: int, data: {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}}
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
+
+        Raises:
+            ValueError: The platform cannot be verified.
         """
-        media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
-        status: int = int(str(media["status"]))
-        if status != 200:
-            status = self.postMedia()
-            return self.__verifyPlatform(status)
-        self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
-        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
-            return self.handleYouTube()
-        else:
+        try:
+            self.sanitizeValue()
+            self.sanitizeSearch()
+            media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
+            status: int = int(str(media["status"]))
+            if status != 200:
+                status = self.postMedia()
+                return self.__verifyPlatform(status)
+            self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
+            if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+                return self.handleYouTube()
+            self.getLogger().error(f"This platform is not supported by the application!\nStatus: 403")
             return {
-                "status": 401,
+                "status": 403,
+                "data": {}
+            }
+        except ValueError as error:
+            self.getLogger().error(f"An error occurred while verifying the platform.\nError: {error}")
+            return {
+                "status": 400,
                 "data": {}
             }
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
-        Retrieving the Media data from the Media table.
+        Retrieving media data from the Media table in the database based on a specified value.
+
+        The function filters the data by a given value and returns the status of the query along with the retrieved data.  The function also captures the current timestamp when the data is retrieved and returns it along with the result.
 
         Returns:
-            {status: int, data: [{identifier: int, value: string}], timestamp: string}
+            Dict[str, Union[int, List[RowType], str]]
+
+        Raises:
+            Relational_Database_Error: If there is an issue with the database query, an error will be logged, and the function will return a 503 status with an empty data list.
         """
         filter_data: Tuple[str] = (self.getValue(),)
-        media: List[RowType] = self.getDatabaseHandler().getData(
-            parameters=filter_data,
-            table_name="Media",
-            filter_condition="value = %s"
-        )
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
-        status: int = 404 if len(media) == 0 else 200
-        return {
-            "status": status,
-            "data": media,
-            "timestamp": self.getTimestamp()
-        }
+        try:
+            media: List[RowType] = self.getDatabaseHandler().getData(
+                parameters=filter_data,
+                table_name="Media",
+                filter_condition="value = %s"
+            )
+            status: int = 404 if len(media) == 0 else 200
+            return {
+                "status": status,
+                "data": media,
+                "timestamp": self.getTimestamp()
+            }
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            return {
+                "status": 503,
+                "data": [],
+                "timestamp": self.getTimestamp()
+            }
 
     def postMedia(self) -> int:
         """
-        Creating a record for the media with its data.
+        Creating a record in the Media table of the database with the provided media value.
+
+        The function inserts the media value into the "Media" table and logs the result.  If the data is successfully inserted, it returns a status code of 201 (Created).  In case of an error during the database interaction, it returns a status code of 503 (Service Unavailable).
 
         Returns:
             int
+
+        Raises:
+            Relational_Database_Error: If there is an error while posting the data to the database, the error is logged, and the function returns a 503 status code.
         """
         data: Tuple[str] = (self.getValue(),)
         try:
@@ -214,17 +254,18 @@ class Media:
             )
             self.getLogger().inform("The data has been inserted in the relational database server.")
             return 201
-        except Error as relational_database_server_error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {relational_database_server_error}")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
             return 503
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Handling the data throughout the You Tube Downloader which
-        will depend on the referer.
+        Processing YouTube media retrieval and store metadata.
+
+        This method initializes a YouTube downloader instance, retrieves media details, and saves them as a JSON file.  If the request has a referer, it fetches available streams; otherwise, it performs a search.
 
         Returns:
-            {status: int, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: int, published_at: string | Datetime | null, thumbnail: string, duration: string, audio_file: string, video_file: string}}
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         """
         response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
@@ -248,61 +289,71 @@ class Media:
 
     def _getIdentifier(self) -> str:
         """
-        Extracting the identifier from the uniform resource locator.
+        Extracting the YouTube video identifier from the search URL.
+
+        This method verifies that the search URL belongs to YouTube and extracts the video identifier (an 11-character string) from it.  If the URL is not supported or does not match the expected pattern, an error is logged and a `ValueError` is raised.
 
         Returns:
-            string
+            str
+
+        Raises:
+            ValueError: If the search URL is not a valid YouTube link or does not contain a valid video identifier.
         """
-        identifier: str
-        if "youtube" in self.getSearch():
-            identifier = self.getSearch().replace("https://www.youtube.com/watch?v=", "")
-        else:
-            identifier = self.getSearch().replace("https://youtu.be/", "").rsplit("?")[0]
-        return identifier
+        if "youtube" not in self.getSearch():
+            self.getLogger().error(f"The uniform resource locator is not supported!\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("The uniform resource locator is not supported.")
+        identifier_regex: str = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
+        match_identifier: Union[Match[str], None] = match(identifier_regex, self.getSearch())
+        if not match_identifier:
+            self.getLogger().error("The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
+        return match_identifier.group(1) # type: ignore
 
     def getRelatedContents(self, identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
-        Retrieving the related contents which is based on the
-        identifier of a specific content.
+        Retrieving related media content based on an identifier.
+
+        This method fetches related content from both the media's channel and its author(s).  It merges and deduplicates the results before returning them.
 
         Parameters:
-            identifier: string: The identifier of the content to be looked upon.
+            identifier (str): The unique identifier of the media item.
 
         Returns:
-            {status: int, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}
+            Dict[str, Union[int, List[Dict[str, str]]]]
         """
         payload: Dict[str, str] = self._getPayload(identifier)
         related_channel_contents: List[Dict[str, Union[str, int]]] = self.getRelatedChannelContents(payload["channel"])
         related_author_contents: List[Dict[str, Union[str, int]]] = []
         payload["author"] = payload["author"].split(", ") # type: ignore
-        for index in range(0, len(payload["author"]), 1):
-            related_author_contents = list({value["identifier"]: value for value in related_author_contents + self.getRelatedAuthorContents(payload["author"][index])}.values())
+        for author in payload["author"]:
+            related_author_contents = list({value["identifier"]: value for value in related_author_contents + self.getRelatedAuthorContents(author)}.values())
         related_contents: List[Dict[str, Union[str, int]]] = list({value["identifier"]: value for value in related_author_contents + related_channel_contents}.values())
         return self._getRelatedContents(related_contents)
 
     def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
-        Retrieving all of the data needed based on the related
-        contents to build the response needed for the API.
+        Processing and returning metadata for related media content.
+
+        This method takes a list of related media entries, retrieves additional metadata using `YouTube_Downloader`, and formats the response.
 
         Parameters:
-            related_contents: [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]: The related contents
+            related_contents (List[Dict[str, Union[str, int]]]): A list of dictionaries containing media details, including `uniform_resource_locator`, `media_identifier`, `duration`, `channel`, and `title`.
 
         Returns:
-            {status: int, data: [{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}]}
+            Dict[str, Union[int, List[Dict[str, str]]]]
         """
         status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
-        for index in range(0, len(related_contents), 1):
-            self._YouTubeDownloader = YouTube_Downloader(str(related_contents[index]["uniform_resource_locator"]), int(related_contents[index]["media_identifier"]))
+        for related_content in related_contents:
+            self._YouTubeDownloader = YouTube_Downloader(str(related_content["uniform_resource_locator"]), int(related_content["media_identifier"]))
             metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
             data.append({
-                "duration": str(related_contents[index]["duration"]),
-                "channel": str(related_contents[index]["channel"]),
-                "title": str(related_contents[index]["title"]),
-                "uniform_resource_locator": str(related_contents[index]["uniform_resource_locator"]),
-                "author_channel": str(metadata["author_channel"]),
-                "thumbnail": str(metadata["thumbnail"])
+                "duration": escape(str(related_content["duration"])),
+                "channel": escape(str(related_content["channel"])),
+                "title": escape(str(related_content["title"])),
+                "uniform_resource_locator": escape(str(related_content["uniform_resource_locator"])),
+                "author_channel": escape(str(metadata["author_channel"])),
+                "thumbnail": escape(str(metadata["thumbnail"]))
             })
         return {
             "status": status,
@@ -311,80 +362,157 @@ class Media:
 
     def getRelatedAuthorContents(self, author: str) -> List[Dict[str, Union[str, int]]]:
         """
-        Retrieving the related content for the author.
+        Retrieving the related content for a given author from the YouTube database.
+
+        This function queries the database to find content associated with the provided author's name.  It returns a list of dictionaries with the content's identifier, duration, channel name, title, URL, and media identifier.
 
         Parameters:
-            author: string: The name of the author.
+            author (string): The name of the author whose related content is being retrieved.
 
         Returns:
-            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]
+            List[Dict[string, Union[string, int]]]
+
+        Raises:
+            Relational_Database_Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
         """
-        response: List[Dict[str, Union[str, int]]] = []
-        database_response: Union[List[RowType], List[Dict[str, Union[str, int]]]] = self.getDatabaseHandler().getData(
-            parameters=None,
-            table_name="YouTube",
-            filter_condition=f"title LIKE '%{author}%'",
-            column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
-        )
-        for index in range(0, len(database_response), 1):
-            response.append({
-                "identifier": str(database_response[index]["identifier"]), # type: ignore
-                "duration": str(database_response[index]["duration"]), # type: ignore
-                "channel": str(database_response[index]["channel"]), # type: ignore
-                "title": str(database_response[index]["title"]), # type: ignore
-                "uniform_resource_locator": str(database_response[index]["uniform_resource_locator"]), # type: ignore
-                "media_identifier": int(database_response[index]["media_identifier"]) # type: ignore
-            })
-        return response
+        parameters: Tuple[str] = (author,)
+        try:
+            database_response: List[Dict[str, Union[str, int]]] = self.getDatabaseHandler().getData(
+                parameters=parameters,
+                table_name="YouTube",
+                filter_condition=f"title LIKE %s",
+                column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
+            ) # type: ignore
+            response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(author_content["identifier"])), "duration": escape(str(author_content["duration"])), "channel": escape(str(author_content["channel"])), "title": escape(str(author_content["title"])), "uniform_resource_locator": escape(str(author_content["uniform_resource_locator"])), "media_identifier": int(author_content["media_identifier"])} for author_content in database_response]
+            self.getLogger().inform(f"The related author contents have been successfully retrieved.\nStatus: 200\nAuthor: {author}\nAmount: {len(response)}")
+            return response
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            return []
 
     def getRelatedChannelContents(self, channel: str) -> List[Dict[str, Union[str, int]]]:
         """
-        Retrieving the related content for the channel.
+        Retrieving the related content for a given channel from the YouTube database.
+
+        This function queries the database to find content associated with the provided channel name.  It returns a list of dictionaries with the content's identifier, duration, channel name, title, URL, and media identifier.
 
         Parameters:
-            channel: string: The name of the channel.
+            channel (string): The name of the channel whose related content is being retrieved.
 
         Returns:
-            [{identifier: string, duration: string, channel: string, title: string, uniform_resource_locator: string, media_identifier: int}]
+            List[Dict[string, Union[string, int]]]
+
+        Raises:
+            Relational_Database_Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
         """
         parameters: Tuple[str] = (channel,)
-        response: List[Dict[str, Union[str, int]]] = []
-        database_response: Union[List[RowType], List[Dict[str, Union[str, int]]]] = self.getDatabaseHandler().getData(
-            parameters=parameters,
-            table_name="YouTube",
-            filter_condition="author = %s",
-            column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
-        )
-        for index in range(0, len(database_response), 1):
-            response.append({
-                "identifier": str(database_response[index]["identifier"]), # type: ignore
-                "duration": str(database_response[index]["duration"]), # type: ignore
-                "channel": str(database_response[index]["channel"]), # type: ignore
-                "title": str(database_response[index]["title"]), # type: ignore
-                "uniform_resource_locator": str(database_response[index]["uniform_resource_locator"]), # type: ignore
-                "media_identifier": int(database_response[index]["media_identifier"]) # type: ignore
-            })
-        return response
+        try:
+            database_response: List[Dict[str, Union[str, int]]] = self.getDatabaseHandler().getData(
+                parameters=parameters,
+                table_name="YouTube",
+                filter_condition="author = %s",
+                column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
+            ) # type: ignore
+            response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(channel_content["identifier"])), "duration": escape(str(channel_content["duration"])), "channel": escape(str(channel_content["channel"])), "title": escape(str(channel_content["title"])), "uniform_resource_locator": escape(str(channel_content["uniform_resource_locator"])), "media_identifier": int(channel_content["media_identifier"])} for channel_content in database_response]
+            self.getLogger().inform(f"The related channel contents have been successfully retrieved.\nStatus: 200\nChannel: {channel}\nAmount: {len(response)}")
+            return response
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            return response
 
     def _getPayload(self, identifier: str) -> Dict[str, str]:
         """
-        Retrieving the payload of the content.
+        Retrieving and processing metadata payload for a given YouTube video identifier.
+
+        This method queries the database to fetch the video's author and title using the provided video identifier.  It then extracts the channel name and author from the retrieved data.
 
         Parameters:
-            identifier: string: The identifier of the content to be looked upon.
+            identifier (string): The YouTube video identifier.
 
         Returns:
-            {channel: string, author: string}
+            Dict[string, string]: A dictionary containing:
+                - "channel" (string): The escaped channel name from the database.
+                - "author" (string): The author's name extracted from the title.
+
+        Raises:
+            KeyError: If the expected keys ("author", "title") are missing in the database response.
+            IndexError: If no data is returned from the database query.
         """
         parameters: Tuple[str] = (identifier,)
-        database_response: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
-            parameters=parameters,
-            table_name="YouTube",
-            filter_condition="identifier = %s",
-            column_names="author AS channel, title",
-            limit_condition=1
-        )[0]
+        try:
+            database_response: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
+                parameters=parameters,
+                table_name="YouTube",
+                filter_condition="identifier = %s",
+                column_names="author, title",
+                limit_condition=1
+            )[0]
+        except IndexError as error:
+            self.getLogger().error(f"There is no data for a given identifier.\nError: {error}\nIdentifier: {identifier}")
+            raise IndexError("There is no data for a given identifier.")
+        try:
+            channel: str = escape(str(database_response["author"])) # type: ignore
+            title: str = escape(str(database_response["title"])) # type: ignore
+        except KeyError as error:
+            self.getLogger().error(f"Missing expected keys in database response: {error}")
+            raise KeyError(f"Missing expected keys in database response: {error}")
+        author: str = title.split(" - ")[0]
         return {
-            "channel": str(database_response["channel"]), # type: ignore
-            "author": str(database_response["title"]).split(" - ")[0] # type: ignore
+            "channel": channel,
+            "author": author
         }
+
+    def sanitizeValue(self) -> None:
+        """
+        Validating and sanitizing the platform value.
+
+        This method ensures that the platform value is valid by performing the following checks:
+        1. It must not be empty.
+        2. It must be one of the allowed platforms: "youtube" or "youtu.be".
+        3. It must contain only lowercase alphabetic characters.
+
+        If any of these conditions fail, an error is logged, and a `ValueError` is raised.
+
+        Returns:
+            void
+
+        Raises:
+            ValueError: If the platform value is missing, unsupported, or contains invalid characters.
+        """
+        allowed_platforms: List[str] = ["youtube", "youtu.be"]
+        if not self.getValue():
+            self.getLogger().error(f"Failed to sanitize the value.\nStatus: 400\nValue: {self.getValue()}")
+            raise ValueError("Failed to sanitize the value.")
+        if not self.getValue() in allowed_platforms:
+            self.getLogger().error(f"The platform is not supported!\nStatus: 400\nValue: {self.getValue()}")
+            raise ValueError("The platform is not supported!")
+        if not match(r"^[a-z.]+$", self.getValue()):
+            self.getLogger().error(f"Incorrect characters in value!\nStatus: 400\nValue: {self.getValue()}")
+            raise ValueError("Incorrect characters in value!")
+        self.setValue(self.getValue())
+
+    def sanitizeSearch(self) -> None:
+        """
+        Validating and sanitizing the search query.
+
+        This method ensures that the search query meets the following criteria:
+        1. It must not be empty.
+        2. It must only contain valid characters.
+        3. It must not exceed 64 characters in length.
+
+        If any of these conditions fail, an error is logged, and a `ValueError` is raised.
+
+        Raises:
+            ValueError: If the search query is empty, contains invalid characters, or exceeds the allowed length.
+        """
+        regular_expression: str = r"^[a-zA-Z0-9\s\-_.,:/?=&]*$"
+        if not self.getSearch():
+            self.getLogger().error(f"The value to be searched is empty.\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("The value to be searched is empty.")
+        if not match(regular_expression, self.getSearch()):
+            self.getLogger().error(f"Invalid characters in search term!\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("Invalid characters in search term")
+        if len(self.getSearch()) > 64:
+            self.getLogger().error(f"The search query is too long.\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError("The search query is too long.")
+        self.setSearch(self.getSearch())

@@ -19,7 +19,11 @@
 /package-lock.json
 /.babelrc
 /webpack.config.js
-/static/scripts/views/index.js
+/static/scripts/views/
 /static/scripts/dist/
 /extractio-v2/
 /static/build/
+/user_agents.txt
+/Errors/__pycache__/
+/start.sh
+/ytd/__pycache__/

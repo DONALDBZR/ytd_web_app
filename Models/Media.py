@@ -55,25 +55,29 @@ class Media:
     """
     The logger that will all the action of the application.
     """
+    __ENV: Environment
+    """
+    ENV File of the application
+    """
 
     def __init__(self, request: Dict[str, Union[str, None]]) -> None:
         """
         Initializing the Media Management System.
 
-        This constructor sets up the necessary environment, logging, database handler, and validates the incoming request data. It also ensures that the required database table (`Media`) exists before proceeding.
+        This constructor sets up the necessary environment, logging, database handler, and validates the incoming request data.  It also ensures that the required database table (`Media`) exists before proceeding.
 
         Parameters:
             request (Dict[str, Union[str, None]]): A dictionary containing the request details with the following keys:
-                - "referer" (Optional[str]): The referring URL.
-                - "search" (str): The search query or target URL.
-                - "platform" (str): The media platform (e.g., "youtube").
+                - "referer" (Optional[str]): The referring uniform resource locator.
+                - "search" (str): The search query or target uniform resource locator.
+                - "platform" (str): The media platform.
                 - "ip_address" (str): The client's IP address.
 
         Raises:
             ValueError: If the request dictionary does not contain all required keys.
         """
-        ENV: Environment = Environment()
-        self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
+        self.__setEnvironment(Environment())
+        self.setDirectory(f"{self.__getEnvironment().getDirectory()}/Cache/Media")
         self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
@@ -95,6 +99,12 @@ class Media:
 
     def setSearch(self, search: str) -> None:
         self.__search = search
+
+    def __getEnvironment(self) -> Environment:
+        return self.__ENV
+
+    def __setEnvironment(self, ENV: Environment) -> None:
+        self.__ENV = ENV
 
     def getReferer(self) -> Union[str, None]:
         return self.__referer

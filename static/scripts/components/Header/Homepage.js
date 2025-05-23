@@ -120,23 +120,30 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Handling the form submission which target the Search API of
-     * Extractio.
+     * Handling the form submission event to extract metadata from a media URL.
+     * 
+     * This function prevents the default form submission behavior, displays a loading icon, parses the user-provided media URL to determine the platform, media type (video or shorts), and identifier, and then initiates metadata fetching via `searchMediaMetadata`.
      * @param {SubmitEvent} event An event which takes place in the DOM.
      * @returns {void}
      */
     handleSubmit(event) {
+        event.preventDefault();
         const loading_icon = document.querySelector("main #loading");
-        const delay = 200;
-        const uniform_resource_locator = new URL(this.state.Media.search);
-        const platform = uniform_resource_locator.host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
         loading_icon.style.height = "-webkit-fill-available";
-        event.preventDefault();
-        this.searchMediaMetadata(platform, this.state.Media.search, delay);
+        try {
+            const uniform_resource_locator = new URL(this.state.Media.search);
+            const platform = uniform_resource_locator.host.replaceAll("www.", "").replaceAll(".com", "");
+            const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
+            const identifier = (type == "Shorts") ? uniform_resource_locator.pathname.replaceAll("/shorts/", "") : uniform_resource_locator.searchParams.get("v");
+            if (!identifier) {
+                throw new Error("The uniform resource locator is invalid as the identifier cannot be extracted.");
+            }
+            this.searchMediaMetadata(platform, type, identifier, 200);
+        } catch (error) {
+            console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);
+        }
     }
-
-
 
     /**
      * Searching for the Media content and redirecting the user to the searched content.
@@ -335,7 +342,7 @@ class HeaderHomepage extends Component {
      * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: ?string, video_file: ?string}}>}
      */
     async getSearchMedia(platform, search) {
-        const response = await fetch(`/Media/Search?platform=${platform}&search=${encodeURIComponent(search)}`, {
+        const response = await fetch(`/Media/Search?platform=${platform}&type=${'type'}&search=${encodeURIComponent(search)}`, {
             method: "GET",
         });
         const data = await response.json();

@@ -403,27 +403,39 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Retrieving the response of the Media API for the search data.
-     * @param {string} platform The platform to be searched on.
-     * @param {string} search The search data to be searched.
-     * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: ?string, video_file: ?string}}>}
+     * Sending a GET request to the Media API to retrieve metadata for a given media identifier.
+     *
+     * This function queries the backend using the specified media platform, type, and identifier.  It returns parsed media data if the request is successful and the response format is valid.  If the response is malformed or lacks expected data, it returns a 400 status with an empty object.
+     *
+     * @param {string} platform - The name of the media platform.
+     * @param {string} type - The media type.
+     * @param {string} identifier - The unique identifier for the media.
+     * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file?: string|null, video_file?: string|null}}>} The HTTP status and the parsed media metadata.
      */
-    async getSearchMedia(platform, search) {
-        const response = await fetch(`/Media/Search?platform=${platform}&type=${'type'}&search=${encodeURIComponent(search)}`, {
-            method: "GET",
-        });
-        const data = await response.json();
-        if (!data.data || typeof data.data !== "object") {
-            console.error("Invalid data received from the server.");
+    async getSearchMedia(platform, type, identifier) {
+        try {
+            const response = await fetch(`/Media/Search?platform=${encodeURIComponent(platform)}&type=${encodeURIComponent(type)}&identifier=${encodeURIComponent(identifier)}`, {
+                method: "GET",
+            });
+            const data = await response.json();
+            if (!data.data || typeof data.data !== "object") {
+                console.error("Invalid data received from the server.");
+                return {
+                    status: 400,
+                    data: {},
+                };
+            }
             return {
-                status: 400,
+                status: response.status,
+                data: data.data,
+            };
+        } catch (error) {
+            console.error("Failed to retrieve metadata of media content.\nError: ", error);
+            return {
+                status: 500,
                 data: {},
             };
         }
-        return {
-            status: response.status,
-            data: data.data,
-        };
     }
 
     /**

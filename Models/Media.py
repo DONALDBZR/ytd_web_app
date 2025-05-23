@@ -312,7 +312,7 @@ class Media:
         if "youtube" not in self.getSearch():
             self.getLogger().error(f"The uniform resource locator is not supported!\nStatus: 400\nSearch: {self.getSearch()}")
             raise ValueError("The uniform resource locator is not supported.")
-        identifier_regex: str = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
+        identifier_regex: str = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
         match_identifier: Union[Match[str], None] = match(identifier_regex, self.getSearch())
         if not match_identifier:
             self.getLogger().error(f"The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")

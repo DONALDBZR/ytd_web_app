@@ -108,14 +108,17 @@ def sanitizeStringData(data: Dict[str, Any]):
 @limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def search() -> Response:
     """
-    Handling media search requests by validating parameters and forwarding the request to the appropriate media verification and retrieval system.
+    Handling GET requests to the /Search endpoint for retrieving media metadata.
 
-    Routes:
+    This endpoint validates the incoming query parameters and constructs a media search request.  If validation passes, it delegates to the media verification system and returns a structured JSON response.
+
+    Route:
         - GET /Search
 
     Query Parameters:
         - platform (str): The name of the platform to search on.
-        - search (str): The search query string.
+        - type (str): The type of media to search for.
+        - identifier (str): The identifier of the media.
 
     Response Codes:
         - 200: Successful response with search results.
@@ -126,9 +129,10 @@ def search() -> Response:
         Response
     """
     platform: str = escape(str(request.args.get("platform")))
-    search: str = escape(str(request.args.get("search")))
+    type: str = escape(str(request.args.get("type")))
+    identifier: str = escape(str(request.args.get("identifier")))
     mime_type: str = "application/json"
-    if not platform or not search:
+    if not platform or not type or not identifier:
         Routing_Logger.error("The parameters are missing.")
         return Response(
             response=dumps(
@@ -140,17 +144,31 @@ def search() -> Response:
             status=400,
             mimetype=mime_type
         )
-    if len(search) > 64:
-        Routing_Logger.error("The search query is too long.")
+    if len(identifier) > 16:
+        Routing_Logger.error("The identifier is too long.")
         return Response(
             response=dumps(
                 obj={
-                    "error": "The search query is too long."
+                    "error": "The identifier is too long."
                 },
-                indent=4),
+                indent=4
+            ),
             status=400,
             mimetype=mime_type
         )
+    if type not in ENV.getAllowedYoutubeContents():
+        Routing_Logger.error(f"The type is invalid.\nType: {type}")
+        return Response(
+            response=dumps(
+                obj={
+                    "error": "The type is invalid."
+                },
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    search: str = f"{ENV.getYouTubeVideoUniformResourceLocator()}{identifier}" if type == "Video" else f"{ENV.getYouTubeShortsUniformResourceLocator()}{identifier}"
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,
         "search": search,

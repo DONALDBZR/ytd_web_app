@@ -347,10 +347,7 @@ class HeaderHomepage extends Component {
     async setMediaYouTubeUniformResourceLocator(platform, type, identifier) {
         const response = await this.getSearchMedia(platform, type, identifier);
         try {
-            if (response.status == 200) {
-                localStorage.removeItem("media");
-                localStorage.removeItem("related_content");
-            }
+            this.clearLocalStorage(response.status);
             const uniform_resource_locator = this.sanitizeUniformResourceLocator(decodeURIComponent(response.data.uniform_resource_locator));
             this.setState((previous) => ({
                 Media: {
@@ -368,6 +365,21 @@ class HeaderHomepage extends Component {
         } catch (error) {
             console.error("Failed to set the uniform resource locator.\nError: ", error);
             throw new Error(error.message);
+        }
+    }
+
+    /**
+     * Clearing specific `localStorage` entries if the HTTP status indicates a successful response.
+     * 
+     * This function removes the `media` and `related_content` keys from `localStorage` only if the provided status is exactly 200.  If the status differs, no action is taken.
+     * 
+     * @param {number} status - The HTTP status code returned from the server.
+     * @returns {void}
+     */
+    clearLocalStorage(status) {
+        if (status == 200) {
+            localStorage.removeItem("media");
+            localStorage.removeItem("related_content");
         }
     }
 

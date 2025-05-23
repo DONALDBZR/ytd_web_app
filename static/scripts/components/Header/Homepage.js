@@ -403,20 +403,19 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Sending a GET request to the Media API to retrieve metadata for a given media identifier.
+     * Sending a GET request to the Media API to retrieve metadata for a specific media item.
      * 
-     * This function queries the backend using the specified media platform, type, and identifier.  It returns parsed media data if the request is successful and the response format is valid.  If the response is malformed or lacks expected data, it returns a 400 status with an empty object.
+     * This function constructs a query to the backend using the provided media platform, type, and identifier.  If the server responds with a valid data structure, it returns the parsed metadata and the HTTP status.  If the response is invalid or an error occurs during the request, it logs the issue and returns a fallback result.
      * 
      * @param {string} platform - The name of the media platform.
      * @param {string} type - The media type.
      * @param {string} identifier - The unique identifier for the media.
-     * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file?: string|null, video_file?: string|null}}>} The HTTP status and the parsed media metadata.
+     * @returns {Promise<{status: number, data: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file?: string|null, video_file?: string|null} | {}}>} A promise resolving to an object with the HTTP status and media metadata, or an empty object on failure.
      */
     async getSearchMedia(platform, type, identifier) {
         try {
-            const response = await fetch(`/Media/Search?platform=${encodeURIComponent(platform)}&type=${encodeURIComponent(type)}&identifier=${encodeURIComponent(identifier)}`, {
-                method: "GET",
-            });
+            const query = `/Media/Search?platform=${encodeURIComponent(platform)}&type=${encodeURIComponent(type)}&identifier=${encodeURIComponent(identifier)}`;
+            const response = await fetch(query, { method: "GET" });
             const data = await response.json();
             return this.isValidResponse(response, data);
         } catch (error) {

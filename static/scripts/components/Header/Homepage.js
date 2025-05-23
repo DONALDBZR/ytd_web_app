@@ -418,17 +418,7 @@ class HeaderHomepage extends Component {
                 method: "GET",
             });
             const data = await response.json();
-            if (!data.data || typeof data.data !== "object") {
-                console.error("Invalid data received from the server.");
-                return {
-                    status: 400,
-                    data: {},
-                };
-            }
-            return {
-                status: response.status,
-                data: data.data,
-            };
+            return this.isValidResponse(response, data);
         } catch (error) {
             console.error("Failed to retrieve metadata of media content.\nError: ", error);
             return {
@@ -436,6 +426,29 @@ class HeaderHomepage extends Component {
                 data: {},
             };
         }
+    }
+
+    /**
+     * Validating the server response and returning a structured result.
+     * 
+     * This function checks whether the `data` object from the server contains a valid `data` property of type object.  If valid, it returns the status and the structured response data.  If not, it logs an error and returns a default 400 response with an empty data object.
+     * 
+     * @param {Response} response The response from the server.
+     * @param {{data?: {uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file?: string|null, video_file?: string|null}}} data The data of the response.
+     * @returns {{status: number, data: object}} An object containing the HTTP status and the validated response data or an empty object.
+     */
+    isValidResponse(response, data) {
+        if (data.data && typeof data.data === "object") {
+            return {
+                status: response.status,
+                data: data.data,
+            };
+        }
+        console.error("Invalid data received from the server.");
+        return {
+            status: 400,
+            data: {},
+        };
     }
 
     /**

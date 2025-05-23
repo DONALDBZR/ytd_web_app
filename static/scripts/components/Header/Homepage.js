@@ -404,9 +404,9 @@ class HeaderHomepage extends Component {
 
     /**
      * Sending a GET request to the Media API to retrieve metadata for a given media identifier.
-     *
+     * 
      * This function queries the backend using the specified media platform, type, and identifier.  It returns parsed media data if the request is successful and the response format is valid.  If the response is malformed or lacks expected data, it returns a 400 status with an empty object.
-     *
+     * 
      * @param {string} platform - The name of the media platform.
      * @param {string} type - The media type.
      * @param {string} identifier - The unique identifier for the media.

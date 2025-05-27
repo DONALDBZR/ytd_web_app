@@ -330,7 +330,6 @@ class YouTube_Downloader:
         }
         self.setVideo(YoutubeDL(options))
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
-        self.getLogger().debug(f"Function: Models.YouTubeDownloader.YouTube_Downloader.search\nIdentifier: {self.getIdentifier()}")
         try:
             raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
             self.__isRawYouTube(raw_youtube)

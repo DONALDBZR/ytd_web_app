@@ -307,6 +307,25 @@ class YouTube_Downloader:
         self.getLogger().error(f"The response is invalid")
         raise ValueError("Invalid Response")
 
+    def __presentGetYouTube(self, status: int) -> None:
+        """
+        Handling the presentation logic after attempting to retrieve YouTube data.
+
+        If the HTTP status code indicates success (200 OK), the method simply returns. Otherwise, it calls `postYouTube()` to perform a fallback or alternative action.
+
+        Args:
+            status (int): The HTTP status code returned from a YouTube GET request.
+
+        Returns:
+            None
+
+        Side Effects:
+            May trigger the `postYouTube()` method if the status code is not 200.
+        """
+        if status == 200:
+            return
+        self.postYouTube()
+
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
         Searching and retrieving information about a YouTube video based on the provided URL.
@@ -345,8 +364,7 @@ class YouTube_Downloader:
             file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
             audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
             video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
-            if meta_data["status"] != 200:
-                self.postYouTube()
+            self.__presentGetYouTube(int(str(meta_data["status"])))
             return {
                 "uniform_resource_locator": self.getUniformResourceLocator(),
                 "author": self.getAuthor(),

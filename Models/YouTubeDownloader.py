@@ -283,12 +283,11 @@ class YouTube_Downloader:
         """
         sanitized_identifier: str
         if "/shorts/" in self.getUniformResourceLocator():
-            sanitized_identifier = self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "").replace("/shorts/", "")
+            sanitized_identifier = f"shorts/{self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), '').replace('/shorts/', '')}"
         elif "youtube" in self.getUniformResourceLocator():
-            sanitized_identifier = self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "")
+            sanitized_identifier = self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "").replace("/watch?v=", "")
         else:
             sanitized_identifier = self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0]
-        self.getLogger().debug(f"Function: Models.YouTubeDownloader.YouTube_Downloader.sanitizeYouTubeIdentifier\nSanitized Identifier: {sanitized_identifier}\nUniform Resource Locator: {self.getUniformResourceLocator()}")
         return self.retrieveIdentifier(sanitized_identifier)
 
     def search(self) -> Dict[str, Union[str, int, None]]:

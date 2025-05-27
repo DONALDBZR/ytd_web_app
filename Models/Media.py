@@ -281,7 +281,6 @@ class Media:
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         identifier: str = self._getIdentifier()
         filename: str = f"{self.getDirectory()}/{identifier}.json"
-        self.getLogger().debug(f"Function: Models.Media.handleYouTube\nIdentifier: {identifier}\nFile Name: {filename}")
         status: int = 200 if self.getReferer() is None else 201
         youtube: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search() if self.getReferer() is None else self._YouTubeDownloader.retrievingStreams() # type: ignore
         media: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = {

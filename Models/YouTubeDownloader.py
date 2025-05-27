@@ -125,7 +125,7 @@ class YouTube_Downloader:
                 parameters=None
             )
             self.getDatabaseHandler()._execute()
-            self.setBaseUniformResourceLocator("https://www.youtube.com/watch?v=")
+            self.setBaseUniformResourceLocator("https://www.youtube.com")
             self.setAudioCodec("mp4a")
             self.setVideoCodec("avc")
             self.setUniformResourceLocator(uniform_resource_locator)
@@ -288,6 +288,7 @@ class YouTube_Downloader:
             sanitized_identifier = self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "")
         else:
             sanitized_identifier = self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0]
+        self.getLogger().debug(f"Function: Models.YouTubeDownloader.YouTube_Downloader.sanitizeYouTubeIdentifier\nSanitized Identifier: {sanitized_identifier}\nUniform Resource Locator: {self.getUniformResourceLocator()}")
         return self.retrieveIdentifier(sanitized_identifier)
 
     def search(self) -> Dict[str, Union[str, int, None]]:

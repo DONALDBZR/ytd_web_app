@@ -290,6 +290,23 @@ class YouTube_Downloader:
             sanitized_identifier = self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0]
         return self.retrieveIdentifier(sanitized_identifier)
 
+    def __isRawYouTube(self, raw_youtube: Dict[str, Any]) -> None:
+        """
+        Validating the presence of a raw YouTube response dictionary.
+
+        This method checks whether the provided dictionary-like object `raw_youtube` is not empty or None. If it is empty or falsy, a ValueError is raised to indicate an invalid response.
+
+        Args:
+            raw_youtube (Dict[str, Any]): The raw response dictionary expected from YouTube data.
+
+        Raises:
+            ValueError: If `raw_youtube` is None or empty.
+        """
+        if raw_youtube:
+            return
+        self.getLogger().error(f"The response is invalid")
+        raise ValueError("Invalid Response")
+
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
         Searching and retrieving information about a YouTube video based on the provided URL.
@@ -316,9 +333,7 @@ class YouTube_Downloader:
         self.getLogger().debug(f"Function: Models.YouTubeDownloader.YouTube_Downloader.search\nIdentifier: {self.getIdentifier()}")
         try:
             raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
-            if not raw_youtube:
-                self.getLogger().error(f"The response is invalid")
-                raise ValueError("Invalid Response")
+            self.__isRawYouTube(raw_youtube)
             youtube: Dict[str, Any] = {
                 key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
             }

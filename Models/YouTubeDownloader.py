@@ -271,16 +271,24 @@ class YouTube_Downloader:
 
     def sanitizeYouTubeIdentifier(self) -> str:
         """
-        Sanitizing the YouTube identifier by removing base URLs and query parameters to return only the unique identifier of the video.
+        Extracting and sanitizing the unique YouTube video identifier from various uniform resource locator formats.
 
-        The method performs the following:
-        - If the uniform resource locator (URL) contains "youtube", it removes the base URL and then sanitizes the identifier.
-        - If the URL contains "youtu.be", it removes the base URL and any query parameters from the identifier.
+        This method handles multiple YouTube uniform resource locator patterns and extracts only the video identifier by:
+        - Stripping the base uniform resource locator for standard YouTube video links.
+        - Handling YouTube Shorts links by removing the "/shorts/" path segment.
+        - Supporting shortened YouTube uniform resource locators, removing query parameters if present.
 
         Returns:
-            str
+            str: The sanitized YouTube video identifier.
         """
-        return self.retrieveIdentifier(self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0])
+        sanitized_identifier: str
+        if "/shorts/" in self.getUniformResourceLocator():
+            sanitized_identifier = self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "").replace("/shorts/", "")
+        elif "youtube" in self.getUniformResourceLocator():
+            sanitized_identifier = self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "")
+        else:
+            sanitized_identifier = self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0]
+        return self.retrieveIdentifier(sanitized_identifier)
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
@@ -305,6 +313,7 @@ class YouTube_Downloader:
         }
         self.setVideo(YoutubeDL(options))
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
+        self.getLogger().debug(f"Function: Models.YouTubeDownloader.YouTube_Downloader.search\nIdentifier: {self.getIdentifier()}")
         try:
             raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
             if not raw_youtube:

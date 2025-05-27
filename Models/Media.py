@@ -280,6 +280,7 @@ class Media:
         response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         identifier: str = self._getIdentifier()
+        print(f"Function: Models.Media.handleYouTube\nIdentifier: {identifier}")
         filename: str = f"{self.getDirectory()}/{identifier}.json"
         status: int = 200 if self.getReferer() is None else 201
         youtube: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search() if self.getReferer() is None else self._YouTubeDownloader.retrievingStreams() # type: ignore
@@ -317,7 +318,7 @@ class Media:
         if not match_identifier:
             self.getLogger().error(f"The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
             raise ValueError(f"The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
-        return match_identifier.group(1) # type: ignore
+        return f"/shorts/{match_identifier.group(1)}" if "/shorts/" in self.getSearch() else match_identifier.group(1)
 
     def getRelatedContents(self, identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """

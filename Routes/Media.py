@@ -494,6 +494,7 @@ def getRelatedContentsShorts(identifier: str) -> Response:
         "port": str(request.environ.get("SERVER_PORT"))
     }
     media: Media = Media(system_request)
+    identifier = f"shorts/{identifier}"
     model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
     return Response(
         response=dumps(

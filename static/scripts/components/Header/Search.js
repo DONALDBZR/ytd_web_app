@@ -112,6 +112,27 @@ class HeaderSearch extends Component {
     }
 
     /**
+     * Retrieving the identifier of the content based on the type of the content and from the parsed uniform resource locator.
+     * 
+     * This function handles three types of YouTube uniform resource locators:
+     * - Shorts uniform resource locators
+     * - Shortened uniform resource locators
+     * - Standard video uniform resource locators with query parameters
+     * @param {URL} uniform_resource_locator A parsed URL object representing the media link.
+     * @param {string} type The media type.
+     * @returns {?string}
+     */
+    getIdentifier(uniform_resource_locator, type) {
+        if (type == "Shorts") {
+            return uniform_resource_locator.pathname.replaceAll("/shorts/", "");
+        }
+        if (uniform_resource_locator.hostname == "youtu.be") {
+            return uniform_resource_locator.pathname.slice(1);
+        }
+        return uniform_resource_locator.searchParams.get("v");
+    }
+
+    /**
      * Retrieving the host name which will be used as the platform for the search from the parsed uniform resource locator.
      * 
      * Currently, this function only supports YouTube uniform resource locators.  If the hostname does not match a known YouTube format, it throws an error.

@@ -13,6 +13,7 @@ root.render(
         <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/Search/:id" element={<Search />} />
+            <Route path="/Search/Shorts/:id" element={<Search />} />
             <Route path="/Download/YouTube/:id" element={<Download />} />
         </Routes>
     </Router>

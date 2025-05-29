@@ -321,6 +321,22 @@ class HeaderSearch extends Component {
     }
 
     /**
+     * Validating that a YouTube identifier has been successfully extracted.
+     * 
+     * This method ensures that the provided identifier is not null, undefined, or an empty string.  It is typically called after attempting to extract an identifier from a uniform resource locator.
+     * 
+     * @param {?string} identifier - The extracted YouTube identifier to validate.
+     * @returns {void}
+     * @throws {Error} Throws an error if the identifier is missing or invalid.
+     */
+    isIdentifierExtracted(identifier) {
+        if (typeof identifier === "string" && identifier.trim() !== "") {
+            return;
+        }
+        throw new Error("The identifier could not be extracted or is invalid.");
+    }
+
+    /**
      * Retrieving the identifier of YouTube from its uniform resource locator.
      * @param {URL} uniform_resource_locator The uniform resource locator
      * @returns {string}

@@ -215,15 +215,15 @@ class HeaderHomepage extends Component {
         })
         .then((status) => {
             console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&type=${type}&identifier=${identifier}\nStatus: ${status}\nEvent Listener: onSubmit\nReferrer: ${window.location.href}\nView Route: ${this.state.System.view_route}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`);
-            // setTimeout(() => {
-            //     window.location.href = this.state.System.view_route;
-            // }, delay);
+            setTimeout(() => {
+                window.location.href = this.state.System.view_route;
+            }, delay);
         })
         .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            // setTimeout(() => {
-            //     window.location.reload();
-            // }, delay);
+            console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
+            setTimeout(() => {
+                window.location.reload();
+            }, delay);
         });
     }
 

@@ -316,7 +316,7 @@ class HeaderSearch extends Component {
             return String(this.sanitize(identifier));
         } catch (error) {
             console.error(`There is an error while extracting the YouTube identifier.\nError: ${error.message}`);
-            throw new Error(error);
+            throw new Error(error.message);
         }
     }
 

@@ -299,17 +299,23 @@ class HeaderSearch extends Component {
     }
 
     /**
-     * Extracting the YouTube Identifier from the uniform resource locator.
-     * @param {string} uniform_resource_locator The uniform resource locator
-     * @returns {string}
+     * Extracting the YouTube video or media identifier from a given uniform resource locator.
+     * 
+     * This method parses the input URL, validates its domain against a list of disallowed domains, and retrieves the YouTube identifier based on the specified media type.
+     * @param {string} uniform_resource_locator - The full YouTube uniform resource locator.
+    * @param {string} type - The media type used to determine how the ID is extracted.
+    * @returns {Promise<string>} - A promise that resolves to the sanitized YouTube identifier string.
+    * @throws {Error} Will throw an error if the URL is invalid, belongs to a disallowed domain, or the identifier cannot be extracted.
      */
-    extractYouTubeIdentifier(uniform_resource_locator) {
+    extractYouTubeIdentifier(uniform_resource_locator, type) {
         try {
             const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
             this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
-            return String(this.sanitize(this.getYouTubeIdentifier(parsed_uniform_resource_locator)));
+            const identifier = this.getYouTubeIdentifier(parsed_uniform_resource_locator);
+            this.isIdentifierExtracted(identifier);
+            return String(this.sanitize(identifier));
         } catch (error) {
-            console.error("There is an error while extracting the YouTube identifier.\nError: ", error);
+            console.error(`There is an error while extracting the YouTube identifier.\nError: ${error.message}`);
             throw new Error(error);
         }
     }

@@ -328,18 +328,26 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Retrieving the identifier of YouTube from its resource locator.
-     * @param {URL} uniform_resource_locator The uniform resource locator
-     * @returns {string}
+     * Extracting the YouTube identifier from a parsed uniform resource locator based on the media type.
+     * 
+     * Supports various YouTube uniform resource locator formats, including Shorts, Shortened and Standard.
+     * @param {URL} uniform_resource_locator - A parsed `URL` object representing the YouTube link.
+     * @param {string} type - The media type to guide the identifier extraction.
+     * @returns {?string} - The extracted YouTube identifier if found, otherwise `null`.
+     * @throws {Error} Throws if the uniform resource locator does not match supported YouTube formats or if extraction fails.
      */
-    getYouTubeIdentifier(uniform_resource_locator) {
-        if ((uniform_resource_locator.hostname === "youtube.com" && uniform_resource_locator.pathname === "/watch") || (uniform_resource_locator.hostname === "www.youtube.com" && uniform_resource_locator.pathname === "/watch")) {
-            return this.sanitize(uniform_resource_locator.searchParams.get("v"));
+    getYouTubeIdentifier(uniform_resource_locator, type) {
+        const hostname = uniform_resource_locator.hostname.replace(/^www\./, "");
+        if (type === "Shorts") {
+            return uniform_resource_locator.pathname.replace("/shorts/", "").trim();
         }
-        if (uniform_resource_locator.hostname === "youtu.be") {
-            return this.sanitize(uniform_resource_locator.pathname.slice(1));
+        if (hostname === "youtu.be") {
+            return uniform_resource_locator.pathname.slice(1).trim();
         }
-        throw new Error(`Error while retrieving the YouTube identifier!\nHost Name: ${uniform_resource_locator.hostname}`);
+        if (hostname === "youtube.com" && uniform_resource_locator.pathname.includes("/watch")) {
+            return uniform_resource_locator.searchParams.get("v")?.trim() || null;
+        }
+        throw new Error(`Error while retrieving the YouTube identifier!\nUniform Resource Locator: ${uniform_resource_locator.href}`);
     }
 
     /**

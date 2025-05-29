@@ -179,7 +179,7 @@ class HeaderSearch extends Component {
             const uniform_resource_locator = new URL(this.state.Media.search);
             const platform = this.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
-            const identifier = this.getIdentifier(uniform_resource_locator);
+            const identifier = this.getIdentifier(uniform_resource_locator, type);
             this.handleSubmitIdentifierExists(identifier);
             this.searchMediaMetadata(platform, type, identifier, 200);
         } catch (error) {

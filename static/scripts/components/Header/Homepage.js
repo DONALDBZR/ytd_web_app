@@ -284,7 +284,7 @@ class HeaderHomepage extends Component {
                 identifier: new_identifier,
             };
         } catch (error) {
-            console.error("An error occurred while setting the YouTube identifier.\nError: ", error);
+            console.error(`An error occurred while setting the YouTube identifier.\nError: ${error.message}`);
             throw new Error(error.message);
         }
     }

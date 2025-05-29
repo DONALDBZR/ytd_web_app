@@ -391,3 +391,55 @@ def rateLimited(error: Exception) -> Response:
         ),
         status=429
     )
+
+@Media_Portal.route('/Shorts/<string:identifier>', methods=["GET"])
+@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
+def getMediaShorts(identifier: str) -> Response:
+    """
+    Retrieving metadata for a specific media short by identifier.
+
+    This endpoint handles a GET request to fetch metadata associated with a media short.  It validates the identifier format and returns metadata from a corresponding JSON file if found.
+
+    URL Pattern:
+        GET /Shorts/<identifier>
+
+    Parameters:
+        identifier (str): A unique identifier for the media short.  Must consist of alphanumeric characters, dashes (`-`), or underscores (`_`).
+
+    Returns:
+        Response
+
+    Response Status Codes:
+        200 OK: Metadata retrieved successfully.
+        400 Bad Request: Invalid identifier format.
+        404 Not Found: Metadata file not found.
+        429 Too Many Requests: Rate limit exceeded.
+
+    Rate Limiting:
+        Maximum 100 requests per day per IP address.
+    """
+    mime_type: str = "application/json"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    if not fullmatch(identifier_regex, identifier):
+        Routing_Logger.error(f"The identifier is invalid.\nIdentifier: {identifier}")
+        data: Dict[str, str] = {
+            "error": "The identifier is invalid."
+        }
+        return Response(
+            response=dumps(
+                obj=data,
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    file_name: str = f"shorts/{identifier}.json"
+    response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = getMetaData(file_name)
+    return Response(
+        response=dumps(
+            obj=response["data"],
+            indent=4
+        ),
+        status=int(str(response["status"])),
+        mimetype=mime_type
+    )

@@ -263,33 +263,38 @@ class HeaderSearch extends Component {
     }
 
     /**
-     * Setting the identifier of a specific YouTube content.
-     * @param {string} platform The platform to be searched on.
-     * @param {string} search The search data to be searched.
-     * @returns {Promise<{status: number, identifier: string}>}
+     * Resolving and setting the YouTube media identifier in the application state.
+     * 
+     * This function first retrieves a media uniform resource locator from the backend using the provided platform, type, and identifier.  It then extracts the canonical YouTube identifier from that uniform resource locator and updates the application state with this value under `Media.YouTube.identifier`.
+     * 
+     * @param {string} platform - The media platform.
+     * @param {string} type - The media type.
+     * @param {string} identifier - The initial identifier extracted from the user-provided uniform resource locator.
+     * @returns {Promise<{status: number, identifier: string}>} The response status and the final, validated YouTube identifier.
+     * @throws {Error} If an error occurs during the fetch or extraction process.
      */
-    async setMediaYouTubeIdentifier(platform, search) {
+    async setMediaYouTubeIdentifier(platform, type, identifier) {
         try {
-            const response = await this.setMediaYouTubeUniformResourceLocator(platform, search);
+            const response = await this.setMediaYouTubeUniformResourceLocator(platform, type, identifier);
             const status = response.status;
-            const identifier = this.extractYouTubeIdentifier(response.uniform_resource_locator);
+            const new_identifier = this.extractYouTubeIdentifier(response.uniform_resource_locator, type);
             this.setState((previous) => ({
                 ...previous,
                 Media: {
                     ...previous.Media,
                     YouTube: {
                         ...previous.Media.YouTube,
-                        identifier: identifier,
+                        identifier: new_identifier,
                     },
                 },
             }));
             return {
                 status: status,
-                identifier: identifier,
+                identifier: new_identifier,
             };
         } catch (error) {
-            console.error("An error occurred while setting the YouTube identifier.\nError: ", error);
-            throw new Error(error);
+            console.error(`An error occurred while setting the YouTube identifier.\nError: ${error.message}`);
+            throw new Error(error.message);
         }
     }
 

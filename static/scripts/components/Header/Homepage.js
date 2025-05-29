@@ -215,15 +215,15 @@ class HeaderHomepage extends Component {
         })
         .then((status) => {
             console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&type=${type}&identifier=${identifier}\nStatus: ${status}\nEvent Listener: onSubmit\nReferrer: ${window.location.href}\nView Route: ${this.state.System.view_route}\nComponent: Homepage.Header.HeaderHomepage\nDelay: ${delay} ms`);
-            setTimeout(() => {
-                window.location.href = this.state.System.view_route;
-            }, delay);
+            // setTimeout(() => {
+            //     window.location.href = this.state.System.view_route;
+            // }, delay);
         })
         .catch((error) => {
             console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.reload();
-            }, delay);
+            // setTimeout(() => {
+            //     window.location.reload();
+            // }, delay);
         });
     }
 
@@ -258,7 +258,7 @@ class HeaderHomepage extends Component {
      * Resolving and setting the YouTube media identifier in the application state.
      * 
      * This function first retrieves a media uniform resource locator from the backend using the provided platform, type, and identifier.  It then extracts the canonical YouTube identifier from that uniform resource locator and updates the application state with this value under `Media.YouTube.identifier`.
-     *
+     * 
      * @param {string} platform - The media platform.
      * @param {string} type - The media type.
      * @param {string} identifier - The initial identifier extracted from the user-provided uniform resource locator.
@@ -269,7 +269,7 @@ class HeaderHomepage extends Component {
         try {
             const response = await this.setMediaYouTubeUniformResourceLocator(platform, type, identifier);
             const status = response.status;
-            const new_identifier = await this.extractYouTubeIdentifier(response.uniform_resource_locator);
+            const new_identifier = await this.extractYouTubeIdentifier(response.uniform_resource_locator, type);
             this.setState((previous) => ({
                 Media: {
                     ...previous.Media,

@@ -444,3 +444,62 @@ def getMediaShorts(identifier: str) -> Response:
         status=int(str(response["status"])),
         mimetype=mime_type
     )
+
+@Media_Portal.route('/RelatedContents/Shorts/<string:identifier>', methods=["GET"])
+@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
+def getRelatedContentsShorts(identifier: str) -> Response:
+    """
+    Retrieving related media contents for a specific short video.
+
+    This endpoint handles a GET request to return related content based on a given media identifier.  It validates the identifier format and uses the `Media` model to fetch related items.
+
+    URL Pattern:
+        GET /RelatedContents/Shorts/<identifier>
+
+    Parameters:
+        identifier (str): A unique media identifier consisting of alphanumeric characters, dashes (`-`), or underscores (`_`).
+
+    Response Status Codes:
+        200 OK: Related contents retrieved successfully.
+        400 Bad Request: Invalid identifier format.
+        404 Not Found: No related contents found.
+        429 Too Many Requests: Rate limit exceeded.
+
+    Rate Limiting:
+        Maximum 100 requests per day per IP address.
+
+    Returns:
+        Response
+    """
+    mime_type: str = "application/json"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    if not fullmatch(identifier_regex, identifier):
+        Routing_Logger.error(f"The format for the identifier is invalid identifier.\nIdentifier: {identifier}\nStatus: 400")
+        data: Dict[str, str] = {
+            "error": "The format for the identifier is invalid."
+        }
+        return Response(
+            response=dumps(
+                obj=data,
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    system_request: Dict[str, Union[str, None]] = {
+        "referer": None,
+        "search": "",
+        "platform": "",
+        "ip_address": "127.0.0.1",
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    media: Media = Media(system_request)
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
+    return Response(
+        response=dumps(
+            obj=model_response["data"],
+            indent=4
+        ),
+        status=int(str(model_response["status"])),
+        mimetype=mime_type
+    )

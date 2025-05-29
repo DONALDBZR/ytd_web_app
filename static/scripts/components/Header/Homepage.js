@@ -426,8 +426,8 @@ class HeaderHomepage extends Component {
             this.__checkInvalidUniformResourceLocator(youtube_regular_expression, parsed_uniform_resource_locator);
             return parsed_uniform_resource_locator.href;
         } catch (error) {
-            console.error(`Invalid uniform resource locator!\nUniform Resource Locator: ${parsed_uniform_resource_locator}\nError: `, error);
-            throw new Error(error);
+            console.error(`Invalid uniform resource locator!\nUniform Resource Locator: ${parsed_uniform_resource_locator}\nError: ${error.message}`);
+            throw new Error(error.message);
         }
     }
 

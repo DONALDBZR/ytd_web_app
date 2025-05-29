@@ -461,7 +461,7 @@ class HeaderHomepage extends Component {
             const data = await response.json();
             return this.isValidResponse(response, data);
         } catch (error) {
-            console.error("Failed to retrieve metadata of media content.\nError: ", error);
+            console.error(`Failed to retrieve metadata of media content.\nError: ${error.message}`);
             return {
                 status: 500,
                 data: {},

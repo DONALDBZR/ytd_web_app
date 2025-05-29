@@ -38,7 +38,8 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     Returns:
         Dict[string, Union[int, Dict[string, Union[string, int, None]]]]
     """
-    allowed_directory: str = f"{ENV.getDirectory()}/Cache/Media"
+    allowed_directory: str = f"{ENV.getDirectory()}/Cache/Media/shorts" if "shorts/" in file_name else f"{ENV.getDirectory()}/Cache/Media"
+    file_name = file_name.replace("shorts/", "") if "shorts/" in file_name else file_name
     identifier: str = r"^[a-zA-Z0-9\-_]+$"
     file_name = escape(file_name)
     if not fullmatch(identifier, file_name.replace(".json", "").replace(f"{allowed_directory}/", "")):

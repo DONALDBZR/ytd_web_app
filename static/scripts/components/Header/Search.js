@@ -220,6 +220,22 @@ class HeaderSearch extends Component {
     }
 
     /**
+     * Generating a route URL based on the API response and media type.
+     * 
+     * If the response status is not `200`, the current URL is returned.  Otherwise, constructs a new route using the media type and identifier.
+     * 
+     * @param {{status: number, identifier: string}} response - The API response object containing status and YouTube identifier.
+     * @param {string} type - The media type.
+     * @returns {string} - The resulting route path or the current window location if the response is not successful.
+     */
+    _setRoute(response, type) {
+        if (response.status !== 200) {
+            return window.location.href;
+        }
+        return (type === "Shorts") ? `/Search/Shorts/${response.identifier}` : `/Search/${response.identifier}`;
+    }
+
+    /**
      * Setting the application's route based on the media identifier and platform.
      * 
      * This function calls an internal method to resolve the media identifier for the given platform and type.  It then updates the application state with the appropriate `view_route` depending on the response status.  If the status is 200, it redirects to a search-specific route; otherwise, it retains the current location.

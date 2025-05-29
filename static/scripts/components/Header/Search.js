@@ -307,7 +307,7 @@ class HeaderSearch extends Component {
     * @returns {Promise<string>} - A promise that resolves to the sanitized YouTube identifier string.
     * @throws {Error} Will throw an error if the URL is invalid, belongs to a disallowed domain, or the identifier cannot be extracted.
      */
-    extractYouTubeIdentifier(uniform_resource_locator, type) {
+    async extractYouTubeIdentifier(uniform_resource_locator, type) {
         try {
             const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
             this.__checkNotAllowedDomains(parsed_uniform_resource_locator);

@@ -365,9 +365,9 @@ class HeaderHomepage extends Component {
 
     /**
      * Fetching and setting the sanitized YouTube media uniform resource locator in the application state.
-     *
+     * 
      * This function performs a backend request to fetch media information using the provided platform, type, and identifier.  If the response is successful, it sanitizes the returned uniform resource locator, clears any related cached media from `localStorage`, and updates the application state.
-     *
+     * 
      * @param {string} platform - The media platform.
      * @param {string} type - The media type.
      * @param {string} identifier - The media identifier.
@@ -393,7 +393,7 @@ class HeaderHomepage extends Component {
                 uniform_resource_locator: uniform_resource_locator,
             };
         } catch (error) {
-            console.error("Failed to set the uniform resource locator.\nError: ", error);
+            console.error(`Failed to set the uniform resource locator.\nError: ${error.message}`);
             throw new Error(error.message);
         }
     }

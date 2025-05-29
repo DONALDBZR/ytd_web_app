@@ -244,7 +244,7 @@ class HeaderHomepage extends Component {
                 ...previous,
                 System: {
                     ...previous.System,
-                    view_route: (response.status == 200) ? `/Search/${response.identifier}` : window.location.href,
+                    view_route: this._setRoute(response, type),
                 },
             }));
             return response.status;
@@ -252,6 +252,22 @@ class HeaderHomepage extends Component {
             console.error(`An error occurred while setting the route!\nError: ${error.message}`);
             throw new Error(error.message);
         }
+    }
+
+    /**
+     * Generating a route URL based on the API response and media type.
+     * 
+     * If the response status is not `200`, the current URL is returned.  Otherwise, constructs a new route using the media type and identifier.
+     * 
+     * @param {{status: number, identifier: string}} response - The API response object containing status and YouTube identifier.
+     * @param {string} type - The media type.
+     * @returns {string} - The resulting route path or the current window location if the response is not successful.
+     */
+    _setRoute(response, type) {
+        if (response.status !== 200) {
+            return window.location.href;
+        }
+        return (type === "Shorts") ? `/Search/Shorts/${response.identifier}` : `/Search/${response.identifier}`;
     }
 
     /**

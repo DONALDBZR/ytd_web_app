@@ -249,7 +249,7 @@ class HeaderHomepage extends Component {
             }));
             return response.status;
         } catch (error) {
-            console.error("An error occurred while setting the route!\nError: ", error);
+            console.error(`An error occurred while setting the route!\nError: ${error.message}`);
             throw new Error(error.message);
         }
     }

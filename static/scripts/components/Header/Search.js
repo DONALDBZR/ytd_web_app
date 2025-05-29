@@ -311,7 +311,7 @@ class HeaderSearch extends Component {
         try {
             const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
             this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
-            const identifier = this.getYouTubeIdentifier(parsed_uniform_resource_locator);
+            const identifier = this.getYouTubeIdentifier(parsed_uniform_resource_locator, type);
             this.isIdentifierExtracted(identifier);
             return String(this.sanitize(identifier));
         } catch (error) {

@@ -277,7 +277,7 @@ class HeaderSearch extends Component {
         try {
             const response = await this.setMediaYouTubeUniformResourceLocator(platform, type, identifier);
             const status = response.status;
-            const new_identifier = this.extractYouTubeIdentifier(response.uniform_resource_locator, type);
+            const new_identifier = await this.extractYouTubeIdentifier(response.uniform_resource_locator, type);
             this.setState((previous) => ({
                 ...previous,
                 Media: {

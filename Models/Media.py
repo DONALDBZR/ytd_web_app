@@ -192,19 +192,31 @@ class Media:
             media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
             self.handleVerifyPlatform(int(str(media["status"])))
             self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
-            if "youtube" in self.getValue() or "youtu.be" in self.getValue():
-                return self.handleYouTube()
-            self.getLogger().error(f"This platform is not supported by the application!\nStatus: 403")
-            return {
-                "status": 403,
-                "data": {}
-            }
+            return self.__handleVerifyPlatform()
         except ValueError as error:
             self.getLogger().error(f"An error occurred while verifying the platform.\nError: {error}")
             return {
                 "status": 400,
                 "data": {}
             }
+
+    def __handleVerifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
+        """
+        Handling platform verification based on the URL provided by the user.
+
+        If the platform matches YouTube, it delegates to the appropriate YouTube handler.  Otherwise, it logs an error and raises
+        a `ValueError` indicating that the platform is not supported.
+
+        Returns:
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
+
+        Raises:
+            ValueError: If the platform is not supported by the application.
+        """
+        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+            return self.handleYouTube()
+        self.getLogger().error(f"This platform is not supported by the application!\nStatus: 403")
+        raise ValueError("This platform is not supported by the application!")
 
     def handleVerifyPlatform(self, status: int) -> Optional[Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]:
         """

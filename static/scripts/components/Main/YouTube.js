@@ -91,28 +91,37 @@ class YouTube extends Component {
     }
 
     /**
-     * Retrieving Media from the server by using its uniform resource locator.
-     * @param {MouseEvent} event The event that is to be handled
+     * Handling the media retrieval process from a given YouTube uniform resource locator.
+     * 
+     * This method prevents the default form or link behavior, displays a loading indicator, parses the YouTube uniform resource locator, determines the media type, extracts the unique identifier, and initiates the media download process.  If an error occurs during uniform resource locator processing, it logs the error to the console.
+     * @param {MouseEvent} event - The mouse event triggered by the user interaction.
      * @returns {void}
      */
     retrieveMedia(event) {
         event.preventDefault();
         const loading_icon = document.querySelector("#loading");
-        const delay = 200;
-        const uniform_resource_locator = this.state.Media.YouTube.uniform_resource_locator;
-        const platform = new URL(this.state.Media.YouTube.uniform_resource_locator).host.replaceAll("www.", "").replaceAll(".com", "");
         loading_icon.style.display = "flex";
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: `/Download/YouTube/${this.state.Media.YouTube.identifier}`,
-        })
-        .then(() => {
-            return this.postMediaDownload(uniform_resource_locator, platform);
-        })
-        .then((response) => this.manageResponse(response, delay))
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            this.redirector(delay, window.location.href);
-        });
+        console.log(`Uniform Resource Locator: ${this.state.Media.YouTube.uniform_resource_locator}`);
+        try {
+            const uniform_resource_locator = new URL(this.state.Media.YouTube.uniform_resource_locator);
+            const platform = this.getPlatform(uniform_resource_locator);
+            const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
+            const identifier = this.getIdentifier(uniform_resource_locator, type);
+            this.downloadMedia(platform, type, identifier, 200);
+        } catch (error) {
+            console.error(`There is an error while processing the uniform resource locator for downloading the media content.\nError: ${error.message}`);
+        }
+        // this.tracker.sendEvent("click", {
+        //     uniform_resource_locator: `/Download/YouTube/${this.state.Media.YouTube.identifier}`,
+        // })
+        // .then(() => {
+        //     return this.postMediaDownload(uniform_resource_locator, platform);
+        // })
+        // .then((response) => this.manageResponse(response, delay))
+        // .catch((error) => {
+        //     console.error("An error occurred while sending the event or setting the route!\nError: ", error);
+        //     this.redirector(delay, window.location.href);
+        // });
     }
 
     /**

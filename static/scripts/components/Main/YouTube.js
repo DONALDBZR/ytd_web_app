@@ -128,6 +128,21 @@ class YouTube extends Component {
     }
 
     /**
+     * Validating the presence of a media identifier extracted from a URL.
+     * 
+     * This function checks if the given identifier exists.  If it does not, it throws an error indicating that the media URL is invalid due to a missing identifier.
+     * @param {string|null|undefined} identifier The media identifier extracted from the URL.
+     * @returns {void}
+     * @throws {Error} If the identifier is null, undefined, or an empty string.
+     */
+    retrieveMediaIdentifierExists(identifier) {
+        if (identifier) {
+            return;
+        }
+        throw new Error("The uniform resource locator is invalid as the identifier cannot be extracted.");
+    }
+
+    /**
      * Handling the media retrieval process from a given YouTube uniform resource locator.
      * 
      * This method prevents the default form or link behavior, displays a loading indicator, parses the YouTube uniform resource locator, determines the media type, extracts the unique identifier, and initiates the media download process.  If an error occurs during uniform resource locator processing, it logs the error to the console.

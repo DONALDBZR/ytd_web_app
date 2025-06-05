@@ -107,6 +107,27 @@ class YouTube extends Component {
     }
 
     /**
+     * Retrieving the identifier of the content based on the type of the content and from the parsed uniform resource locator.
+     * 
+     * This function handles three types of YouTube uniform resource locators:
+     * - Shorts uniform resource locators
+     * - Shortened uniform resource locators
+     * - Standard video uniform resource locators with query parameters
+     * @param {URL} uniform_resource_locator A parsed URL object representing the media link.
+     * @param {string} type The media type.
+     * @returns {?string}
+     */
+    getIdentifier(uniform_resource_locator, type) {
+        if (type == "Shorts") {
+            return uniform_resource_locator.pathname.replaceAll("/shorts/", "");
+        }
+        if (uniform_resource_locator.hostname == "youtu.be") {
+            return uniform_resource_locator.pathname.slice(1);
+        }
+        return uniform_resource_locator.searchParams.get("v");
+    }
+
+    /**
      * Handling the media retrieval process from a given YouTube uniform resource locator.
      * 
      * This method prevents the default form or link behavior, displays a loading indicator, parses the YouTube uniform resource locator, determines the media type, extracts the unique identifier, and initiates the media download process.  If an error occurs during uniform resource locator processing, it logs the error to the console.

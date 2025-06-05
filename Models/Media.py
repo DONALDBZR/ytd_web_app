@@ -9,6 +9,7 @@ from datetime import datetime
 from json import dumps
 from re import match, Match
 from html import escape
+from typing import Optional
 
 
 class Media:
@@ -189,10 +190,7 @@ class Media:
             self.sanitizeValue()
             self.sanitizeSearch()
             media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
-            status: int = int(str(media["status"]))
-            if status != 200:
-                status = self.postMedia()
-                return self.__verifyPlatform(status)
+            self.handleVerifyPlatform(int(str(media["status"])))
             self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
             if "youtube" in self.getValue() or "youtu.be" in self.getValue():
                 return self.handleYouTube()
@@ -207,6 +205,23 @@ class Media:
                 "status": 400,
                 "data": {}
             }
+
+    def handleVerifyPlatform(self, status: int) -> Optional[Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]:
+        """
+        Handling platform verification based on the provided status code.
+
+        If the status is 200, the platform is assumed to be already verified and the method exits early.  Otherwise, it triggers a media posting operation followed by platform verification.
+
+        Args:
+            status (int): The HTTP status code indicating the current state of the platform.
+
+        Returns:
+            Optional[Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]
+        """
+        if status == 200:
+            return None
+        status = self.postMedia()
+        return self.__verifyPlatform(status)
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """

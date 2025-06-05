@@ -144,6 +144,7 @@ class YouTube extends Component {
             const platform = this.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.getIdentifier(uniform_resource_locator, type);
+            this.retrieveMediaIdentifierExists(identifier);
             this.downloadMedia(platform, type, identifier, 200);
         } catch (error) {
             console.error(`There is an error while processing the uniform resource locator for downloading the media content.\nError: ${error.message}`);

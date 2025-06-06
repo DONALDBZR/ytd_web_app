@@ -105,6 +105,9 @@ class Video:
         """
         Serving the file needed by the user-interface.
 
+        Args:
+            is_shorts (bool): The flag for checking the type of the video.
+
         Returns:
             int
         """

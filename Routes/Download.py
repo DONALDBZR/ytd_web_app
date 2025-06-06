@@ -1,17 +1,37 @@
-from flask import Blueprint, Response, render_template, request, send_file
-from typing import Dict
-from Environment import Environment
+"""
+The entrypoint for the Download Portal.
 
-Download_Portal = Blueprint("Download", __name__)
+Link:
+    https://omnitechbros.ddns.net:591/Download
+    http://omnitechbros.ddns.net:5000/Download
+"""
+from flask import Blueprint, Response, render_template, request, send_file
+from Models.SecurityManagementSystem import Security_Management_System, Union, Environment
+from typing import Dict
+
+
+Download_Portal: Blueprint = Blueprint("Download", __name__)
 """
 The Routing for all the Downloads.
-
-Type: Blueprint
 """
-ENV = Environment()
+SecurityManagementSystem: Security_Management_System = Security_Management_System()
+"""
+It will be a major component that will assure the security of the data that will be stored across the application.
+"""
+ENV: Environment = Environment()
 """
 ENV File of the application
 """
+
+@Download_Portal.before_request
+def before_request() -> None:
+    """
+    Preparing the data before the request is made.
+
+    Returns:
+        void
+    """
+    SecurityManagementSystem.generateNonce()
 
 @Download_Portal.route('/YouTube/<string:identifier>', methods=['GET'])
 def downloadPage(identifier: str) -> Response:

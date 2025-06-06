@@ -141,15 +141,18 @@ class Video:
             self.getLogger().error(f"There is an error between the model and the file servers.\nError: {error}\nStatus: {self.service_unavailable}")
             return self.service_unavailable
 
-    def removeIdentifierRelationalDatabaseServer(self) -> int:
+    def removeIdentifierRelationalDatabaseServer(self, is_shorts: bool) -> int:
         """
-        Removing all of the entries of the identifier from the
-        relational database server.
+        Removing all of the entries of the identifier from the relational database server.
+
+        Args:
+            is_shorts (bool): The flag for checking the type of the video.
 
         Returns:
             int
         """
-        parameters: Tuple[str] = (self.getIdentifier(),)
+        identifier: str = f"shorts/{self.getIdentifier()}" if is_shorts else self.getIdentifier()
+        parameters: Tuple[str] = (identifier,)
         try:
             self.getDatabaseHandler().deleteData(
                 table=self.getTableName(),

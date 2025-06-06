@@ -22,7 +22,7 @@ def serveVideo(name: str) -> Response:
     ok: int = 200
     identifier: str = name.replace(".mp4", "")
     video_management_system: Video = Video(identifier)
-    status: int = video_management_system.serveFile()
+    status: int = video_management_system.serveFile(False)
     return Video_Portal.send_static_file(name) if status == ok else Response({}, status, mimetype="application/json")
 
 @Video_Portal.route("/Shorts/<string:name>", methods=['GET'])

@@ -613,8 +613,8 @@ class YouTube_Downloader:
         Raises:
             NotFoundError: If no valid audio or video stream is available.
         """
-        maximum_height: int = 1080
-        maximum_width: int = 1920
+        maximum_height: int = 1080 if "shorts/" not in self.getIdentifier() else 1920
+        maximum_width: int = 1920 if "shorts/" not in self.getIdentifier() else 1080
         audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and self.getAudioCodec() in str(stream.get("acodec"))]
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])

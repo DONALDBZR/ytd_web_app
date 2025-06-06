@@ -84,6 +84,55 @@ def downloadPage(identifier: str) -> Response:
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     return response
 
+@Download_Portal.route('/YouTube/Shorts/<string:identifier>', methods=['GET'])
+def downloadShortsPage(identifier: str) -> Response:
+    """
+    Rendering the template needed which will import the web-worker.
+
+    Parameters:
+        identifier (str): Identifier of the media content to be searched.
+
+    Returns:
+        Response
+    """
+    is_embedded: bool = isEmbeddedRequest(request)
+    status: int = 403 if is_embedded else 200
+    mime_type: str = "text/html"
+    if is_embedded:
+        return Response(
+            response="Forbidden",
+            status=status,
+            mimetype=mime_type
+        )
+    nonce: str = SecurityManagementSystem.getNonce()
+    template: str = render_template(
+        template_name_or_list='Download.html',
+        nonce=nonce,
+    )
+    content_security_policy: str = "; ".join([
+        "default-src 'self'",
+        f"script-src 'self' 'nonce-{nonce}' https://cdnjs.cloudflare.com",
+        "style-src 'self' https://fonts.cdnfonts.com https://cdnjs.cloudflare.com",
+        "img-src 'self' data: https://i.ytimg.com",
+        "font-src 'self' https://fonts.cdnfonts.com https://cdnjs.cloudflare.com",
+        "connect-src 'self'",
+        "frame-src 'none'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'"
+    ])
+    response: Response = Response(
+        response=template,
+        status=status,
+        mimetype=mime_type
+    )
+    response.cache_control.max_age = 604800
+    response.cache_control.no_cache = False  # type: ignore
+    response.cache_control.public = True
+    response.content_security_policy = content_security_policy
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    return response
+
 def isEmbeddedRequest(request: Request) -> bool:
     """
     Checking if the request is an embedded request.

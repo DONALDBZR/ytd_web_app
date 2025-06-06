@@ -101,18 +101,19 @@ class Video:
     def setIdentifier(self, identifier: str) -> None:
         self.__identifier = identifier
 
-    def serveFile(self) -> int:
+    def serveFile(self, is_shorts: bool = False) -> int:
         """
         Serving the file needed by the user-interface.
 
         Returns:
             int
         """
-        status: int = self.ok if exists(f"{self.getDirectory()}/{self.getIdentifier()}.mp4") else self.not_found
+        file_path: str = f"{self.getDirectory()}/shorts/{self.getIdentifier()}.mp4" if is_shorts else f"{self.getDirectory()}/{self.getIdentifier()}.mp4"
+        status: int = self.ok if exists(file_path) else self.not_found
         if status != self.ok:
             self.getLogger().error(f"The file {self.getIdentifier()}.mp4 does not exist!  It will be removed from the relational database server.\nIdentifier: {self.getIdentifier()}")
-            relational_database_status: int = self.removeIdentifierRelationalDatabaseServer()
-            file_server_status: int = self.removeDataFileServer()
+            relational_database_status: int = self.removeIdentifierRelationalDatabaseServer(is_shorts)
+            file_server_status: int = self.removeDataFileServer(is_shorts)
             status = self.not_found if relational_database_status == self.accepted and file_server_status == self.accepted else self.service_unavailable
             return status
         self.getLogger().inform(f"The file {self.getIdentifier()}.mp4 has been served!\nStatus: {status}")

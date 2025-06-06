@@ -5,11 +5,10 @@ Link:
     https://omnitechbros.ddns.net:591/Download
     http://omnitechbros.ddns.net:5000/Download
 """
-from flask import Blueprint, Response, render_template, request, send_file
+from flask import Blueprint, Response, render_template, request, send_file, Request
 from Models.SecurityManagementSystem import Security_Management_System, Union, Environment
 from typing import Dict
-
-from index import isEmbeddedRequest
+from urllib.parse import urlparse, ParseResult
 
 
 Download_Portal: Blueprint = Blueprint("Download", __name__)
@@ -84,6 +83,27 @@ def downloadPage(identifier: str) -> Response:
     response.content_security_policy = content_security_policy
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     return response
+
+def isEmbeddedRequest(request: Request) -> bool:
+    """
+    Checking if the request is an embedded request.
+
+    Parameters:
+        request (Request): The request object.
+
+    Returns:
+        boolean
+    """
+    referrer: Union[str, None] = request.headers.get("Referer")
+    origin: Union[str, None] = request.headers.get("Origin")
+    if referrer:
+        parsed_referrer: ParseResult = urlparse(referrer)
+        referrer_domain: str = f"{parsed_referrer.scheme}://{parsed_referrer.netloc}"
+        if referrer_domain not in ENV.getAllowedOrigins():
+            return True
+    if origin and origin not in ENV.getAllowedOrigins():
+        return True
+    return False
 
 @Download_Portal.route('/', methods=['POST'])
 def downloadFile() -> Response:

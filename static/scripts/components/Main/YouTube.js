@@ -252,7 +252,7 @@ class YouTube extends Component {
                 },
             });
             const data = await response.json();
-            const uniform_resource_locator = (response.status == 201) ? `/Download/YouTube/${data.identifier}` : "/";
+            const uniform_resource_locator = (response.status == 201) ? ((type == "Shorts") ? `/Download/YouTube/Shorts/${data.identifier}` : `/Download/YouTube/${data.identifier}`) : "/";
             return {
                 status: response.status,
                 uniform_resource_locator: uniform_resource_locator,

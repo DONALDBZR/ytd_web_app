@@ -122,17 +122,19 @@ class Video:
         self.getLogger().inform(f"The file {self.getIdentifier()}.mp4 has been served!\nStatus: {status}")
         return status
 
-    def removeDataFileServer(self) -> int:
+    def removeDataFileServer(self, is_shorts: bool) -> int:
         """
-        Removing all of the data from the file servers which are
-        linked to a specific identifier.
+        Removing all of the data from the file servers which are linked to a specific identifier.
+
+        Args:
+            is_shorts (bool): The flag for checking the type of the video.
 
         Returns:
             int
         """
         try:
-            audio_file: str = f"{self.getDirectory()}/../Audio/{self.getIdentifier()}.mp3"
-            cache_file: str = f"{self.getDirectory()}/../../Cache/Media/{self.getIdentifier()}.json"
+            audio_file: str = f"{self.getDirectory()}/../Audio/shorts/{self.getIdentifier()}.mp3" if is_shorts else f"{self.getDirectory()}/../Audio/{self.getIdentifier()}.mp3"
+            cache_file: str = f"{self.getDirectory()}/../../Cache/Media/shorts/{self.getIdentifier()}.json" if is_shorts else f"{self.getDirectory()}/../../Cache/Media/{self.getIdentifier()}.json"
             remove(audio_file)
             remove(cache_file)
             self.getLogger().inform(f"The files related have been deleted from the file servers.\nIdentifier: {self.getIdentifier()}\nStatus: {self.accepted}")

@@ -40,4 +40,4 @@ def serveShortsVideo(name: str) -> Response:
     identifier: str = name.replace(".mp4", "")
     video_management_system: Video = Video(identifier)
     status: int = video_management_system.serveFile(True)
-    return Video_Portal.send_static_file(name) if status == ok else Response({}, status, mimetype="application/json")
+    return Video_Portal.send_static_file(f"shorts/{name}") if status == ok else Response({}, status, mimetype="application/json")

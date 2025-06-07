@@ -46,12 +46,12 @@ Ensure you have the following installed on your system:
 - **[UPDATE 3.7.125]** URL Sanitization: Prevents injection and unauthorized access by escaping HTML characters and validating domain origins.
 - **[UPDATE 3.7.124]** Domain Whitelist Checks: Enforces allowed YouTube domains for content extraction.
 - **[UPDATE 3.7.123]** YouTube Identifier Parsing: Accurate extraction of media identifiers from input uniform resource locators.
+- **[UPDATE 3.7.118]** `localStorage` Cleanup: Conditional cleanup tied to HTTP responses to avoid data corruption.
 - **[UPDATE 3.7.117]** Response Validation & Error Feedback: Ensures front-end stability with clear validation checks.
 - **[UPDATE 3.7.116]** YouTube Metadata Retrieval via API: GET requests fetch metadata dynamically, enabling pre-download previews.
 - **[UPDATE 3.7.108]** Form Submission Rework: Forms trigger real-time metadata extraction, enhancing interaction flow.
 - **[UPDATE 3.7.87]** Route-Based Media Source Generation: Media URLs are constructed from route paths and metadata.
 - **[UPDATE 3.7.86]** Media Download Request Handling: Backend now supports direct POST requests for starting downloads.
-- **[UPDATE 3.7.118]** `localStorage` Cleanup: Conditional cleanup tied to HTTP responses to avoid data corruption.
 
 ## Contributing
 Contributions, feedback, and testing are welcome! Please open a pull request or issue for any modifications. The main branch is reserved for production; development should be done in separate branches.

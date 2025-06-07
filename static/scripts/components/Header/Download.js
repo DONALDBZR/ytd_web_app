@@ -229,6 +229,22 @@ class HeaderDownload extends Component {
     }
 
     /**
+     * Validating that a YouTube identifier has been successfully extracted.
+     * 
+     * This method ensures that the provided identifier is not null, undefined, or an empty string.  It is typically called after attempting to extract an identifier from a uniform resource locator.
+     * 
+     * @param {?string} identifier - The extracted YouTube identifier to validate.
+     * @returns {void}
+     * @throws {Error} Throws an error if the identifier is missing or invalid.
+     */
+    isIdentifierExtracted(identifier) {
+        if (typeof identifier === "string" && identifier.trim() !== "") {
+            return;
+        }
+        throw new Error("The identifier could not be extracted or is invalid.");
+    }
+
+    /**
      * Extracting the YouTube video or media identifier from a given uniform resource locator.
      * 
      * This method parses the input URL, validates its domain against a list of disallowed domains, and retrieves the YouTube identifier based on the specified media type.

@@ -110,6 +110,27 @@ class HeaderDownload extends Component {
     }
 
     /**
+     * Retrieving the identifier of the content based on the type of the content and from the parsed uniform resource locator.
+     * 
+     * This function handles three types of YouTube uniform resource locators:
+     * - Shorts uniform resource locators
+     * - Shortened uniform resource locators
+     * - Standard video uniform resource locators with query parameters
+     * @param {URL} uniform_resource_locator A parsed URL object representing the media link.
+     * @param {string} type The media type.
+     * @returns {?string}
+     */
+    getIdentifier(uniform_resource_locator, type) {
+        if (type == "Shorts") {
+            return uniform_resource_locator.pathname.replaceAll("/shorts/", "");
+        }
+        if (uniform_resource_locator.hostname == "youtu.be") {
+            return uniform_resource_locator.pathname.slice(1);
+        }
+        return uniform_resource_locator.searchParams.get("v");
+    }
+
+    /**
      * Handling the form submission event to extract metadata from a media URL.
      * 
      * This function prevents the default form submission behavior, displays a loading icon, parses the user-provided media URL to determine the platform, media type (video or shorts), and identifier, and then initiates metadata fetching via `searchMediaMetadata`.

@@ -9,6 +9,7 @@ from datetime import datetime
 from json import dumps
 from re import match, Match
 from html import escape
+from typing import Optional
 
 
 class Media:
@@ -55,25 +56,29 @@ class Media:
     """
     The logger that will all the action of the application.
     """
+    __ENV: Environment
+    """
+    ENV File of the application
+    """
 
     def __init__(self, request: Dict[str, Union[str, None]]) -> None:
         """
         Initializing the Media Management System.
 
-        This constructor sets up the necessary environment, logging, database handler, and validates the incoming request data. It also ensures that the required database table (`Media`) exists before proceeding.
+        This constructor sets up the necessary environment, logging, database handler, and validates the incoming request data.  It also ensures that the required database table (`Media`) exists before proceeding.
 
         Parameters:
             request (Dict[str, Union[str, None]]): A dictionary containing the request details with the following keys:
-                - "referer" (Optional[str]): The referring URL.
-                - "search" (str): The search query or target URL.
-                - "platform" (str): The media platform (e.g., "youtube").
+                - "referer" (Optional[str]): The referring uniform resource locator.
+                - "search" (str): The search query or target uniform resource locator.
+                - "platform" (str): The media platform.
                 - "ip_address" (str): The client's IP address.
 
         Raises:
             ValueError: If the request dictionary does not contain all required keys.
         """
-        ENV: Environment = Environment()
-        self.setDirectory(f"{ENV.getDirectory()}/Cache/Media")
+        self.__setEnvironment(Environment())
+        self.setDirectory(f"{self.__getEnvironment().getDirectory()}/Cache/Media")
         self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.getDatabaseHandler()._query(
@@ -95,6 +100,12 @@ class Media:
 
     def setSearch(self, search: str) -> None:
         self.__search = search
+
+    def __getEnvironment(self) -> Environment:
+        return self.__ENV
+
+    def __setEnvironment(self, ENV: Environment) -> None:
+        self.__ENV = ENV
 
     def getReferer(self) -> Union[str, None]:
         return self.__referer
@@ -179,24 +190,50 @@ class Media:
             self.sanitizeValue()
             self.sanitizeSearch()
             media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
-            status: int = int(str(media["status"]))
-            if status != 200:
-                status = self.postMedia()
-                return self.__verifyPlatform(status)
+            self.handleVerifyPlatform(int(str(media["status"])))
             self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
-            if "youtube" in self.getValue() or "youtu.be" in self.getValue():
-                return self.handleYouTube()
-            self.getLogger().error(f"This platform is not supported by the application!\nStatus: 403")
-            return {
-                "status": 403,
-                "data": {}
-            }
+            return self.__handleVerifyPlatform()
         except ValueError as error:
             self.getLogger().error(f"An error occurred while verifying the platform.\nError: {error}")
             return {
                 "status": 400,
                 "data": {}
             }
+
+    def __handleVerifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
+        """
+        Handling platform verification based on the URL provided by the user.
+
+        If the platform matches YouTube, it delegates to the appropriate YouTube handler.  Otherwise, it logs an error and raises
+        a `ValueError` indicating that the platform is not supported.
+
+        Returns:
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
+
+        Raises:
+            ValueError: If the platform is not supported by the application.
+        """
+        if "youtube" in self.getValue() or "youtu.be" in self.getValue():
+            return self.handleYouTube()
+        self.getLogger().error(f"This platform is not supported by the application!\nStatus: 403")
+        raise ValueError("This platform is not supported by the application!")
+
+    def handleVerifyPlatform(self, status: int) -> Optional[Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]:
+        """
+        Handling platform verification based on the provided status code.
+
+        If the status is 200, the platform is assumed to be already verified and the method exits early.  Otherwise, it triggers a media posting operation followed by platform verification.
+
+        Args:
+            status (int): The HTTP status code indicating the current state of the platform.
+
+        Returns:
+            Optional[Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]
+        """
+        if status == 200:
+            return None
+        status = self.postMedia()
+        return self.__verifyPlatform(status)
 
     def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
         """
@@ -302,12 +339,12 @@ class Media:
         if "youtube" not in self.getSearch():
             self.getLogger().error(f"The uniform resource locator is not supported!\nStatus: 400\nSearch: {self.getSearch()}")
             raise ValueError("The uniform resource locator is not supported.")
-        identifier_regex: str = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
+        identifier_regex: str = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
         match_identifier: Union[Match[str], None] = match(identifier_regex, self.getSearch())
         if not match_identifier:
-            self.getLogger().error("The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
-            raise ValueError("The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
-        return match_identifier.group(1) # type: ignore
+            self.getLogger().error(f"The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
+            raise ValueError(f"The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
+        return f"shorts/{match_identifier.group(1)}" if "/shorts/" in self.getSearch() else match_identifier.group(1)
 
     def getRelatedContents(self, identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
@@ -411,7 +448,7 @@ class Media:
                 parameters=parameters,
                 table_name="YouTube",
                 filter_condition="author = %s",
-                column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier"
+                column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CASE WHEN identifier LIKE 'shorts/%' THEN CONCAT('https://www.youtube.com/', identifier) ELSE CONCAT('https://www.youtube.com/watch?v=', identifier) END AS uniform_resource_locator, Media AS media_identifier"
             ) # type: ignore
             response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(channel_content["identifier"])), "duration": escape(str(channel_content["duration"])), "channel": escape(str(channel_content["channel"])), "title": escape(str(channel_content["title"])), "uniform_resource_locator": escape(str(channel_content["uniform_resource_locator"])), "media_identifier": int(channel_content["media_identifier"])} for channel_content in database_response]
             self.getLogger().inform(f"The related channel contents have been successfully retrieved.\nStatus: 200\nChannel: {channel}\nAmount: {len(response)}")

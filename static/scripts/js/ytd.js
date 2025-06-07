@@ -414,7 +414,6 @@ class YTD {
      */
     loadDataDownloadPage() {
         this.setMedia();
-        this.setRelatedContents();
     }
 
     /**
@@ -497,7 +496,8 @@ class YTD {
         const current_time = Math.floor(Date.now() / 1000);
         if (!media) {
             this.getMedia(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`))
+            .catch((error) => console.error(`An error occurred while retrieving the data!\nRoute: ${request_method} ${route}\nError: ${error.message}`));
             return;
         }
         status = ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) ? 304 : 204;

@@ -38,7 +38,8 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     Returns:
         Dict[string, Union[int, Dict[string, Union[string, int, None]]]]
     """
-    allowed_directory: str = f"{ENV.getDirectory()}/Cache/Media"
+    allowed_directory: str = f"{ENV.getDirectory()}/Cache/Media/shorts" if "shorts/" in file_name else f"{ENV.getDirectory()}/Cache/Media"
+    file_name = file_name.replace("shorts/", "") if "shorts/" in file_name else file_name
     identifier: str = r"^[a-zA-Z0-9\-_]+$"
     file_name = escape(file_name)
     if not fullmatch(identifier, file_name.replace(".json", "").replace(f"{allowed_directory}/", "")):
@@ -108,14 +109,17 @@ def sanitizeStringData(data: Dict[str, Any]):
 @limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def search() -> Response:
     """
-    Handling media search requests by validating parameters and forwarding the request to the appropriate media verification and retrieval system.
+    Handling GET requests to the /Search endpoint for retrieving media metadata.
 
-    Routes:
+    This endpoint validates the incoming query parameters and constructs a media search request.  If validation passes, it delegates to the media verification system and returns a structured JSON response.
+
+    Route:
         - GET /Search
 
     Query Parameters:
         - platform (str): The name of the platform to search on.
-        - search (str): The search query string.
+        - type (str): The type of media to search for.
+        - identifier (str): The identifier of the media.
 
     Response Codes:
         - 200: Successful response with search results.
@@ -126,9 +130,10 @@ def search() -> Response:
         Response
     """
     platform: str = escape(str(request.args.get("platform")))
-    search: str = escape(str(request.args.get("search")))
+    type: str = escape(str(request.args.get("type")))
+    identifier: str = escape(str(request.args.get("identifier")))
     mime_type: str = "application/json"
-    if not platform or not search:
+    if not platform or not type or not identifier:
         Routing_Logger.error("The parameters are missing.")
         return Response(
             response=dumps(
@@ -140,17 +145,31 @@ def search() -> Response:
             status=400,
             mimetype=mime_type
         )
-    if len(search) > 64:
-        Routing_Logger.error("The search query is too long.")
+    if len(identifier) > 16:
+        Routing_Logger.error("The identifier is too long.")
         return Response(
             response=dumps(
                 obj={
-                    "error": "The search query is too long."
+                    "error": "The identifier is too long."
                 },
-                indent=4),
+                indent=4
+            ),
             status=400,
             mimetype=mime_type
         )
+    if type not in ENV.getAllowedYoutubeContents():
+        Routing_Logger.error(f"The type is invalid.\nType: {type}")
+        return Response(
+            response=dumps(
+                obj={
+                    "error": "The type is invalid."
+                },
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    search: str = f"{ENV.getYouTubeVideoUniformResourceLocator()}{identifier}" if type == "Video" else f"{ENV.getYouTubeShortsUniformResourceLocator()}{identifier}"
     user_request: Dict[str, Union[None, str]] = {
         "referer": None,
         "search": search,
@@ -372,4 +391,116 @@ def rateLimited(error: Exception) -> Response:
             indent=4
         ),
         status=429
+    )
+
+@Media_Portal.route('/Shorts/<string:identifier>', methods=["GET"])
+@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
+def getMediaShorts(identifier: str) -> Response:
+    """
+    Retrieving metadata for a specific media short by identifier.
+
+    This endpoint handles a GET request to fetch metadata associated with a media short.  It validates the identifier format and returns metadata from a corresponding JSON file if found.
+
+    URL Pattern:
+        GET /Shorts/<identifier>
+
+    Parameters:
+        identifier (str): A unique identifier for the media short.  Must consist of alphanumeric characters, dashes (`-`), or underscores (`_`).
+
+    Returns:
+        Response
+
+    Response Status Codes:
+        200 OK: Metadata retrieved successfully.
+        400 Bad Request: Invalid identifier format.
+        404 Not Found: Metadata file not found.
+        429 Too Many Requests: Rate limit exceeded.
+
+    Rate Limiting:
+        Maximum 100 requests per day per IP address.
+    """
+    mime_type: str = "application/json"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    if not fullmatch(identifier_regex, identifier):
+        Routing_Logger.error(f"The identifier is invalid.\nIdentifier: {identifier}")
+        data: Dict[str, str] = {
+            "error": "The identifier is invalid."
+        }
+        return Response(
+            response=dumps(
+                obj=data,
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    file_name: str = f"shorts/{identifier}.json"
+    response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = getMetaData(file_name)
+    return Response(
+        response=dumps(
+            obj=response["data"],
+            indent=4
+        ),
+        status=int(str(response["status"])),
+        mimetype=mime_type
+    )
+
+@Media_Portal.route('/RelatedContents/Shorts/<string:identifier>', methods=["GET"])
+@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
+def getRelatedContentsShorts(identifier: str) -> Response:
+    """
+    Retrieving related media contents for a specific short video.
+
+    This endpoint handles a GET request to return related content based on a given media identifier.  It validates the identifier format and uses the `Media` model to fetch related items.
+
+    URL Pattern:
+        GET /RelatedContents/Shorts/<identifier>
+
+    Parameters:
+        identifier (str): A unique media identifier consisting of alphanumeric characters, dashes (`-`), or underscores (`_`).
+
+    Response Status Codes:
+        200 OK: Related contents retrieved successfully.
+        400 Bad Request: Invalid identifier format.
+        404 Not Found: No related contents found.
+        429 Too Many Requests: Rate limit exceeded.
+
+    Rate Limiting:
+        Maximum 100 requests per day per IP address.
+
+    Returns:
+        Response
+    """
+    mime_type: str = "application/json"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    if not fullmatch(identifier_regex, identifier):
+        Routing_Logger.error(f"The format for the identifier is invalid identifier.\nIdentifier: {identifier}\nStatus: 400")
+        data: Dict[str, str] = {
+            "error": "The format for the identifier is invalid."
+        }
+        return Response(
+            response=dumps(
+                obj=data,
+                indent=4
+            ),
+            status=400,
+            mimetype=mime_type
+        )
+    system_request: Dict[str, Union[str, None]] = {
+        "referer": None,
+        "search": "",
+        "platform": "",
+        "ip_address": "127.0.0.1",
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    media: Media = Media(system_request)
+    identifier = f"shorts/{identifier}"
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
+    return Response(
+        response=dumps(
+            obj=model_response["data"],
+            indent=4
+        ),
+        status=int(str(model_response["status"])),
+        mimetype=mime_type
     )

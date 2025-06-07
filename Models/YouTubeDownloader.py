@@ -125,7 +125,7 @@ class YouTube_Downloader:
                 parameters=None
             )
             self.getDatabaseHandler()._execute()
-            self.setBaseUniformResourceLocator("https://www.youtube.com/watch?v=")
+            self.setBaseUniformResourceLocator("https://www.youtube.com")
             self.setAudioCodec("mp4a")
             self.setVideoCodec("avc")
             self.setUniformResourceLocator(uniform_resource_locator)
@@ -271,16 +271,60 @@ class YouTube_Downloader:
 
     def sanitizeYouTubeIdentifier(self) -> str:
         """
-        Sanitizing the YouTube identifier by removing base URLs and query parameters to return only the unique identifier of the video.
+        Extracting and sanitizing the unique YouTube video identifier from various uniform resource locator formats.
 
-        The method performs the following:
-        - If the uniform resource locator (URL) contains "youtube", it removes the base URL and then sanitizes the identifier.
-        - If the URL contains "youtu.be", it removes the base URL and any query parameters from the identifier.
+        This method handles multiple YouTube uniform resource locator patterns and extracts only the video identifier by:
+        - Stripping the base uniform resource locator for standard YouTube video links.
+        - Handling YouTube Shorts links by removing the "/shorts/" path segment.
+        - Supporting shortened YouTube uniform resource locators, removing query parameters if present.
 
         Returns:
-            str
+            str: The sanitized YouTube video identifier.
         """
-        return self.retrieveIdentifier(self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "")) if "youtube" in self.getUniformResourceLocator() else self.retrieveIdentifier(self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0])
+        sanitized_identifier: str
+        if "/shorts/" in self.getUniformResourceLocator():
+            sanitized_identifier = f"shorts/{self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), '').replace('/shorts/', '')}"
+        elif "youtube" in self.getUniformResourceLocator():
+            sanitized_identifier = self.getUniformResourceLocator().replace(self.getBaseUniformResourceLocator(), "").replace("/watch?v=", "")
+        else:
+            sanitized_identifier = self.getUniformResourceLocator().replace("https://youtu.be/", "").rsplit("?")[0]
+        return self.retrieveIdentifier(sanitized_identifier)
+
+    def __isRawYouTube(self, raw_youtube: Dict[str, Any]) -> None:
+        """
+        Validating the presence of a raw YouTube response dictionary.
+
+        This method checks whether the provided dictionary-like object `raw_youtube` is not empty or None. If it is empty or falsy, a ValueError is raised to indicate an invalid response.
+
+        Args:
+            raw_youtube (Dict[str, Any]): The raw response dictionary expected from YouTube data.
+
+        Raises:
+            ValueError: If `raw_youtube` is None or empty.
+        """
+        if raw_youtube:
+            return
+        self.getLogger().error(f"The response is invalid")
+        raise ValueError("Invalid Response")
+
+    def __presentGetYouTube(self, status: int) -> None:
+        """
+        Handling the presentation logic after attempting to retrieve YouTube data.
+
+        If the HTTP status code indicates success (200 OK), the method simply returns. Otherwise, it calls `postYouTube()` to perform a fallback or alternative action.
+
+        Args:
+            status (int): The HTTP status code returned from a YouTube GET request.
+
+        Returns:
+            None
+
+        Side Effects:
+            May trigger the `postYouTube()` method if the status code is not 200.
+        """
+        if status == 200:
+            return
+        self.postYouTube()
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
@@ -307,9 +351,7 @@ class YouTube_Downloader:
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
         try:
             raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
-            if not raw_youtube:
-                self.getLogger().error(f"The response is invalid")
-                raise ValueError("Invalid Response")
+            self.__isRawYouTube(raw_youtube)
             youtube: Dict[str, Any] = {
                 key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
             }
@@ -322,8 +364,7 @@ class YouTube_Downloader:
             file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
             audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
             video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
-            if meta_data["status"] != 200:
-                self.postYouTube()
+            self.__presentGetYouTube(int(str(meta_data["status"])))
             return {
                 "uniform_resource_locator": self.getUniformResourceLocator(),
                 "author": self.getAuthor(),
@@ -572,8 +613,8 @@ class YouTube_Downloader:
         Raises:
             NotFoundError: If no valid audio or video stream is available.
         """
-        maximum_height: int = 1080
-        maximum_width: int = 1920
+        maximum_height: int = 1080 if "shorts/" not in self.getIdentifier() else 1920
+        maximum_width: int = 1920 if "shorts/" not in self.getIdentifier() else 1080
         audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and self.getAudioCodec() in str(stream.get("acodec"))]
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])

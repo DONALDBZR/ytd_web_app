@@ -409,16 +409,6 @@ class YouTubeDownloader extends Component {
                             <div id="buttons">
                                 {this.renderButton(this.state.File.audio)}
                                 {this.renderButton(this.state.File.video)}
-                                <div class="button">
-                                    <button name="file_downloader" value={this.state.File.audio} onClick={this.getFile.bind(this)}>
-                                        <i class="fa-solid fa-music"></i>
-                                    </button>
-                                </div>
-                                <div class="button">
-                                    <button name="file_downloader" value={this.state.File.video} onClick={this.getFile.bind(this)}>
-                                        <i class="fa-solid fa-video"></i>
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>

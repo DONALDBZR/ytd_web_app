@@ -144,7 +144,12 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Verifying the existence and accessibility of the media file based on the uniform resource locator path, then updates the component state with the media file's location if available.
+     * Verifying the existence and accessibility of the media file by checking the current uniform resource locator path.
+     * 
+     * - Extracts a media identifier from the uniform resource locator.
+     * - Checks the video status from the server.
+     * - Handles the video status to determine the correct route (file path or search redirect).
+     * - Manages the result by either updating the component state or redirecting the user.
      * @param {HTMLDivElement} loading_icon - The DOM element representing the loading indicator.
      * @returns {void}
      */
@@ -154,13 +159,6 @@ class YouTubeDownloader extends Component {
         this.checkVideoStatus(identifier)
         .then((status) => this.handleVideoStatus(status, loading_icon))
         .then((route) => this.manageRoute(route, loading_icon));
-        .then((uniform_resource_locator) => this.setState((previous) => ({
-            ...previous,
-            File: {
-                ...previous.File,
-                uniform_resource_locator: uniform_resource_locator,
-            },
-        })));
     }
 
     /**

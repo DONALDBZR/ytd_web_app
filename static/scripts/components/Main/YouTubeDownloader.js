@@ -125,17 +125,22 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Handling the status of the video that is returned by the
-     * server.
-     * @param {number} status The status of the video
-     * @returns {Promise<string>}
+     * Processing the video status returned by the server and determines the final media file path or redirect uniform resource locator.
+     * 
+     * - If the status is not `200`, it returns a redirect path to the search page.
+     * - If the status is `200`, it processes and returns a cleaned-up path for the video file,
+     *   removing internal server paths based on known directory locations.
+     * 
+     * @param {number} status - HTTP status code indicating the availability of the video.
+     * @returns {Promise<string>} A promise resolving to the processed video file path or search redirection URL.
      */
     async handleVideoStatus(status) {
         if (status != 200) {
-            window.location.href = `/Search/${window.location.pathname.replace("/Download/YouTube/", "")}`;
-            return "";
+            const identifier = window.location.pathname.replace("/Download/YouTube/", "");
+            return `/Search/${identifier}`;
         }
-        return (this.state.File.video.includes("extractio")) ? this.state.File.video.replace("/home/darkness4869/Documents/extractio", "") : this.state.File.video.replace("/var/www/html/ytd_web_app", "");
+        const video_path = this.state.File.video;
+        return (video_path.includes("extractio")) ? video_path.replace("/home/darkness4869/Documents/extractio", "") : video_path.replace("/var/www/html/ytd_web_app", "");
     }
 
     /**

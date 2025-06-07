@@ -153,6 +153,7 @@ class YouTubeDownloader extends Component {
         identifier = (path_name.includes("/Shorts/")) ? path_name.replace("/Download/YouTube/Shorts/", "") : path_name.replace("/Download/YouTube/", "");
         this.checkVideoStatus(identifier)
         .then((status) => this.handleVideoStatus(status, loading_icon))
+        .then((route) => this.manageRoute(route, loading_icon));
         .then((uniform_resource_locator) => this.setState((previous) => ({
             ...previous,
             File: {

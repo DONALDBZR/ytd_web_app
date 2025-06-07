@@ -280,6 +280,24 @@ class HeaderDownload extends Component {
     }
 
     /**
+     * Sanitizing the given uniform resource locator by ensuring that it belongs to an allowed domain.
+     * @param {string} uniform_resource_locator The uniform resource locator
+     * @returns {string}
+     */
+    sanitizeUniformResourceLocator(uniform_resource_locator) {
+        const youtube_regular_expression = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|shorts\/|)([a-zA-Z0-9_-]{11})(&.*)?$/;
+        const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
+        try {
+            this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
+            this.__checkInvalidUniformResourceLocator(youtube_regular_expression, parsed_uniform_resource_locator);
+            return parsed_uniform_resource_locator.href;
+        } catch (error) {
+            console.error(`Invalid uniform resource locator!\nUniform Resource Locator: ${parsed_uniform_resource_locator}\nError: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
+
+    /**
      * Fetching and setting the sanitized YouTube media uniform resource locator in the application state.
      * 
      * This function performs a backend request to fetch media information using the provided platform, type, and identifier.  If the response is successful, it sanitizes the returned uniform resource locator, clears any related cached media from `localStorage`, and updates the application state.

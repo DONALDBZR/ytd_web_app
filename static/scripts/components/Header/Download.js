@@ -229,6 +229,22 @@ class HeaderDownload extends Component {
     }
 
     /**
+     * Generating a route URL based on the API response and media type.
+     * 
+     * If the response status is not `200`, the current URL is returned.  Otherwise, constructs a new route using the media type and identifier.
+     * 
+     * @param {{status: number, identifier: string}} response - The API response object containing status and YouTube identifier.
+     * @param {string} type - The media type.
+     * @returns {string} - The resulting route path or the current window location if the response is not successful.
+     */
+    _setRoute(response, type) {
+        if (response.status !== 200) {
+            return window.location.href;
+        }
+        return (type === "Shorts") ? `/Search/Shorts/${response.identifier}` : `/Search/${response.identifier}`;
+    }
+
+    /**
      * Validating that a YouTube identifier has been successfully extracted.
      * 
      * This method ensures that the provided identifier is not null, undefined, or an empty string.  It is typically called after attempting to extract an identifier from a uniform resource locator.

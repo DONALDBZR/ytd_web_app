@@ -414,7 +414,6 @@ class YTD {
      */
     loadDataDownloadPage() {
         this.setMedia();
-        this.setRelatedContents();
     }
 
     /**

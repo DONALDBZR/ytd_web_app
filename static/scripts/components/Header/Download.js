@@ -280,6 +280,19 @@ class HeaderDownload extends Component {
     }
 
     /**
+     * Checking domains that are not allowed.
+     * @param {URL} uniform_resource_locator The parsed uniform resource locator
+     * @returns {void}
+     */
+    __checkNotAllowedDomains(uniform_resource_locator) {
+        const allowed_domains = ["www.youtube.com", "youtu.be"];
+        if (allowed_domains.includes(uniform_resource_locator.hostname)) {
+            return;
+        }
+        throw new Error(`The domain is not allowed!\nHost Name: ${uniform_resource_locator.hostname}`);
+    }
+
+    /**
      * Sanitizing the given uniform resource locator by ensuring that it belongs to an allowed domain.
      * @param {string} uniform_resource_locator The uniform resource locator
      * @returns {string}

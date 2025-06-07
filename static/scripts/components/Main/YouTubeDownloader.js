@@ -66,30 +66,45 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Setting the main state of the component.
+     * Initializing the component's state based on data from localStorage and sets up tracking.
+     * 
+     * - Retrieves the `media` object from localStorage.
+     * - Updates component state with media metadata if available.
+     * - Displays the loading icon.
+     * - Sets up the `tracker` if available on the global `window` object.
+     * - Triggers file verification if data is successfully loaded.
      * @returns {void}
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
         const local_storage_data = localStorage.getItem("media");
-        const media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
+        let media = null;
+        if (typeof local_storage_data === "string") {
+            try {
+                media = JSON.parse(localStorage.getItem("media")).data;
+            } catch (error) {
+                console.error(`The application has failed to parse the data.\nError: ${error.message}`);
+            }
+        } else {
+            media = null;
+        }
         const data_loaded = (media != null && window.Tracker);
         loading_icon.style.display = "flex";
         this.setState((previous) => ({
             ...previous,
-            uniform_resource_locator: (media) ? media.uniform_resource_locator : this.state.uniform_resource_locator,
-            author: (media) ? media.author : this.state.author,
-            title: (media) ? media.title : this.state.title,
-            identifier: (media) ? media.identifier : this.state.identifier,
-            author_channel: (media) ? media.author_channel : this.state.author_channel,
-            views: (media) ? media.views : this.state.views,
-            published_at: (media) ? media.published_at : this.state.published_at,
-            thumbnail: (media) ? media.thumbnail : this.state.thumbnail,
-            duration: (media) ? media.duration : this.state.duration,
+            uniform_resource_locator: (media) ? media.uniform_resource_locator : previous.uniform_resource_locator,
+            author: (media) ? media.author : previous.author,
+            title: (media) ? media.title : previous.title,
+            identifier: (media) ? media.identifier : previous.identifier,
+            author_channel: (media) ? media.author_channel : previous.author_channel,
+            views: (media) ? media.views : previous.views,
+            published_at: (media) ? media.published_at : previous.published_at,
+            thumbnail: (media) ? media.thumbnail : previous.thumbnail,
+            duration: (media) ? media.duration : previous.duration,
             File: {
                 ...previous.File,
-                audio: (media) ? media.audio : this.state.File.audio,
-                video: (media) ? media.video : this.state.File.video,
+                audio: (media) ? media.audio : previous.File.audio,
+                video: (media) ? media.video : previous.File.video,
             },
             data_loaded: data_loaded,
         }));

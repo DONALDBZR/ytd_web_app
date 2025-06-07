@@ -186,11 +186,12 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Determining whether the given route is a search redirect or a valid media file path, then updates the component state or redirects accordingly.
+     * Determining if the given route is a search redirect or a valid media file path, then either navigates to the search page or updates the component state with the file path.
      * 
-     * - If the route is a search path, the browser navigates to that route.
-     * - Otherwise, the loading icon is hidden and the state is updated with the file's uniform resource locator.
-     * @param {string} route - Either a search route or a direct file path.
+     * - If the route contains "/Search/", the browser is redirected to that route.
+     * - Otherwise, the loading icon is hidden and the state is updated with the corrected file uniform resource locator.
+     * - Adjusts the route casing for Shorts uniform resource locators to maintain consistency.
+     * @param {string} route - A uniform resource locator route, either a search path or a direct media file path.
      * @param {HTMLDivElement} loading_icon - The DOM element representing the loading indicator.
      * @returns {void}
      */
@@ -199,12 +200,13 @@ class YouTubeDownloader extends Component {
             window.location.href = route;
             return;
         }
+        const file_path = (window.location.pathname.includes("/Shorts/")) ? route.replace("/shorts/", "/Shorts/") : route;
         loading_icon.style.display = "none";
         this.setState((previous) => ({
             ...previous,
             File: {
                 ...previous.File,
-                uniform_resource_locator: route,
+                uniform_resource_locator: file_path,
             },
         }));
     }

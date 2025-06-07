@@ -66,6 +66,25 @@ class YouTubeDownloader extends Component {
     }
 
     /**
+     * Parsing and validating media metadata from localStorage.
+     * 
+     * - Attempts to parse the provided JSON string and extract the `data` property.
+     * - If parsing fails, logs the error and rethrows it as a new `Error`.
+     * @param {?string} local_storage_data The data from the local storage.
+     * @returns {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: ?string, video: ?string}}
+     * @throws {Error} If the JSON cannot be parsed or does not match expected structure.
+     */
+    getMedia(local_storage_data) {
+        try {
+            const parsed_data = JSON.parse(local_storage_data);
+            return parsed_data.data;
+        } catch (error) {
+            console.error(`The application has failed to parse the data.\nError: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
+
+    /**
      * Initializing the component's state based on data from localStorage and sets up tracking.
      * 
      * - Retrieves the `media` object from localStorage.

@@ -39,20 +39,19 @@ Ensure you have the following installed on your system:
 2. Click the "Download" button to retrieve the media.
 
 ## Commit History (Latest Major Updates)
-- **[UPDATE 3.6.102]** Uniform URL handling standardized across versions.
-- **[UPDATE 3.6.98]** File download logic streamlined.
-- **[UPDATE 3.6.96]** Dynamic title height adjustment, rendering logic improved.
-- **[UPDATE 3.6.75]** Dedicated layout redesigns for mobile, tablet, and desktop.
-- **[UPDATE 3.6.66]** Fine-grained route control and redirects added for media content paths.
-- **[UPDATE 3.6.50]** Modular rendering of media cards, YouTube downloaders, search headers.
-- **[UPDATE 3.6.43]** Trend component built with localStorage support.
-- **[UPDATE 3.6.32]** Enhanced asset caching & stylesheet splitting for performance.
-- **[UPDATE 3.5.1]** Changing from WSGI to ASGI for better performance.
-- **[UPDATE 3.4.124]** Parsing and sanitizing URLs, extracting identifiers.
-- **[UPDATE 3.4.107]** Input sanitization, CSP headers, and rate-limiting were progressively added.
-- **[UPDATE 3.4.104]** Metadata scraping with `youtube-dl`.
-- **[UPDATE 3.4.100]** Handling related content by author/channel
-- **[UPDATE 3.4.91]** Media platform validation and response control.
+- **[UPDATE 3.7.129]** Rendered YouTube Downloader Component: to reflect latest media interaction logic.
+- **[UPDATE 3.7.128]** Dynamic FontAwesome Icons are used to represent media types, improving UX.
+- **[UPDATE 3.7.127]** Download Button Logic: Button display now dynamically adjusts based on route and media type.
+- **[UPDATE 3.7.126]** Media Route Generation: Route URLs are dynamically built based on media types and server metadata responses.
+- **[UPDATE 3.7.125]** URL Sanitization: Prevents injection and unauthorized access by escaping HTML characters and validating domain origins.
+- **[UPDATE 3.7.124]** Domain Whitelist Checks: Enforces allowed YouTube domains for content extraction.
+- **[UPDATE 3.7.123]** YouTube Identifier Parsing: Accurate extraction of media identifiers from input uniform resource locators.
+- **[UPDATE 3.7.117]** Response Validation & Error Feedback: Ensures front-end stability with clear validation checks.
+- **[UPDATE 3.7.116]** YouTube Metadata Retrieval via API: GET requests fetch metadata dynamically, enabling pre-download previews.
+- **[UPDATE 3.7.108]** Form Submission Rework: Forms trigger real-time metadata extraction, enhancing interaction flow.
+- **[UPDATE 3.7.87]** Route-Based Media Source Generation: Media URLs are constructed from route paths and metadata.
+- **[UPDATE 3.7.86]** Media Download Request Handling: Backend now supports direct POST requests for starting downloads.
+- **[UPDATE 3.7.118]** `localStorage` Cleanup: Conditional cleanup tied to HTTP responses to avoid data corruption.
 
 ## Contributing
 Contributions, feedback, and testing are welcome! Please open a pull request or issue for any modifications. The main branch is reserved for production; development should be done in separate branches.

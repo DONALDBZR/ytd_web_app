@@ -229,39 +229,39 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Extracting the identifier of a specific YouTube content.
-     * @param {string} platform The platform to be searched on.
-     * @param {string} search The search data to be searched.
-     * @returns {Promise<{status: number, identifier: string}>}
+     * Resolving and setting the YouTube media identifier in the application state.
+     * 
+     * This function first retrieves a media uniform resource locator from the backend using the provided platform, type, and identifier.  It then extracts the canonical YouTube identifier from that uniform resource locator and updates the application state with this value under `Media.YouTube.identifier`.
+     * 
+     * @param {string} platform - The media platform.
+     * @param {string} type - The media type.
+     * @param {string} identifier - The initial identifier extracted from the user-provided uniform resource locator.
+     * @returns {Promise<{status: number, identifier: string}>} The response status and the final, validated YouTube identifier.
+     * @throws {Error} If an error occurs during the fetch or extraction process.
      */
-    async setMediaYouTubeIdentifier(platform, search) {
-        const response = await this.setMediaYouTubeUniformResourceLocator(platform, search);
-        const identifier = (response.uniform_resource_locator.includes("youtube")) ? response.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "").replace(/\?.*/, "") : response.uniform_resource_locator.replace("https://youtu.be/", "").replace(/\?.*/, "");
-        if (response.uniform_resource_locator.includes("youtube")) {
+    async setMediaYouTubeIdentifier(platform, type, identifier) {
+        try {
+            const response = await this.setMediaYouTubeUniformResourceLocator(platform, type, identifier);
+            const status = response.status;
+            const new_identifier = await this.extractYouTubeIdentifier(response.uniform_resource_locator, type);
             this.setState((previous) => ({
+                ...previous,
                 Media: {
                     ...previous.Media,
                     YouTube: {
                         ...previous.Media.YouTube,
-                        identifier: response.uniform_resource_locator.replace("https://www.youtube.com/watch?v=", "").replace(/\?.*/, ""),
+                        identifier: new_identifier,
                     },
                 },
             }));
-        } else {
-            this.setState((previous) => ({
-                Media: {
-                    ...previous.Media,
-                    YouTube: {
-                        ...previous.Media.YouTube,
-                        identifier: response.uniform_resource_locator.replace("https://youtu.be/", "").replace(/\?.*/, ""),
-                    },
-                },
-            }));
+            return {
+                status: status,
+                identifier: identifier,
+            };
+        } catch (error) {
+            console.error(`An error occurred while setting the YouTube identifier.\nError: ${error.message}`);
+            throw new Error(error.message);
         }
-        return {
-            status: response.status,
-            identifier: identifier,
-        };
     }
 
     /**

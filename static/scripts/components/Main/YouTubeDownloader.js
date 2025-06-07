@@ -342,6 +342,29 @@ class YouTubeDownloader extends Component {
     }
 
     /**
+     * Rendering a download button based on the media file type and current route.
+     * 
+     * - Determines whether the file is an Audio or Video resource from the path.
+     * - If the file is Audio and the current route is a Shorts uniform resource locator, the button is not rendered.
+     * - Otherwise, returns a styled download button with an appropriate icon.
+     * @param {string} file_path - The full path to the downloadable media file.
+     * @returns {React.JSX.Element | void} A JSX element representing the button, or nothing if suppressed.
+     */
+    renderButton(file_path) {
+        const type = (file_path.includes("/Audio/")) ? "Audio" : "Video";
+        if (window.location.pathname.includes("/Shorts/") && type == "Audio") {
+            return;
+        }
+        return (
+            <div className="button">
+                <button name="file_downloader" value={file_path} onClick={this.getFile.bind(this)}>
+                    {this.renderDownloadIcon(type)}
+                </button>
+            </div>
+        );
+    }
+
+    /**
      * Rendering the component for the YouTube downloader.
      * @returns {React.JSX.Element}
      */
@@ -371,6 +394,8 @@ class YouTubeDownloader extends Component {
                                 </div>
                             </div>
                             <div id="buttons">
+                                {this.renderButton(this.state.File.audio)}
+                                {this.renderButton(this.state.File.video)}
                                 <div class="button">
                                     <button name="file_downloader" value={this.state.File.audio} onClick={this.getFile.bind(this)}>
                                         <i class="fa-solid fa-music"></i>

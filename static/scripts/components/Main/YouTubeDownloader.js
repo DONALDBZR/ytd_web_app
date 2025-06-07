@@ -115,13 +115,23 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Checking the video status from the server.
-     * @param {string} identifier The identifier of the video.
-     * @returns {Promise<number>}
+     * Sending a request to check the availability of a video file on the server.
+     * 
+     * - Determines the appropriate video path based on the current uniform resource locator structure (Shorts or regular).
+     * - Performs a fetch request to that path.
+     * - Returns the HTTP status code to indicate the video's availability.
+     * @param {string} identifier - The unique identifier of the video.
+     * @returns {Promise<number>} A promise that resolves to the HTTP status code of the video resource.
      */
     async checkVideoStatus(identifier) {
-        const response = await fetch(`/Public/Video/${identifier}.mp4`);
-        return response.status;
+        const query = (window.location.pathname.includes("/Shorts/")) ? `/Public/Video/Shorts/${identifier}.mp4` : `/Public/Video/${identifier}.mp4`;
+        try {
+            const response = await fetch(query);
+            return response.status;
+        } catch (error) {
+            console.error(`There is an error while retrieving the video status.\nError: ${error.message}`);
+            return 500;
+        }
     }
 
     /**

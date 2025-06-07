@@ -365,6 +365,19 @@ class YouTubeDownloader extends Component {
     }
 
     /**
+     * Returning a Font Awesome icon element based on the type of the media file.
+     * 
+     * - For `"Audio"` type, a music icon is rendered.
+     * - For `"Video"` type, a video icon is rendered.
+     * @param {string} type - The type of the media file.
+     * @returns {React.JSX.Element} A JSX `<i>` element with the appropriate Font Awesome classes.
+     */
+    renderDownloadIcon(type) {
+        const class_name = (type === "Audio") ? "fa-solid fa-music" : "fa-solid fa-video";
+        return <i className={class_name}></i>;
+    }
+
+    /**
      * Rendering the component for the YouTube downloader.
      * @returns {React.JSX.Element}
      */

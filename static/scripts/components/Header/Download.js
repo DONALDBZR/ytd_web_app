@@ -267,6 +267,23 @@ class HeaderDownload extends Component {
     }
 
     /**
+     * Sanitizing a string by escaping special HTML characters.
+     * 
+     * This function replaces the following characters with their HTML entity equivalents:
+     * - `&` → `&amp;`
+     * - `<` → `&lt;`
+     * - `>` → `&gt;`
+     * - `"` → `&quot;`
+     * - `'` → `&#039;`
+     * - `/` → `&#x2F;`
+     * @param {string} data The input string to be sanitized.
+     * @returns {string}
+     */
+    sanitize(data) {
+        return data.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("/", "&#x2F;");
+    }
+
+    /**
      * Extracting the YouTube identifier from a parsed uniform resource locator based on the media type.
      * 
      * Supports various YouTube uniform resource locator formats, including Shorts, Shortened and Standard.

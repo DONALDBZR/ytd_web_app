@@ -301,21 +301,6 @@ class HeaderSearch extends Component {
     }
 
     /**
-     * Clearing specific `localStorage` entries if the HTTP status indicates a successful response.
-     * 
-     * This function removes the `media` and `related_content` keys from `localStorage` only if the provided status is exactly 200.  If the status differs, no action is taken.
-     * 
-     * @param {number} status - The HTTP status code returned from the server.
-     * @returns {void}
-     */
-    clearLocalStorage(status) {
-        if (status == 200) {
-            localStorage.removeItem("media");
-            localStorage.removeItem("related_content");
-        }
-    }
-
-    /**
      * Fetching and setting the sanitized YouTube media uniform resource locator in the application state.
      * 
      * This function performs a backend request to fetch media information using the provided platform, type, and identifier.  If the response is successful, it sanitizes the returned uniform resource locator, clears any related cached media from `localStorage`, and updates the application state.

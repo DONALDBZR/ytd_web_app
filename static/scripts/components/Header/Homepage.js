@@ -546,6 +546,8 @@ class HeaderHomepage extends Component {
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay, button) {
+        const loading_icon = document.querySelector("#loading");
+        loading_icon.style.display = "flex";
         this.tracker.sendEvent("color_scheme_updated", {
             color_scheme: color_scheme,
         })

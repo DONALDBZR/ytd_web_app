@@ -108,7 +108,7 @@ class HeaderHomepage extends Component {
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.Header_Utilities.getIdentifier(uniform_resource_locator, type);
             this.Header_Utilities.handleSubmitIdentifierExists(identifier);
-            this.searchMediaMetadata(platform, type, identifier, 200);
+            this.Header_Utilities.searchMediaMetadata(platform, type, identifier, 200, this.tracker);
         } catch (error) {
             console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);
         }

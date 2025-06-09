@@ -102,14 +102,13 @@ class HeaderSearch extends Component {
         event.preventDefault();
         const loading_icon = document.querySelector("main #loading");
         loading_icon.style.display = "flex";
-        loading_icon.style.height = "-webkit-fill-available";
         try {
             const uniform_resource_locator = new URL(this.state.Media.search);
             const platform = this.Header_Utilities.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.Header_Utilities.getIdentifier(uniform_resource_locator, type);
             this.Header_Utilities.handleSubmitIdentifierExists(identifier);
-            this.searchMediaMetadata(platform, type, identifier, 200);
+            this.Header_Utilities.searchMediaMetadata(platform, type, identifier, 200, this.tracker);
         } catch (error) {
             console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);
         }

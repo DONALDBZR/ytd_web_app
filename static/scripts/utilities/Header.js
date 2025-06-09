@@ -473,7 +473,7 @@ class Header {
      * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
      * @returns {Promise<void>}
      */
-    async updateColorScheme(color_scheme, delay, button) {
+    async updateColorScheme(color_scheme, delay, button, tracker) {
         const loading_icon = document.querySelector("#loading");
         loading_icon.style.display = "flex";
         try {
@@ -510,6 +510,18 @@ class Header {
         } catch (error) {
             console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);
         }
+    }
+
+    /**
+     * Toggling the color scheme between light and dark modes based on the current value, and applies the new scheme using the `updateColorScheme` method.
+     * @param {MouseEvent} event - The mouse event triggered by user interaction.  Expects the event target's parent element to contain a `value` indicating the current color scheme.
+     * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
+     * @returns {void}
+     */
+    setColorScheme(event, tracker) {
+        event.preventDefault();
+        const color_scheme = (String(event.target.parentElement.value.toLowerCase()) == "light") ? "dark" : "light";
+        this.updateColorScheme(color_scheme, 200, event.target.parentElement, tracker);
     }
 }
 

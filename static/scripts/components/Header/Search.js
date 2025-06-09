@@ -129,7 +129,7 @@ class HeaderSearch extends Component {
                         <a href="/">Extractio</a>
                     </div>
                     <div>
-                        <form method="GET" onSubmit={this.handleSubmit.bind(this)}>
+                        <form method="GET" onSubmit={(event) => this.Header_Utilities.handleSubmit(event, this.tracker)}>
                             <button class="active">
                                 <i class="fa fa-search"></i>
                             </button>

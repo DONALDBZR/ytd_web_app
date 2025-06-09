@@ -464,6 +464,29 @@ class Header {
         loading_icon.style.display = "none";
         console.info(`Route: PUT /Session/\nStatus: ${status}`);
     }
+
+    /**
+     * Updating the application's color scheme by sending a tracking event, updating the user session, and handling the server response.  If any step fails, the page reloads after the specified delay.
+     * @param {string} color_scheme - The desired color scheme to apply.
+     * @param {number} delay - The time to wait before reloading the page in milliseconds, if needed.
+     * @param {HTMLButtonElement} button - The button that triggers the event.
+     * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
+     * @returns {Promise<void>}
+     */
+    async updateColorScheme(color_scheme, delay, button) {
+        const loading_icon = document.querySelector("#loading");
+        loading_icon.style.display = "flex";
+        try {
+            await tracker.sendEvent("color_scheme_updated", {
+                color_scheme: color_scheme,
+            });
+            const status = await this.updateSession(color_scheme);
+            await this.manageResponse(status, color_scheme, button, loading_icon);
+        } catch (error) {
+            console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
+            setTimeout(() => window.location.reload(), delay);
+        }
+    }
 }
 
 export default Header;

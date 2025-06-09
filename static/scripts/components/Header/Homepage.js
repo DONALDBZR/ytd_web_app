@@ -535,7 +535,7 @@ class HeaderHomepage extends Component {
     setColorScheme(event) {
         event.preventDefault();
         const color_scheme = (String(event.target.parentElement.value.toLowerCase()) == "light") ? "dark" : "light";
-        this.updateColorScheme(color_scheme, 200);
+        this.updateColorScheme(color_scheme, 200, event.target.parentElement);
     }
 
     /**

@@ -87,29 +87,6 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Handling the form submission event to extract metadata from a media URL.
-     * 
-     * This function prevents the default form submission behavior, displays a loading icon, parses the user-provided media URL to determine the platform, media type (video or shorts), and identifier, and then initiates metadata fetching via `searchMediaMetadata`.
-     * @param {SubmitEvent} event An event which takes place in the DOM.
-     * @returns {void}
-     */
-    handleSubmit(event) {
-        event.preventDefault();
-        const loading_icon = document.querySelector("main #loading");
-        loading_icon.style.display = "flex";
-        try {
-            const uniform_resource_locator = new URL(this.state.Media.search);
-            const platform = this.Header_Utilities.getPlatform(uniform_resource_locator);
-            const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
-            const identifier = this.Header_Utilities.getIdentifier(uniform_resource_locator, type);
-            this.Header_Utilities.handleSubmitIdentifierExists(identifier);
-            this.Header_Utilities.searchMediaMetadata(platform, type, identifier, 200, this.tracker);
-        } catch (error) {
-            console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);
-        }
-    }
-
-    /**
      * Handling the change of the data form the search form of the
      * User-Interface of Extractio.
      * @param {InputEvent} event An event which takes place in the DOM.

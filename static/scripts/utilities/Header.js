@@ -487,6 +487,30 @@ class Header {
             setTimeout(() => window.location.reload(), delay);
         }
     }
+
+    /**
+     * Handling the form submission event to extract metadata from a media URL.
+     * 
+     * This function prevents the default form submission behavior, displays a loading icon, parses the user-provided media URL to determine the platform, media type (video or shorts), and identifier, and then initiates metadata fetching via `searchMediaMetadata`.
+     * @param {SubmitEvent} event - An event which takes place in the DOM.
+     * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
+     * @returns {void}
+     */
+    handleSubmit(event, tracker) {
+        event.preventDefault();
+        const loading_icon = document.querySelector("main #loading");
+        loading_icon.style.display = "flex";
+        try {
+            const uniform_resource_locator = new URL(this.state.Media.search);
+            const platform = this.getPlatform(uniform_resource_locator);
+            const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
+            const identifier = this.getIdentifier(uniform_resource_locator, type);
+            this.handleSubmitIdentifierExists(identifier);
+            this.searchMediaMetadata(platform, type, identifier, 200, tracker);
+        } catch (error) {
+            console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);
+        }
+    }
 }
 
 export default Header;

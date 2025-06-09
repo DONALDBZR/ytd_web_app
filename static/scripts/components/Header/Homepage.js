@@ -539,29 +539,20 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Refreshing the page while updating the color scheme.
-     * @param {string} color_scheme The color scheme of the application.
-     * @param {number} delay The delay in terms of milliseconds
+     * Updating the application's color scheme by sending a tracking event, updating the user session, and handling the server response.  If any step fails, the page reloads after the specified delay.
+     * @param {string} color_scheme - The desired color scheme to apply.
+     * @param {number} delay - The time to wait before reloading the page in milliseconds, if needed.
      * @returns {void}
      */
     updateColorScheme(color_scheme, delay) {
         this.tracker.sendEvent("color_scheme_updated", {
             color_scheme: color_scheme,
         })
-        .then(() => {
-            return this.updateSession(color_scheme);
-        })
-        .then((status) => {
-            console.log(`Request: PUT /Session\nStatus: ${status}`);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
-        })
+        .then(() => this.updateSession(color_scheme))
+        .then((status) => this.manageResponse(status, delay))
         .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
+            console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
+            setTimeout(() => window.location.reload(), delay);
         });
     }
 

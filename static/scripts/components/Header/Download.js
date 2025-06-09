@@ -519,15 +519,14 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Changing the color scheme according to the user's taste.
-     * @param {MouseEvent} event An event which takes place in the DOM.
+     * Toggling the color scheme between light and dark modes based on the current value, and applies the new scheme using the `updateColorScheme` method.
+     * @param {MouseEvent} event - The mouse event triggered by user interaction.  Expects the event target's parent element to contain a `value` indicating the current color scheme.
      * @returns {void}
      */
     setColorScheme(event) {
-        const delay = 200;
-        const color_scheme = (String(event.target.parentElement.parentElement.value) == "light") ? "dark" : "light";
         event.preventDefault();
-        this.updateColorScheme(color_scheme, delay);
+        const color_scheme = (String(event.target.parentElement.value.toLowerCase()) == "light") ? "dark" : "light";
+        this.updateColorScheme(color_scheme, 200, event.target.parentElement);
     }
 
     /**

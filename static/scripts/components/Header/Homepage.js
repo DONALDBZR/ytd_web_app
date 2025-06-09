@@ -571,12 +571,8 @@ class HeaderHomepage extends Component {
      * @returns {Promise<number>}
      */
     async updateSession(color_scheme) {
-        const allowed_color_schemes = ["light", "dark"];
         try {
-            if (!allowed_color_schemes.includes(color_scheme)) {
-                console.error(`The color scheme is invalid.\nStatus: 400\nColor Scheme: ${color_scheme}`);
-                throw new Error(`The color scheme is invalid.\nStatus: 400\nColor Scheme: ${color_scheme}`);
-            }
+            await this.isAllowedColorScheme(color_scheme);
             const response = await fetch("/Session/", {
                 method: "PUT",
                 body: JSON.stringify({

@@ -102,7 +102,6 @@ class HeaderHomepage extends Component {
         event.preventDefault();
         const loading_icon = document.querySelector("main #loading");
         loading_icon.style.display = "flex";
-        loading_icon.style.height = "-webkit-fill-available";
         try {
             const uniform_resource_locator = new URL(this.state.Media.search);
             const platform = this.getPlatform(uniform_resource_locator);

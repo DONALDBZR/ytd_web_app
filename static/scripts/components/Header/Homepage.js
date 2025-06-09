@@ -552,7 +552,7 @@ class HeaderHomepage extends Component {
             color_scheme: color_scheme,
         })
         .then(() => this.updateSession(color_scheme))
-        .then((status) => this.manageResponse(status, color_scheme, button))
+        .then((status) => this.manageResponse(status, color_scheme, button, loading_icon))
         .catch((error) => {
             console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
             setTimeout(() => window.location.reload(), delay);

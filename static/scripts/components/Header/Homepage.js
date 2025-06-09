@@ -50,13 +50,11 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
+     * Running the methods needed as soon as the component has been successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
         this.setData();
-        console.log("Component: Homepage.Header.HeaderHomepage\nStatus: Mount");
     }
 
     /**

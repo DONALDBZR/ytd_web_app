@@ -551,26 +551,29 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Checking the response of the server to handle it correctly.
-     * @param {string} color_scheme The color scheme of the application.
+     * Sending a PUT request to the server to update the user's session with the selected color scheme.  Validating the provided scheme before making the request.
+     * @param {string} color_scheme - The desired color scheme to set.
      * @returns {Promise<number>}
      */
     async updateSession(color_scheme) {
-        const response = await fetch("/Session/", {
-            method: "PUT",
-            body: JSON.stringify({
-                Client: {
-                    color_scheme: color_scheme,
+        try {
+            await this.isAllowedColorScheme(color_scheme);
+            const response = await fetch("/Session/", {
+                method: "PUT",
+                body: JSON.stringify({
+                    Client: {
+                        color_scheme: color_scheme,
+                    },
+                }),
+                headers: {
+                    "Content-Type": "application/json",
                 },
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        if (response.status == 202) {
-            localStorage.removeItem("session");
+            });
+            return response.status;
+        } catch (error) {
+            console.error(`The application has failed to update the session.\nError: ${error.message}`);
+            throw new Error(error.message);
         }
-        return response.status;
     }
 
     /**

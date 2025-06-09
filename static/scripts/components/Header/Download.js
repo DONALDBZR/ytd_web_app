@@ -89,6 +89,7 @@ class HeaderDownload extends Component {
             },
         }));
         this.tracker = (window.Tracker) ? window.Tracker : null;
+        console.info("The state of the application has been updated.");
     }
 
     /**

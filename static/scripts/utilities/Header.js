@@ -346,6 +346,33 @@ class Header {
     }
 
     /**
+     * Searching for the Media content and redirecting the user to the searched content.
+     * 
+     * This function builds the search uniform resource locator based on the media type, logs the search event using a tracking service, sets the route for the selected platform and media type, and finally redirects the user to the view route.  If any step fails, the page is reloaded after the delay.
+     * @param {string} platform The media platform.
+     * @param {string} type The media type.
+     * @param {string} identifier The unique identifier for the media.
+     * @param {number} delay Delay in milliseconds before redirection.
+     * @param {Tracker} tracker The tracker class which will track the user's activity on the application.
+     * @returns {Promise<void>}
+     */
+    async searchMediaMetadata(platform, type, identifier, delay) {
+        const search = (type == "Shorts") ? `https://www.youtube.com/shorts/${identifier}` : `https://www.youtube.com/watch?v=${identifier}`;
+        const route = (type == "Shorts") ? `/Search/Shorts/${identifier}` : `/Search/${identifier}`;
+        try {
+            await tracker.sendEvent("search_submitted", {
+                search_term: search,
+            });
+            const status = await this.setRoute(platform, type, identifier);
+            console.info(`Route: GET /Media/Search?platform=${platform}&type=${type}&identifier=${identifier}\nStatus: ${status}\nEvent Listener: onSubmit\nReferrer: ${window.location.href}\nView Route: ${route}\nDelay: ${delay} ms`);
+            setTimeout(() => this.redirect(route), delay);
+        } catch (error) {
+            console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
+            setTimeout(() => window.location.reload(), delay);
+        }
+    }
+
+    /**
      * Redirecting the application to the route needed.
      * @param {string} route - The route of which the application will be redirected.
      * @returns {void}

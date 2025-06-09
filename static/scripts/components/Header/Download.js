@@ -116,38 +116,6 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Searching for the Media content and redirecting the user to the searched content.
-     * 
-     * This function builds the search uniform resource locator based on the media type, logs the search event using a tracking service, sets the route for the selected platform and media type, and finally redirects the user to the view route.  If any step fails, the page is reloaded after the delay.
-     * @param {string} platform The media platform.
-     * @param {string} type The media type.
-     * @param {string} identifier The unique identifier for the media.
-     * @param {number} delay Delay in milliseconds before redirection.
-     * @returns {void}
-     */
-    searchMediaMetadata(platform, type, identifier, delay) {
-        const search = (type == "Shorts") ? `https://www.youtube.com/shorts/${identifier}` : `https://www.youtube.com/watch?v=${identifier}`;
-        this.tracker.sendEvent("search_submitted", {
-            search_term: search,
-        })
-        .then(() => {
-            return this.setRoute(platform, type, identifier);
-        })
-        .then((status) => {
-            console.log(`Request Method: GET\nRoute: /Media/Search?platform=${platform}&type=${type}&identifier=${identifier}\nStatus: ${status}\nEvent Listener: onSubmit\nView Route: ${window.location.href}\nComponent: Search.Header.HeaderDownload\nDelay: ${delay} ms`);
-            setTimeout(() => {
-                window.location.href = this.state.System.view_route;
-            }, delay);
-        })
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.reload();
-            }, delay);
-        });
-    }
-
-    /**
      * Handling the change of the data form the search form of the
      * User-Interface of Extractio.
      * @param {InputEvent} event An event which takes place in the DOM.

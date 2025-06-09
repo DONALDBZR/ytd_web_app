@@ -29,7 +29,7 @@ class Header {
 
     /**
      * Retrieving the session data for the component.
-     * @returns {?{session: {Client: {timestamp: number, color_scheme: string}}, data_loaded: boolean, view_route: string}}
+     * @returns {{session: {Client: {timestamp: number, color_scheme: string}}, data_loaded: boolean, view_route: string} | {data_loaded: boolean, view_route: string}}
      */
     setData() {
         const session = JSON.parse(localStorage.getItem("session"));
@@ -44,7 +44,10 @@ class Header {
         root.style.setProperty("--color3", color_3);
         root.style.setProperty("--color5", color_5);
         if (!data_loaded) {
-            return null;
+            return {
+                data_loaded: data_loaded,
+                view_route: window.location.pathname,
+            };
         }
         return {
             session: session,

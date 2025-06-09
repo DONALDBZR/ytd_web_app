@@ -211,6 +211,32 @@ class Header {
             throw new Error(error.message);
         }
     }
+
+    /**
+     * Fetching and setting the sanitized YouTube media uniform resource locator in the application state.
+     * 
+     * This function performs a backend request to fetch media information using the provided platform, type, and identifier.  If the response is successful, it sanitizes the returned uniform resource locator, clears any related cached media from `localStorage`, and updates the application state.
+     * 
+     * @param {string} platform - The media platform.
+     * @param {string} type - The media type.
+     * @param {string} identifier - The media identifier.
+     * @returns {Promise<{status: number, uniform_resource_locator: string}>} The HTTP status and sanitized uniform resource locator.
+     * @throws {Error} If the uniform resource locator processing or state update fails.
+     */
+    async setMediaYouTubeUniformResourceLocator(platform, type, identifier) {
+        const response = await this.getSearchMedia(platform, type, identifier);
+        try {
+            this.clearLocalStorage(response.status);
+            const uniform_resource_locator = this.sanitizeUniformResourceLocator(decodeURIComponent(response.data.uniform_resource_locator));
+            return {
+                status: response.status,
+                uniform_resource_locator: uniform_resource_locator,
+            };
+        } catch (error) {
+            console.error(`Failed to set the uniform resource locator.\nError: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
 }
 
 export default Header;

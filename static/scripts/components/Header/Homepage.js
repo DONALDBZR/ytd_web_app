@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ColorScheme from "./ColorScheme";
-import HeaderUtilities from "../../utilities/Header";
+import HeaderUtilities from "../utilities/Header";
 
 
 /**

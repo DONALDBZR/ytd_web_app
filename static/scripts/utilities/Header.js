@@ -420,6 +420,50 @@ class Header {
             throw new Error(error.message);
         }
     }
+
+    /**
+     * Handling the server response after attempting to update the session.
+     * 
+     * - Throws an error if the response status is not 202 or session data is invalid.
+     * - On success:
+     *   - Updates the local session data with a new timestamp and selected color scheme.
+     *   - Applies new CSS custom properties to reflect the selected theme.
+     *   - Updates the icon inside the triggering button to reflect the theme state.
+     *   - Hides the loading icon once processing is complete.
+     * @param {number} status - The HTTP response status code from the server.
+     * @param {string} color_scheme - The color scheme to apply.
+     * @param {HTMLButtonElement} button - The button that triggered the update, its icon and value are updated.
+     * @param {HTMLDivElement} loading_icon - The loading indicator element to hide after completion.
+     * @returns {Promise<void>} Resolves when the session data, visual theme, and UI state are successfully updated.
+     * @throws {Error} If the status is not 202, session data is invalid, or the icon is missing from the button.
+     */
+    async manageResponse(status, color_scheme, button, loading_icon) {
+        if (status !== 202) {
+            throw new Error(`Status: ${status}\nError: There is an issue with the application's API and the session cannot be updated.`);
+        }
+        const session = JSON.parse(localStorage.getItem("session"));
+        if (!session || !session.Client) {
+            throw new Error("Invalid session structure in localStorage.");
+        }
+        session.Client.timestamp = Date.now() / 1000;
+        session.Client.color_scheme = color_scheme;
+        localStorage.setItem("session", JSON.stringify(session));
+        const root = document.querySelector(":root");
+        const icon = button.querySelector("i");
+        const color_1 = (color_scheme == "light") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
+        const color_2 = (color_scheme == "light") ? "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))" : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
+        const color_5 = (color_scheme == "light") ? "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))" : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))";
+        root.style.setProperty("--color1", color_1);
+        root.style.setProperty("--color2", color_2);
+        root.style.setProperty("--color5", color_5);
+        button.value = color_scheme;
+        if (!icon) {
+            throw new Error("The icon is not present in the DOM.");
+        }
+        icon.className = (color_scheme == "light") ? "fa-solid fa-toggle-off" : "fa-solid fa-toggle-on";
+        loading_icon.style.display = "none";
+        console.info(`Route: PUT /Session/\nStatus: ${status}`);
+    }
 }
 
 export default Header;

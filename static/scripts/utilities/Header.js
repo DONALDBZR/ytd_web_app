@@ -52,6 +52,27 @@ class Header {
             view_route: window.location.pathname,
         };
     }
+
+    /**
+     * Retrieving the identifier of the content based on the type of the content and from the parsed uniform resource locator.
+     * 
+     * This function handles three types of YouTube uniform resource locators:
+     * - Shorts uniform resource locators
+     * - Shortened uniform resource locators
+     * - Standard video uniform resource locators with query parameters
+     * @param {URL} uniform_resource_locator A parsed URL object representing the media link.
+     * @param {string} type The media type.
+     * @returns {string|null}
+     */
+    getIdentifier(uniform_resource_locator, type) {
+        if (type == "Shorts") {
+            return uniform_resource_locator.pathname.replaceAll("/shorts/", "");
+        }
+        if (uniform_resource_locator.hostname == "youtu.be") {
+            return uniform_resource_locator.pathname.slice(1);
+        }
+        return uniform_resource_locator.searchParams.get("v");
+    }
 }
 
 export default Header;

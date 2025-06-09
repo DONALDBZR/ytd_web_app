@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ColorScheme from "./ColorScheme";
+import HeaderUtilities from "../../utilities/Header";
 
 
 /**
@@ -42,22 +43,11 @@ class HeaderSearch extends Component {
          * @type {Tracker}
          */
         this.tracker = null;
-    }
-
-    /**
-     * * Sanitizing a string by escaping special HTML characters.
-     * * This function replaces the following characters with their HTML entity equivalents:
-     * - `&` → `&amp;`
-     * - `<` → `&lt;`
-     * - `>` → `&gt;`
-     * - `"` → `&quot;`
-     * - `'` → `&#039;`
-     * - `/` → `&#x2F;`
-     * @param {string} data The input string to be sanitized.
-     * @returns {string}
-     */
-    sanitize(data) {
-        return data.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;").replaceAll("/", "&#x2F;");
+        /**
+         * The utility class of the Header component.
+         * @type {HeaderUtilities}
+         */
+        this.Header_Utilities = new HeaderUtilities();
     }
 
     /**
@@ -88,27 +78,17 @@ class HeaderSearch extends Component {
      * @returns {void}
      */
     setData() {
-        const session = JSON.parse(localStorage.getItem("session"));
-        const data_loaded = (session != null && window.Tracker);
-        const root = document.querySelector(":root");
-        const color_1 = (session != null) ? ((session.Client.color_scheme == "light") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))") : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
-        const color_2 = (session != null) ? ((session.Client.color_scheme == "dark") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))") : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
-        const color_3 = "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
-        const color_5 = (session != null) ? ((session.Client.color_scheme == "light") ? "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))" : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))") : "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))";
+        const response = this.Header_Utilities.setData();
         this.setState((previous) => ({
             ...previous,
-            Session: (data_loaded) ? session : this.state.Session,
+            Session: (response.data_loaded) ? response.session : this.state.Session,
             System: {
                 ...previous.System,
-                view_route: window.location.pathname,
-                data_loaded: data_loaded,
+                data_loaded: response.data_loaded,
+                view_route: (response.data_loaded) ? response.view_route : "/",
             },
         }));
         this.tracker = (window.Tracker) ? window.Tracker : null;
-        root.style.setProperty("--color1", color_1);
-        root.style.setProperty("--color2", color_2);
-        root.style.setProperty("--color3", color_3);
-        root.style.setProperty("--color5", color_5);
     }
 
     /**
@@ -124,27 +104,6 @@ class HeaderSearch extends Component {
             return;
         }
         throw new Error("The uniform resource locator is invalid as the identifier cannot be extracted.");
-    }
-
-    /**
-     * Retrieving the identifier of the content based on the type of the content and from the parsed uniform resource locator.
-     * 
-     * This function handles three types of YouTube uniform resource locators:
-     * - Shorts uniform resource locators
-     * - Shortened uniform resource locators
-     * - Standard video uniform resource locators with query parameters
-     * @param {URL} uniform_resource_locator A parsed URL object representing the media link.
-     * @param {string} type The media type.
-     * @returns {?string}
-     */
-    getIdentifier(uniform_resource_locator, type) {
-        if (type == "Shorts") {
-            return uniform_resource_locator.pathname.replaceAll("/shorts/", "");
-        }
-        if (uniform_resource_locator.hostname == "youtu.be") {
-            return uniform_resource_locator.pathname.slice(1);
-        }
-        return uniform_resource_locator.searchParams.get("v");
     }
 
     /**
@@ -179,7 +138,7 @@ class HeaderSearch extends Component {
             const uniform_resource_locator = new URL(this.state.Media.search);
             const platform = this.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
-            const identifier = this.getIdentifier(uniform_resource_locator, type);
+            const identifier = this.Header_Utilities.getIdentifier(uniform_resource_locator, type);
             this.handleSubmitIdentifierExists(identifier);
             this.searchMediaMetadata(platform, type, identifier, 200);
         } catch (error) {
@@ -313,7 +272,7 @@ class HeaderSearch extends Component {
             this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
             const identifier = this.getYouTubeIdentifier(parsed_uniform_resource_locator, type);
             this.isIdentifierExtracted(identifier);
-            return String(this.sanitize(identifier));
+            return String(this.Header_Utilities.sanitize(identifier));
         } catch (error) {
             console.error(`There is an error while extracting the YouTube identifier.\nError: ${error.message}`);
             throw new Error(error.message);

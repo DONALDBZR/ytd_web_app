@@ -92,21 +92,6 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Validating the presence of a media identifier extracted from a URL.
-     * 
-     * This function checks if the given identifier exists.  If it does not, it throws an error indicating that the media URL is invalid due to a missing identifier.
-     * @param {string|null|undefined} identifier The media identifier extracted from the URL.
-     * @returns {void}
-     * @throws {Error} If the identifier is null, undefined, or an empty string.
-     */
-    handleSubmitIdentifierExists(identifier) {
-        if (identifier) {
-            return;
-        }
-        throw new Error("The uniform resource locator is invalid as the identifier cannot be extracted.");
-    }
-
-    /**
      * Handling the form submission event to extract metadata from a media URL.
      * 
      * This function prevents the default form submission behavior, displays a loading icon, parses the user-provided media URL to determine the platform, media type (video or shorts), and identifier, and then initiates metadata fetching via `searchMediaMetadata`.
@@ -123,7 +108,7 @@ class HeaderDownload extends Component {
             const platform = this.Header_Utilities.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.Header_Utilities.getIdentifier(uniform_resource_locator, type);
-            this.handleSubmitIdentifierExists(identifier);
+            this.Header_Utilities.handleSubmitIdentifierExists(identifier);
             this.searchMediaMetadata(platform, type, identifier, 200);
         } catch (error) {
             console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);

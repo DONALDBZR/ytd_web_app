@@ -89,6 +89,21 @@ class Header {
         }
         throw new Error("The platform is not supported by the application.");
     }
+
+    /**
+     * Validating the presence of a media identifier extracted from a URL.
+     * 
+     * This function checks if the given identifier exists.  If it does not, it throws an error indicating that the media URL is invalid due to a missing identifier.
+     * @param {string|null|undefined} identifier The media identifier extracted from the URL.
+     * @returns {void}
+     * @throws {Error} If the identifier is null, undefined, or an empty string.
+     */
+    handleSubmitIdentifierExists(identifier) {
+        if (identifier) {
+            return;
+        }
+        throw new Error("The uniform resource locator is invalid as the identifier cannot be extracted.");
+    }
 }
 
 export default Header;

@@ -72,7 +72,7 @@ class ColorScheme extends Component {
 
     /**
      * Setting the data for the SVG SVG Element.
-     * @param {SVGSVGElement} svg
+     * @param {SVGSVGElement} svg - The Element.
      * @returns {void}
      */
     setSvgSvgElement(svg) {
@@ -82,6 +82,7 @@ class ColorScheme extends Component {
         };
         svg.setAttribute("class", lookup[this.state.Session.Client.color_scheme]);
         svg.setAttribute("data-icon", (this.state.Session.Client.color_scheme == "dark") ? "toggle-on" : "toggle-off");
+        console.info("Component: ColorScheme\nStatus: Updated");
     }
 
     /**

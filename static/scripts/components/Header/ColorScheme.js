@@ -90,9 +90,13 @@ class ColorScheme extends Component {
      */
     setSvg() {
         const dom_element = document.querySelector("header nav div div button").children[0];
-        if (typeof dom_element != null) {
-            (String(dom_element).includes("HTMLElement")) ? ((this.state.Session.Client.color_scheme == "dark") ? dom_element.setAttribute("class", "fa-solid fa-toggle-on") : dom_element.setAttribute("class", "fa-solid fa-toggle-off")) : this.setSvgSvgElement(dom_element);
+        if (typeof dom_element == null) {
+            return;
         }
+        if (!String(dom_element).includes("HTMLElement")) {
+            this.setSvgSvgElement(dom_element);
+        }
+        (this.state.Session.Client.color_scheme == "dark") ? dom_element.setAttribute("class", "fa-solid fa-toggle-on") : dom_element.setAttribute("class", "fa-solid fa-toggle-off");
     }
 
     /**

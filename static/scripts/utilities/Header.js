@@ -276,6 +276,28 @@ class Header {
         }
         throw new Error("The identifier could not be extracted or is invalid.");
     }
+
+    /**
+     * Extracting the YouTube video or media identifier from a given uniform resource locator.
+     * 
+     * This method parses the input URL, validates its domain against a list of disallowed domains, and retrieves the YouTube identifier based on the specified media type.
+     * @param {string} uniform_resource_locator - The full YouTube uniform resource locator.
+    * @param {string} type - The media type used to determine how the ID is extracted.
+    * @returns {Promise<string>} - A promise that resolves to the sanitized YouTube identifier string.
+    * @throws {Error} Will throw an error if the URL is invalid, belongs to a disallowed domain, or the identifier cannot be extracted.
+     */
+    async extractYouTubeIdentifier(uniform_resource_locator, type) {
+        try {
+            const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
+            this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
+            const identifier = this.getYouTubeIdentifier(parsed_uniform_resource_locator, type);
+            this.isIdentifierExtracted(identifier);
+            return String(this.sanitize(identifier));
+        } catch (error) {
+            console.error(`Error extracting YouTube identifier.\nError: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
 }
 
 export default Header;

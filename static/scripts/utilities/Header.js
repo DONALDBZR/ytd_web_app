@@ -344,6 +344,15 @@ class Header {
             throw new Error(error.message);
         }
     }
+
+    /**
+     * Redirecting the application to the route needed.
+     * @param {string} route - The route of which the application will be redirected.
+     * @returns {void}
+     */
+    redirect(route) {
+        window.location.href = route;
+    }
 }
 
 export default Header;

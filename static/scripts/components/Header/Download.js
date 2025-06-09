@@ -191,42 +191,6 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Resolving and setting the YouTube media identifier in the application state.
-     * 
-     * This function first retrieves a media uniform resource locator from the backend using the provided platform, type, and identifier.  It then extracts the canonical YouTube identifier from that uniform resource locator and updates the application state with this value under `Media.YouTube.identifier`.
-     * 
-     * @param {string} platform - The media platform.
-     * @param {string} type - The media type.
-     * @param {string} identifier - The initial identifier extracted from the user-provided uniform resource locator.
-     * @returns {Promise<{status: number, identifier: string}>} The response status and the final, validated YouTube identifier.
-     * @throws {Error} If an error occurs during the fetch or extraction process.
-     */
-    async setMediaYouTubeIdentifier(platform, type, identifier) {
-        try {
-            const response = await this.setMediaYouTubeUniformResourceLocator(platform, type, identifier);
-            const status = response.status;
-            const new_identifier = await this.extractYouTubeIdentifier(response.uniform_resource_locator, type);
-            this.setState((previous) => ({
-                ...previous,
-                Media: {
-                    ...previous.Media,
-                    YouTube: {
-                        ...previous.Media.YouTube,
-                        identifier: new_identifier,
-                    },
-                },
-            }));
-            return {
-                status: status,
-                identifier: identifier,
-            };
-        } catch (error) {
-            console.error(`An error occurred while setting the YouTube identifier.\nError: ${error.message}`);
-            throw new Error(error.message);
-        }
-    }
-
-    /**
      * Handling the change of the data form the search form of the
      * User-Interface of Extractio.
      * @param {InputEvent} event An event which takes place in the DOM.

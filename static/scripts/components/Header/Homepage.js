@@ -566,31 +566,33 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Checking the response of the server to handle it correctly.
-     * @param {string} color_scheme The color scheme of the application.
+     * Sending a PUT request to the server to update the user's session with the selected color scheme.  Validating the provided scheme before making the request.
+     * @param {string} color_scheme - The desired color scheme to set.
      * @returns {Promise<number>}
      */
     async updateSession(color_scheme) {
         const allowed_color_schemes = ["light", "dark"];
-        if (!allowed_color_schemes.includes(color_scheme)) {
-            console.error(`The color scheme is invalid.\nStatus: 400\nColor Scheme: ${color_scheme}`);
-            return 400;
-        }
-        const response = await fetch("/Session/", {
-            method: "PUT",
-            body: JSON.stringify({
-                Client: {
-                    color_scheme: color_scheme,
+        try {
+            if (!allowed_color_schemes.includes(color_scheme)) {
+                console.error(`The color scheme is invalid.\nStatus: 400\nColor Scheme: ${color_scheme}`);
+                throw new Error(`The color scheme is invalid.\nStatus: 400\nColor Scheme: ${color_scheme}`);
+            }
+            const response = await fetch("/Session/", {
+                method: "PUT",
+                body: JSON.stringify({
+                    Client: {
+                        color_scheme: color_scheme,
+                    },
+                }),
+                headers: {
+                    "Content-Type": "application/json",
                 },
-            }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        if (response.status == 202) {
-            localStorage.removeItem("session");
+            });
+            return response.status;
+        } catch (error) {
+            console.error(`The application has failed to update the session.\nError: ${error.message}`);
+            throw new Error(error.message);
         }
-        return response.status;
     }
 
     /**

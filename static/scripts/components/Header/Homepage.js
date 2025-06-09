@@ -321,24 +321,6 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Sanitizing the given uniform resource locator by ensuring it belongs to an allowed domain.
-     * @param {string} uniform_resource_locator The uniform resource locator
-     * @returns {string}
-     */
-    sanitizeUniformResourceLocator(uniform_resource_locator) {
-        const youtube_regular_expression = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/(watch\?v=|embed\/|shorts\/|)([a-zA-Z0-9_-]{11})(&.*)?$/;
-        const parsed_uniform_resource_locator = new URL(uniform_resource_locator);
-        try {
-            this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
-            this.__checkInvalidUniformResourceLocator(youtube_regular_expression, parsed_uniform_resource_locator);
-            return parsed_uniform_resource_locator.href;
-        } catch (error) {
-            console.error(`Invalid uniform resource locator!\nUniform Resource Locator: ${parsed_uniform_resource_locator}\nError: ${error.message}`);
-            throw new Error(error.message);
-        }
-    }
-
-    /**
      * Handling the change of the data form the search form of the
      * User-Interface of Extractio.
      * @param {InputEvent} event An event which takes place in the DOM.

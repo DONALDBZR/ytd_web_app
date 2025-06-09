@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ColorScheme from "./ColorScheme";
+import HeaderUtilities from "../../utilities/Header";
 
 
 /**
@@ -41,30 +42,11 @@ class HeaderHomepage extends Component {
          * @type {Tracker}
          */
         this.tracker = null;
-    }
-
-    /**
-     * * Sanitizing a string by escaping special HTML characters.
-     * * This function replaces the following characters with their HTML entity equivalents:
-     * - `&` → `&amp;`
-     * - `<` → `&lt;`
-     * - `>` → `&gt;`
-     * - `"` → `&quot;`
-     * - `'` → `&#039;`
-     * - `/` → `&#x2F;`
-     * @param {string} data The input string to be sanitized.
-     * @returns {string}
-     */
-    sanitize(data) {
-        const lookup = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;",
-            "/": "&#x2F;"
-        };
-        return data.replaceAll(/[&<>"'\/]/g, (character) => lookup[character]);
+        /**
+         * The utility class of the Header component.
+         * @type {HeaderUtilities}
+         */
+        this.Header_Utilities = new HeaderUtilities();
     }
 
     /**
@@ -320,7 +302,7 @@ class HeaderHomepage extends Component {
             this.__checkNotAllowedDomains(parsed_uniform_resource_locator);
             const identifier = this.getYouTubeIdentifier(parsed_uniform_resource_locator, type);
             this.isIdentifierExtracted(identifier);
-            return String(this.sanitize(identifier));
+            return String(this.Header_Utilities.sanitize(identifier));
         } catch (error) {
             console.error(`Error extracting YouTube identifier.\nError: ${error.message}`);
             throw new Error(error.message);

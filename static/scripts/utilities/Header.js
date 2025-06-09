@@ -356,7 +356,7 @@ class Header {
      * @param {Tracker} tracker The tracker class which will track the user's activity on the application.
      * @returns {Promise<void>}
      */
-    async searchMediaMetadata(platform, type, identifier, delay) {
+    async searchMediaMetadata(platform, type, identifier, delay, tracker) {
         const search = (type == "Shorts") ? `https://www.youtube.com/shorts/${identifier}` : `https://www.youtube.com/watch?v=${identifier}`;
         const route = (type == "Shorts") ? `/Search/Shorts/${identifier}` : `/Search/${identifier}`;
         try {

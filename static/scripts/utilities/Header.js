@@ -324,6 +324,26 @@ class Header {
             throw new Error(error.message);
         }
     }
+
+    /**
+     * Setting the application's route based on the media identifier and platform.
+     * 
+     * This function calls an internal method to resolve the media identifier for the given platform and type.  It then updates the application state with the appropriate `view_route` depending on the response status.  If the status is 200, it redirects to a search-specific route; otherwise, it retains the current location.
+     * @param {string} platform The media platform.
+     * @param {string} type The media type.
+     * @param {string} identifier The unique identifier for the media.
+     * @returns {Promise<number>} The HTTP response status from the identifier resolution request.
+     * @throws {Error} If an error occurs while resolving the media or updating the state.
+     */
+    async setRoute(platform, type, identifier) {
+        try {
+            const response = await this.setMediaYouTubeIdentifier(platform, type, identifier);
+            return response.status;
+        } catch (error) {
+            console.error(`An error occurred while setting the route!\nError: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
 }
 
 export default Header;

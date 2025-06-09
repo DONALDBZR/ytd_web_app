@@ -148,49 +148,6 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Setting the application's route based on the media identifier and platform.
-     * 
-     * This function calls an internal method to resolve the media identifier for the given platform and type.  It then updates the application state with the appropriate `view_route` depending on the response status.  If the status is 200, it redirects to a search-specific route; otherwise, it retains the current location.
-     * @param {string} platform The media platform.
-     * @param {string} type The media type.
-     * @param {string} identifier The unique identifier for the media.
-     * @returns {Promise<number>} The HTTP response status from the identifier resolution request.
-     * @throws {Error} If an error occurs while resolving the media or updating the state.
-     */
-    async setRoute(platform, type, identifier) {
-        try {
-            const response = await this.setMediaYouTubeIdentifier(platform, type, identifier);
-            this.setState((previous) => ({
-                ...previous,
-                System: {
-                    ...previous.System,
-                    view_route: this._setRoute(response, type),
-                },
-            }));
-            return response.status;
-        } catch (error) {
-            console.error(`An error occurred while setting the route!\nError: ${error.message}`);
-            throw new Error(error.message);
-        }
-    }
-
-    /**
-     * Generating a route URL based on the API response and media type.
-     * 
-     * If the response status is not `200`, the current URL is returned.  Otherwise, constructs a new route using the media type and identifier.
-     * 
-     * @param {{status: number, identifier: string}} response - The API response object containing status and YouTube identifier.
-     * @param {string} type - The media type.
-     * @returns {string} - The resulting route path or the current window location if the response is not successful.
-     */
-    _setRoute(response, type) {
-        if (response.status !== 200) {
-            return window.location.href;
-        }
-        return (type === "Shorts") ? `/Search/Shorts/${response.identifier}` : `/Search/${response.identifier}`;
-    }
-
-    /**
      * Handling the change of the data form the search form of the
      * User-Interface of Extractio.
      * @param {InputEvent} event An event which takes place in the DOM.

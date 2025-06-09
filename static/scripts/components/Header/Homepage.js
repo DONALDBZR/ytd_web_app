@@ -558,13 +558,14 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Handling the server response after attempting to update the session.  If the response status is not 202, it throws an error.  On success, it updates localStorage with the new color scheme and timestamp, then updates CSS custom properties to reflect the new theme.
-     * @param {number} status - The HTTP status code returned by the server.
-     * @param {string} color_scheme - The color scheme to apply and store in the session.
-     * @returns {Promise<void>} Resolves if session update and color application succeed.
-     * @throws {Error} If the response status is not 202 or the session structure is invalid.
+     * Handling the server response after attempting to update the session.  Throwing an error if the response status is not 202 or session data is invalid.  On success, updates localStorage with the new color scheme and timestamp, applies CSS custom properties to reflect the selected theme, and updates the button's icon and value.
+     * @param {number} status - The HTTP response status code from the server.
+     * @param {string} color_scheme - The color scheme to apply.
+     * @param {HTMLButtonElement} button - The button that triggered the update; used to reflect the current theme visually.
+     * @returns {Promise<void>} Resolves when session data and theme updates are applied successfully.
+     * @throws {Error} If the status is not 202, local session data is malformed, or the icon element is missing.
      */
-    async manageResponse(status, color_scheme) {
+    async manageResponse(status, color_scheme, button) {
         if (status !== 202) {
             throw new Error(`Status: ${status}\nError: There is an issue with the application's API and the session cannot be updated.`);
         }
@@ -576,12 +577,18 @@ class HeaderHomepage extends Component {
         session.Client.color_scheme = color_scheme;
         localStorage.setItem("session", JSON.stringify(session));
         const root = document.querySelector(":root");
+        const icon = button.querySelector("i");
         const color_1 = (color_scheme == "light") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
         const color_2 = (color_scheme == "light") ? "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))" : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
         const color_5 = (color_scheme == "light") ? "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))" : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))";
         root.style.setProperty("--color1", color_1);
         root.style.setProperty("--color2", color_2);
         root.style.setProperty("--color5", color_5);
+        button.value = color_scheme;
+        if (!icon) {
+            throw new Error("The icon is not present in the DOM.");
+        }
+        icon.className = (color_scheme == "light") ? "fa-solid fa-toggle-off" : "fa-solid fa-toggle-on";
         console.info(`Route: PUT /Session/\nStatus: ${status}`);
     }
 

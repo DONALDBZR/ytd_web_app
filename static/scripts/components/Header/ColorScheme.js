@@ -97,6 +97,7 @@ class ColorScheme extends Component {
             this.setSvgSvgElement(dom_element);
         }
         (this.state.Session.Client.color_scheme == "dark") ? dom_element.setAttribute("class", "fa-solid fa-toggle-on") : dom_element.setAttribute("class", "fa-solid fa-toggle-off");
+        console.info("Component: ColorScheme\nStatus: Updated");
     }
 
     /**

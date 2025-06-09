@@ -288,19 +288,6 @@ class HeaderSearch extends Component {
     }
 
     /**
-     * Checking domains that are not allowed.
-     * @param {URL} uniform_resource_locator The parsed uniform resource locator
-     * @returns {void}
-     */
-    __checkNotAllowedDomains(uniform_resource_locator) {
-        const allowed_domains = ["www.youtube.com", "youtu.be"];
-        if (allowed_domains.includes(uniform_resource_locator.hostname)) {
-            return;
-        }
-        throw new Error(`The domain is not allowed!\nHost Name: ${uniform_resource_locator.hostname}`);
-    }
-
-    /**
      * Fetching and setting the sanitized YouTube media uniform resource locator in the application state.
      * 
      * This function performs a backend request to fetch media information using the provided platform, type, and identifier.  If the response is successful, it sanitizes the returned uniform resource locator, clears any related cached media from `localStorage`, and updates the application state.

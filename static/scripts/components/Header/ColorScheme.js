@@ -39,16 +39,12 @@ class ColorScheme extends Component {
     }
 
     /**
-     * Updating the component as soon as there is an update in the
-     * states.
+     * Updating the component as soon as there is an update in the states.
      * @returns {void}
      */
     componentDidUpdate() {
         if (!this.state.System.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.log("Component: Homepage.Header.HeaderHomepage\nStatus: Updated");
-            }, 1000);
+            setTimeout(() => this.setData(), 1000);
         }
     }
 

@@ -180,6 +180,19 @@ class Header {
         }
         throw new Error(`The domain is not allowed!\nHost Name: ${uniform_resource_locator.hostname}`);
     }
+
+    /**
+     * Checking the uniform resource locator against the regular expression.
+     * @param {RegExp} regular_expression Regular expression
+     * @param {string} uniform_resource_locator Uniform Resource Locator
+     * @returns {void}
+     */
+    __checkInvalidUniformResourceLocator(regular_expression, uniform_resource_locator) {
+        if (regular_expression.test(uniform_resource_locator.href)) {
+            return;
+        }
+        throw new Error(`Invalid YouTube uniform resource locator format!\nUniform Resource Locator: ${uniform_resource_locator.href}`);
+    }
 }
 
 export default Header;

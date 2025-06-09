@@ -288,19 +288,6 @@ class HeaderDownload extends Component {
     }
 
     /**
-     * Checking the uniform resource locator against the regular expression.
-     * @param {RegExp} regular_expression The regular expression
-     * @param {string} uniform_resource_locator The uniform resource locator
-     * @return {void}
-     */
-    __checkInvalidUniformResourceLocator(regular_expression, uniform_resource_locator) {
-        if (regular_expression.test(uniform_resource_locator.href)) {
-            return;
-        }
-        throw new Error(`Invalid YouTube uniform resource locator format!\nUniform Resource Locator: ${uniform_resource_locator.href}`);
-    }
-
-    /**
      * Sanitizing the given uniform resource locator by ensuring that it belongs to an allowed domain.
      * @param {string} uniform_resource_locator The uniform resource locator
      * @returns {string}

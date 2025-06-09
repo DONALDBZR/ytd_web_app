@@ -231,20 +231,6 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Validating whether the provided color scheme is allowed.
-     * @param {string} color_scheme - The color scheme to validate.
-     * @returns {Promise<void>} Resolves if the color scheme is valid.
-     * @throws {Error} Throws an error with status 400 if the color scheme is invalid.
-     */
-    async isAllowedColorScheme(color_scheme) {
-        const allowed_color_schemes = ["light", "dark"];
-        if (allowed_color_schemes.includes(color_scheme)) {
-            return;
-        }
-        throw new Error(`The color scheme is invalid.\nStatus: 400\nColor Scheme: ${color_scheme}`);
-    }
-
-    /**
      * Rendering the component
      * @returns {React.JSX.Element}
      */

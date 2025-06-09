@@ -134,7 +134,7 @@ class HeaderDownload extends Component {
                             <button
                                 name="colorSchemeChanger"
                                 value={this.state.Session.Client.color_scheme}
-                                onClick={this.setColorScheme.bind(this)}
+                                onClick={(event) => this.Header_Utilities.setColorScheme(event, this.tracker)}
                             >
                                 <ColorScheme />
                             </button>

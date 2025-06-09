@@ -78,27 +78,17 @@ class HeaderHomepage extends Component {
      * @returns {void}
      */
     setData() {
-        const session = JSON.parse(localStorage.getItem("session"));
-        const data_loaded = (session != null && window.Tracker);
-        const root = document.querySelector(":root");
-        const color_1 = (data_loaded) ? ((session.Client.color_scheme == "light") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))") : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
-        const color_2 = (data_loaded) ? ((session.Client.color_scheme == "light") ? "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))" : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))") : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
-        const color_3 = "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (69 / 255)), calc(var(--percentage) * (65 / 255)))";
-        const color_5 = (data_loaded) ? ((session.Client.color_scheme == "light") ? "rgba(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)), calc(var(--percentage) / 2))" : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))") : "rgba(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)), calc(var(--percentage) / 2))";
+        const response = this.Header_Utilities.setData();
         this.setState((previous) => ({
             ...previous,
-            Session: (data_loaded) ? session : this.state.Session,
+            Session: (response.data_loaded) ? response.session : this.state.Session,
             System: {
                 ...previous.System,
-                data_loaded: data_loaded,
-                view_route: (data_loaded) ? window.location.pathname : "/",
+                data_loaded: response.data_loaded,
+                view_route: (response.data_loaded) ? response.view_route : "/",
             },
         }));
         this.tracker = (window.Tracker) ? window.Tracker : null;
-        root.style.setProperty("--color1", color_1);
-        root.style.setProperty("--color2", color_2);
-        root.style.setProperty("--color3", color_3);
-        root.style.setProperty("--color5", color_5);
     }
 
     /**

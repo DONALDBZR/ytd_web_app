@@ -104,7 +104,7 @@ class HeaderHomepage extends Component {
         loading_icon.style.display = "flex";
         try {
             const uniform_resource_locator = new URL(this.state.Media.search);
-            const platform = this.getPlatform(uniform_resource_locator);
+            const platform = this.Header_Utilities.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.Header_Utilities.getIdentifier(uniform_resource_locator, type);
             this.handleSubmitIdentifierExists(identifier);
@@ -112,22 +112,6 @@ class HeaderHomepage extends Component {
         } catch (error) {
             console.error(`There is an error while processing the uniform resource locator for searching the media content.\nError: ${error.message}`);
         }
-    }
-
-    /**
-     * Retrieving the host name which will be used as the platform for the search from the parsed uniform resource locator.
-     * 
-     * Currently, this function only supports YouTube uniform resource locators.  If the hostname does not match a known YouTube format, it throws an error.
-     * @param {URL} uniform_resource_locator The parsed uniform resource locator.
-     * @returns {string} The name of the supported platform.
-     * @throws {Error} If the URL does not belong to a supported platform.
-     */
-    getPlatform(uniform_resource_locator) {
-        const hostname = uniform_resource_locator.hostname.toLowerCase();
-        if (hostname == "youtu.be" || hostname.includes("youtube")) {
-            return "youtube";
-        }
-        throw new Error("The platform is not supported by the application.");
     }
 
     /**

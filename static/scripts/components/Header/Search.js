@@ -107,22 +107,6 @@ class HeaderSearch extends Component {
     }
 
     /**
-     * Retrieving the host name which will be used as the platform for the search from the parsed uniform resource locator.
-     * 
-     * Currently, this function only supports YouTube uniform resource locators.  If the hostname does not match a known YouTube format, it throws an error.
-     * @param {URL} uniform_resource_locator The parsed uniform resource locator.
-     * @returns {string} The name of the supported platform.
-     * @throws {Error} If the URL does not belong to a supported platform.
-     */
-    getPlatform(uniform_resource_locator) {
-        const hostname = uniform_resource_locator.hostname.toLowerCase();
-        if (hostname == "youtu.be" || hostname.includes("youtube")) {
-            return "youtube";
-        }
-        throw new Error("The platform is not supported by the application.");
-    }
-
-    /**
      * Handling the form submission event to extract metadata from a media URL.
      * 
      * This function prevents the default form submission behavior, displays a loading icon, parses the user-provided media URL to determine the platform, media type (video or shorts), and identifier, and then initiates metadata fetching via `searchMediaMetadata`.
@@ -136,7 +120,7 @@ class HeaderSearch extends Component {
         loading_icon.style.height = "-webkit-fill-available";
         try {
             const uniform_resource_locator = new URL(this.state.Media.search);
-            const platform = this.getPlatform(uniform_resource_locator);
+            const platform = this.Header_Utilities.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.Header_Utilities.getIdentifier(uniform_resource_locator, type);
             this.handleSubmitIdentifierExists(identifier);

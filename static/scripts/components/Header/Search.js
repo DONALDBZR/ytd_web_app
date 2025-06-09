@@ -61,15 +61,12 @@ class HeaderSearch extends Component {
     }
 
     /**
-     * Running the methods needed whenever the component is updated.
+     * Updating the component as soon as there is an update in the states.
      * @returns {void}
      */
     componentDidUpdate() {
         if (!this.state.System.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.info("Component: Search.Header.HeaderSearch\nStatus: Update");
-            }, 1000);
+            setTimeout(() => this.setData(), 1000);
         }
     }
 

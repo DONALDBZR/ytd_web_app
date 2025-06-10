@@ -75,7 +75,7 @@ class Trend extends Component {
         }));
         this.tracker = window.Tracker;
         loading_icon.style.display = "none";
-        console.info("Component: Trend\nStatus: Loaded");
+        console.info(`Route: ${window.location.pathname}\nComponent: Trend\nStatus: Loaded`);
     }
 
     /**

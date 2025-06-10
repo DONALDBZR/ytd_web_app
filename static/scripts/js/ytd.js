@@ -254,6 +254,7 @@ class YTD {
         const data = localStorage.getItem("media");
         if (!data) {
             setTimeout(() => this.addTitle(), 1000);
+            return;
         }
         const media = JSON.parse(data).data;
         if (this.getRequestURI().includes("/Search/")) {

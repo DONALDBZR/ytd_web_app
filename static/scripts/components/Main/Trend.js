@@ -79,48 +79,6 @@ class Trend extends Component {
     }
 
     /**
-     * Handling click events, tracking the event and opening the link in a new tab.
-     *
-     * This method prevents the default behavior of the event, extracts the URL from the clicked anchor (`<a>`) element or its parent, and sends a tracking event.  If the tracking event is successfully sent, the URL is opened in a new tab.  If an error occurs, it logs the error and refreshes the page after a delay.
-     * @param {MouseEvent} event The click event object.
-     * @returns {void}
-     * @throws {Error} If an issue occurs while sending the tracking event.
-     */
-    handleClick(event) {
-        event.preventDefault();
-        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            window.open(uniform_resource_locator, "_blank");
-        })
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
-        });
-    };
-
-    /**
-     * Decoding HTML entities in a given string.
-     * 
-     * This function takes a string that may contain HTML entities and returns the decoded version.  It uses a temporary `textarea` element to leverage the browser's parsing capabilities.
-     * @param {string} encoded_string - The string potentially containing HTML entities.
-     * @returns {string}
-     */
-    decodeHtmlEntities(encoded_string) {
-        if (typeof encoded_string !== "string") {
-            console.warn(`Component: Trend\nMessage: The data is not a string.\nData: ${encoded_string}`);
-            return encoded_string;
-        }
-        const text_area = document.createElement("textarea");
-        text_area.innerHTML = encoded_string;
-        return text_area.value;
-    }
-
-    /**
      * Rendering the media card.
      * @param {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio_file: string, video_file: string}} content
      * @return {React.JSX.Element}
@@ -128,24 +86,24 @@ class Trend extends Component {
     renderMediaCard(content) {
         const width = (window.innerWidth < 640) ? 179 : 1280;
         const height = (window.innerWidth < 640) ? 101 : 720;
-        const identifier = this.decodeHtmlEntities(content.identifier);
-        const uniform_resource_locator = this.decodeHtmlEntities(content.uniform_resource_locator);
-        const thumbnail = this.decodeHtmlEntities(content.thumbnail);
-        const title = this.decodeHtmlEntities(content.title);
-        const author_channel = this.decodeHtmlEntities(content.author_channel);
-        const author = this.decodeHtmlEntities(content.author);
-        const duration = this.decodeHtmlEntities(content.duration);
+        const identifier = this.main_utilities.decodeHtmlEntities(content.identifier);
+        const uniform_resource_locator = this.main_utilities.decodeHtmlEntities(content.uniform_resource_locator);
+        const thumbnail = this.main_utilities.decodeHtmlEntities(content.thumbnail);
+        const title = this.main_utilities.decodeHtmlEntities(content.title);
+        const author_channel = this.main_utilities.decodeHtmlEntities(content.author_channel);
+        const author = this.main_utilities.decodeHtmlEntities(content.author);
+        const duration = this.main_utilities.decodeHtmlEntities(content.duration);
         return (
             <div className="card" key={identifier}>
                 <div>
-                    <a href={uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
+                    <a href={uniform_resource_locator} target="__blank" onClick={(event) => this.main_utilities.handleClick(event)}>
                         <img src={thumbnail} loading="lazy" alt={`Thumbnail for ${title}`}  width={width} height={height} sizes="(max-width: 640px) 179px, (min-width: 641px) 1280px" />
                     </a>
                 </div>
                 <div>
                     <div>{title}</div>
                     <div>
-                        <a href={author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{author}</a>
+                        <a href={author_channel} target="__blank" onClick={(event) => this.main_utilities.handleClick(event)}>{author}</a>
                     </div>
                     <div>
                         <div>Duration:</div>
@@ -158,7 +116,7 @@ class Trend extends Component {
                         </div>
                     </div>
                     <div>
-                        <a href={`/Download/YouTube/${identifier}`} target="__blank" onClick={this.handleClick.bind(this)}>
+                        <a href={`/Download/YouTube/${identifier}`} target="__blank" onClick={(event) => this.main_utilities.handleClick(event)}>
                             <i className="fa-solid fa-download"></i>
                         </a>
                     </div>

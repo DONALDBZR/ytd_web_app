@@ -117,7 +117,10 @@ class HeaderHomepage extends Component {
                         <a href="/">Extractio</a>
                     </div>
                     <div>
-                        <form method="GET" onSubmit={(event) => this.Header_Utilities.handleSubmit(event, this.tracker)}>
+                        <form
+                            method="GET"
+                            onSubmit={(event) => this.Header_Utilities.handleSubmit(event, this.tracker, this.state.Media.search)}
+                        >
                             <button>
                                 <i class="fa fa-search"></i>
                             </button>
@@ -126,7 +129,7 @@ class HeaderHomepage extends Component {
                                 placeholder="Search..."
                                 name="search"
                                 value={this.state.Media.search}
-                                onChange={this.handleChange.bind(this)}
+                                onChange={(event) => this.handleChange(event)}
                                 required
                             />
                         </form>

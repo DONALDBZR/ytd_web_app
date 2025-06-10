@@ -37,6 +37,23 @@ class Main {
         const trend_list = event.target.parentElement;
         trend_list.style.animationPlayState = (window.innerWidth < 640) ? "running" : "unset";
     }
+
+    /**
+     * Decoding HTML entities in a given string.
+     * 
+     * This function takes a string that may contain HTML entities and returns the decoded version.  It uses a temporary `textarea` element to leverage the browser's parsing capabilities.
+     * @param {string} encoded_string - The string potentially containing HTML entities.
+     * @returns {string}
+     */
+    decodeHtmlEntities(encoded_string) {
+        if (typeof encoded_string !== "string") {
+            console.warn(`Component: Trend\nMessage: The data is not a string.\nData: ${encoded_string}`);
+            return encoded_string;
+        }
+        const text_area = document.createElement("textarea");
+        text_area.innerHTML = encoded_string;
+        return text_area.value;
+    }
 }
 
 export default Main;

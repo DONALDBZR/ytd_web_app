@@ -439,14 +439,15 @@ class Header extends Application {
      * This function prevents the default form submission behavior, displays a loading icon, parses the user-provided media URL to determine the platform, media type (video or shorts), and identifier, and then initiates metadata fetching via `searchMediaMetadata`.
      * @param {SubmitEvent} event - An event which takes place in the DOM.
      * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
+     * @param {string} search - The uniform resrouce locator of the media content.
      * @returns {void}
      */
-    handleSubmit(event, tracker) {
+    handleSubmit(event, tracker, search) {
         event.preventDefault();
         const loading_icon = document.querySelector("main #loading");
         loading_icon.style.display = "flex";
         try {
-            const uniform_resource_locator = new URL(this.state.Media.search);
+            const uniform_resource_locator = new URL(search);
             const platform = this.getPlatform(uniform_resource_locator);
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.getIdentifier(uniform_resource_locator, type);

@@ -157,46 +157,6 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Sending the request to the server to download the file
-     * needed.
-     * @param {string} file_location The location of the file.
-     * @param {string} file_name The name of the file.
-     * @returns {Promise<Blob>}
-     */
-    async downloadFileServer(file_location, file_name) {
-        try {
-            const response = await fetch("/Download/", {
-                method: "POST",
-                body: JSON.stringify({
-                    file: file_location,
-                    file_name: file_name,
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!response.ok) {
-                throw new Error(`Failed to download file: ${response.statusText}`);
-            }
-            const reader = response.body.getReader();
-            const chunks = [];
-            let done = false;
-            while (!done) {
-                const {value, done: is_done} = await reader.read();
-                done = is_done;
-                if (value) {
-                    chunks.push(value);
-                }
-            }
-            const blob = new Blob(chunks);
-            return blob;
-        } catch (error) {
-            console.error("Fetch Error: ", error);
-            throw error;
-        }
-    }
-
-    /**
      * Creating the file needed that is generated from the blob
      * retrieved from the server to be downloaded.
      * @param {Blob} data The data in the form of a blob.
@@ -214,26 +174,6 @@ class YouTubeDownloader extends Component {
         } catch (error) {
             console.error("Download Failed: ", error);
         }
-    }
-
-    /**
-     * Downloading the file retrieved from the server.
-     * @param {MouseEvent} event The on-click event.
-     * @returns {void}
-     */
-    getFile(event) {
-        const button = event.target.parentElement;
-        const file_location = button.value;
-        const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
-        const uniform_resource_locator = (file_location.includes("/Public/Audio/")) ? `/Public/Audio/${this.state.identifier}.mp3` : `/Public/Video/${this.state.identifier}.mp4`;
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            return this.downloadFileServer(file_location, file_name);
-        })
-        .then((data) => this.downloadFileClient(data, file_name))
-        .catch((error) => console.error("Download Failed: ", error));
     }
 
     /**
@@ -335,10 +275,10 @@ class YouTubeDownloader extends Component {
                     </div>
                     <div id="data">
                         <div id="title" style={{"--title-height": this.getTitleHeight(this.state.title)}}>
-                            <a href={this.state.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.title}</a>
+                            <a href={this.state.uniform_resource_locator} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{this.state.title}</a>
                         </div>
                         <div id="author">
-                            <a href={this.state.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.author}</a>
+                            <a href={this.state.author_channel} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{this.state.author}</a>
                         </div>
                         <div id="actions">
                             <div id="metrics">

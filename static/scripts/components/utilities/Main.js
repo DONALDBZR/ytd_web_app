@@ -3,12 +3,13 @@
  */
 class Main {
     /**
-     * Retrieving the Trend data from the `localStorage`.
-     * @returns {{trend: ?[{audio_file: ?string, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video_file: ?string, views: number}], data_loaded: boolean}}
+     * Retrieving trending video data from `localStorage`.
+     * @returns {{trend: ?[{audio_file: ?string, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video_file: ?string, views: number}], data_loaded: boolean}} An object containing the parsed trend data and a boolean indicating whether the data is loaded.
      */
     getTrends() {
-        const trend = (localStorage.getItem("trend") != null) ? JSON.parse(localStorage.getItem("trend")).data : null;
-        const data_loaded = (trend != null && window.Tracker);
+        const trend_data = localStorage.getItem("trend");
+        const trend = (trend_data) ? JSON.parse(trend_data).data : null;
+        const data_loaded = Boolean(trend && window.Tracker);
         return {
             trend: trend,
             data_loaded: data_loaded,

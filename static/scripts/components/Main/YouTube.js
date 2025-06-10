@@ -57,16 +57,6 @@ class YouTube extends Component {
     }
 
     /**
-     * The methods to be executed when the component has been updated.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.System.data_loaded) {
-            setTimeout(() => this.setData(), 1000);
-        }
-    }
-
-    /**
      * Setting the main state of the component with media metadata from `localStorage`.
      * 
      * This method retrieves media metadata using `main_utilities.getMedia()`.  If the data is fully loaded, it updates the component's state with the media under `Media.YouTube`, updates the system's `data_loaded` flag, initializes the `tracker`, hides the loading icon, and logs the load status to the console.
@@ -74,6 +64,12 @@ class YouTube extends Component {
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
+        if (this.state.System.data_loaded) {
+            console.info(`Route: ${window.location.pathname}\nComponent: YouTube\nStatus: Loaded`);
+            loading_icon.style.display = "none";
+            return;
+        }
+        this.getData();
         const {media, data_loaded} = this.main_utilities.getMedia();
         if (!data_loaded) {
             return;
@@ -90,8 +86,6 @@ class YouTube extends Component {
             },
         }));
         this.tracker = window.Tracker;
-        loading_icon.style.display = "none";
-        console.info(`Route: ${window.location.pathname}\nComponent: YouTube\nData Status: Loaded`);
     }
 
     /**

@@ -221,6 +221,22 @@ class Main extends Application {
             throw new Error(error.message);
         }
     }
+
+    /**
+     * Retrieving related content metadata from `localStorage`.
+     * 
+     * This method reads the `related_content` key from `localStorage`, parses it as JSON, and returns the list of related content items if available.  It also checks whether the global `window.Tracker` is available to determine if the data is fully loaded.
+     * @returns {{related_content: ?[{author_channel: string, channel: string,  duration: string, thumbnail: string, title: string, uniform_resource_locator: string}], data_loaded: boolean}} An object containing the related content array and a flag indicating readiness.
+     */
+    getRelatedContents() {
+        const data = localStorage.getItem("related_content");
+        const related_content = (typeof data == "string") ? JSON.parse(data).data : null;
+        const data_loaded = Boolean(related_content && window.Tracker);
+        return {
+            related_content: related_content,
+            data_loaded: data_loaded,
+        };
+    }
 }
 
 export default Main;

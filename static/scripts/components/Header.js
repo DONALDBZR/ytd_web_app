@@ -21,13 +21,7 @@ class Header extends Component {
      * @returns {React.JSX.Element}
      */
     render() {
-        if (window.location.pathname.includes("Search")) {
-            return <HeaderSearch />;
-        } else if (window.location.pathname.includes("Download/YouTube")) {
-            return <HeaderDownload />;
-        } else {
-            return <HeaderHomepage />;
-        }
+        (window.location.pathname == "/") ? <HeaderHomepage /> : <HeaderSearch />;
     }
 }
 

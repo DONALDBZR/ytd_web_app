@@ -128,11 +128,11 @@ class YouTube extends Component {
      */
     render() {
         if (this.state.System.data_loaded) {
-            const title = this.decodeHtmlEntities(this.state.Media.YouTube.title);
+            const title = this.main_utilities.decodeHtmlEntities(this.state.Media.YouTube.title);
             return (
                 <div className="YouTube">
                     <div>
-                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
+                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>
                             <img src={this.state.Media.YouTube.thumbnail} />
                         </a>
                     </div>
@@ -140,7 +140,7 @@ class YouTube extends Component {
                         <div class="metadata">
                             <div style={{height: this.getTitleHeight(title)}}>{title}</div>
                             <div>
-                                <a href={this.state.Media.YouTube.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.Media.YouTube.author}</a>
+                                <a href={this.state.Media.YouTube.author_channel} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{this.state.Media.YouTube.author}</a>
                             </div>
                             <div>
                                 <div id="duration">
@@ -154,7 +154,7 @@ class YouTube extends Component {
                             </div>
                         </div>
                         <div>
-                            <button name="mediaDownloader" value={this.state.Media.YouTube.uniform_resource_locator} onClick={this.retrieveMedia.bind(this)}>
+                            <button name="mediaDownloader" value={this.state.Media.YouTube.uniform_resource_locator} onClick={(event) => this.main_utilities.retrieveMedia(event)}>
                                 <i class="fa-solid fa-download"></i>
                             </button>
                         </div>

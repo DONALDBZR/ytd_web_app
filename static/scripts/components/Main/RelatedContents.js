@@ -45,22 +45,26 @@ class RelatedContents extends Component {
     }
 
     /**
-     * The methods to be executed when the component has been updated.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.System.data_loaded) {
-            setTimeout(() => this.setData(), 1000);
-        }
-    }
-
-    /**
      * Setting the main state of the component.
      * @returns {void}
      */
     setData() {
+        if (this.state.System.data_loaded) {
+            console.info(`Route: ${window.location.pathname}\nComponent: RelatedContents\nStatus: Loaded`);
+            return;
+        }
+        this.getData();
+    }
+
+    /**
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
+     */
+    getData() {
         const {related_content, data_loaded} = this.main_utilities.getRelatedContents();
+        const delay = 1000;
         if (!data_loaded) {
+            setTimeout(() => this.setData(), delay);
             return;
         }
         this.setState((previous) => ({
@@ -75,7 +79,7 @@ class RelatedContents extends Component {
             },
         }));
         this.tracker = window.Tracker;
-        console.info(`Route: ${window.location.pathname}\nComponent: RelatedContents\nComponent Status: Loaded`);
+        setTimeout(() => this.setData(), delay);
     }
 
     /**

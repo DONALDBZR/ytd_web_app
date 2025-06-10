@@ -65,8 +65,9 @@ class Trend extends Component {
      */
     getData() {
         const {trend, data_loaded} = this.main_utilities.getTrends();
+        const delay = 1000;
         if (!data_loaded) {
-            setTimeout(() => this.setData(), 1000);
+            setTimeout(() => this.setData(), delay);
             return;
         }
         this.setState((previous) => ({
@@ -78,7 +79,7 @@ class Trend extends Component {
             },
         }));
         this.tracker = window.Tracker;
-        setTimeout(() => this.setData(), 1000);
+        setTimeout(() => this.setData(), delay);
     }
 
     /**

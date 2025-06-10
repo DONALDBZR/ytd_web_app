@@ -70,8 +70,17 @@ class YouTube extends Component {
             return;
         }
         this.getData();
+    }
+
+    /**
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
+     */
+    getData() {
         const {media, data_loaded} = this.main_utilities.getMedia();
+        const delay = 1000;
         if (!data_loaded) {
+            setTimeout(() => this.setData(), delay);
             return;
         }
         this.setState((previous) => ({
@@ -86,6 +95,7 @@ class YouTube extends Component {
             },
         }));
         this.tracker = window.Tracker;
+        setTimeout(() => this.setData(), delay);
     }
 
     /**

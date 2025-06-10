@@ -77,6 +77,22 @@ class Main {
             setTimeout(() => window.location.reload(), delay);
         }
     };
+
+    /**
+     * Retrieving media metadata from `localStorage`.
+     * 
+     * This method reads the `media` key from localStorage, parses it as JSON, and extracts the media data.  It also checks whether the global `window.Tracker` exists to determine if the data is fully loaded.
+     * @returns {{media: ?{audio: ?string, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video: ?string, views: number}, data_loaded: boolean}} An object containing the media metadata and a flag indicating whether it is ready for use.
+     */
+    getMedia() {
+        const data = localStorage.getItem("media");
+        const media = (typeof data == "string") ? JSON.parse(data).data : null;
+        const data_loaded = Boolean(media && window.Tracker);
+        return {
+            media: media,
+            data_loaded: data_loaded,
+        };
+    }
 }
 
 export default Main;

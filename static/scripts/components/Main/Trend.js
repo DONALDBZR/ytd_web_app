@@ -30,13 +30,11 @@ class Trend extends Component {
     }
 
     /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
+     * Running the methods needed as soon as the component has been successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
         this.setData();
-        console.info("Component: Homepage.Main.MainHomepage.Trend\nStatus: Mount");
     }
 
     /**

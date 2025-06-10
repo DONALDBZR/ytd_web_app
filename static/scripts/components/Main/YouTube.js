@@ -95,29 +95,6 @@ class YouTube extends Component {
     }
 
     /**
-     * Sending a tracking event and initiates the media download process.
-     * 
-     * Based on the provided media type and identifier, this method constructs the appropriate download route, logs a tracking event, and performs the download process.  It manages the server response and handles any errors by logging them and optionally redirecting the user after a delay.
-     * @param {string} platform - The supported platform.
-     * @param {string} type - The type of media.
-     * @param {string} identifier - The unique identifier of the media.
-     * @param {number} delay - The delay in milliseconds before processing the response or redirection.
-     * @returns {void}
-     */
-    downloadMedia(platform, type, identifier, delay) {
-        const uniform_resource_locator = (type == "Shorts") ? `/Download/YouTube/Shorts/${identifier}` : `/Download/YouTube/${identifier}`;
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => this.postMediaDownload(platform, type, identifier))
-        .then((response) => this.manageResponse(response, delay))
-        .catch((error) => {
-            console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
-            this.redirector(delay, window.location.href);
-        });
-    }
-
-    /**
      * Clearing specific `localStorage` entries if the HTTP status indicates a successful response.
      * 
      * This function removes the `media` and `related_content` keys from `localStorage` only if the provided status is exactly 200.  If the status differs, no action is taken.

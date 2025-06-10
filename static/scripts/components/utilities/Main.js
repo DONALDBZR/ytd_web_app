@@ -135,6 +135,31 @@ class Main extends Application {
             setTimeout(() => window.location.reload(), 200);
         }
     }
+
+    /**
+     * Sending a tracking event and initiates the media download process.
+     * 
+     * Based on the provided media type and identifier, this method constructs the appropriate download route, logs a tracking event, and performs the download process.  It manages the server response and handles any errors by logging them and optionally redirecting the user after a delay.
+     * @param {string} platform - The supported platform.
+     * @param {string} type - The type of media.
+     * @param {string} identifier - The unique identifier of the media.
+     * @param {number} delay - The delay in milliseconds before processing the response or redirection.
+     * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
+     * @returns {Promise<void>}
+     */
+    async downloadMedia(platform, type, identifier, delay, tracker) {
+        const uniform_resource_locator = (type == "Shorts") ? `/Download/YouTube/Shorts/${identifier}` : `/Download/YouTube/${identifier}`;
+        try {
+            await tracker.sendEvent("click", {
+                uniform_resource_locator: uniform_resource_locator,
+            });
+            const response = await this.postMediaDownload(platform, type, identifier);
+            await this.manageResponse(response, delay);
+        } catch (error) {
+            console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
+            this.redirect(delay, window.location.href);
+        }
+    }
 }
 
 export default Main;

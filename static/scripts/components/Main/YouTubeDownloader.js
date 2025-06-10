@@ -48,13 +48,11 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
+     * Running the methods needed as soon as the component has been successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Mount`);
     }
 
     /**
@@ -175,28 +173,6 @@ class YouTubeDownloader extends Component {
             console.error("Download Failed: ", error);
         }
     }
-
-    /**
-     * Handles the click event on a component.
-     * @param {MouseEvent} event The click event.
-     * @returns {void}
-     */
-    handleClick = (event) => {
-        event.preventDefault();
-        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            window.open(uniform_resource_locator, "_blank");
-        })
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
-        });
-    };
 
     /**
      * Calculating the height of the title based on its length and the height of the component.

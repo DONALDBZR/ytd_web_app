@@ -79,24 +79,6 @@ class Trend extends Component {
     }
 
     /**
-     * Adding the mouse enter event handler for the trend list.
-     * @returns {void}
-     */
-    handleTrendListMouseEnter() {
-        const trend_list = document.querySelector("#Homepage main .Trend div");
-        trend_list.style.animationPlayState = (window.innerWidth < 640) ? "paused" : "unset";
-    }
-
-    /**
-     * Adding the mouse leave event handler for the trend list.
-     * @returns {void}
-     */
-    handleTrendListMouseLeave() {
-        const trend_list = document.querySelector("#Homepage main .Trend div");
-        trend_list.style.animationPlayState = (window.innerWidth < 640) ? "running" : "unset";
-    }
-
-    /**
      * Handling click events, tracking the event and opening the link in a new tab.
      *
      * This method prevents the default behavior of the event, extracts the URL from the clicked anchor (`<a>`) element or its parent, and sends a tracking event.  If the tracking event is successfully sent, the URL is opened in a new tab.  If an error occurs, it logs the error and refreshes the page after a delay.
@@ -195,7 +177,7 @@ class Trend extends Component {
         const animation = (window.innerWidth < 640) ? `trend-scroll ${delay * this.state.Trend.length}s linear infinite` : "none";
         return (
             <div className="Trend">
-                <div style={{width: width, animation: animation}} onMouseEnter={this.handleTrendListMouseEnter} onMouseLeave={this.handleTrendListMouseLeave}>
+                <div style={{width: width, animation: animation}} onMouseEnter={(event) => this.main_utilities.handleTrendListMouseEnter(event)} onMouseLeave={(event) => this.main_utilities.handleTrendListMouseLeave(event)}>
                     {this.state.Trend.map((content) => this.renderMediaCard(content))}
                 </div>
             </div>

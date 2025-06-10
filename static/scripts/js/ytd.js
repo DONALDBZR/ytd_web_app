@@ -343,14 +343,13 @@ class YTD {
     }
 
     /**
-     * Configuring the pages for which the web crawlers can index
-     * on the application.
+     * Configuring the pages for which the web crawlers can index on the application.
      * @returns {void}
      */
     configureRobot() {
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "robots";
-        this.getMeta().content = "index, follow";
+        this.getMeta().content = (this.getRequestURI().includes("/Download/")) ? "index" : "index, follow";
         this.getHead().appendChild(this.getMeta());
     }
 

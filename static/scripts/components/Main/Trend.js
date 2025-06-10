@@ -49,10 +49,7 @@ class Trend extends Component {
      */
     componentDidUpdate() {
         if (!this.state.System.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.log("Component: Homepage.Main.MainHomepage.Trend\nStatus: Updated");
-            }, 1000);
+            setTimeout(() => this.setData(), 1000);
         }
     }
 

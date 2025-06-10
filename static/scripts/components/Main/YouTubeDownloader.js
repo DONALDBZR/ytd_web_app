@@ -152,6 +152,7 @@ class YouTubeDownloader extends Component {
                 uniform_resource_locator: file_path,
             },
         }));
+        console.info(`Route: ${window.location.pathname}\nComponent: YouTubeDownloader\nComponent Status: Loaded`);
     }
 
     /**

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import HeaderHomepage from "./Header/Homepage";
-import HeaderDownload from "./Header/Download";
 import HeaderSearch from "./Header/Search";
 
 

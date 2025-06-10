@@ -292,6 +292,27 @@ class Main extends Application {
         const video_path = this.state.File.video;
         return (video_path.includes("extractio")) ? video_path.replace("/home/darkness4869/Documents/extractio", "") : video_path.replace("/var/www/html/ytd_web_app", "");
     }
+
+    /**
+     * Downloading the file retrieved from the server.
+     * @param {MouseEvent} event - The on-click event.
+     * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
+     * @returns {void}
+     */
+    async getFile(event, tracker) {
+        const button = event.target.parentElement;
+        const file_location = button.value;
+        const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
+        const uniform_resource_locator = (file_location.includes("/Public/Audio/")) ? `/Public/Audio/${this.state.identifier}.mp3` : `/Public/Video/${this.state.identifier}.mp4`;
+        try {
+            await tracker.sendEvent("click", {
+                uniform_resource_locator: uniform_resource_locator,
+            });
+            return await this.downloadFileServer(file_location, file_name);
+        } catch (error) {
+            console.error(`Download Failed: ${error.message}`);
+        }
+    }
 }
 
 export default Main;

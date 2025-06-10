@@ -63,15 +63,16 @@ class Main extends Application {
      * 
      * This method prevents the default behavior of the event, extracts the URL from the clicked anchor (`<a>`) element or its parent, and sends a tracking event.  If the tracking event is successfully sent, the URL is opened in a new tab.  If an error occurs, it logs the error and refreshes the page after a delay.
      * @param {MouseEvent} event The click event object.
+     * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
      * @returns {Promise<void>}
      * @throws {Error} If an issue occurs while sending the tracking event.
      */
-    async handleClick(event) {
+    async handleClick(event, tracker) {
         const delay = 200;
         event.preventDefault();
         try {
             const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-            await this.tracker.sendEvent("click", {
+            await tracker.sendEvent("click", {
                 uniform_resource_locator: uniform_resource_locator,
             });
             window.open(uniform_resource_locator, "_blank");

@@ -42,7 +42,6 @@ class RelatedContents extends Component {
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.RelatedContents\nComponent Status: Mount`);
     }
 
     /**

@@ -313,6 +313,56 @@ class Main extends Application {
             console.error(`Download Failed: ${error.message}`);
         }
     }
+
+    /**
+     * Checking from the status flag whether the file has been downloaded from the server.
+     * @param {Response} response - The response from the server.
+     * @returns {void}
+     * @throws {Error} Throws an error if the file has failed to download.
+     */
+    isFileDownloaded(response) {
+        if (response.ok) {
+            return;
+        }
+        throw new Error(`Failed to download file: ${response.statusText}`);
+    }
+
+    /**
+     * Sending the request to the server to download the file needed.
+     * @param {string} file_location The location of the file.
+     * @param {string} file_name The name of the file.
+     * @returns {Promise<Blob>}
+     */
+    async downloadFileServer(file_location, file_name) {
+        try {
+            const response = await fetch("/Download/", {
+                method: "POST",
+                body: JSON.stringify({
+                    file: file_location,
+                    file_name: file_name,
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            this.isFileDownloaded(response);
+            const reader = response.body.getReader();
+            const chunks = [];
+            let done = false;
+            while (!done) {
+                const {value, done: is_done} = await reader.read();
+                done = is_done;
+                if (value) {
+                    chunks.push(value);
+                }
+            }
+            const blob = new Blob(chunks);
+            return blob;
+        } catch (error) {
+            console.error(`Fetch Error: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
 }
 
 export default Main;

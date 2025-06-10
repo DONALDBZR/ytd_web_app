@@ -161,6 +161,26 @@ class Main extends Application {
             this.redirect(delay, window.location.href);
         }
     }
+
+    /**
+     * Handling application flow based on the server's response.
+     * 
+     * Clears local storage if applicable, then redirects the user after a specified delay.  If the response status is `201`, the user is redirected to the provided download uniform resource locator.  For any other status, the user is redirected to the current page. If an error occurs during processing, it logs the error and rethrows it.
+     * @param {{status: number, uniform_resource_locator: string}} response - The response object from the backend, including HTTP status and redirect uniform resource locator.
+     * @param {number} delay - The delay (in milliseconds) before redirecting the user.
+     * @returns {void}
+     * @throws {Error} Throws an error if the application fails to process the response.
+     */
+    manageResponse(response, delay) {
+        try {
+            this.clearLocalStorage(response.status);
+            const uniform_resource_locator = (response.status == 201) ? response.uniform_resource_locator : window.location.href;
+            this.redirect(delay, uniform_resource_locator);
+        } catch (error) {
+            console.error(`There is an error while processing the response.\nError: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
 }
 
 export default Main;

@@ -496,12 +496,11 @@ class YTD {
         const current_time = Math.floor(Date.now() / 1000);
         if (!media) {
             this.getMedia(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`))
-            .catch((error) => console.error(`An error occurred while retrieving the data!\nRoute: ${request_method} ${route}\nError: ${error.message}`));
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
         status = ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) ? 304 : 204;
-        if ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) {
+        if (status == 304) {
             media.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(media));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);

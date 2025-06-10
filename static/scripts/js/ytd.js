@@ -599,6 +599,14 @@ class YTD {
         this.getSession(route, request_method, data_object)
         .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
+
+    /**
+     * Adding the stylesheets needed for the application.
+     * @returns {void}
+     */
+    addStylesheets() {
+        this._stylesheetIdentifiers.forEach((identifier) => this.addStylesheet(identifier));
+    }
 }
 
 /**
@@ -619,3 +627,4 @@ window.addEventListener("resize", () => application.resizeApplication(), true);
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => load());
 }
+document.addEventListener("DOMContentLoaded", () => application.addStylesheets(), true);

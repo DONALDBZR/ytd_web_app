@@ -1,7 +1,10 @@
+import Application from "./Application";
+
+
 /**
  * The utility class of the Main component.
  */
-class Main {
+class Main extends Application {
     /**
      * Retrieving trending video data from `localStorage`.
      * @returns {{trend: ?[{audio_file: ?string, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video_file: ?string, views: number}], data_loaded: boolean}} An object containing the parsed trend data and a boolean indicating whether the data is loaded.

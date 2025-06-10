@@ -56,10 +56,18 @@ class Trend extends Component {
             loading_icon.style.display = "none";
             return;
         }
-        setTimeout(() => this.getData(), 1000);
+        this.getData();
+    }
+
+    /**
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
+     */
+    getData() {
         const {trend, data_loaded} = this.main_utilities.getTrends();
         if (!data_loaded) {
             console.info(`Route: ${window.location.pathname}\nComponent: Trend\nStatus: Not Loaded`);
+            setTimeout(() => this.setData(), 1000);
             return;
         }
         this.setState((previous) => ({
@@ -71,6 +79,7 @@ class Trend extends Component {
             },
         }));
         this.tracker = window.Tracker;
+        setTimeout(() => this.setData(), 1000);
     }
 
     /**

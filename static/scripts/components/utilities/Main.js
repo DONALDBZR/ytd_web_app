@@ -292,6 +292,32 @@ class Main extends Application {
         const video_path = this.state.File.video;
         return (video_path.includes("extractio")) ? video_path.replace("/home/darkness4869/Documents/extractio", "") : video_path.replace("/var/www/html/ytd_web_app", "");
     }
+
+    /**
+     * Determining if the given route is a search redirect or a valid media file path, then either navigates to the search page or updates the component state with the file path.
+     * 
+     * - If the route contains "/Search/", the browser is redirected to that route.
+     * - Otherwise, the loading icon is hidden and the state is updated with the corrected file uniform resource locator.
+     * - Adjusts the route casing for Shorts uniform resource locators to maintain consistency.
+     * @param {string} route - A uniform resource locator route, either a search path or a direct media file path.
+     * @param {HTMLDivElement} loading_icon - The DOM element representing the loading indicator.
+     * @returns {void}
+     */
+    manageRoute(route, loading_icon) {
+        if (route.includes("/Search/")) {
+            window.location.href = route;
+            return;
+        }
+        const file_path = (window.location.pathname.includes("/Shorts/")) ? route.replace("/shorts/", "/Shorts/") : route;
+        loading_icon.style.display = "none";
+        this.setState((previous) => ({
+            ...previous,
+            File: {
+                ...previous.File,
+                uniform_resource_locator: file_path,
+            },
+        }));
+    }
 }
 
 export default Main;

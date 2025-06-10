@@ -313,27 +313,33 @@ class YTD {
      * @returns {void}
      */
     addDescription() {
-        let local_storage_data;
-        let media;
+        const data = localStorage.getItem("media");
+        const is_homepage = (this.getRequestURI() == "" || this.getRequestURI() == "/");
+        if (!data && !is_homepage) {
+            setTimeout(() => this.addDescription(), 1000);
+        }
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
-        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
+        if (is_homepage) {
             this.getMeta().content = "Extractio extracts content from various platforms for various needs.";
-        } else if (this.getRequestURI() == "/Search/") {
-            this.getMeta().content = "The content needed can be searched, here.";
-        } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
-            local_storage_data = localStorage.getItem("media");
-            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-            const platform = (media) ? new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "") : "";
-            this.getMeta().content = (media) ? `Metadata for the content from ${media.author} on ${platform} entitled ${media.title}` : "The content needed can be searched, here.";
-        } else if (this.getRequestURI().includes("/Download/")) {
-            local_storage_data = localStorage.getItem("media");
-            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-            const platform = (media) ? new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "") : "";
-            this.getMeta().content = (media) ? `Content from ${media.author} on ${platform} entitled ${media.title}` : "The content needed can be searched, here.";
+            this.getHead().appendChild(this.getMeta());
+            setTimeout(() => this.configureRobot(), 2000);
+            return;
         }
-        this.getHead().appendChild(this.getMeta());
-        setTimeout(() => this.configureRobot(), 2000);
+        const media = JSON.parse(data).data;
+        const platform = new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "");
+        if (this.getRequestURI().includes("/Search/")) {
+            this.getMeta().content = `Metadata for the content from ${media.author} on ${platform} entitled ${media.title}`;
+            this.getHead().appendChild(this.getMeta());
+            setTimeout(() => this.configureRobot(), 2000);
+            return;
+        }
+        if (this.getRequestURI().includes("/Download/")) {
+            this.getMeta().content = `Content from ${media.author} on ${platform} entitled ${media.title}`;
+            this.getHead().appendChild(this.getMeta());
+            setTimeout(() => this.configureRobot(), 2000);
+            return;
+        }
     }
 
     /**

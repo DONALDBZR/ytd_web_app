@@ -360,7 +360,7 @@ class YTD {
     optimize() {
         this.addTitle();
         this.addDescription();
-        this.style();
+        this.resizeApplication();
     }
 
     /**
@@ -385,8 +385,6 @@ class YTD {
      * @returns {void}
      */
     style() {
-        this.setRelationship("stylesheet");
-        this.setMimeType("text/css");
         this.resizeApplication();
     }
 

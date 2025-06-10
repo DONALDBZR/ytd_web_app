@@ -255,7 +255,6 @@ class YTD {
         if (!data) {
             setTimeout(() => this.addTitle(), 1000);
         }
-        this.setTitle(document.createElement("title"));
         const media = JSON.parse(data).data;
         if (this.getRequestURI().includes("/Search/")) {
             this.getTitle().text = `Extractio Data: ${media.title}`;

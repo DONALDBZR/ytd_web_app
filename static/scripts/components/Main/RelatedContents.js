@@ -63,21 +63,23 @@ class RelatedContents extends Component {
      * @returns {void}
      */
     setData() {
-        const local_storage_data = localStorage.getItem("related_content");
-        const related_content = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("related_content")).data : null;
-        const data_loaded = (related_content != null && window.Tracker);
+        const {related_content, data_loaded} = this.main_utilities.getRelatedContents();
+        if (!data_loaded) {
+            return;
+        }
         this.setState((previous) => ({
             ...previous,
             Media: {
                 ...previous.Media,
-                RelatedContents: (data_loaded) ? related_content : this.state.Media.RelatedContents,
+                RelatedContents: related_content,
             },
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,
             },
         }));
-        this.tracker = (window.Tracker) ? window.Tracker : null;
+        this.tracker = window.Tracker;
+        console.info(`Route: ${window.location.pathname}\nComponent: RelatedContents\nComponent Status: Loaded`);
     }
 
     /**

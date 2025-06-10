@@ -85,7 +85,7 @@ class YouTubeDownloader extends Component {
      */
     setData() {
         try {
-            const loading_icon: HTMLDivElement = document.querySelector("#loading");
+            const loading_icon = document.querySelector("#loading");
             const {media, data_loaded} = this.main_utilities.getDownloadedMedia();
             loading_icon.style.display = "flex";
             if (!data_loaded) {
@@ -117,45 +117,6 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Sending a request to check the availability of a video file on the server.
-     * 
-     * - Determines the appropriate video path based on the current uniform resource locator structure (Shorts or regular).
-     * - Performs a fetch request to that path.
-     * - Returns the HTTP status code to indicate the video's availability.
-     * @param {string} identifier - The unique identifier of the video.
-     * @returns {Promise<number>} A promise that resolves to the HTTP status code of the video resource.
-     */
-    async checkVideoStatus(identifier) {
-        const query = (window.location.pathname.includes("/Shorts/")) ? `/Public/Video/Shorts/${identifier}.mp4` : `/Public/Video/${identifier}.mp4`;
-        try {
-            const response = await fetch(query);
-            return response.status;
-        } catch (error) {
-            console.error(`There is an error while retrieving the video status.\nError: ${error.message}`);
-            return 500;
-        }
-    }
-
-    /**
-     * Processing the video status returned by the server and determines the final media file path or redirect uniform resource locator.
-     * 
-     * - If the status is not `200`, it returns a redirect path to the search page.
-     * - If the status is `200`, it processes and returns a cleaned-up path for the video file,
-     *   removing internal server paths based on known directory locations.
-     * 
-     * @param {number} status - HTTP status code indicating the availability of the video.
-     * @returns {Promise<string>} A promise resolving to the processed video file path or search redirection URL.
-     */
-    async handleVideoStatus(status) {
-        if (status != 200) {
-            const identifier = window.location.pathname.replace("/Download/YouTube/", "");
-            return `/Search/${identifier}`;
-        }
-        const video_path = this.state.File.video;
-        return (video_path.includes("extractio")) ? video_path.replace("/home/darkness4869/Documents/extractio", "") : video_path.replace("/var/www/html/ytd_web_app", "");
-    }
-
-    /**
      * Verifying the existence and accessibility of the media file by checking the current uniform resource locator path.
      * 
      * - Extracts a media identifier from the uniform resource locator.
@@ -168,8 +129,8 @@ class YouTubeDownloader extends Component {
     verifyFile(loading_icon) {
         const path_name = window.location.pathname;
         const identifier = (path_name.includes("/Shorts/")) ? path_name.replace("/Download/YouTube/Shorts/", "") : path_name.replace("/Download/YouTube/", "");
-        this.checkVideoStatus(identifier)
-        .then((status) => this.handleVideoStatus(status, loading_icon))
+        this.main_utilities.checkVideoStatus(identifier)
+        .then((status) => this.main_utilities.handleVideoStatus(status, loading_icon))
         .then((route) => this.manageRoute(route, loading_icon));
     }
 

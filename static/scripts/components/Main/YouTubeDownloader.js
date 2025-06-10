@@ -84,36 +84,32 @@ class YouTubeDownloader extends Component {
      * @returns {void}
      */
     setData() {
-        try {
-            const loading_icon = document.querySelector("#loading");
-            const {media, data_loaded} = this.main_utilities.getDownloadedMedia();
-            loading_icon.style.display = "flex";
-            if (!data_loaded) {
-                return;
-            }
-            this.setState((previous) => ({
-                ...previous,
-                uniform_resource_locator: media.uniform_resource_locator,
-                author: media.author,
-                title: media.title,
-                identifier: media.identifier,
-                author_channel: media.author_channel,
-                views: media.views,
-                published_at: media.published_at,
-                thumbnail: media.thumbnail,
-                duration: media.duration,
-                File: {
-                    ...previous.File,
-                    audio: media.audio,
-                    video: media.video,
-                },
-                data_loaded: data_loaded,
-            }));
-            this.tracker = window.Tracker;
-            this.verifyFile(loading_icon);
-        } catch (error) {
-            console.error(`The application has failed to initialize the data.\nError: ${error.message}`);
+        const loading_icon = document.querySelector("#loading");
+        const {media, data_loaded} = this.main_utilities.getDownloadedMedia();
+        loading_icon.style.display = "flex";
+        if (!data_loaded) {
+            return;
         }
+        this.setState((previous) => ({
+            ...previous,
+            uniform_resource_locator: media.uniform_resource_locator,
+            author: media.author,
+            title: media.title,
+            identifier: media.identifier,
+            author_channel: media.author_channel,
+            views: media.views,
+            published_at: media.published_at,
+            thumbnail: media.thumbnail,
+            duration: media.duration,
+            File: {
+                ...previous.File,
+                audio: media.audio,
+                video: media.video,
+            },
+            data_loaded: data_loaded,
+        }));
+        this.tracker = window.Tracker;
+        this.verifyFile(loading_icon);
     }
 
     /**

@@ -381,14 +381,6 @@ class YTD {
     }
 
     /**
-     * Styling the application
-     * @returns {void}
-     */
-    style() {
-        this.resizeApplication();
-    }
-
-    /**
      * Resizing the application which depends on the client's size
      * @returns {void}
      */
@@ -672,12 +664,15 @@ class YTD {
 
 /**
  * Loading the service worker.
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const load = () => {
-    navigator.serviceWorker.register('/static/scripts/js/service-worker.js')
-    .then((registration) => console.log('ServiceWorker registration successful with scope: ', registration.scope))
-    .catch((error) => console.error('ServiceWorker registration failed: ', error));
+const load = async () => {
+    try {
+        const registration = await navigator.serviceWorker.register("/static/scripts/js/service-worker.js");
+        console.info(`ServiceWorker registration successful.\nScope: ${registration.scope}`);
+    } catch (error) {
+        console.error(`ServiceWorker registration failed.\nError: ${error.message}`);
+    }
 };
 
 const application = new YTD();

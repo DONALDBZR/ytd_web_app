@@ -86,30 +86,31 @@ class YouTubeDownloader extends Component {
     setData() {
         try {
             const loading_icon: HTMLDivElement = document.querySelector("#loading");
-            const local_storage_data = localStorage.getItem("media");
-            const media = (typeof local_storage_data == "string") ? this.getMedia(local_storage_data) : null;
-            const data_loaded = (media != null && window.Tracker);
+            const {media, data_loaded} = this.main_utilities.getDownloadedMedia();
             loading_icon.style.display = "flex";
+            if (!data_loaded) {
+                return;
+            }
             this.setState((previous) => ({
                 ...previous,
-                uniform_resource_locator: (media) ? media.uniform_resource_locator : previous.uniform_resource_locator,
-                author: (media) ? media.author : previous.author,
-                title: (media) ? media.title : previous.title,
-                identifier: (media) ? media.identifier : previous.identifier,
-                author_channel: (media) ? media.author_channel : previous.author_channel,
-                views: (media) ? media.views : previous.views,
-                published_at: (media) ? media.published_at : previous.published_at,
-                thumbnail: (media) ? media.thumbnail : previous.thumbnail,
-                duration: (media) ? media.duration : previous.duration,
+                uniform_resource_locator: media.uniform_resource_locator,
+                author: media.author,
+                title: media.title,
+                identifier: media.identifier,
+                author_channel: media.author_channel,
+                views: media.views,
+                published_at: media.published_at,
+                thumbnail: media.thumbnail,
+                duration: media.duration,
                 File: {
                     ...previous.File,
-                    audio: (media) ? media.audio : previous.File.audio,
-                    video: (media) ? media.video : previous.File.video,
+                    audio: media.audio,
+                    video: media.video,
                 },
                 data_loaded: data_loaded,
             }));
-            this.tracker = (window.Tracker) ? window.Tracker : null;
-            (data_loaded) ? this.verifyFile(loading_icon) : null;
+            this.tracker = window.Tracker;
+            this.verifyFile(loading_icon);
         } catch (error) {
             console.error(`The application has failed to initialize the data.\nError: ${error.message}`);
         }

@@ -15,6 +15,18 @@ class Main {
             data_loaded: data_loaded,
         };
     }
+
+    /**
+     * Handling mouse enter on a trend list item by controlling its animation state.
+     * 
+     * Pauses the animation if the viewport width is less than 640 pixels otherwise, resumes it.
+     * @param {MouseEvent} event - The mouse enter event object.
+     * @returns {void}
+     */
+    handleTrendListMouseEnter(event) {
+        const trend_list = event.target.parentElement;
+        trend_list.style.animationPlayState = window.innerWidth < 640 ? "paused" : "unset";
+    }
 }
 
 export default Main;

@@ -171,7 +171,7 @@ class YouTube extends Component {
                             <button
                                 name="mediaDownloader"
                                 value={this.state.Media.YouTube.uniform_resource_locator}
-                                onClick={(event) => this.main_utilities.retrieveMedia(event, this.state.Media.YouTube.uniform_resource_locator)}
+                                onClick={(event) => this.main_utilities.retrieveMedia(event, this.state.Media.YouTube.uniform_resource_locator, this.tracker)}
                             >
                                 <i class="fa-solid fa-download"></i>
                             </button>

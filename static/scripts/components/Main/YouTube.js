@@ -95,20 +95,6 @@ class YouTube extends Component {
     }
 
     /**
-     * Clearing specific `localStorage` entries if the HTTP status indicates a successful response.
-     * 
-     * This function removes the `media` and `related_content` keys from `localStorage` only if the provided status is exactly 200.  If the status differs, no action is taken.
-     * @param {number} status - The HTTP status code returned from the server.
-     * @returns {void}
-     */
-    clearLocalStorage(status) {
-        if (status == 201) {
-            localStorage.removeItem("media");
-            localStorage.removeItem("related_content");
-        }
-    }
-
-    /**
      * Handling application flow based on the server's response.
      * 
      * Clears local storage if applicable, then redirects the user after a specified delay.  If the response status is `201`, the user is redirected to the provided download uniform resource locator.  For any other status, the user is redirected to the current page. If an error occurs during processing, it logs the error and rethrows it.

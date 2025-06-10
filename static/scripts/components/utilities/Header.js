@@ -123,21 +123,6 @@ class Header extends Application {
     }
 
     /**
-     * Clearing specific `localStorage` entries if the HTTP status indicates a successful response.
-     * 
-     * This function removes the `media` and `related_content` keys from `localStorage` only if the provided status is exactly 200.  If the status differs, no action is taken.
-     * 
-     * @param {number} status - The HTTP status code returned from the server.
-     * @returns {void}
-     */
-    clearLocalStorage(status) {
-        if (status == 200) {
-            localStorage.removeItem("media");
-            localStorage.removeItem("related_content");
-        }
-    }
-
-    /**
      * Checking domains that are not allowed.
      * @param {URL} uniform_resource_locator The parsed uniform resource locator
      * @returns {void}

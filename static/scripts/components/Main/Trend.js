@@ -44,16 +44,6 @@ class Trend extends Component {
     }
 
     /**
-     * Updating the component as soon as there is an update in the states.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.System.data_loaded) {
-            setTimeout(() => this.setData(), 1000);
-        }
-    }
-
-    /**
      * Updating the component state with trend data retrieved from localStorage.
      * 
      * This method accesses trend data using `main_utilities.getTrends()`, and if the data is fully loaded, it updates the component state with the retrieved trend information.  Additionally, it initializes the `tracker` property with the global `window.Tracker` and hides the loading icon in the DOM.
@@ -61,8 +51,15 @@ class Trend extends Component {
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
+        if (this.state.System.data_loaded) {
+            console.info(`Route: ${window.location.pathname}\nComponent: Trend\nStatus: Loaded`);
+            loading_icon.style.display = "none";
+            return;
+        }
+        setTimeout(() => this.getData(), 1000);
         const {trend, data_loaded} = this.main_utilities.getTrends();
         if (!data_loaded) {
+            console.info(`Route: ${window.location.pathname}\nComponent: Trend\nStatus: Not Loaded`);
             return;
         }
         this.setState((previous) => ({
@@ -74,8 +71,6 @@ class Trend extends Component {
             },
         }));
         this.tracker = window.Tracker;
-        loading_icon.style.display = "none";
-        console.info(`Route: ${window.location.pathname}\nComponent: Trend\nStatus: Loaded`);
     }
 
     /**

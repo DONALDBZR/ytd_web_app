@@ -27,6 +27,16 @@ class Main {
         const trend_list = event.target.parentElement;
         trend_list.style.animationPlayState = window.innerWidth < 640 ? "paused" : "unset";
     }
+
+    /**
+     * Adding the mouse leave event handler for the trend list.
+     * @param {MouseEvent} event - The mouse leave event object.
+     * @returns {void}
+     */
+    handleTrendListMouseLeave(event) {
+        const trend_list = event.target.parentElement;
+        trend_list.style.animationPlayState = (window.innerWidth < 640) ? "running" : "unset";
+    }
 }
 
 export default Main;

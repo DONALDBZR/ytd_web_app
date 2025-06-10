@@ -443,7 +443,10 @@ class YTD {
      * @returns {void}
      */
     setRelatedContents() {
-        if (!this.getRequestURI().includes("Search") && window.outerWidth < 1024) {
+        if (!this.getRequestURI().includes("Search")) {
+            return;
+        }
+        if (window.outerWidth < 1024) {
             return;
         }
         const identifier = this._getRelatedContentsIdentifier();
@@ -459,7 +462,7 @@ class YTD {
             return;
         }
         status = ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) ? 304 : 204;
-        if ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) {
+        if (status == 304) {
             related_content.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(related_content));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);

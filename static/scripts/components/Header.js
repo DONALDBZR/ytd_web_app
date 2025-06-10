@@ -21,7 +21,7 @@ class Header extends Component {
      * @returns {React.JSX.Element}
      */
     render() {
-        (window.location.pathname == "/") ? <HeaderHomepage /> : <HeaderSearch />;
+        return (window.location.pathname == "/") ? <HeaderHomepage /> : <HeaderSearch />;
     }
 }
 

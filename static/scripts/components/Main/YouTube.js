@@ -62,10 +62,7 @@ class YouTube extends Component {
      */
     componentDidUpdate() {
         if (!this.state.System.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.YouTube\nComponent Status: Update`);
-            }, 1000);
+            setTimeout(() => this.setData(), 1000);
         }
     }
 

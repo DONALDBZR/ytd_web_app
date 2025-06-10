@@ -66,7 +66,6 @@ class Trend extends Component {
     getData() {
         const {trend, data_loaded} = this.main_utilities.getTrends();
         if (!data_loaded) {
-            console.info(`Route: ${window.location.pathname}\nComponent: Trend\nStatus: Not Loaded`);
             setTimeout(() => this.setData(), 1000);
             return;
         }

@@ -237,6 +237,22 @@ class Main extends Application {
             data_loaded: data_loaded,
         };
     }
+
+    /**
+     * Retrieving downloaded media metadata from localStorage.
+     * 
+     * This method attempts to read and parse the `media` object stored in `localStorage`.  It checks whether media data is present and whether the global `window.Tracker` is available, returning both the parsed media object and a `data_loaded` status.
+     * @returns {{media: ?{audio: ?string, author: string, author_channel: string, duration: string, identifier: string, published_at: string, thumbnail: string, title: string, uniform_resource_locator: string, video: ?string, views: number}, data_loaded: boolean}}
+     */
+    getDownloadedMedia() {
+        const data = localStorage.getItem("media");
+        const media = (typeof data == "string") ? JSON.parse(data).data : null;
+        const data_loaded = Boolean(media && window.Tracker);
+        return {
+            media: media,
+            data_loaded: data_loaded,
+        };
+    }
 }
 
 export default Main;

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import MainUtilities from "../utilities/Main";
 
 
 /**
@@ -28,6 +29,11 @@ class RelatedContents extends Component {
          * @type {Tracker}
          */
         this.tracker = null;
+        /**
+         * The utility class of the Main component.
+         * @type {MainUtilities}
+         */
+        this.main_utilities = new MainUtilities();
     }
 
     /**

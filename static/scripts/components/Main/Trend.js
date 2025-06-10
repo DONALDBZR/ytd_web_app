@@ -57,27 +57,27 @@ class Trend extends Component {
     }
 
     /**
-     * Updating the component state with trend data from localStorage.
+     * Updating the component state with trend data retrieved from localStorage.
      * 
-     * This method retrieves trend data from localStorage (if available) and updates the component state. If trend data exists, it hides the loading icon.
+     * This method accesses trend data using `main_utilities.getTrends()`, and if the data is fully loaded, it updates the component state with the retrieved trend information.  Additionally, it initializes the `tracker` property with the global `window.Tracker` and hides the loading icon in the DOM.
      * @returns {void}
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
-        const trend = (localStorage.getItem("trend") != null) ? JSON.parse(localStorage.getItem("trend")).data : null;
-        const data_loaded = (trend != null && window.Tracker);
+        const {trend, data_loaded} = this.main_utilities.getTrends();
+        if (!data_loaded) {
+            return;
+        }
         this.setState((previous) => ({
             ...previous,
-            Trend: (data_loaded) ? trend : this.state.Trend,
+            Trend: trend,
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,
             },
         }));
-        this.tracker = (data_loaded) ? window.Tracker : null;
-        if (data_loaded) {
-            loading_icon.style.display = "none";
-        }
+        this.tracker = window.Tracker;
+        loading_icon.style.display = "none";
     }
 
     /**

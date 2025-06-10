@@ -54,6 +54,29 @@ class Main {
         text_area.innerHTML = encoded_string;
         return text_area.value;
     }
+
+    /**
+     * Handling click events, tracking the event and opening the link in a new tab.
+     * 
+     * This method prevents the default behavior of the event, extracts the URL from the clicked anchor (`<a>`) element or its parent, and sends a tracking event.  If the tracking event is successfully sent, the URL is opened in a new tab.  If an error occurs, it logs the error and refreshes the page after a delay.
+     * @param {MouseEvent} event The click event object.
+     * @returns {Promise<void>}
+     * @throws {Error} If an issue occurs while sending the tracking event.
+     */
+    async handleClick(event) {
+        const delay = 200;
+        event.preventDefault();
+        try {
+            const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
+            await this.tracker.sendEvent("click", {
+                uniform_resource_locator: uniform_resource_locator,
+            });
+            window.open(uniform_resource_locator, "_blank");
+        } catch (error) {
+            console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
+            setTimeout(() => window.location.reload(), delay);
+        }
+    };
 }
 
 export default Main;

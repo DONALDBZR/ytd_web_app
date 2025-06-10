@@ -245,16 +245,16 @@ class YTD {
      */
     addTitle() {
         const is_homepage = (this.getRequestURI() == "" || this.getRequestURI() == "/");
-        const data = localStorage.getItem("media");
-        if (!data && !is_homepage) {
-            setTimeout(() => this.addTitle(), 1000);
-        }
-        this.setTitle(document.createElement("title"));
         if (is_homepage) {
             this.getTitle().text = "Extractio";
             this.getHead().appendChild(this.getTitle());
             return;
         }
+        const data = localStorage.getItem("media");
+        if (!data) {
+            setTimeout(() => this.addTitle(), 1000);
+        }
+        this.setTitle(document.createElement("title"));
         const media = JSON.parse(data).data;
         if (this.getRequestURI().includes("/Search/")) {
             this.getTitle().text = `Extractio Data: ${media.title}`;

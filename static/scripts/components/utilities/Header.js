@@ -342,15 +342,6 @@ class Header extends Application {
     }
 
     /**
-     * Redirecting the application to the route needed.
-     * @param {string} route - The route of which the application will be redirected.
-     * @returns {void}
-     */
-    redirect(route) {
-        window.location.href = route;
-    }
-
-    /**
      * Validating whether the provided color scheme is allowed.
      * @param {string} color_scheme - The color scheme to validate.
      * @returns {Promise<void>} Resolves if the color scheme is valid.

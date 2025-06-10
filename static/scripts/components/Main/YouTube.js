@@ -136,7 +136,11 @@ class YouTube extends Component {
             return (
                 <div className="YouTube">
                     <div>
-                        <a href={this.state.Media.YouTube.uniform_resource_locator} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>
+                        <a
+                            href={this.state.Media.YouTube.uniform_resource_locator}
+                            target="__blank"
+                            onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}
+                        >
                             <img src={this.state.Media.YouTube.thumbnail} />
                         </a>
                     </div>
@@ -144,7 +148,13 @@ class YouTube extends Component {
                         <div class="metadata">
                             <div style={{height: this.getTitleHeight(title)}}>{title}</div>
                             <div>
-                                <a href={this.state.Media.YouTube.author_channel} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{this.state.Media.YouTube.author}</a>
+                                <a
+                                    href={this.state.Media.YouTube.author_channel}
+                                    target="__blank"
+                                    onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}
+                                >
+                                    {this.state.Media.YouTube.author}
+                                </a>
                             </div>
                             <div>
                                 <div id="duration">
@@ -158,7 +168,11 @@ class YouTube extends Component {
                             </div>
                         </div>
                         <div>
-                            <button name="mediaDownloader" value={this.state.Media.YouTube.uniform_resource_locator} onClick={(event) => this.main_utilities.retrieveMedia(event)}>
+                            <button
+                                name="mediaDownloader"
+                                value={this.state.Media.YouTube.uniform_resource_locator}
+                                onClick={(event) => this.main_utilities.retrieveMedia(event, this.state.Media.YouTube.uniform_resource_locator)}
+                            >
                                 <i class="fa-solid fa-download"></i>
                             </button>
                         </div>

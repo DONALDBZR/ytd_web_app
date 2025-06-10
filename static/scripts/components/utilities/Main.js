@@ -50,7 +50,7 @@ class Main extends Application {
      */
     decodeHtmlEntities(encoded_string) {
         if (typeof encoded_string !== "string") {
-            console.warn(`Component: Trend\nMessage: The data is not a string.\nData: ${encoded_string}`);
+            console.warn(`Route: ${window.location.pathname}\nMessage: The data is not a string.\nData: ${encoded_string}`);
             return encoded_string;
         }
         const text_area = document.createElement("textarea");

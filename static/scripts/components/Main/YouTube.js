@@ -95,18 +95,6 @@ class YouTube extends Component {
     }
 
     /**
-     * Redirecting the user to an intended uniform resource locator.
-     * @param {number} delay The amount of time in milliseconds before firing the method
-     * @param {string} uniform_resource_locator The route
-     * @returns {void}
-     */
-    redirector(delay, uniform_resource_locator) {
-        setTimeout(() => {
-            window.location.href = uniform_resource_locator;
-        }, delay);
-    }
-
-    /**
      * Retrieving the height of the component for the title.
      * @param {string} title The title of the media content.
      * @returns {string}
@@ -132,43 +120,6 @@ class YouTube extends Component {
         const coefficient = (title.length <= limit) ? 1 : Math.ceil(title.length / limit);
         const height_coefficient = component_height_coefficient / coefficient;
         return `calc(var(--metadata-height) / ${height_coefficient})`;
-    }
-
-    /**
-     * Handles the click event on a component.
-     * @param {MouseEvent} event The click event.
-     * @returns {void}
-     */
-    handleClick = (event) => {
-        event.preventDefault();
-        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            window.open(uniform_resource_locator, "_blank");
-        })
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            this.redirector(delay, window.location.href);
-        });
-    };
-
-    /**
-     * Decoding HTML entities in a given string.
-     * 
-     * This function takes a string that may contain HTML entities and returns the decoded version.  It uses a temporary `textarea` element to leverage the browser's parsing capabilities.
-     * @param {string} encoded_string - The string potentially containing HTML entities.
-     * @returns {string}
-     */
-    decodeHtmlEntities(encoded_string) {
-        if (typeof encoded_string !== "string") {
-            console.warn(`Component: Trend\nMessage: The data is not a string.\nData: ${encoded_string}`);
-            return encoded_string;
-        }
-        const text_area = document.createElement("textarea");
-        text_area.innerHTML = encoded_string;
-        return text_area.value;
     }
 
     /**

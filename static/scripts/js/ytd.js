@@ -19,16 +19,6 @@ class YTD {
          */
         this.__bodyId;
         /**
-         * Stylesheets of the application
-         * @type {string[]}
-         */
-        this._stylesheets = [
-            "/static/stylesheets/ytd.css",
-            "/static/stylesheets/desktop.css",
-            "/static/stylesheets/mobile.css",
-            "/static/stylesheets/tablet.css",
-        ];
-        /**
          * Relationship of the object
          * @type {string}
          */
@@ -38,15 +28,6 @@ class YTD {
          * @type {string}
          */
         this.__mimeType;
-        /**
-         * Media queries for the stylesheets
-         * @type {string[]}
-         */
-        this._mediaQueries = [
-            "screen and (min-width: 1024px)",
-            "screen and (min-width: 640px) and (max-width: 1023px)",
-            "screen and (max-width: 639px)",
-        ];
         /**
          * The body of the page
          * @type {HTMLBodyElement}
@@ -68,7 +49,7 @@ class YTD {
          * Contains descriptive metadata about a document.  It inherits
          * all of the properties and methods described in the
          * HTMLElement interface.
-         * @type {HTMLMetaElement|null}
+         * @type {HTMLMetaElement}
          */
         this.__meta;
         /**
@@ -83,11 +64,6 @@ class YTD {
          * @type {string}
          */
         this.__origin;
-        /**
-         * The identifiers of the stylsheets.
-         * @type {string[]}
-         */
-        this._stylesheetIdentifiers = ["ytd-css", "desktop-css", "mobile-css", "tablet-css"];
         this.init();
     }
 
@@ -197,14 +173,14 @@ class YTD {
     }
 
     /**
-     * @returns {HTMLMetaElement|null}
+     * @returns {HTMLMetaElement}
      */
     getMeta() {
         return this.__meta;
     }
 
     /**
-     * @param {HTMLMetaElement|null} meta
+     * @param {HTMLMetaElement} meta
      * @returns {void}
      */
     setMeta(meta) {
@@ -257,26 +233,6 @@ class YTD {
         }
         this.getBody().id = this.getBodyId();
         this.loadData();
-    }
-
-    /**
-     * Adding the stylesheets needed for the application.
-     * @returns {void}
-     */
-    addStylesheets() {
-        this._stylesheetIdentifiers.forEach((identifier) => this.addStylesheet(identifier));
-    }
-
-    /**
-     * Adding the stylesheet based on its identifier.
-     * @param {string} identifier The identifier of the stylesheet.
-     * @returns {void}
-     */
-    addStylesheet(identifier) {
-        let link = document.getElementById(identifier);
-        if (link) {
-            link.rel = "stylesheet";
-        }
     }
 
     /**
@@ -361,23 +317,6 @@ class YTD {
         this.addTitle();
         this.addDescription();
         this.resizeApplication();
-    }
-
-    /**
-     * Retrieving the media query needed for the stylesheets.
-     * @param {string} href The hyperlink of the stylesheet.
-     * @returns {string}
-     */
-    getMediaQuery(href) {
-        if (href.includes("desktop")) {
-            return this._mediaQueries[0];
-        } else if (href.includes("mobile")) {
-            return this._mediaQueries[2];
-        } else if (href.includes("tablet")) {
-            return this._mediaQueries[1];
-        } else {
-            return "";
-        }
     }
 
     /**
@@ -680,4 +619,3 @@ window.addEventListener("resize", () => application.resizeApplication(), true);
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => load());
 }
-document.addEventListener("DOMContentLoaded", () => application.addStylesheets(), true);

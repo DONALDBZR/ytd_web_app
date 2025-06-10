@@ -56,16 +56,12 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * The methods to be executed when the component has been
-     * updated.
+     * The methods to be executed when the component has been updated.
      * @returns {void}
      */
     componentDidUpdate() {
         if (!this.state.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Update`);
-            }, 2000);
+            setTimeout(() => this.setData(), 1000);
         }
     }
 

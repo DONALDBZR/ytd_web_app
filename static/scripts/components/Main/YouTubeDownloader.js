@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import MainUtilities from "../utilities/Main";
 
 
 /**
@@ -39,6 +40,11 @@ class YouTubeDownloader extends Component {
          * @type {Tracker}
          */
         this.tracker = null;
+        /**
+         * The utility class of the Main component.
+         * @type {MainUtilities}
+         */
+        this.main_utilities = new MainUtilities();
     }
 
     /**
@@ -66,25 +72,6 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * Parsing and validating media metadata from localStorage.
-     * 
-     * - Attempts to parse the provided JSON string and extract the `data` property.
-     * - If parsing fails, logs the error and rethrows it as a new `Error`.
-     * @param {?string} local_storage_data The data from the local storage.
-     * @returns {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: ?string, video: ?string}}
-     * @throws {Error} If the JSON cannot be parsed or does not match expected structure.
-     */
-    getMedia(local_storage_data) {
-        try {
-            const parsed_data = JSON.parse(local_storage_data);
-            return parsed_data.data;
-        } catch (error) {
-            console.error(`The application has failed to parse the data.\nError: ${error.message}`);
-            throw new Error(error.message);
-        }
-    }
-
-    /**
      * Initializing the component's state using media metadata stored in `localStorage`, sets up tracking, and triggers media file verification.
      * 
      * - Attempts to retrieve and parse the `media` object from localStorage via `getMedia()`.
@@ -98,7 +85,7 @@ class YouTubeDownloader extends Component {
      */
     setData() {
         try {
-            const loading_icon = document.querySelector("#loading");
+            const loading_icon: HTMLDivElement = document.querySelector("#loading");
             const local_storage_data = localStorage.getItem("media");
             const media = (typeof local_storage_data == "string") ? this.getMedia(local_storage_data) : null;
             const data_loaded = (media != null && window.Tracker);

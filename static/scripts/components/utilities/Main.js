@@ -119,9 +119,10 @@ class Main extends Application {
      * This method prevents the default form or link behavior, displays a loading indicator, parses the YouTube uniform resource locator, determines the media type, extracts the unique identifier, and initiates the media download process.  If an error occurs during uniform resource locator processing, it logs the error to the console.
      * @param {MouseEvent} event - The mouse event triggered by the user interaction.
      * @param {string} media_uniform_resource_locator - The uniform resource locator of the media.
+     * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
      * @returns {void}
      */
-    retrieveMedia(event, media_uniform_resource_locator) {
+    retrieveMedia(event, media_uniform_resource_locator, tracker) {
         event.preventDefault();
         const loading_icon = document.querySelector("#loading");
         loading_icon.style.display = "flex";
@@ -131,7 +132,7 @@ class Main extends Application {
             const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
             const identifier = this.getIdentifier(uniform_resource_locator, type);
             this.retrieveMediaIdentifierExists(identifier);
-            this.downloadMedia(platform, type, identifier, 200);
+            this.downloadMedia(platform, type, identifier, 200, tracker);
         } catch (error) {
             console.error(`There is an error while processing the uniform resource locator for downloading the media content.\nError: ${error.message}`);
             setTimeout(() => window.location.reload(), 200);

@@ -71,29 +71,31 @@ class YouTube extends Component {
     }
 
     /**
-     * Setting the main state of the component.
+     * Setting the main state of the component with media metadata from `localStorage`.
+     * 
+     * This method retrieves media metadata using `main_utilities.getMedia()`.  If the data is fully loaded, it updates the component's state with the media under `Media.YouTube`, updates the system's `data_loaded` flag, initializes the `tracker`, hides the loading icon, and logs the load status to the console.
      * @returns {void}
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
-        const local_storage_data = localStorage.getItem("media");
-        const media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-        const data_loaded = (media != null && window.Tracker);
+        const {media, data_loaded} = this.main_utilities.getMedia();
+        if (!data_loaded) {
+            return;
+        }
         this.setState((previous) => ({
             ...previous,
             Media: {
                 ...previous.Media,
-                YouTube: (data_loaded) ? media : this.state.Media.YouTube,
+                YouTube: media,
             },
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,
             },
         }));
-        this.tracker = (window.Tracker) ? window.Tracker : null;
-        if (data_loaded) {
-            loading_icon.style.display = "none";
-        }
+        this.tracker = window.Tracker;
+        loading_icon.style.display = "none";
+        console.info(`Route: ${window.location.pathname}\nComponent: YouTube\nData Status: Loaded`);
     }
 
     /**

@@ -274,17 +274,18 @@ class YTD {
      * @returns {void}
      */
     addDescription() {
-        const data = localStorage.getItem("media");
-        const is_homepage = (this.getRequestURI() == "" || this.getRequestURI() == "/");
-        if (!data && !is_homepage) {
-            setTimeout(() => this.addDescription(), 1000);
-        }
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
+        const data = localStorage.getItem("media");
+        const is_homepage = (this.getRequestURI() == "" || this.getRequestURI() == "/");
         if (is_homepage) {
             this.getMeta().content = "Extractio extracts content from various platforms for various needs.";
             this.getHead().appendChild(this.getMeta());
             setTimeout(() => this.configureRobot(), 2000);
+            return;
+        }
+        if (!data) {
+            setTimeout(() => this.addDescription(), 1000);
             return;
         }
         const media = JSON.parse(data).data;

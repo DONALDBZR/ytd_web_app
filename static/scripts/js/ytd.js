@@ -619,7 +619,7 @@ class YTD {
             return;
         }
         status = (current_time < trend.timestamp + 86400) ? 304 : 204;
-        if (current_time < trend.timestamp + 86400) {
+        if (status == 304) {
             trend.timestamp = current_time + 86400;
             localStorage.setItem(data_object, JSON.stringify(trend));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);

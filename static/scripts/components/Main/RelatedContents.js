@@ -79,28 +79,6 @@ class RelatedContents extends Component {
     }
 
     /**
-     * Handling the click event on a component.
-     * @param {MouseEvent} event The click event.
-     * @returns {void}
-     */
-    handleClick = (event) => {
-        event.preventDefault();
-        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            window.open(uniform_resource_locator, "_blank");
-        })
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
-        });
-    };
-
-    /**
      * Rendering the media content that are related with the main content.
      * @param {{duration: string, channel: string, title: string, uniform_resource_locator: string, author_channel: string, thumbnail: string}} media The metadata of the media content.
      * @returns {React.JSX.Component}
@@ -110,14 +88,14 @@ class RelatedContents extends Component {
         return (
             <div className="card" key={identifier}>
                 <div className="thumbnail">
-                    <a href={media.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
+                    <a href={media.uniform_resource_locator} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>
                         <img src={media.thumbnail} loading="lazy" alt={`Thumbnail for ${media.title}`} />
                     </a>
                 </div>
                 <div className="metadata">
                     <div className="title">{media.title}</div>
                     <div className="author">
-                        <a href={media.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{media.channel}</a>
+                        <a href={media.author_channel} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{media.channel}</a>
                     </div>
                     <div className="duration">
                         <div>Duration</div>

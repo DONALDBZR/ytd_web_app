@@ -95,30 +95,6 @@ class YouTube extends Component {
     }
 
     /**
-     * Handling the media retrieval process from a given YouTube uniform resource locator.
-     * 
-     * This method prevents the default form or link behavior, displays a loading indicator, parses the YouTube uniform resource locator, determines the media type, extracts the unique identifier, and initiates the media download process.  If an error occurs during uniform resource locator processing, it logs the error to the console.
-     * @param {MouseEvent} event - The mouse event triggered by the user interaction.
-     * @returns {void}
-     */
-    retrieveMedia(event) {
-        event.preventDefault();
-        const loading_icon = document.querySelector("#loading");
-        loading_icon.style.display = "flex";
-        console.log(`Uniform Resource Locator: ${this.state.Media.YouTube.uniform_resource_locator}`);
-        try {
-            const uniform_resource_locator = new URL(this.state.Media.YouTube.uniform_resource_locator);
-            const platform = this.getPlatform(uniform_resource_locator);
-            const type = (uniform_resource_locator.pathname.includes("shorts")) ? "Shorts" : "Video";
-            const identifier = this.getIdentifier(uniform_resource_locator, type);
-            this.retrieveMediaIdentifierExists(identifier);
-            this.downloadMedia(platform, type, identifier, 200);
-        } catch (error) {
-            console.error(`There is an error while processing the uniform resource locator for downloading the media content.\nError: ${error.message}`);
-        }
-    }
-
-    /**
      * Sending a tracking event and initiates the media download process.
      * 
      * Based on the provided media type and identifier, this method constructs the appropriate download route, logs a tracking event, and performs the download process.  It manages the server response and handles any errors by logging them and optionally redirecting the user after a delay.

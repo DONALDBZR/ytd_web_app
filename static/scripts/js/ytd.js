@@ -633,9 +633,9 @@ class YTD {
 
     /**
      * Setting the session of the user.
-     * @returns {Promise<void>}
+     * @returns {void}
      */
-    async setSession() {
+    setSession() {
         const data_object = "session";
         const session = JSON.parse(localStorage.getItem(data_object));
         const route = "/Session/";
@@ -643,8 +643,8 @@ class YTD {
         let status = 0;
         const current_time = Math.floor(Date.now() / 1000);
         if (!session) {
-            status = await this.getSession(route, request_method, data_object);
-            console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+            this.getSession(route, request_method, data_object)
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
         status = (current_time < session.Client.timestamp + 3600) ? 304 : 204;
@@ -655,8 +655,8 @@ class YTD {
             return;
         }
         localStorage.removeItem(data_object);
-        status = await this.getSession(route, request_method, data_object);
-        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+        this.getSession(route, request_method, data_object)
+        .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
     }
 }
 

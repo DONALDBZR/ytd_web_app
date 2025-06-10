@@ -181,6 +181,46 @@ class Main extends Application {
             throw new Error(error.message);
         }
     }
+
+    /**
+     * Sending a POST request to the server to initiate the download of a media file.
+     * 
+     * Constructs the YouTube media uniform resource locator based on the media type and sends it to the backend endpoint with metadata.  Returns a simplified object containing the HTTP status code and the uniform resource locator to which the user can be redirected to access the media.
+     * @param {string} platform - The supported platform.
+     * @param {string} type - The type of media.
+     * @param {string} identifier - The unique media identifier.
+     * @returns {Promise<{status: number, uniform_resource_locator: string}>} A promise that resolves with the server response status and download route.
+     * @throws {Error} Throws an error if the request fails or JSON parsing fails.
+     */
+    async postMediaDownload(platform, type, identifier) {
+        const query = "/Media/Download";
+        const youtube_uniform_resource_locator = (type == "Shorts") ? `https://www.youtube.com/shorts/${identifier}`: `https://www.youtube.com/watch?v=${identifier}`;
+        try {
+            const response = await fetch(query, {
+                method: "POST",
+                body: JSON.stringify({
+                    Media: {
+                        uniform_resource_locator: youtube_uniform_resource_locator,
+                        platform: platform,
+                        type: type,
+                        identifier: identifier,
+                    },
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            const data = await response.json();
+            const uniform_resource_locator = (response.status == 201) ? ((type == "Shorts") ? `/Download/YouTube/Shorts/${data.identifier.replaceAll("shorts/", "")}` : `/Download/YouTube/${data.identifier}`) : "/";
+            return {
+                status: response.status,
+                uniform_resource_locator: uniform_resource_locator,
+            };
+        } catch (error) {
+            console.error(`There is an issue while downloading the file.\nError: ${error.message}`);
+            throw new Error(error.message);
+        }
+    }
 }
 
 export default Main;

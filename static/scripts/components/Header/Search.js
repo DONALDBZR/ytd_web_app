@@ -73,18 +73,21 @@ class HeaderSearch extends Component {
      * @returns {void}
      */
     setData() {
-        const response = this.Header_Utilities.setData();
+        const {session, data_loaded, view_route} = this.Header_Utilities.getSession();
+        if (!data_loaded) {
+            return;
+        }
         this.setState((previous) => ({
             ...previous,
-            Session: (response.data_loaded) ? response.session : this.state.Session,
+            Session: session,
             System: {
                 ...previous.System,
-                data_loaded: response.data_loaded,
-                view_route: (response.data_loaded) ? response.view_route : "/",
+                data_loaded: data_loaded,
+                view_route: view_route,
             },
         }));
-        this.tracker = (window.Tracker) ? window.Tracker : null;
-        console.info("The state of the application has been updated.");
+        this.tracker = window.Tracker;
+        console.info(`Route: ${view_route}\nComponent Status: Loaded`);
     }
 
     /**

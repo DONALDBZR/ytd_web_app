@@ -51,10 +51,7 @@ class RelatedContents extends Component {
      */
     componentDidUpdate() {
         if (!this.state.System.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.RelatedContents\nComponent Status: Update`);
-            }, 2000);
+            setTimeout(() => this.setData(), 1000);
         }
     }
 

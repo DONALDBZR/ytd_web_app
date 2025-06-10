@@ -3,8 +3,7 @@
  */
 class YTD {
     /**
-     * Setting the data needed as well as initalizing the
-     * application
+     * Setting the data needed as well as initalizing the application.
      * @returns {YTD}
      */
     constructor() {
@@ -64,6 +63,11 @@ class YTD {
          * @type {string}
          */
         this.__origin;
+        /**
+         * The identifiers of the stylesheets.
+         * @type {[string]}
+         */
+        this._stylesheetIdentifiers = ["ytd-css", "desktop-css", "tablet-css", "mobile-css"];
         this.init();
     }
 

@@ -242,7 +242,7 @@ class YouTubeDownloader extends Component {
         }
         return (
             <div className="button">
-                <button name="file_downloader" value={file_path} onClick={this.getFile.bind(this)}>
+                <button name="file_downloader" value={file_path} onClick={(event) => this.main_utilities.getFile(event, this.tracker)}>
                     {this.renderDownloadIcon(type)}
                 </button>
             </div>

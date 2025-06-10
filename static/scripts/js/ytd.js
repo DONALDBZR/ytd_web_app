@@ -244,6 +244,7 @@ class YTD {
      * @returns {void}
      */
     addTitle() {
+        this.setTitle(document.createElement("title"));
         const is_homepage = (this.getRequestURI() == "" || this.getRequestURI() == "/");
         if (is_homepage) {
             this.getTitle().text = "Extractio";

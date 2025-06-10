@@ -60,27 +60,6 @@ class Header extends Application {
     }
 
     /**
-     * Retrieving the identifier of the content based on the type of the content and from the parsed uniform resource locator.
-     * 
-     * This function handles three types of YouTube uniform resource locators:
-     * - Shorts uniform resource locators
-     * - Shortened uniform resource locators
-     * - Standard video uniform resource locators with query parameters
-     * @param {URL} uniform_resource_locator A parsed URL object representing the media link.
-     * @param {string} type The media type.
-     * @returns {string|null}
-     */
-    getIdentifier(uniform_resource_locator, type) {
-        if (type == "Shorts") {
-            return uniform_resource_locator.pathname.replaceAll("/shorts/", "");
-        }
-        if (uniform_resource_locator.hostname == "youtu.be") {
-            return uniform_resource_locator.pathname.slice(1);
-        }
-        return uniform_resource_locator.searchParams.get("v");
-    }
-
-    /**
      * Validating the presence of a media identifier extracted from a URL.
      * 
      * This function checks if the given identifier exists.  If it does not, it throws an error indicating that the media URL is invalid due to a missing identifier.

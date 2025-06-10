@@ -32,7 +32,7 @@ class Header extends Application {
 
     /**
      * Retrieving the session data for the component.
-     * @returns {{session: ?{Client: {timestamp: number, color_scheme: string}}, data_loaded: boolean, view_route: string}}
+     * @returns {{session: {Client: {timestamp: number, color_scheme: string}}, data_loaded: boolean, view_route: string}}
      */
     getSession() {
         const session = JSON.parse(localStorage.getItem("session"));

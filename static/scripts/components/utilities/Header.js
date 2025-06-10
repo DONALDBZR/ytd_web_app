@@ -32,11 +32,17 @@ class Header extends Application {
 
     /**
      * Retrieving the session data for the component.
-     * @returns {{session: {Client: {timestamp: number, color_scheme: string}}, data_loaded: boolean, view_route: string} | {data_loaded: boolean, view_route: string}}
+     * @returns {{session: ?{Client: {timestamp: number, color_scheme: string}}, data_loaded: boolean, view_route: string}}
      */
-    setData() {
+    getSession() {
         const session = JSON.parse(localStorage.getItem("session"));
-        const data_loaded = (session != null && window.Tracker);
+        const data_loaded = (session && window.Tracker);
+        if (!data_loaded) {
+            return {
+                data_loaded: data_loaded,
+                view_route: window.location.pathname,
+            };
+        }
         const root = document.querySelector(":root");
         const color_1 = (data_loaded) ? ((session.Client.color_scheme == "light") ? "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))" : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))") : "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))";
         const color_2 = (data_loaded) ? ((session.Client.color_scheme == "light") ? "rgb(calc(var(--percentage) * (27 / 255)), calc(var(--percentage) * (54 / 255)), calc(var(--percentage) * (92 / 255)))" : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))") : "rgb(calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (250 / 255)), calc(var(--percentage) * (90 / 255)))";
@@ -46,12 +52,6 @@ class Header extends Application {
         root.style.setProperty("--color2", color_2);
         root.style.setProperty("--color3", color_3);
         root.style.setProperty("--color5", color_5);
-        if (!data_loaded) {
-            return {
-                data_loaded: data_loaded,
-                view_route: window.location.pathname,
-            };
-        }
         return {
             session: session,
             data_loaded: data_loaded,

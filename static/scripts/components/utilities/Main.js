@@ -160,7 +160,7 @@ class Main extends Application {
             this.manageResponse(response, delay);
         } catch (error) {
             console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
-            this.redirect(delay, window.location.href);
+            setTimeout(() => window.location.reload(), delay);
         }
     }
 
@@ -175,9 +175,10 @@ class Main extends Application {
      */
     manageResponse(response, delay) {
         try {
-            this.clearLocalStorage(response.status);
-            const uniform_resource_locator = (response.status == 201) ? response.uniform_resource_locator : window.location.href;
-            this.redirect(delay, uniform_resource_locator);
+            console.log(`Status: ${response.status}\nUniform Resource Locator: ${response.uniform_resource_locator}`);
+            // this.clearLocalStorage(response.status);
+            const uniform_resource_locator = (response.status == 201 && response.uniform_resource_locator) ? response.uniform_resource_locator : window.location.href;
+            // this.redirect(delay, uniform_resource_locator);
         } catch (error) {
             console.error(`There is an error while processing the response.\nError: ${error.message}`);
             throw new Error(error.message);

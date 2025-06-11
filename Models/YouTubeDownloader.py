@@ -593,7 +593,10 @@ class YouTube_Downloader:
         Raises:
             NotFoundError: If no valid audio stream is available.
         """
-        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and self.getAudioCodec() in stream["acodec"]] # type: ignore
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if isinstance(stream.get("abr"), (int, float)) and float(str(stream["abr"])) > 0 and isinstance(stream.get("acodec"), str) and self.getAudioCodec() in str(stream["acodec"])]
+        if not streams:
+            self.getLogger().error("There is no audio stream with the codec needed.")
+            raise NotFoundError("There is no audio stream with the codec needed.")
         adaptive_bitrate: float = float(max(streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in streams if stream["abr"] == adaptive_bitrate][0])
         self.setMimeType("audio/mp3")
@@ -616,6 +619,7 @@ class YouTube_Downloader:
         maximum_height: int = 1080 if "shorts/" not in self.getIdentifier() else 1920
         maximum_width: int = 1920 if "shorts/" not in self.getIdentifier() else 1080
         audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and self.getAudioCodec() in str(stream.get("acodec"))]
+        self.getLogger().debug(f"Function: getVideoFile()\nStreams: {audio_streams}")
         adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
         self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
         if self.getStream() == None:

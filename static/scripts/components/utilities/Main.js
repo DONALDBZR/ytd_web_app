@@ -157,7 +157,7 @@ class Main extends Application {
                 uniform_resource_locator: uniform_resource_locator,
             });
             const response = await this.postMediaDownload(platform, type, identifier);
-            await this.manageResponse(response, delay);
+            this.manageResponse(response, delay);
         } catch (error) {
             console.error(`An error occurred while sending the event or setting the route!\nError: ${error.message}`);
             this.redirect(delay, window.location.href);

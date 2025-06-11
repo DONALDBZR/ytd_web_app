@@ -328,42 +328,62 @@ class YouTube_Downloader:
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Searching and retrieving information about a YouTube video based on the provided URL.
+        Extracting metadata for a YouTube video using `yt-dlp` and returning relevant information.
 
-        This function:
-        - Extracts the information about the video from YouTube using the `youtube-dl` (or `yt-dlp`) library.
-        - Handles both successful and failed extraction, including fetching meta-data from an internal source if needed.
-        - Sets various properties such as video length, publish date, author, and title based on the metadata.
-        - Returns a dictionary containing key information about the video, including the title, author, view count, and media file locations (audio/video).
+        This method attempts to retrieve video metadata either from YouTube directly or from a local/internal cache.  The retrieved data includes title, author, view count, publish date, thumbnail, duration, and file locations.
+
+        Key Features:
+            - Uses yt-dlp to extract video metadata without downloading.
+            - Attempts to use internal database metadata if available.
+            - Constructs and returns a clean dictionary of metadata for front-end consumption.
+            - Handles unexpected errors gracefully and logs details.
 
         Returns:
-            Dict[str, Union[str, int, None]]
+            Dict[str, Union[str, int, None]]: A dictionary containing video metadata, including:
+                - 'uniform_resource_locator': str — Original URL
+                - 'author': str — Author/uploader name
+                - 'title': str — Video title
+                - 'identifier': str — Sanitized video ID
+                - 'author_channel': str — URL to the author's channel
+                - 'views': int — Number of views
+                - 'published_at': str — ISO date string of publication
+                - 'thumbnail': str — URL to the thumbnail
+                - 'duration': str — Video duration in HH:MM:SS
+                - 'audio_file': Optional[str] — Path to stored audio file (if found)
+                - 'video_file': Optional[str] — Path to stored video file (if found)
 
         Raises:
-            ValueError: If the response from YouTube is invalid or cannot be parsed.
-            Exception: If an error occurs during the search or data extraction process.
+            ValueError: If the video metadata cannot be parsed correctly.
+            Exception: For any other unexpected errors.
         """
         options: Dict[str, bool] = {
             "quiet": True,
-            "skip_download": True
+            "skip_download": True,
+            "nocheckcertificate": True,
+            "force_generic_extractor": False,
+            "extract_flat": False
         }
         self.setVideo(YoutubeDL(options))
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
         try:
-            raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
+            raw_youtube: Dict[str, Any] = self.getVideo().extract_info(
+                url=self.getUniformResourceLocator(),
+                download=False
+            ) # type: ignore
             self.__isRawYouTube(raw_youtube)
             youtube: Dict[str, Any] = {
                 key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
             }
             meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
-            self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
-            self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
-            self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
+            has_metadata: bool = meta_data["status"] == 200
+            self.setLength(int(meta_data["data"][0]["length"]) if has_metadata else int(youtube["duration"])) # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if has_metadata else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
+            self.setAuthor(str(meta_data["data"][0]["author"]) if has_metadata else str(youtube["uploader"])) # type: ignore
+            self.setTitle(str(meta_data["data"][0]["title"]) if has_metadata else str(youtube["title"])) # type: ignore
             self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-            file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
-            audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
-            video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
+            file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if has_metadata else {} # type: ignore
+            audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if has_metadata else None
+            video_file: Union[str, None] = escape(str(file_locations["video_file"])) if has_metadata else None
             self.__presentGetYouTube(int(str(meta_data["status"])))
             return {
                 "uniform_resource_locator": self.getUniformResourceLocator(),
@@ -593,15 +613,30 @@ class YouTube_Downloader:
         Raises:
             NotFoundError: If no valid audio stream is available.
         """
-        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if isinstance(stream.get("abr"), (int, float)) and float(str(stream["abr"])) > 0 and isinstance(stream.get("acodec"), str) and self.getAudioCodec() in str(stream["acodec"])]
+        # streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if isinstance(stream.get("abr"), (int, float)) and float(str(stream["abr"])) > 0 and isinstance(stream.get("acodec"), str) and self.getAudioCodec() in str(stream["acodec"])]
+        # if not streams:
+        #     self.getLogger().error("There is no audio stream with the codec needed.")
+        #     raise NotFoundError("There is no audio stream with the codec needed.")
+        # adaptive_bitrate: float = float(max(streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
+        # self.setStream([stream for stream in streams if stream["abr"] == adaptive_bitrate][0])
+        # self.setMimeType("audio/mp3")
+        # if self.getStream() == None:
+        #     raise NotFoundError("There is not valid audio stream available.")
+        # return self.__downloadAudio(self.getStream())
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = []
+        for stream in self.getStreams():
+            is_audio_only: bool = stream.get("vcodec") == "none"
+            adaptive_bitrate: float = stream.get("abr") or stream.get("tbr") or 0 # type: ignore
+            audio_codec: str = stream.get("acodec", "Unknown") # type: ignore
+            if is_audio_only and adaptive_bitrate > 0 and isinstance(audio_codec, str):
+                streams.append(stream)
         if not streams:
             self.getLogger().error("There is no audio stream with the codec needed.")
             raise NotFoundError("There is no audio stream with the codec needed.")
-        adaptive_bitrate: float = float(max(streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
-        self.setStream([stream for stream in streams if stream["abr"] == adaptive_bitrate][0])
+        preferred_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in streams if self.getAudioCodec() in str(stream.get("acodec"))]
+        stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = max(preferred_streams or streams, key=lambda stream: stream.get("abr", 0.00)) # type: ignore
+        self.setStream(stream)
         self.setMimeType("audio/mp3")
-        if self.getStream() == None:
-            raise NotFoundError("There is not valid audio stream available.")
         return self.__downloadAudio(self.getStream())
 
     def getVideoFile(self) -> str:

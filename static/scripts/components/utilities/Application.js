@@ -51,12 +51,12 @@ class Application {
     /**
      * Clearing specific `localStorage` entries if the HTTP status indicates a successful response.
      * 
-     * This function removes the `media` and `related_content` keys from `localStorage` only if the provided status is 200 or 201.  If the status differs, no action is taken.
-     * @param {number} status - The HTTP status code returned from the server.
+     * This function removes the `media` and `related_content` keys from `localStorage` only if the provided status is `true`.  If the status differs, no action is taken.
+     * @param {boolean} status - The status for clearing the `localStorage`
      * @returns {void}
      */
     clearLocalStorage(status) {
-        if (status == 200 || status == 201) {
+        if (status) {
             localStorage.removeItem("media");
             localStorage.removeItem("related_content");
         }

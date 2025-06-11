@@ -214,9 +214,11 @@ class Main extends Application {
                     "Content-Type": "application/json",
                 },
             });
+            const data = await response.json();
             const uniform_resource_locator = (response.status == 201) ? ((type == "Shorts") ? `/Download/YouTube/Shorts/${identifier}` : `/Download/YouTube/${identifier}`) : "/";
+            const status = (response.status == 201 && data) ? 201 : 503;
             return {
-                status: response.status,
+                status: status,
                 uniform_resource_locator: uniform_resource_locator,
             };
         } catch (error) {

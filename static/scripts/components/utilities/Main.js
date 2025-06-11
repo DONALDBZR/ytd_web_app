@@ -175,6 +175,7 @@ class Main extends Application {
      */
     manageResponse(response, delay) {
         try {
+            can_clear_cache = (response.status == 201 && )
             console.log(`Status: ${response.status}\nUniform Resource Locator: ${response.uniform_resource_locator}`);
             // this.clearLocalStorage(response.status);
             const uniform_resource_locator = (response.status == 201 && response.uniform_resource_locator) ? response.uniform_resource_locator : window.location.href;
@@ -213,8 +214,7 @@ class Main extends Application {
                     "Content-Type": "application/json",
                 },
             });
-            const data = await response.json();
-            const uniform_resource_locator = (response.status == 201) ? ((type == "Shorts") ? `/Download/YouTube/Shorts/${data.identifier.replaceAll("shorts/", "")}` : `/Download/YouTube/${data.identifier}`) : "/";
+            const uniform_resource_locator = (response.status == 201) ? ((type == "Shorts") ? `/Download/YouTube/Shorts/${identifier}` : `/Download/YouTube/${identifier}`) : "/";
             return {
                 status: response.status,
                 uniform_resource_locator: uniform_resource_locator,

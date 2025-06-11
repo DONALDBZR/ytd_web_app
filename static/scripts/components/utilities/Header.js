@@ -180,7 +180,8 @@ class Header extends Application {
     async setMediaYouTubeUniformResourceLocator(platform, type, identifier) {
         const response = await this.getSearchMedia(platform, type, identifier);
         try {
-            this.clearLocalStorage(response.status);
+            can_clear_cache = (response.status == 200);
+            this.clearLocalStorage(can_clear_cache);
             const uniform_resource_locator = this.sanitizeUniformResourceLocator(decodeURIComponent(response.data.uniform_resource_locator));
             return {
                 status: response.status,

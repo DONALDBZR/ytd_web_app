@@ -666,7 +666,8 @@ class YouTube_Downloader:
         Returns:
             An updated list of audio streams including the candidate stream if it passed validation.
         """
-        if is_audio_only and adaptive_bitrate > 0 and isinstance(audio_codec, str):
+        if is_audio_only:
+            self.getLogger().warn(f"Audio stream missing metadata\nStream: {stream}") if adaptive_bitrate == 0 or audio_codec in ("unknown", "") else None
             streams.append(stream)
         return streams
 

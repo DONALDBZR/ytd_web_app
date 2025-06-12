@@ -625,10 +625,19 @@ class YouTube_Downloader:
 
     def _getAudioStreams(self) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
         """
-        Retrieving the audio streams from all of the possible streams.
+        Extracting all potential audio-only streams from the current list of available media streams.
+
+        Each stream is examined for the following:
+        - It must be audio-only (`vcodec == "none"`).
+        - It should have a measurable bitrate (`abr` or `tbr`).
+        - It may or may not specify an audio codec (`acodec`).
+
+        This method prepares stream metadata and delegates filtering logic to the internal
+        `__getAudioStreams` method, which applies application-specific validation.
 
         Returns:
-            List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]: A list of audio streams.
+            List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+                A filtered list of stream metadata dictionaries representing audio-only streams.
         """
         streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = []
         for stream in self.getStreams():

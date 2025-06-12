@@ -214,8 +214,9 @@ class Main extends Application {
                 },
             });
             const data = await response.json();
-            const uniform_resource_locator = (response.status == 201) ? ((type == "Shorts") ? `/Download/YouTube/Shorts/${identifier}` : `/Download/YouTube/${identifier}`) : "/";
-            const status = (response.status == 201 && data.uniform_resource_locator) ? 201 : 503;
+            const is_content_downloaded = Boolean(response.status == 201 && data.uniform_resource_locator);
+            const uniform_resource_locator = (is_content_downloaded) ? ((type == "Shorts") ? `/Download/YouTube/Shorts/${identifier}` : `/Download/YouTube/${identifier}`) : window.location.href;
+            const status = (is_content_downloaded) ? response.status : 503;
             return {
                 status: status,
                 uniform_resource_locator: uniform_resource_locator,

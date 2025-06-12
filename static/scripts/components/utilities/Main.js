@@ -286,14 +286,15 @@ class Main extends Application {
      *   removing internal server paths based on known directory locations.
      * 
      * @param {number} status - HTTP status code indicating the availability of the video.
+     * @param {?string} video_file_path - The file path of the video.
      * @returns {Promise<string>} A promise resolving to the processed video file path or search redirection URL.
      */
-    async handleVideoStatus(status) {
+    async handleVideoStatus(status, video_file_path) {
         if (status != 200) {
             const identifier = window.location.pathname.replace("/Download/YouTube/", "");
             return `/Search/${identifier}`;
         }
-        const video_path = this.state.File.video;
+        const video_path = video_file_path;
         return (video_path.includes("extractio")) ? video_path.replace("/home/darkness4869/Documents/extractio", "") : video_path.replace("/var/www/html/ytd_web_app", "");
     }
 

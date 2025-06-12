@@ -594,7 +594,7 @@ class YouTube_Downloader:
             )
             self.setStreams(info["formats"]) # type: ignore
             return {
-                "audio": self.getAudioFile(),
+                "audio": self.getAudioFile(audio),
                 "video": self.getVideoFile()
             }
         except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:

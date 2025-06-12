@@ -736,7 +736,7 @@ class YouTube_Downloader:
         streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]] = []
         for stream in self.getStreams():
             is_video: bool = stream.get("vbr") is not None and stream.get("vbr") != 0.00
-            streams = self._getValidVideoStreams(streams, stream, is_video)
+            streams = self._getValidVideoStreams(streams, stream, is_video) # type: ignore
         if not streams:
             self.getLogger().error("There is no video stream.")
             raise NotFoundError("There is no video stream.")
@@ -750,6 +750,22 @@ class YouTube_Downloader:
             is_in_resolution: bool = stream.get("height") == height and stream.get("width") == width
             is_in_size: bool = stream.get("filesize") == file_size
             streams = self.__getVideoStreams(streams, stream, is_in_resolution, is_in_size, video_codec)
+        return streams
+
+    def _getValidVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_video: bool) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+        """
+        Appending a stream to the list of valid video streams if it qualifies as a video.
+
+        Args:
+            streams (List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]): The current list of valid video streams.
+            stream (Dict[str, Union[str, int, float, None, Dict[str, str]]]): The stream being evaluated.
+            is_video (bool): True if the stream contains video data (based on vbr presence and value).
+
+        Returns:
+            List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]: The updated list of valid video streams.
+        """
+        if is_video:
+            streams.append(stream)
         return streams
 
     def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:

@@ -178,9 +178,9 @@ class Header extends Application {
      * @throws {Error} If the uniform resource locator processing or state update fails.
      */
     async setMediaYouTubeUniformResourceLocator(platform, type, identifier) {
-        const response = await this.getSearchMedia(platform, type, identifier);
         try {
-            can_clear_cache = (response.status == 200);
+            const response = await this.getSearchMedia(platform, type, identifier);
+            const can_clear_cache = (response.status == 200);
             this.clearLocalStorage(can_clear_cache);
             const uniform_resource_locator = this.sanitizeUniformResourceLocator(decodeURIComponent(response.data.uniform_resource_locator));
             return {

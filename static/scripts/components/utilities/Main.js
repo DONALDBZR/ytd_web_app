@@ -177,7 +177,7 @@ class Main extends Application {
         try {
             const can_clear_local_storage = (response.status == 201);
             this.clearLocalStorage(can_clear_local_storage);
-            this.redirect(delay, uniform_resource_locator);
+            this.redirect(delay, response.uniform_resource_locator);
         } catch (error) {
             console.error(`There is an error while processing the response.\nError: ${error.message}`);
             throw new Error(error.message);

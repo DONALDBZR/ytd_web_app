@@ -325,6 +325,25 @@ class Main extends Application {
     }
 
     /**
+     * Creating the file needed that is generated from the blob retrieved from the server to be downloaded.
+     * @param {Blob} data The data in the form of a blob.
+     * @param {string} file_name The name of the file.
+     * @returns {void}
+     */
+    downloadFileClient(data, file_name) {
+        try {
+            const uniform_resource_locator = URL.createObjectURL(data);
+            const a = document.createElement("a");
+            a.href = uniform_resource_locator;
+            a.download = file_name;
+            a.click();
+            URL.revokeObjectURL(uniform_resource_locator);
+        } catch (error) {
+            console.error("Download Failed: ", error);
+        }
+    }
+
+    /**
      * Checking from the status flag whether the file has been downloaded from the server.
      * @param {Response} response - The response from the server.
      * @returns {void}

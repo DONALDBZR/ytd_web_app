@@ -871,6 +871,7 @@ class YouTube_Downloader:
             Relational_Database_Error: If insertion into the database fails.
         """
         try:
+            self.getLogger().inform("Downloading the audio file.\nFile Path: {file_path}")
             format_identifier: str = stream.get("format_id") # type: ignore
             protocol: str = stream.get("protocol", "") # type: ignore
             format_specification: str = self.getAudioFormatSpecification(format_identifier, protocol)

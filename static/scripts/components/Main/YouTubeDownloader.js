@@ -117,13 +117,14 @@ class YouTubeDownloader extends Component {
      * - Checks the video status from the server.
      * - Handles the video status to determine the correct route (file path or search redirect).
      * - Manages the result by either updating the component state or redirecting the user.
+     * @param {?string} video_file_path - The file path of the video.
      * @returns {void}
      */
-    verifyFile() {
+    verifyFile(video_file_path) {
         const path_name = window.location.pathname;
         const identifier = (path_name.includes("/Shorts/")) ? path_name.replace("/Download/YouTube/Shorts/", "") : path_name.replace("/Download/YouTube/", "");
         this.main_utilities.checkVideoStatus(identifier)
-        .then((status) => this.main_utilities.handleVideoStatus(status))
+        .then((status) => this.main_utilities.handleVideoStatus(status, video_file_path))
         .then((route) => this.manageRoute(route));
     }
 

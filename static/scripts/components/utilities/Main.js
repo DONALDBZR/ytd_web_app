@@ -302,13 +302,16 @@ class Main extends Application {
      * Downloading the file retrieved from the server.
      * @param {MouseEvent} event - The on-click event.
      * @param {Tracker} tracker - The tracker class which will track the user's activity on the application.
+     * @param {string} title - The title of the media content.
+     * @param {string} identifier - The identifier of the media content.
      * @returns {void}
      */
-    async getFile(event, tracker) {
+    async getFile(event, tracker, title, identifier) {
         const button = event.target.parentElement;
         const file_location = button.value;
-        const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
-        const uniform_resource_locator = (file_location.includes("/Public/Audio/")) ? `/Public/Audio/${this.state.identifier}.mp3` : `/Public/Video/${this.state.identifier}.mp4`;
+        const is_audio = Boolean(file_location.includes("/Public/Audio/"));
+        const file_name = (is_audio) ? `${title}.mp3` : `${title}.mp4`;
+        const uniform_resource_locator = (is_audio) ? `/Public/Audio/${identifier}.mp3` : `/Public/Video/${identifier}.mp4`;
         try {
             await tracker.sendEvent("click", {
                 uniform_resource_locator: uniform_resource_locator,

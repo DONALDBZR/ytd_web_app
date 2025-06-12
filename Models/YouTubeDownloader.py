@@ -795,8 +795,8 @@ class YouTube_Downloader:
             Relational_Database_Error: If storing metadata in the relational database fails.
         """
         try:
-            self.getLogger().inform("Downloading the video file.\nFile Path: {file_path}")
-            format_identifier: str = f"{video['format_id']+{audio['format_id']}}" # type: ignore
+            self.getLogger().inform(f"Downloading the video file.\nFile Path: {file_path}")
+            format_identifier: str = f"{video['format_id']}+{audio['format_id']}" # type: ignore
             options: Dict[str, str] = {
                 "format": format_identifier,
                 "merge_output_format": "mp4",

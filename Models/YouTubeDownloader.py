@@ -778,15 +778,10 @@ class YouTube_Downloader:
             Relational_Database_Error: If insertion into the relational database fails.
         """
         try:
-            format_specification: str
             file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
             format_identifier: str = stream.get("format_id") # type: ignore
             protocol: str = stream.get("protocol", "") # type: ignore
-            if format_identifier is None or "m3u8" is str(protocol).lower():
-                self.getLogger().warn("Using fallback format due to unsupported or missing format identifier.")
-                format_specification = "bestaudio"
-            else:
-                format_specification = str(format_identifier)
+            format_specification: str = self.getAudioFormatSpecification(format_identifier, protocol)
             options: Dict[str, str] = {
                 "format": format_specification,
                 "outtmpl": file_path

@@ -96,7 +96,7 @@ class ColorScheme extends Component {
      * @param {number} delay - The delay in milliseconds.
      * @returns {void}
      */
-    setSvg() {
+    setSvg(delay) {
         const dom_element = document.querySelector("header nav div div button").children[0];
         if (typeof dom_element == null) {
             return;

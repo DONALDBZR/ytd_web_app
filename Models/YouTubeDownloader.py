@@ -629,6 +629,22 @@ class YouTube_Downloader:
         self.setMimeType("audio/mp3")
         return self.__downloadAudio(self.getStream())
 
+    def _getAudioStreams(self) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
+        """
+        Retrieving the audio streams from all of the possible streams.
+
+        Returns:
+            List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]: A list of audio streams.
+        """
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = []
+        for stream in self.getStreams():
+            is_audio_only: bool = stream.get("vcodec") == "none"
+            adaptive_bitrate: float = stream.get("abr") or stream.get("tbr") or 0 # type: ignore
+            audio_codec: str = stream.get("acodec", "Unknown") # type: ignore
+            if is_audio_only and adaptive_bitrate > 0 and isinstance(audio_codec, str):
+                streams.append(stream)
+        return streams
+
     def getVideoFile(self) -> str:
         """
         Retrieving the highest-quality video and audio streams and downloads the video file.

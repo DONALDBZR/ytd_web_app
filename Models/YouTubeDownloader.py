@@ -641,8 +641,7 @@ class YouTube_Downloader:
             is_audio_only: bool = stream.get("vcodec") == "none"
             adaptive_bitrate: float = stream.get("abr") or stream.get("tbr") or 0 # type: ignore
             audio_codec: str = stream.get("acodec", "Unknown") # type: ignore
-            if is_audio_only and adaptive_bitrate > 0 and isinstance(audio_codec, str):
-                streams.append(stream)
+            streams = self.__getAudioStreams(streams, stream, is_audio_only, adaptive_bitrate, audio_codec)
         return streams
 
     def __getAudioStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], is_audio_only: bool, adaptive_bitrate: float, audio_codec: str) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:

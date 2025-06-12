@@ -56,16 +56,6 @@ class YouTubeDownloader extends Component {
     }
 
     /**
-     * The methods to be executed when the component has been updated.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.data_loaded) {
-            setTimeout(() => this.setData(), 1000);
-        }
-    }
-
-    /**
      * Initializing the component's state using media metadata stored in `localStorage`, sets up tracking, and triggers media file verification.
      * 
      * - Attempts to retrieve and parse the `media` object from localStorage via `getMedia()`.
@@ -79,9 +69,23 @@ class YouTubeDownloader extends Component {
      */
     setData() {
         const loading_icon = document.querySelector("#loading");
-        const {media, data_loaded} = this.main_utilities.getDownloadedMedia();
         loading_icon.style.display = "flex";
+        if (this.state.System.data_loaded) {
+            loading_icon.style.display = "none";
+            console.info(`Route: ${window.location.pathname}\nComponent: YouTubeDownloader\nComponent Status: Loaded`);
+            return;
+        }
+        this.getData();
+    }
+
+    /**
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
+     */
+    getData() {
+        const {media, data_loaded} = this.main_utilities.getDownloadedMedia();
         if (!data_loaded) {
+            setTimeout(() => this.setData(), 1000);
             return;
         }
         this.setState((previous) => ({
@@ -103,7 +107,7 @@ class YouTubeDownloader extends Component {
             data_loaded: data_loaded,
         }));
         this.tracker = window.Tracker;
-        this.verifyFile(loading_icon);
+        this.verifyFile();
     }
 
     /**
@@ -113,15 +117,14 @@ class YouTubeDownloader extends Component {
      * - Checks the video status from the server.
      * - Handles the video status to determine the correct route (file path or search redirect).
      * - Manages the result by either updating the component state or redirecting the user.
-     * @param {HTMLDivElement} loading_icon - The DOM element representing the loading indicator.
      * @returns {void}
      */
-    verifyFile(loading_icon) {
+    verifyFile() {
         const path_name = window.location.pathname;
         const identifier = (path_name.includes("/Shorts/")) ? path_name.replace("/Download/YouTube/Shorts/", "") : path_name.replace("/Download/YouTube/", "");
         this.main_utilities.checkVideoStatus(identifier)
-        .then((status) => this.main_utilities.handleVideoStatus(status, loading_icon))
-        .then((route) => this.manageRoute(route, loading_icon));
+        .then((status) => this.main_utilities.handleVideoStatus(status))
+        .then((route) => this.manageRoute(route));
     }
 
     /**
@@ -131,16 +134,14 @@ class YouTubeDownloader extends Component {
      * - Otherwise, the loading icon is hidden and the state is updated with the corrected file uniform resource locator.
      * - Adjusts the route casing for Shorts uniform resource locators to maintain consistency.
      * @param {string} route - A uniform resource locator route, either a search path or a direct media file path.
-     * @param {HTMLDivElement} loading_icon - The DOM element representing the loading indicator.
      * @returns {void}
      */
-    manageRoute(route, loading_icon) {
+    manageRoute(route) {
         if (route.includes("/Search/")) {
             window.location.href = route;
             return;
         }
         const file_path = (window.location.pathname.includes("/Shorts/")) ? route.replace("/shorts/", "/Shorts/") : route;
-        loading_icon.style.display = "none";
         this.setState((previous) => ({
             ...previous,
             File: {
@@ -148,7 +149,7 @@ class YouTubeDownloader extends Component {
                 uniform_resource_locator: file_path,
             },
         }));
-        console.info(`Route: ${window.location.pathname}\nComponent: YouTubeDownloader\nComponent Status: Loaded`);
+        setTimeout(() => this.setData(), 1000);
     }
 
     /**

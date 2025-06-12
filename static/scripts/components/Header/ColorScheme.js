@@ -73,7 +73,7 @@ class ColorScheme extends Component {
                 data_loaded: data_loaded,
             },
         }));
-        this.setSvg();
+        this.setSvg(delay);
     }
 
     /**
@@ -93,6 +93,7 @@ class ColorScheme extends Component {
 
     /**
      * Setting the SVG Element.
+     * @param {number} delay - The delay in milliseconds.
      * @returns {void}
      */
     setSvg() {
@@ -104,7 +105,7 @@ class ColorScheme extends Component {
             this.setSvgSvgElement(dom_element);
         }
         (this.state.Session.Client.color_scheme == "dark") ? dom_element.setAttribute("class", "fa-solid fa-toggle-on") : dom_element.setAttribute("class", "fa-solid fa-toggle-off");
-        console.info("Component: ColorScheme\nStatus: Updated");
+        setTimeout(() => this.setData(), delay);
     }
 
     /**

@@ -711,7 +711,7 @@ class YouTube_Downloader:
         if not audio_streams:
             self.getLogger().error("There is no audio stream with the codec needed.")
             raise NotFoundError("There is no audio stream with the codec needed.")
-        preferred_audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in audio_streams if self.getAudioCodec() in str(stream.get("acodec"))]
+        preferred_audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in audio_streams if self.getAudioCodec() in str(stream.get("acodec")) or "high" in str(stream.get("format_note", "")).lower()]
         audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = max(preferred_audio_streams or audio_streams, key=lambda stream: float(stream.get("abr") or stream.get("tbr") or 0)) # type: ignore
         audio_stream_info: str = f"\nFormat Identifier: {audio_stream.get('format_id')}\nAudio Codec: {audio_stream.get('acodec', 'Unknown')}\nFile Size: {audio_stream.get('filesize', 0)}"
         self.getLogger().debug(f"Function: getVideoFile()\nAudio Stream Info: {audio_stream_info}")

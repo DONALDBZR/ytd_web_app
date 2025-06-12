@@ -762,31 +762,38 @@ class YouTube_Downloader:
 
     def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
         """
-        Downloading an audio file using the provided stream details and stores it in the specified directory.
+        Downloading an audio file using the provided stream details and save it to a specified directory.
 
-        Parameters:
-            stream (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]):  A dictionary containing metadata about the audio stream, such as format ID.
+        This method configures yt-dlp with the appropriate format specification, initiates the download, and records metadata into the database.  If the provided stream's format ID is missing or corresponds to an HLS (m3u8) protocol, it falls back to downloading the best available audio format.
+
+        Args:
+            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]):
+                A dictionary containing metadata about the audio stream, including format ID and protocol.
 
         Returns:
-            string
+            str: The file path where the downloaded audio is saved.
 
         Raises:
             DownloadError: If the audio download process fails.
-            Relational_Database_Error: If there is an issue inserting data into the relational database.
+            Relational_Database_Error: If insertion into the relational database fails.
         """
-        file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        options: Dict[str, str] = {
-            "format": str(stream["format_id"]),
-            "outtmpl": file_path
-        }
         try:
+            format_specification: str
+            file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
+            format_identifier: str = stream.get("format_id") # type: ignore
+            protocol: str = stream.get("protocol", "") # type: ignore
+            if format_identifier is None or "m3u8" is str(protocol).lower():
+                self.getLogger().warn("Using fallback format due to unsupported or missing format identifier.")
+                format_specification = "bestaudio"
+            else:
+                format_specification = str(format_identifier)
+            options: Dict[str, str] = {
+                "format": format_specification,
+                "outtmpl": file_path
+            }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-        except DownloadError as error:
-            self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
-            raise error
-        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        try:
+            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
             self.getDatabaseHandler().postData(
                 table="MediaFile",
                 columns="type, date_downloaded, location, YouTube",
@@ -794,6 +801,9 @@ class YouTube_Downloader:
                 parameters=data # type: ignore
             )
             return file_path
+        except DownloadError as error:
+            self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
+            raise error
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
             raise error

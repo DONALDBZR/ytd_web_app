@@ -807,3 +807,21 @@ class YouTube_Downloader:
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
             raise error
+
+    def getAudioFormatSpecification(self, format_identifier: Union[str, None], protocol: str) -> str:
+        """
+        Determining the audio format specification for downloading based on the provided format identifier and protocol.
+
+        Args:
+            format_identifier (Union[str, None]): The format ID of the audio stream, or None if unavailable.
+            protocol (str): The protocol string associated with the stream (e.g., "http", "m3u8").
+
+        Returns:
+            str: The format specification string to be used for downloading.
+                Returns "bestaudio" if the format ID is missing or if the protocol is HLS (m3u8),
+                otherwise returns the string representation of the format identifier.
+        """
+        if format_identifier is None or "m3u8" is str(protocol).lower():
+            self.getLogger().warn("Using fallback format due to unsupported or missing format identifier.")
+            return "bestaudio"
+        return str(format_identifier)

@@ -750,7 +750,7 @@ class YouTube_Downloader:
         width: int = int(max(streams, key=lambda stream: stream.get("width"))["width"]) # type: ignore
         height = min(height, maximum_height)
         width = min(width, maximum_width)
-        file_size: int = int(max((stream for stream in streams if isinstance(stream.get("filesize", 0), int)), key=lambda stream: stream.get("filesize", 0.00)["filesize"])) # type: ignore
+        file_size: int = int(max((stream for stream in streams if isinstance(stream.get("filesize", 0), int)), key=lambda stream: stream.get("filesize", 0)["filesize"])) # type: ignore
         for stream in streams:
             video_codec: str = stream.get("vcodec", "Unknown") # type: ignore
             is_in_resolution: bool = stream.get("height") == height and stream.get("width") == width

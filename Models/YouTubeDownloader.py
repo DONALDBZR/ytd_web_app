@@ -613,13 +613,7 @@ class YouTube_Downloader:
         Raises:
             NotFoundError: If no valid audio stream is available.
         """
-        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = []
-        for stream in self.getStreams():
-            is_audio_only: bool = stream.get("vcodec") == "none"
-            adaptive_bitrate: float = stream.get("abr") or stream.get("tbr") or 0 # type: ignore
-            audio_codec: str = stream.get("acodec", "Unknown") # type: ignore
-            if is_audio_only and adaptive_bitrate > 0 and isinstance(audio_codec, str):
-                streams.append(stream)
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = self._getAudioStreams()
         if not streams:
             self.getLogger().error("There is no audio stream with the codec needed.")
             raise NotFoundError("There is no audio stream with the codec needed.")

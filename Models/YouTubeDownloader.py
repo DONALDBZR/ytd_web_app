@@ -765,25 +765,24 @@ class YouTube_Downloader:
         if "403" not in str(error):
             raise error
 
-    def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
+    def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], file_path: str) -> str:
         """
-        Downloading an audio file using the provided stream details and save it to a specified directory.
+        Downloading an audio stream and saving it to the specified file path.
 
-        This method configures yt-dlp with the appropriate format specification, initiates the download, and records metadata into the database.  If the provided stream's format ID is missing or corresponds to an HLS (m3u8) protocol, it falls back to downloading the best available audio format.
+        This method configures `yt-dlp` with the correct format specification based on the provided stream metadata.  It handles edge cases such as missing format IDs or HLS (m3u8) streams by falling back to the best available format.  After a successful download, it records metadata into the `MediaFile` table of a relational database.
 
         Args:
-            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]):
-                A dictionary containing metadata about the audio stream, including format ID and protocol.
+            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Dictionary containing metadata of the audio stream, including format ID and protocol.
+            file_path (str): Path where the downloaded audio file should be saved.
 
         Returns:
-            str: The file path where the downloaded audio is saved.
+            str: The absolute file path of the saved audio file.
 
         Raises:
-            DownloadError: If the audio download process fails.
-            Relational_Database_Error: If insertion into the relational database fails.
+            DownloadError: If the audio download fails.
+            Relational_Database_Error: If insertion into the database fails.
         """
         try:
-            file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
             format_identifier: str = stream.get("format_id") # type: ignore
             protocol: str = stream.get("protocol", "") # type: ignore
             format_specification: str = self.getAudioFormatSpecification(format_identifier, protocol)

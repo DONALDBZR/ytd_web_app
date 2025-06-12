@@ -58,22 +58,26 @@ class HeaderHomepage extends Component {
     }
 
     /**
-     * Updating the component as soon as there is an update in the states.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.System.data_loaded) {
-            setTimeout(() => this.setData(), 1000);
-        }
-    }
-
-    /**
      * Setting the data for the component.
      * @returns {void}
      */
     setData() {
+        if (this.state.System.data_loaded) {
+            console.info(`Route: ${window.location.pathname}\nComponent: Header\nStatus: Loaded`);
+            return;
+        }
+        this.getData();
+    }
+
+    /**
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
+     */
+    getData() {
         const {session, data_loaded, view_route} = this.Header_Utilities.getSession();
+        const delay = 1000;
         if (!data_loaded) {
+            setTimeout(() => this.setData(), delay);
             return;
         }
         this.setState((previous) => ({
@@ -86,7 +90,7 @@ class HeaderHomepage extends Component {
             },
         }));
         this.tracker = window.Tracker;
-        console.info(`Route: ${view_route}\n\nComponent: Header\nComponent Status: Loaded`);
+        setTimeout(() => this.setData(), delay);
     }
 
     /**

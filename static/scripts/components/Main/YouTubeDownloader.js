@@ -70,7 +70,7 @@ class YouTubeDownloader extends Component {
     setData() {
         const loading_icon = document.querySelector("#loading");
         loading_icon.style.display = "flex";
-        if (this.state.System.data_loaded) {
+        if (this.state.data_loaded) {
             loading_icon.style.display = "none";
             console.info(`Route: ${window.location.pathname}\nComponent: YouTubeDownloader\nComponent Status: Loaded`);
             return;

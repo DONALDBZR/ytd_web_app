@@ -808,6 +808,29 @@ class YouTube_Downloader:
             self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
             raise error
 
+    def __getVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_in_resolution: bool, is_in_size: bool, video_codec: str) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+        """
+        Gg
+
+        This method appends a stream to the given list if it satisfies all of the following:
+            - Matches the target resolution (height and width).
+            - Matches the maximum determined file size.
+            - Uses a codec that matches the preferred video codec defined by the instance.
+
+        Args:
+            streams (List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]): The list of already accepted video streams.
+            stream (Dict[str, Union[str, int, float, None, Dict[str, str]]]): The candidate video stream to evaluate.
+            is_in_resolution (bool): True if the stream matches the selected resolution.
+            is_in_size (bool): True if the stream matches the maximum file size.
+            video_codec (str): The codec string extracted from the stream for comparison.
+
+        Returns:
+            List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]: The updated list of valid video streams.
+        """
+        if is_in_resolution and is_in_size and self.getVideoCodec() in video_codec:
+            streams.append(stream)
+        return streams
+
     def handleHttpError(self, error: HTTPError) -> None:
         """
         Handling HTTP errors that occur during requests.

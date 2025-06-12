@@ -645,6 +645,24 @@ class YouTube_Downloader:
                 streams.append(stream)
         return streams
 
+    def __getAudioStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], is_audio_only: bool, adaptive_bitrate: float, audio_codec: str) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
+        """
+        Verifying that the stream is an audio stream to add it to the list of streams.
+
+        Args:
+            streams (List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]): The list of streams to be returned.
+            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): The stream to be verified.
+            is_audio_only (bool): Whether the stream is audio-only.
+            adaptive_bitrate (float): The adaptive bitrate of the stream.
+            audio_codec (str): The audio codec of the stream.
+
+        Returns:
+            List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]: The updated list of streams.
+        """
+        if is_audio_only and adaptive_bitrate > 0 and isinstance(audio_codec, str):
+            streams.append(stream)
+        return streams
+
     def getVideoFile(self) -> str:
         """
         Retrieving the highest-quality video and audio streams and downloads the video file.

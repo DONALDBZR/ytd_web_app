@@ -107,7 +107,7 @@ class YouTubeDownloader extends Component {
             data_loaded: data_loaded,
         }));
         this.tracker = window.Tracker;
-        this.verifyFile();
+        this.verifyFile(media.video);
     }
 
     /**

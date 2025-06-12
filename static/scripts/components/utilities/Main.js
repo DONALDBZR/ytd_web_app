@@ -316,9 +316,11 @@ class Main extends Application {
             await tracker.sendEvent("click", {
                 uniform_resource_locator: uniform_resource_locator,
             });
-            return await this.downloadFileServer(file_location, file_name);
+            const data = await this.downloadFileServer(file_location, file_name);
+            this.downloadFileClient(data, file_name);
         } catch (error) {
-            console.error(`Download Failed: ${error.message}`);
+            console.error(`The download has failed.\nError: ${error.message}`);
+            throw new Error(error.message);
         }
     }
 

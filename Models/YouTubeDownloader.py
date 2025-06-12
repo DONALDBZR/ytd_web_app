@@ -649,17 +649,22 @@ class YouTube_Downloader:
 
     def __getAudioStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], is_audio_only: bool, adaptive_bitrate: float, audio_codec: str) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
         """
-        Verifying that the stream is an audio stream to add it to the list of streams.
+        Validating and appending an audio-only stream to the list of collected audio streams.
+
+        A stream is considered valid if:
+        - It is audio-only (video codec is explicitly marked as "none").
+        - It has a non-zero adaptive bitrate (ABR or TBR).
+        - It specifies an audio codec (must be a string).
 
         Args:
-            streams (List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]): The list of streams to be returned.
-            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): The stream to be verified.
-            is_audio_only (bool): Whether the stream is audio-only.
-            adaptive_bitrate (float): The adaptive bitrate of the stream.
-            audio_codec (str): The audio codec of the stream.
+            streams: The current list of accepted audio streams.
+            stream: The candidate stream to evaluate.
+            is_audio_only: Flag indicating if the stream contains only audio.
+            adaptive_bitrate: Calculated adaptive bitrate (ABR/TBR) for prioritizing quality.
+            audio_codec: The codec used for the stream's audio.
 
         Returns:
-            List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]: The updated list of streams.
+            An updated list of audio streams including the candidate stream if it passed validation.
         """
         if is_audio_only and adaptive_bitrate > 0 and isinstance(audio_codec, str):
             streams.append(stream)

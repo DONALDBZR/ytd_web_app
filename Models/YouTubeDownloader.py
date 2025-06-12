@@ -810,7 +810,7 @@ class YouTube_Downloader:
 
     def __getVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_in_resolution: bool, is_in_size: bool, video_codec: str) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
         """
-        Gg
+        Filtering and appending a video stream based on resolution, size, and codec preferences.
 
         This method appends a stream to the given list if it satisfies all of the following:
             - Matches the target resolution (height and width).

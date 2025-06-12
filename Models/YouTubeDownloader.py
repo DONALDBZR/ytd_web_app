@@ -774,35 +774,34 @@ class YouTube_Downloader:
             streams.append(stream)
         return streams
 
-    def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
+    def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], file_path: str) -> str:
         """
-        Downloading a video file with the corresponding audio stream and stores it in the specified directory.
+        Downloading and merging a video file with its corresponding audio stream, then save it to the specified path.
 
-        Parameters:
-            audio (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the audio stream, including format ID.
-            video (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the video stream, including format ID.
+        This method configures `yt-dlp` with appropriate format options to combine a selected video and audio stream and save the result in MP4 format.  After download, it logs metadata into a relational database.
+
+        Args:
+            audio (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Metadata dictionary for the selected audio stream.
+            video (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Metadata dictionary for the selected video stream.
+            file_path (str): Path where the resulting video file should be saved.
 
         Returns:
-            string
+            str: The file path of the downloaded and merged video.
 
         Raises:
-            DownloadError: If the video download process fails.
-            Relational_Database_Error: If there is an issue inserting data into the relational database.
+            DownloadError: If the video download or merge process fails.
+            Relational_Database_Error: If storing metadata in the relational database fails.
         """
-        file_path: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        options: Dict[str, str] = {
-            "format": f"{video['format_id']}+{audio['format_id']}",
-            "merge_output_format": "mp4",
-            "outtmpl": file_path
-        }
         try:
+            format_identifier: str = f"{video['format_id']+{audio['format_id']}}" # type: ignore
+            options: Dict[str, str] = {
+                "format": format_identifier,
+                "merge_output_format": "mp4",
+                "outtmpl": file_path
+            }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-        except DownloadError as error:
-            self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
-            raise error
-        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        try:
+            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
             self.getDatabaseHandler().postData(
                 table="MediaFile",
                 columns="type, date_downloaded, location, YouTube",
@@ -810,6 +809,9 @@ class YouTube_Downloader:
                 parameters=data # type: ignore
             )
             return file_path
+        except DownloadError as error:
+            self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
+            raise error
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
             raise error

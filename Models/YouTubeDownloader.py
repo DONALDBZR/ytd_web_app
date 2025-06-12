@@ -718,10 +718,6 @@ class YouTube_Downloader:
             self.getLogger().error("There is no video stream with the codec needed.")
             raise NotFoundError("There is no video stream with the codec needed.")
         video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = video_streams[0]
-        audio_stream_info: str = f"\nFormat Identifier: {audio_stream.get('format_id')}\nAudio Codec: {audio_stream.get('acodec', 'Unknown')}\nFile Size: {audio_stream.get('filesize', 0)}"
-        video_stream_info: str = f"\nFormat Identifier: {video_stream.get('format_id')}\nVideo Codec: {video_stream.get('vcodec', 'Unknown')}\nHeight: {video_stream.get('height', 0)}\nWidth: {video_stream.get('width', 0)}\nFile Size: {video_stream.get('filesize', 0)}"
-        self.getLogger().debug(f"Function: getVideoFile()\nAudio Stream Info: {audio_stream_info}\nVideo Stream Info: {video_stream_info}")
-        exit()
         return self.__downloadVideo(audio_stream, video_stream, file_path)
 
     def _getVideoStreams(self, maximum_height: int, maximum_width: int) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:

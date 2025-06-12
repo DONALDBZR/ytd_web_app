@@ -175,10 +175,9 @@ class Main extends Application {
      */
     manageResponse(response, delay) {
         try {
-            console.log(`Status: ${response.status}\nUniform Resource Locator: ${response.uniform_resource_locator}`);
-            // this.clearLocalStorage(response.status);
-            const uniform_resource_locator = (response.status == 201 && response.uniform_resource_locator) ? response.uniform_resource_locator : window.location.href;
-            // this.redirect(delay, uniform_resource_locator);
+            const can_clear_local_storage = (response.status == 201);
+            this.clearLocalStorage(can_clear_local_storage);
+            this.redirect(delay, uniform_resource_locator);
         } catch (error) {
             console.error(`There is an error while processing the response.\nError: ${error.message}`);
             throw new Error(error.message);

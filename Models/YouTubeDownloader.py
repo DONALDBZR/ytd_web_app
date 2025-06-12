@@ -713,15 +713,15 @@ class YouTube_Downloader:
             raise NotFoundError("There is no audio stream with the codec needed.")
         preferred_audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in audio_streams if self.getAudioCodec() in str(stream.get("acodec")) or "high" in str(stream.get("format_note", "")).lower()]
         audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = max(preferred_audio_streams or audio_streams, key=lambda stream: float(stream.get("abr") or stream.get("tbr") or 0)) # type: ignore
-        audio_stream_info: str = f"\nFormat Identifier: {audio_stream.get('format_id')}\nAudio Codec: {audio_stream.get('acodec', 'Unknown')}\nFile Size: {audio_stream.get('filesize', 0)}"
-        self.getLogger().debug(f"Function: getVideoFile()\nAudio Stream Info: {audio_stream_info}")
-        exit()
         video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = self._getVideoStreams(maximum_height, maximum_width) # type: ignore
         if not video_streams:
             self.getLogger().error("There is no video stream with the codec needed.")
             raise NotFoundError("There is no video stream with the codec needed.")
         video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = video_streams[0]
-        video_stream_info: str = f"\nVideo Codec: {video_stream.get('vcodec', 'Unknown')}\nHeight: {video_stream.get('height', 0)}\nWidth: {video_stream.get('width', 0)}\nFile Size: {video_stream.get('filesize', 0)}"
+        audio_stream_info: str = f"\nFormat Identifier: {audio_stream.get('format_id')}\nAudio Codec: {audio_stream.get('acodec', 'Unknown')}\nFile Size: {audio_stream.get('filesize', 0)}"
+        video_stream_info: str = f"\nFormat Identifier: {video_stream.get('format_id')}\nVideo Codec: {video_stream.get('vcodec', 'Unknown')}\nHeight: {video_stream.get('height', 0)}\nWidth: {video_stream.get('width', 0)}\nFile Size: {video_stream.get('filesize', 0)}"
+        self.getLogger().debug(f"Function: getVideoFile()\nAudio Stream Info: {audio_stream_info}\nVideo Stream Info: {video_stream_info}")
+        exit()
         return self.__downloadVideo(audio_stream, video_stream, file_path)
 
     def _getVideoStreams(self, maximum_height: int, maximum_width: int) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
@@ -756,12 +756,13 @@ class YouTube_Downloader:
         height = min(height, maximum_height)
         width = min(width, maximum_width)
         file_size: int = int(max((stream for stream in streams if isinstance(stream.get("filesize", 0), int)), key=lambda stream: stream.get("filesize", 0)).get("filesize", 0)) # type: ignore
+        filtered_streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]] = []
         for stream in streams:
             video_codec: str = stream.get("vcodec", "Unknown") # type: ignore
             is_in_resolution: bool = stream.get("height") == height and stream.get("width") == width
             is_in_size: bool = stream.get("filesize", 0) == file_size
-            streams = self.__getVideoStreams(streams, stream, is_in_resolution, is_in_size, video_codec)
-        return streams
+            filtered_streams = self.__getVideoStreams(filtered_streams, stream, is_in_resolution, is_in_size, video_codec)
+        return filtered_streams
 
     def _getValidVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_video: bool) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
         """

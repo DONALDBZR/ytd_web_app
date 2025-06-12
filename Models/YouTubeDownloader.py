@@ -601,18 +601,24 @@ class YouTube_Downloader:
             self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
             raise error
 
-    def getAudioFile(self) -> str:
+    def getAudioFile(self, file_path: str) -> str:
         """
-        Retrieving the highest-quality audio stream from available streams.
+        Retrieving and downloading the highest-quality audio stream.
 
-        This method filters the available streams to extract only valid audio streams, selects the one with the highest adaptive bitrate, and sets it as the current stream.  It also sets the MIME type to "audio/mp3" before initiating the download.
+        This method checks if the audio file already exists at the given path.  If it does, the path is returned.  Otherwise, it filters the available streams to identify valid audio streams, preferably matching the desired audio codec.  Among those, it selects the one with the highest available adaptive bitrate (ABR or TBR), sets the stream, and initiates a download.  The MIME type is set to "audio/mp3" prior to download.
+
+        Args:
+            file_path (str): The file path where the audio file should be saved.
 
         Returns:
-            str
+            str: The path to the downloaded or existing audio file.
 
         Raises:
-            NotFoundError: If no valid audio stream is available.
+            NotFoundError: If no valid audio stream is found.
         """
+        self.setMimeType("audio/mp3")
+        if isfile(file_path):
+            return file_path
         streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = self._getAudioStreams()
         if not streams:
             self.getLogger().error("There is no audio stream with the codec needed.")
@@ -620,8 +626,7 @@ class YouTube_Downloader:
         preferred_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in streams if self.getAudioCodec() in str(stream.get("acodec"))]
         stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = max(preferred_streams or streams, key=lambda stream: float(stream.get("abr") or stream.get("tbr") or 0)) # type: ignore
         self.setStream(stream)
-        self.setMimeType("audio/mp3")
-        return self.__downloadAudio(self.getStream())
+        return self.__downloadAudio(self.getStream(), file_path)
 
     def _getAudioStreams(self) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
         """

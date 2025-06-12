@@ -87,7 +87,7 @@ class HeaderSearch extends Component {
             },
         }));
         this.tracker = window.Tracker;
-        console.info(`Route: ${view_route}\nComponent Status: Loaded`);
+        console.info(`Route: ${view_route}\nComponent: Header\nComponent Status: Loaded`);
     }
 
     /**

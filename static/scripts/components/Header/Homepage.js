@@ -86,7 +86,7 @@ class HeaderHomepage extends Component {
             },
         }));
         this.tracker = window.Tracker;
-        console.info(`Route: ${view_route}\nComponent Status: Loaded`);
+        console.info(`Route: ${view_route}\n\nComponent: Header\nComponent Status: Loaded`);
     }
 
     /**

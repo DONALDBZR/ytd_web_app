@@ -39,19 +39,23 @@ Ensure you have the following installed on your system:
 2. Click the "Download" button to retrieve the media.
 
 ## Commit History (Latest Major Updates)
-- **[UPDATE 3.7.129]** Rendered YouTube Downloader Component: to reflect latest media interaction logic.
-- **[UPDATE 3.7.128]** Dynamic FontAwesome Icons are used to represent media types, improving UX.
-- **[UPDATE 3.7.127]** Download Button Logic: Button display now dynamically adjusts based on route and media type.
-- **[UPDATE 3.7.126]** Media Route Generation: Route URLs are dynamically built based on media types and server metadata responses.
-- **[UPDATE 3.7.125]** URL Sanitization: Prevents injection and unauthorized access by escaping HTML characters and validating domain origins.
-- **[UPDATE 3.7.124]** Domain Whitelist Checks: Enforces allowed YouTube domains for content extraction.
-- **[UPDATE 3.7.123]** YouTube Identifier Parsing: Accurate extraction of media identifiers from input uniform resource locators.
-- **[UPDATE 3.7.118]** `localStorage` Cleanup: Conditional cleanup tied to HTTP responses to avoid data corruption.
-- **[UPDATE 3.7.117]** Response Validation & Error Feedback: Ensures front-end stability with clear validation checks.
-- **[UPDATE 3.7.116]** YouTube Metadata Retrieval via API: GET requests fetch metadata dynamically, enabling pre-download previews.
-- **[UPDATE 3.7.108]** Form Submission Rework: Forms trigger real-time metadata extraction, enhancing interaction flow.
-- **[UPDATE 3.7.87]** Route-Based Media Source Generation: Media URLs are constructed from route paths and metadata.
-- **[UPDATE 3.7.86]** Media Download Request Handling: Backend now supports direct POST requests for starting downloads.
+- **[UPDATE 3.8.218]** State & Component Initialization: Initializing state from `localStorage` and triggering verification/tracking.
+- **[UPDATE 3.8.225]** Rendering & UI Logic: Rendering download button, media cards, and related content.
+- **[UPDATE 3.8.224]** File Download & Blob Handling: Handling file download from blob data, saving files to path.
+- **[UPDATE 3.8.221]** Server Communication: Verifying file accessibility and video status.
+- **[UPDATE 3.8.211]** Media Retrieval & Merging: Downloading and merging video with audio streams.
+- **[UPDATE 3.8.209]** Video Stream Handling: Filtering video streams based on resolution, codec, size.
+- **[UPDATE 3.8.192]** Media Retrieval & Merging: Conditional downloading based on file existence.
+- **[UPDATE 3.8.187]** Media Format Selection: Determining audio format spec from format ID and protocol.
+- **[UPDATE 3.8.186]** Audio Stream Handling: Validating, filtering, and saving audio streams.
+- **[UPDATE 3.8.172]** Routing & Redirection: Determining file paths, updating routes, redirect handling.
+- **[UPDATE 3.8.171]** Server Communication: Initiating media download via POST requests.
+- **[UPDATE 3.8.132]** State & Component Initialization: State updates with trends and session data.
+- **[UPDATE 3.8.105]** Rendering & UI Logic: Lifecycle method executions.
+- **[UPDATE 3.8.163]** Server Communication: Extracting metadata using `yt-dlp`.
+- **[UPDATE 3.8.154]** SEO & Metadata: Setting titles, descriptions, and meta tags for search engines.
+- **[UPDATE 3.8.114]** Utility Functions: Utility classes for component support.
+- **[UPDATE 3.8.99]** Utility Functions: HTML entity decoding.
 
 ## Contributing
 Contributions, feedback, and testing are welcome! Please open a pull request or issue for any modifications. The main branch is reserved for production; development should be done in separate branches.

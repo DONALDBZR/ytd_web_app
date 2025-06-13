@@ -39,10 +39,10 @@ Ensure you have the following installed on your system:
 2. Click the "Download" button to retrieve the media.
 
 ## Commit History (Latest Major Updates)
-- **[UPDATE 3.8.218]** State & Component Initialization: Initializing state from `localStorage` and triggering verification/tracking.
 - **[UPDATE 3.8.225]** Rendering & UI Logic: Rendering download button, media cards, and related content.
 - **[UPDATE 3.8.224]** File Download & Blob Handling: Handling file download from blob data, saving files to path.
 - **[UPDATE 3.8.221]** Server Communication: Verifying file accessibility and video status.
+- **[UPDATE 3.8.218]** State & Component Initialization: Initializing state from `localStorage` and triggering verification/tracking.
 - **[UPDATE 3.8.211]** Media Retrieval & Merging: Downloading and merging video with audio streams.
 - **[UPDATE 3.8.209]** Video Stream Handling: Filtering video streams based on resolution, codec, size.
 - **[UPDATE 3.8.192]** Media Retrieval & Merging: Conditional downloading based on file existence.

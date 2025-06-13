@@ -717,7 +717,7 @@ class YouTube_Downloader:
         if not video_streams:
             self.getLogger().error("There is no video stream with the codec needed.")
             raise NotFoundError("There is no video stream with the codec needed.")
-        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = video_streams[0]
+        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = [stream for stream in video_streams if stream.get("filesize", 0) > 0][0] # type: ignore
         return self.__downloadVideo(audio_stream, video_stream, file_path)
 
     def _getVideoStreams(self, maximum_height: int, maximum_width: int) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:

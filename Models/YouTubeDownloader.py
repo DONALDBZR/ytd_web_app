@@ -741,9 +741,6 @@ class YouTube_Downloader:
             NotFoundError: If no valid video streams are found.
         """
         streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]] = []
-        streams_info: str = "\n".join([f"Variable Bitrate: {stream.get('vbr', 0.00)}\nHeight: {stream.get('height', 0)}\nWidth: {stream.get('width', 0)}\nFileSize: {stream.get('filesize', 0)}\nVideo Codec: {stream.get('vcodec', 'Unknown')}" for stream in self.getStreams()])
-        self.getLogger().debug(f"Function: _getVideoStreams()\nStreams:\n{streams_info}")
-        exit()
         for stream in self.getStreams():
             is_video: bool = stream.get("vbr") is not None and stream.get("vbr") != 0.00
             streams = self._getValidVideoStreams(streams, stream, is_video) # type: ignore
@@ -759,7 +756,7 @@ class YouTube_Downloader:
         for stream in streams:
             video_codec: str = stream.get("vcodec", "Unknown") # type: ignore
             is_in_resolution: bool = stream.get("height") == height and stream.get("width") == width
-            is_in_size: bool = stream.get("filesize", 0) == file_size
+            is_in_size: bool = stream.get("filesize", 0) <= file_size # type: ignore
             filtered_streams = self.__getVideoStreams(filtered_streams, stream, is_in_resolution, is_in_size, video_codec)
         return filtered_streams
 

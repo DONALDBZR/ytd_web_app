@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import MainUtilities from "../utilities/Main";
 
 
 /**
@@ -28,6 +29,11 @@ class RelatedContents extends Component {
          * @type {Tracker}
          */
         this.tracker = null;
+        /**
+         * The utility class of the Main component.
+         * @type {MainUtilities}
+         */
+        this.main_utilities = new MainUtilities();
     }
 
     /**
@@ -36,20 +42,6 @@ class RelatedContents extends Component {
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.RelatedContents\nComponent Status: Mount`);
-    }
-
-    /**
-     * The methods to be executed when the component has been updated.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.System.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.info(`Route: ${window.location.pathname}\nComponent: Main.Search.Media.RelatedContents\nComponent Status: Update`);
-            }, 2000);
-        }
     }
 
     /**
@@ -57,44 +49,38 @@ class RelatedContents extends Component {
      * @returns {void}
      */
     setData() {
-        const local_storage_data = localStorage.getItem("related_content");
-        const related_content = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("related_content")).data : null;
-        const data_loaded = (related_content != null && window.Tracker);
+        if (this.state.System.data_loaded) {
+            console.info(`Route: ${window.location.pathname}\nComponent: RelatedContents\nStatus: Loaded`);
+            return;
+        }
+        this.getData();
+    }
+
+    /**
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
+     */
+    getData() {
+        const {related_content, data_loaded} = this.main_utilities.getRelatedContents();
+        const delay = 1000;
+        if (!data_loaded) {
+            setTimeout(() => this.setData(), delay);
+            return;
+        }
         this.setState((previous) => ({
             ...previous,
             Media: {
                 ...previous.Media,
-                RelatedContents: (data_loaded) ? related_content : this.state.Media.RelatedContents,
+                RelatedContents: related_content,
             },
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,
             },
         }));
-        this.tracker = (window.Tracker) ? window.Tracker : null;
+        this.tracker = window.Tracker;
+        setTimeout(() => this.setData(), delay);
     }
-
-    /**
-     * Handling the click event on a component.
-     * @param {MouseEvent} event The click event.
-     * @returns {void}
-     */
-    handleClick = (event) => {
-        event.preventDefault();
-        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            window.open(uniform_resource_locator, "_blank");
-        })
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
-        });
-    };
 
     /**
      * Rendering the media content that are related with the main content.
@@ -106,14 +92,14 @@ class RelatedContents extends Component {
         return (
             <div className="card" key={identifier}>
                 <div className="thumbnail">
-                    <a href={media.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>
+                    <a href={media.uniform_resource_locator} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>
                         <img src={media.thumbnail} loading="lazy" alt={`Thumbnail for ${media.title}`} />
                     </a>
                 </div>
                 <div className="metadata">
                     <div className="title">{media.title}</div>
                     <div className="author">
-                        <a href={media.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{media.channel}</a>
+                        <a href={media.author_channel} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{media.channel}</a>
                     </div>
                     <div className="duration">
                         <div>Duration</div>

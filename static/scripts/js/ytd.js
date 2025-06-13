@@ -3,8 +3,7 @@
  */
 class YTD {
     /**
-     * Setting the data needed as well as initalizing the
-     * application
+     * Setting the data needed as well as initalizing the application.
      * @returns {YTD}
      */
     constructor() {
@@ -19,16 +18,6 @@ class YTD {
          */
         this.__bodyId;
         /**
-         * Stylesheets of the application
-         * @type {string[]}
-         */
-        this._stylesheets = [
-            "/static/stylesheets/ytd.css",
-            "/static/stylesheets/desktop.css",
-            "/static/stylesheets/mobile.css",
-            "/static/stylesheets/tablet.css",
-        ];
-        /**
          * Relationship of the object
          * @type {string}
          */
@@ -38,15 +27,6 @@ class YTD {
          * @type {string}
          */
         this.__mimeType;
-        /**
-         * Media queries for the stylesheets
-         * @type {string[]}
-         */
-        this._mediaQueries = [
-            "screen and (min-width: 1024px)",
-            "screen and (min-width: 640px) and (max-width: 1023px)",
-            "screen and (max-width: 639px)",
-        ];
         /**
          * The body of the page
          * @type {HTMLBodyElement}
@@ -68,7 +48,7 @@ class YTD {
          * Contains descriptive metadata about a document.  It inherits
          * all of the properties and methods described in the
          * HTMLElement interface.
-         * @type {HTMLMetaElement|null}
+         * @type {HTMLMetaElement}
          */
         this.__meta;
         /**
@@ -84,10 +64,10 @@ class YTD {
          */
         this.__origin;
         /**
-         * The identifiers of the stylsheets.
-         * @type {string[]}
+         * The identifiers of the stylesheets.
+         * @type {[string]}
          */
-        this._stylesheetIdentifiers = ["ytd-css", "desktop-css", "mobile-css", "tablet-css"];
+        this._stylesheetIdentifiers = ["ytd-css", "desktop-css", "tablet-css", "mobile-css"];
         this.init();
     }
 
@@ -197,14 +177,14 @@ class YTD {
     }
 
     /**
-     * @returns {HTMLMetaElement|null}
+     * @returns {HTMLMetaElement}
      */
     getMeta() {
         return this.__meta;
     }
 
     /**
-     * @param {HTMLMetaElement|null} meta
+     * @param {HTMLMetaElement} meta
      * @returns {void}
      */
     setMeta(meta) {
@@ -260,47 +240,33 @@ class YTD {
     }
 
     /**
-     * Adding the stylesheets needed for the application.
-     * @returns {void}
-     */
-    addStylesheets() {
-        this._stylesheetIdentifiers.forEach((identifier) => this.addStylesheet(identifier));
-    }
-
-    /**
-     * Adding the stylesheet based on its identifier.
-     * @param {string} identifier The identifier of the stylesheet.
-     * @returns {void}
-     */
-    addStylesheet(identifier) {
-        let link = document.getElementById(identifier);
-        if (link) {
-            link.rel = "stylesheet";
-        }
-    }
-
-    /**
      * Defining the title of the page for the application.
      * @returns {void}
      */
     addTitle() {
-        let media;
-        let local_storage_data;
         this.setTitle(document.createElement("title"));
-        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
+        const is_homepage = (this.getRequestURI() == "" || this.getRequestURI() == "/");
+        if (is_homepage) {
             this.getTitle().text = "Extractio";
-        } else if (this.getRequestURI() == "/Search/") {
-            this.getTitle().text = "Extractio: Search";
-        } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
-            local_storage_data = localStorage.getItem("media");
-            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-            this.getTitle().text = (media) ? `Extractio Data: ${media.title}` : "Extractio: Search";
-        } else if (this.getRequestURI().includes("/Download/")) {
-            local_storage_data = localStorage.getItem("media");
-            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-            this.getTitle().text = (media) ? `Extractio: ${media.title}` : "Extractio";
+            this.getHead().appendChild(this.getTitle());
+            return;
         }
-        this.getHead().appendChild(this.getTitle());
+        const data = localStorage.getItem("media");
+        if (!data) {
+            setTimeout(() => this.addTitle(), 1000);
+            return;
+        }
+        const media = JSON.parse(data).data;
+        if (this.getRequestURI().includes("/Search/")) {
+            this.getTitle().text = `Extractio Data: ${media.title}`;
+            this.getHead().appendChild(this.getTitle());
+            return;
+        }
+        if (this.getRequestURI().includes("/Download/")) {
+            this.getTitle().text = `Extractio: ${media.title}`;
+            this.getHead().appendChild(this.getTitle());
+            return;
+        }
     }
 
     /**
@@ -308,38 +274,44 @@ class YTD {
      * @returns {void}
      */
     addDescription() {
-        let local_storage_data;
-        let media;
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "description";
-        if (this.getRequestURI() == "" || this.getRequestURI() == "/") {
+        const data = localStorage.getItem("media");
+        const is_homepage = (this.getRequestURI() == "" || this.getRequestURI() == "/");
+        if (is_homepage) {
             this.getMeta().content = "Extractio extracts content from various platforms for various needs.";
-        } else if (this.getRequestURI() == "/Search/") {
-            this.getMeta().content = "The content needed can be searched, here.";
-        } else if (this.getRequestURI().includes("/Search/") && this.getRequestURI() != "/Search/") {
-            local_storage_data = localStorage.getItem("media");
-            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-            const platform = (media) ? new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "") : "";
-            this.getMeta().content = (media) ? `Metadata for the content from ${media.author} on ${platform} entitled ${media.title}` : "The content needed can be searched, here.";
-        } else if (this.getRequestURI().includes("/Download/")) {
-            local_storage_data = localStorage.getItem("media");
-            media = (typeof local_storage_data == "string") ? JSON.parse(localStorage.getItem("media")).data : null;
-            const platform = (media) ? new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "") : "";
-            this.getMeta().content = (media) ? `Content from ${media.author} on ${platform} entitled ${media.title}` : "The content needed can be searched, here.";
+            this.getHead().appendChild(this.getMeta());
+            setTimeout(() => this.configureRobot(), 2000);
+            return;
         }
-        this.getHead().appendChild(this.getMeta());
-        setTimeout(() => this.configureRobot(), 2000);
+        if (!data) {
+            setTimeout(() => this.addDescription(), 1000);
+            return;
+        }
+        const media = JSON.parse(data).data;
+        const platform = new URL(media.uniform_resource_locator).hostname.replace("www.", "").replace(".com", "");
+        if (this.getRequestURI().includes("/Search/")) {
+            this.getMeta().content = `Metadata for the content from ${media.author} on ${platform} entitled ${media.title}`;
+            this.getHead().appendChild(this.getMeta());
+            setTimeout(() => this.configureRobot(), 2000);
+            return;
+        }
+        if (this.getRequestURI().includes("/Download/")) {
+            this.getMeta().content = `Content from ${media.author} on ${platform} entitled ${media.title}`;
+            this.getHead().appendChild(this.getMeta());
+            setTimeout(() => this.configureRobot(), 2000);
+            return;
+        }
     }
 
     /**
-     * Configuring the pages for which the web crawlers can index
-     * on the application.
+     * Configuring the pages for which the web crawlers can index on the application.
      * @returns {void}
      */
     configureRobot() {
         this.setMeta(document.createElement("meta"));
         this.getMeta().name = "robots";
-        this.getMeta().content = "index, follow";
+        this.getMeta().content = (this.getRequestURI().includes("/Download/")) ? "index" : "index, follow";
         this.getHead().appendChild(this.getMeta());
     }
 
@@ -350,33 +322,6 @@ class YTD {
     optimize() {
         this.addTitle();
         this.addDescription();
-        this.style();
-    }
-
-    /**
-     * Retrieving the media query needed for the stylesheets.
-     * @param {string} href The hyperlink of the stylesheet.
-     * @returns {string}
-     */
-    getMediaQuery(href) {
-        if (href.includes("desktop")) {
-            return this._mediaQueries[0];
-        } else if (href.includes("mobile")) {
-            return this._mediaQueries[2];
-        } else if (href.includes("tablet")) {
-            return this._mediaQueries[1];
-        } else {
-            return "";
-        }
-    }
-
-    /**
-     * Styling the application
-     * @returns {void}
-     */
-    style() {
-        this.setRelationship("stylesheet");
-        this.setMimeType("text/css");
         this.resizeApplication();
     }
 
@@ -443,7 +388,10 @@ class YTD {
      * @returns {void}
      */
     setRelatedContents() {
-        if (!this.getRequestURI().includes("Search") && window.outerWidth < 1024) {
+        if (!this.getRequestURI().includes("Search")) {
+            return;
+        }
+        if (window.outerWidth < 1024) {
             return;
         }
         const identifier = this._getRelatedContentsIdentifier();
@@ -459,7 +407,7 @@ class YTD {
             return;
         }
         status = ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) ? 304 : 204;
-        if ((current_time < related_content.timestamp + 3600) && (related_content.identifier == identifier)) {
+        if (status == 304) {
             related_content.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(related_content));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
@@ -496,12 +444,11 @@ class YTD {
         const current_time = Math.floor(Date.now() / 1000);
         if (!media) {
             this.getMedia(route, request_method, data_object)
-            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`))
-            .catch((error) => console.error(`An error occurred while retrieving the data!\nRoute: ${request_method} ${route}\nError: ${error.message}`));
+            .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
             return;
         }
         status = ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) ? 304 : 204;
-        if ((current_time < media.timestamp + 3600) && (media.data.identifier == this.getRequestURI().replace("/Search/", ""))) {
+        if (status == 304) {
             media.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(media));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
@@ -619,7 +566,7 @@ class YTD {
             return;
         }
         status = (current_time < trend.timestamp + 86400) ? 304 : 204;
-        if (current_time < trend.timestamp + 86400) {
+        if (status == 304) {
             trend.timestamp = current_time + 86400;
             localStorage.setItem(data_object, JSON.stringify(trend));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
@@ -648,26 +595,50 @@ class YTD {
             return;
         }
         status = (current_time < session.Client.timestamp + 3600) ? 304 : 204;
-        if (current_time < session.Client.timestamp + 3600) {
+        if (status == 304) {
             session.Client.timestamp = current_time + 3600;
             localStorage.setItem(data_object, JSON.stringify(session));
             console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
+            return;
         }
         localStorage.removeItem(data_object);
-        console.info(`Route: ${request_method} ${route}\nStatus: ${status}`);
         this.getSession(route, request_method, data_object)
         .then((status) => console.info(`Route: ${request_method} ${route}\nStatus: ${status}`));
+    }
+
+    /**
+     * Adding the stylesheets needed for the application.
+     * @returns {void}
+     */
+    addStylesheets() {
+        this._stylesheetIdentifiers.forEach((identifier) => this.addStylesheet(identifier));
+    }
+
+    /**
+     * Adding the stylesheet based on its identifier.
+     * @param {string} identifier The identifier of the stylesheet.
+     * @returns {void}
+     */
+    addStylesheet(identifier) {
+        const link = this.getHead().querySelector(`#${identifier}`);
+        if (!link) {
+            return;
+        }
+        link.rel = "stylesheet";
     }
 }
 
 /**
  * Loading the service worker.
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const load = () => {
-    navigator.serviceWorker.register('/static/scripts/js/service-worker.js')
-    .then((registration) => console.log('ServiceWorker registration successful with scope: ', registration.scope))
-    .catch((error) => console.error('ServiceWorker registration failed: ', error));
+const load = async () => {
+    try {
+        const registration = await navigator.serviceWorker.register("/static/scripts/js/service-worker.js");
+        console.info(`ServiceWorker registration successful.\nScope: ${registration.scope}`);
+    } catch (error) {
+        console.error(`ServiceWorker registration failed.\nError: ${error.message}`);
+    }
 };
 
 const application = new YTD();

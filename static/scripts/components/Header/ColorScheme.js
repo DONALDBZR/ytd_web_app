@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Header_Utilities from "../utilities/Header";
 
 
 /**
@@ -26,30 +27,19 @@ class ColorScheme extends Component {
                 data_loaded: false,
             },
         };
+        /**
+         * The utility class of the Header component.
+         * @type {Header_Utilities}
+         */
+        this.Header_Utilities = new Header_Utilities();
     }
 
     /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
+     * Running the methods needed as soon as the component has been successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
         this.setData();
-        console.log("Component: Header.HeaderHomepage.ColorScheme\nStatus: Mount");
-    }
-
-    /**
-     * Updating the component as soon as there is an update in the
-     * states.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.System.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.log("Component: Homepage.Header.HeaderHomepage\nStatus: Updated");
-            }, 1000);
-        }
     }
 
     /**
@@ -57,22 +47,38 @@ class ColorScheme extends Component {
      * @returns {void}
      */
     setData() {
-        const session = JSON.parse(localStorage.getItem("session"));
-        const data_loaded = (session != null);
+        if (this.state.System.data_loaded) {
+            console.info(`Route: ${window.location.pathname}\nComponent: ColorScheme\nStatus: Loaded`);
+            return;
+        }
+        this.getData();
+    }
+
+    /**
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
+     */
+    getData() {
+        const {session, data_loaded, view_route} = this.Header_Utilities.getSession();
+        const delay = 1000;
+        if (!data_loaded) {
+            setTimeout(() => this.setData(), delay);
+            return
+        }
         this.setState((previous) => ({
             ...previous,
-            Session: (data_loaded) ? session : this.state.Session,
+            Session: session,
             System: {
                 ...previous.System,
                 data_loaded: data_loaded,
             },
         }));
-        this.setSvg();
+        this.setSvg(delay);
     }
 
     /**
      * Setting the data for the SVG SVG Element.
-     * @param {SVGSVGElement} svg
+     * @param {SVGSVGElement} svg - The Element.
      * @returns {void}
      */
     setSvgSvgElement(svg) {
@@ -82,17 +88,24 @@ class ColorScheme extends Component {
         };
         svg.setAttribute("class", lookup[this.state.Session.Client.color_scheme]);
         svg.setAttribute("data-icon", (this.state.Session.Client.color_scheme == "dark") ? "toggle-on" : "toggle-off");
+        console.info("Component: ColorScheme\nStatus: Updated");
     }
 
     /**
      * Setting the SVG Element.
+     * @param {number} delay - The delay in milliseconds.
      * @returns {void}
      */
-    setSvg() {
+    setSvg(delay) {
         const dom_element = document.querySelector("header nav div div button").children[0];
-        if (typeof dom_element != null) {
-            (String(dom_element).includes("HTMLElement")) ? ((this.state.Session.Client.color_scheme == "dark") ? dom_element.setAttribute("class", "fa-solid fa-toggle-on") : dom_element.setAttribute("class", "fa-solid fa-toggle-off")) : this.setSvgSvgElement(dom_element);
+        if (typeof dom_element == null) {
+            return;
         }
+        if (!String(dom_element).includes("HTMLElement")) {
+            this.setSvgSvgElement(dom_element);
+        }
+        (this.state.Session.Client.color_scheme == "dark") ? dom_element.setAttribute("class", "fa-solid fa-toggle-on") : dom_element.setAttribute("class", "fa-solid fa-toggle-off");
+        setTimeout(() => this.setData(), delay);
     }
 
     /**

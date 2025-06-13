@@ -1,3 +1,5 @@
+from email.mime import audio
+from requests import get
 from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, Union, List, Tuple, Any, Relational_Database_Error
 from datetime import datetime
 from urllib.error import HTTPError
@@ -328,42 +330,62 @@ class YouTube_Downloader:
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Searching and retrieving information about a YouTube video based on the provided URL.
+        Extracting metadata for a YouTube video using `yt-dlp` and returning relevant information.
 
-        This function:
-        - Extracts the information about the video from YouTube using the `youtube-dl` (or `yt-dlp`) library.
-        - Handles both successful and failed extraction, including fetching meta-data from an internal source if needed.
-        - Sets various properties such as video length, publish date, author, and title based on the metadata.
-        - Returns a dictionary containing key information about the video, including the title, author, view count, and media file locations (audio/video).
+        This method attempts to retrieve video metadata either from YouTube directly or from a local/internal cache.  The retrieved data includes title, author, view count, publish date, thumbnail, duration, and file locations.
+
+        Key Features:
+            - Uses yt-dlp to extract video metadata without downloading.
+            - Attempts to use internal database metadata if available.
+            - Constructs and returns a clean dictionary of metadata for front-end consumption.
+            - Handles unexpected errors gracefully and logs details.
 
         Returns:
-            Dict[str, Union[str, int, None]]
+            Dict[str, Union[str, int, None]]: A dictionary containing video metadata, including:
+                - 'uniform_resource_locator': str — Original URL
+                - 'author': str — Author/uploader name
+                - 'title': str — Video title
+                - 'identifier': str — Sanitized video ID
+                - 'author_channel': str — URL to the author's channel
+                - 'views': int — Number of views
+                - 'published_at': str — ISO date string of publication
+                - 'thumbnail': str — URL to the thumbnail
+                - 'duration': str — Video duration in HH:MM:SS
+                - 'audio_file': Optional[str] — Path to stored audio file (if found)
+                - 'video_file': Optional[str] — Path to stored video file (if found)
 
         Raises:
-            ValueError: If the response from YouTube is invalid or cannot be parsed.
-            Exception: If an error occurs during the search or data extraction process.
+            ValueError: If the video metadata cannot be parsed correctly.
+            Exception: For any other unexpected errors.
         """
         options: Dict[str, bool] = {
             "quiet": True,
-            "skip_download": True
+            "skip_download": True,
+            "nocheckcertificate": True,
+            "force_generic_extractor": False,
+            "extract_flat": False
         }
         self.setVideo(YoutubeDL(options))
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
         try:
-            raw_youtube: Dict[str, Any] = self.getVideo().extract_info(self.getUniformResourceLocator(), download=False) # type: ignore
+            raw_youtube: Dict[str, Any] = self.getVideo().extract_info(
+                url=self.getUniformResourceLocator(),
+                download=False
+            ) # type: ignore
             self.__isRawYouTube(raw_youtube)
             youtube: Dict[str, Any] = {
                 key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
             }
             meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
-            self.setLength(int(meta_data["data"][0]["length"]) if meta_data["status"] == 200 else int(youtube["duration"])) # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if meta_data["status"] == 200 else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
-            self.setAuthor(str(meta_data["data"][0]["author"]) if meta_data["status"] == 200 else str(youtube["uploader"])) # type: ignore
-            self.setTitle(str(meta_data["data"][0]["title"]) if meta_data["status"] == 200 else str(youtube["title"])) # type: ignore
+            has_metadata: bool = meta_data["status"] == 200
+            self.setLength(int(meta_data["data"][0]["length"]) if has_metadata else int(youtube["duration"])) # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if has_metadata else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
+            self.setAuthor(str(meta_data["data"][0]["author"]) if has_metadata else str(youtube["uploader"])) # type: ignore
+            self.setTitle(str(meta_data["data"][0]["title"]) if has_metadata else str(youtube["title"])) # type: ignore
             self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-            file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if meta_data["status"] == 200 else {} # type: ignore
-            audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if meta_data["status"] == 200 else None
-            video_file: Union[str, None] = escape(str(file_locations["video_file"])) if meta_data["status"] == 200 else None
+            file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if has_metadata else {} # type: ignore
+            audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if has_metadata else None
+            video_file: Union[str, None] = escape(str(file_locations["video_file"])) if has_metadata else None
             self.__presentGetYouTube(int(str(meta_data["status"])))
             return {
                 "uniform_resource_locator": self.getUniformResourceLocator(),
@@ -574,96 +596,215 @@ class YouTube_Downloader:
             )
             self.setStreams(info["formats"]) # type: ignore
             return {
-                "audio": self.getAudioFile(),
-                "video": self.getVideoFile()
+                "audio": self.getAudioFile(audio),
+                "video": self.getVideoFile(video)
             }
         except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:
             self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
             raise error
 
-    def getAudioFile(self) -> str:
+    def getAudioFile(self, file_path: str) -> str:
         """
-        Retrieving the highest-quality audio stream from available streams.
+        Retrieving and downloading the highest-quality audio stream.
 
-        This method filters the available streams to extract only valid audio streams, selects the one with the highest adaptive bitrate, and sets it as the current stream.  It also sets the MIME type to "audio/mp3" before initiating the download.
+        This method checks if the audio file already exists at the given path.  If it does, the path is returned.  Otherwise, it filters the available streams to identify valid audio streams, preferably matching the desired audio codec.  Among those, it selects the one with the highest available adaptive bitrate (ABR or TBR), sets the stream, and initiates a download.  The MIME type is set to "audio/mp3" prior to download.
+
+        Args:
+            file_path (str): The file path where the audio file should be saved.
 
         Returns:
-            str
+            str: The path to the downloaded or existing audio file.
 
         Raises:
-            NotFoundError: If no valid audio stream is available.
+            NotFoundError: If no valid audio stream is found.
         """
-        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream["abr"] != None and stream["abr"] != 0 and self.getAudioCodec() in stream["acodec"]] # type: ignore
-        adaptive_bitrate: float = float(max(streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
-        self.setStream([stream for stream in streams if stream["abr"] == adaptive_bitrate][0])
         self.setMimeType("audio/mp3")
-        if self.getStream() == None:
-            raise NotFoundError("There is not valid audio stream available.")
-        return self.__downloadAudio(self.getStream())
+        if isfile(file_path):
+            return file_path
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = self._getAudioStreams()
+        if not streams:
+            self.getLogger().error("There is no audio stream with the codec needed.")
+            raise NotFoundError("There is no audio stream with the codec needed.")
+        preferred_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in streams if self.getAudioCodec() in str(stream.get("acodec")) or "high" in str(stream.get("format_note", "")).lower()]
+        stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = max(preferred_streams or streams, key=lambda stream: float(stream.get("abr") or stream.get("tbr") or 0)) # type: ignore
+        self.setStream(stream)
+        return self.__downloadAudio(self.getStream(), file_path)
 
-    def getVideoFile(self) -> str:
+    def _getAudioStreams(self) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
         """
-        Retrieving the highest-quality video and audio streams and downloads the video file.
+        Extracting all potential audio-only streams from the current list of available media streams.
 
-        This method filters available streams to select the best audio and video quality, ensuring the video resolution does not exceed 1080p (1920x1080).  It then combines the selected audio and video streams and initiates the video download.
+        Each stream is examined for the following:
+        - It must be audio-only (`vcodec == "none"`).
+        - It should have a measurable bitrate (`abr` or `tbr`).
+        - It may or may not specify an audio codec (`acodec`).
+
+        This method prepares stream metadata and delegates filtering logic to the internal
+        `__getAudioStreams` method, which applies application-specific validation.
 
         Returns:
-            string
+            List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+                A filtered list of stream metadata dictionaries representing audio-only streams.
+        """
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = []
+        for stream in self.getStreams():
+            is_audio_only: bool = stream.get("vcodec") == "none" and stream.get("audio_ext", "") == "mp4"
+            adaptive_bitrate: float = stream.get("abr") or stream.get("tbr") or 0 # type: ignore
+            audio_codec: str = stream.get("acodec", "Unknown") # type: ignore
+            streams = self.__getAudioStreams(streams, stream, is_audio_only, adaptive_bitrate, audio_codec)
+        return streams
+
+    def __getAudioStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], is_audio_only: bool, adaptive_bitrate: float, audio_codec: str) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
+        """
+        Validating and appending an audio-only stream to the list of collected audio streams.
+
+        A stream is considered valid if:
+        - It is audio-only (video codec is explicitly marked as "none").
+        - It has a non-zero adaptive bitrate (ABR or TBR).
+        - It specifies an audio codec (must be a string).
+
+        Args:
+            streams: The current list of accepted audio streams.
+            stream: The candidate stream to evaluate.
+            is_audio_only: Flag indicating if the stream contains only audio.
+            adaptive_bitrate: Calculated adaptive bitrate (ABR/TBR) for prioritizing quality.
+            audio_codec: The codec used for the stream's audio.
+
+        Returns:
+            An updated list of audio streams including the candidate stream if it passed validation.
+        """
+        if is_audio_only:
+            self.getLogger().warn(f"Audio stream missing metadata\nStream: {stream}") if adaptive_bitrate == 0 or audio_codec in ("unknown", "") else None
+            streams.append(stream)
+        return streams
+
+    def getVideoFile(self, file_path: str) -> str:
+        """
+        Retrieving and downloading the highest-quality video with matching audio, respecting resolution constraints.
+
+        This method performs the following:
+            - Ensures the MIME type is set to "video/mp4".
+            - Skips download if the file already exists at the given path.
+            - Determines max resolution (1080p for standard videos, 1920x1080 for Shorts).
+            - Filters and selects the best available audio and video streams:
+                - Prefers streams that match the instance's audio and video codec requirements.
+                - Prioritizes adaptive bitrates (`abr` for audio, `vbr` for video).
+            - Raises an exception if no valid streams are found.
+            - Initiates the download by combining selected streams.
+
+        Args:
+            file_path (str): The path where the downloaded video file should be saved.
+
+        Returns:
+            str: The path to the downloaded video file.
 
         Raises:
-            NotFoundError: If no valid audio or video stream is available.
+            NotFoundError: If no valid audio or video streams matching codec requirements are found.
         """
-        maximum_height: int = 1080 if "shorts/" not in self.getIdentifier() else 1920
-        maximum_width: int = 1920 if "shorts/" not in self.getIdentifier() else 1080
-        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if (stream.get("abr") is not None and stream.get("abr") != 0.00) and self.getAudioCodec() in str(stream.get("acodec"))]
-        adaptive_bitrate: float = float(max(audio_streams, key=lambda stream: stream["abr"])["abr"]) # type: ignore
-        self.setStream([stream for stream in audio_streams if stream["abr"] == adaptive_bitrate][0])
-        if self.getStream() == None:
-            raise NotFoundError("There is not valid audio stream available.")
-        audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
-        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in self.getStreams() if stream.get("vbr") is not None and stream.get("vbr") != 0.00]
-        height: int = int(max(video_streams, key=lambda stream: stream["height"])["height"]) # type: ignore
-        width: int = int(max(video_streams, key=lambda stream: stream["width"])["width"]) # type: ignore
-        height = maximum_height if height >= maximum_height else height
-        width = maximum_width if width >= maximum_width else width
-        video_streams = [stream for stream in video_streams if stream.get("height") == height and stream.get("width") == width and self.getVideoCodec() in str(stream.get("vcodec")) and "filesize" in stream]
-        file_size: int = int(max(video_streams, key=lambda stream: stream["filesize"])["filesize"]) # type: ignore
-        self.setStream([stream for stream in video_streams if stream.get("filesize") == file_size][0])
-        if self.getStream() == None:
-            raise NotFoundError("There is not valid video stream available.")
-        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = self.getStream()
         self.setMimeType("video/mp4")
-        return self.__downloadVideo(audio_stream, video_stream)
+        if isfile(file_path):
+            return file_path
+        is_not_shorts: bool = "shorts/" not in self.getIdentifier()
+        maximum_height: int = 1080 if is_not_shorts else 1920
+        maximum_width: int = 1920 if is_not_shorts else 1080
+        audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = self._getAudioStreams()
+        if not audio_streams:
+            self.getLogger().error("There is no audio stream with the codec needed.")
+            raise NotFoundError("There is no audio stream with the codec needed.")
+        preferred_audio_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = [stream for stream in audio_streams if self.getAudioCodec() in str(stream.get("acodec")) or "high" in str(stream.get("format_note", "")).lower()]
+        audio_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = max(preferred_audio_streams or audio_streams, key=lambda stream: float(stream.get("abr") or stream.get("tbr") or 0)) # type: ignore
+        video_streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = self._getVideoStreams(maximum_height, maximum_width) # type: ignore
+        if not video_streams:
+            self.getLogger().error("There is no video stream with the codec needed.")
+            raise NotFoundError("There is no video stream with the codec needed.")
+        video_stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]] = video_streams[0]
+        return self.__downloadVideo(audio_stream, video_stream, file_path)
 
-    def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
+    def _getVideoStreams(self, maximum_height: int, maximum_width: int) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
         """
-        Downloading a video file with the corresponding audio stream and stores it in the specified directory.
+        Retrieving the best valid video streams based on resolution, file size, and codec.
 
-        Parameters:
-            audio (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the audio stream, including format ID.
-            video (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]): A dictionary containing metadata about the video stream, including format ID.
+        This method:
+            - Filters available streams to include only valid video streams.
+            - Determines the optimal resolution bounded by the given maximum height and width.
+            - Selects the largest file size among matching streams.
+            - Narrows down to streams that match both the chosen resolution and file size, and further refines the selection based on the preferred video codec.
+
+        Args:
+            maximum_height (int): The maximum allowed video height.
+            maximum_width (int): The maximum allowed video width.
 
         Returns:
-            string
+            List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]: A list of valid video streams filtered by resolution, size, and codec.
 
         Raises:
-            DownloadError: If the video download process fails.
-            Relational_Database_Error: If there is an issue inserting data into the relational database.
+            NotFoundError: If no valid video streams are found.
         """
-        file_path: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-        options: Dict[str, str] = {
-            "format": f"{video['format_id']}+{audio['format_id']}",
-            "merge_output_format": "mp4",
-            "outtmpl": file_path
-        }
+        streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]] = []
+        for stream in self.getStreams():
+            is_video: bool = stream.get("vbr") is not None and stream.get("vbr") != 0.00
+            streams = self._getValidVideoStreams(streams, stream, is_video) # type: ignore
+        if not streams:
+            self.getLogger().error("There is no video stream.")
+            raise NotFoundError("There is no video stream.")
+        height: int = int(max(streams, key=lambda stream: stream.get("height"))["height"]) # type: ignore
+        width: int = int(max(streams, key=lambda stream: stream.get("width"))["width"]) # type: ignore
+        height = min(height, maximum_height)
+        width = min(width, maximum_width)
+        file_size: int = int(max((stream for stream in streams if isinstance(stream.get("filesize", 0), int)), key=lambda stream: stream.get("filesize", 0)).get("filesize", 0)) # type: ignore
+        filtered_streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]] = []
+        for stream in streams:
+            video_codec: str = stream.get("vcodec", "Unknown") # type: ignore
+            is_in_resolution: bool = stream.get("height") == height and stream.get("width") == width
+            is_in_size: bool = stream.get("filesize", 0) == file_size
+            filtered_streams = self.__getVideoStreams(filtered_streams, stream, is_in_resolution, is_in_size, video_codec)
+        return filtered_streams
+
+    def _getValidVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_video: bool) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+        """
+        Appending a stream to the list of valid video streams if it qualifies as a video.
+
+        Args:
+            streams (List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]): The current list of valid video streams.
+            stream (Dict[str, Union[str, int, float, None, Dict[str, str]]]): The stream being evaluated.
+            is_video (bool): True if the stream contains video data (based on vbr presence and value).
+
+        Returns:
+            List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]: The updated list of valid video streams.
+        """
+        if is_video:
+            streams.append(stream)
+        return streams
+
+    def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], file_path: str) -> str:
+        """
+        Downloading and merging a video file with its corresponding audio stream, then save it to the specified path.
+
+        This method configures `yt-dlp` with appropriate format options to combine a selected video and audio stream and save the result in MP4 format.  After download, it logs metadata into a relational database.
+
+        Args:
+            audio (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Metadata dictionary for the selected audio stream.
+            video (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Metadata dictionary for the selected video stream.
+            file_path (str): Path where the resulting video file should be saved.
+
+        Returns:
+            str: The file path of the downloaded and merged video.
+
+        Raises:
+            DownloadError: If the video download or merge process fails.
+            Relational_Database_Error: If storing metadata in the relational database fails.
+        """
         try:
+            self.getLogger().inform(f"Downloading the video file.\nFile Path: {file_path}")
+            format_identifier: str = f"{video['format_id']}+{audio['format_id']}" # type: ignore
+            options: Dict[str, str] = {
+                "format": format_identifier,
+                "merge_output_format": "mp4",
+                "outtmpl": file_path
+            }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-        except DownloadError as error:
-            self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
-            raise error
-        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        try:
+            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
             self.getDatabaseHandler().postData(
                 table="MediaFile",
                 columns="type, date_downloaded, location, YouTube",
@@ -671,9 +812,35 @@ class YouTube_Downloader:
                 parameters=data # type: ignore
             )
             return file_path
+        except DownloadError as error:
+            self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
+            raise error
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
             raise error
+
+    def __getVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_in_resolution: bool, is_in_size: bool, video_codec: str) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+        """
+        Filtering and appending a video stream based on resolution, size, and codec preferences.
+
+        This method appends a stream to the given list if it satisfies all of the following:
+            - Matches the target resolution (height and width).
+            - Matches the maximum determined file size.
+            - Uses a codec that matches the preferred video codec defined by the instance.
+
+        Args:
+            streams (List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]): The list of already accepted video streams.
+            stream (Dict[str, Union[str, int, float, None, Dict[str, str]]]): The candidate video stream to evaluate.
+            is_in_resolution (bool): True if the stream matches the selected resolution.
+            is_in_size (bool): True if the stream matches the maximum file size.
+            video_codec (str): The codec string extracted from the stream for comparison.
+
+        Returns:
+            List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]: The updated list of valid video streams.
+        """
+        if is_in_resolution and is_in_size and self.getVideoCodec() in video_codec:
+            streams.append(stream)
+        return streams
 
     def handleHttpError(self, error: HTTPError) -> None:
         """
@@ -689,33 +856,35 @@ class YouTube_Downloader:
         if "403" not in str(error):
             raise error
 
-    def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]) -> str:
+    def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], file_path: str) -> str:
         """
-        Downloading an audio file using the provided stream details and stores it in the specified directory.
+        Downloading an audio stream and saving it to the specified file path.
 
-        Parameters:
-            stream (Dict[string, Union[string, int, float, List[Dict[string, Union[string, float]]], None, Dict[string, string]]]):  A dictionary containing metadata about the audio stream, such as format ID.
+        This method configures `yt-dlp` with the correct format specification based on the provided stream metadata.  It handles edge cases such as missing format IDs or HLS (m3u8) streams by falling back to the best available format.  After a successful download, it records metadata into the `MediaFile` table of a relational database.
+
+        Args:
+            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Dictionary containing metadata of the audio stream, including format ID and protocol.
+            file_path (str): Path where the downloaded audio file should be saved.
 
         Returns:
-            string
+            str: The absolute file path of the saved audio file.
 
         Raises:
-            DownloadError: If the audio download process fails.
-            Relational_Database_Error: If there is an issue inserting data into the relational database.
+            DownloadError: If the audio download fails.
+            Relational_Database_Error: If insertion into the database fails.
         """
-        file_path: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
-        options: Dict[str, str] = {
-            "format": str(stream["format_id"]),
-            "outtmpl": file_path
-        }
         try:
+            self.getLogger().inform("Downloading the audio file.\nFile Path: {file_path}")
+            format_identifier: str = stream.get("format_id") # type: ignore
+            protocol: str = stream.get("protocol", "") # type: ignore
+            format_specification: str = self.getAudioFormatSpecification(format_identifier, protocol)
+            options: Dict[str, str] = {
+                "format": format_specification,
+                "outtmpl": file_path
+            }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-        except DownloadError as error:
-            self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
-            raise error
-        data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-        try:
+            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
             self.getDatabaseHandler().postData(
                 table="MediaFile",
                 columns="type, date_downloaded, location, YouTube",
@@ -723,6 +892,27 @@ class YouTube_Downloader:
                 parameters=data # type: ignore
             )
             return file_path
+        except DownloadError as error:
+            self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
+            raise error
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
             raise error
+
+    def getAudioFormatSpecification(self, format_identifier: Union[str, None], protocol: str) -> str:
+        """
+        Determining the audio format specification for downloading based on the provided format identifier and protocol.
+
+        Args:
+            format_identifier (Union[str, None]): The format ID of the audio stream, or None if unavailable.
+            protocol (str): The protocol string associated with the stream (e.g., "http", "m3u8").
+
+        Returns:
+            str: The format specification string to be used for downloading.
+                Returns "bestaudio" if the format ID is missing or if the protocol is HLS (m3u8),
+                otherwise returns the string representation of the format identifier.
+        """
+        if format_identifier is None or "m3u8" is str(protocol).lower():
+            self.getLogger().warn("Using fallback format due to unsupported or missing format identifier.")
+            return "bestaudio"
+        return str(format_identifier)

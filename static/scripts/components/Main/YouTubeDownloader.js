@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import MainUtilities from "../utilities/Main";
 
 
 /**
@@ -39,49 +40,19 @@ class YouTubeDownloader extends Component {
          * @type {Tracker}
          */
         this.tracker = null;
+        /**
+         * The utility class of the Main component.
+         * @type {MainUtilities}
+         */
+        this.main_utilities = new MainUtilities();
     }
 
     /**
-     * Running the methods needed as soon as the component has been
-     * successfully mounted.
+     * Running the methods needed as soon as the component has been successfully mounted.
      * @returns {void}
      */
     componentDidMount() {
         this.setData();
-        console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Mount`);
-    }
-
-    /**
-     * The methods to be executed when the component has been
-     * updated.
-     * @returns {void}
-     */
-    componentDidUpdate() {
-        if (!this.state.data_loaded) {
-            setTimeout(() => {
-                this.setData();
-                console.info(`Route: ${window.location.pathname}\nComponent: Download.Main.MainDownload.YouTubeDownloader\nComponent Status: Update`);
-            }, 2000);
-        }
-    }
-
-    /**
-     * Parsing and validating media metadata from localStorage.
-     * 
-     * - Attempts to parse the provided JSON string and extract the `data` property.
-     * - If parsing fails, logs the error and rethrows it as a new `Error`.
-     * @param {?string} local_storage_data The data from the local storage.
-     * @returns {{uniform_resource_locator: string, author: string, title: string, identifier: string, author_channel: string, views: number, published_at: string, thumbnail: string, duration: string, audio: ?string, video: ?string}}
-     * @throws {Error} If the JSON cannot be parsed or does not match expected structure.
-     */
-    getMedia(local_storage_data) {
-        try {
-            const parsed_data = JSON.parse(local_storage_data);
-            return parsed_data.data;
-        } catch (error) {
-            console.error(`The application has failed to parse the data.\nError: ${error.message}`);
-            throw new Error(error.message);
-        }
     }
 
     /**
@@ -97,74 +68,46 @@ class YouTubeDownloader extends Component {
      * @returns {void}
      */
     setData() {
-        try {
-            const loading_icon = document.querySelector("#loading");
-            const local_storage_data = localStorage.getItem("media");
-            const media = (typeof local_storage_data == "string") ? this.getMedia(local_storage_data) : null;
-            const data_loaded = (media != null && window.Tracker);
-            loading_icon.style.display = "flex";
-            this.setState((previous) => ({
-                ...previous,
-                uniform_resource_locator: (media) ? media.uniform_resource_locator : previous.uniform_resource_locator,
-                author: (media) ? media.author : previous.author,
-                title: (media) ? media.title : previous.title,
-                identifier: (media) ? media.identifier : previous.identifier,
-                author_channel: (media) ? media.author_channel : previous.author_channel,
-                views: (media) ? media.views : previous.views,
-                published_at: (media) ? media.published_at : previous.published_at,
-                thumbnail: (media) ? media.thumbnail : previous.thumbnail,
-                duration: (media) ? media.duration : previous.duration,
-                File: {
-                    ...previous.File,
-                    audio: (media) ? media.audio : previous.File.audio,
-                    video: (media) ? media.video : previous.File.video,
-                },
-                data_loaded: data_loaded,
-            }));
-            this.tracker = (window.Tracker) ? window.Tracker : null;
-            (data_loaded) ? this.verifyFile(loading_icon) : null;
-        } catch (error) {
-            console.error(`The application has failed to initialize the data.\nError: ${error.message}`);
+        const loading_icon = document.querySelector("#loading");
+        loading_icon.style.display = "flex";
+        if (this.state.data_loaded) {
+            loading_icon.style.display = "none";
+            console.info(`Route: ${window.location.pathname}\nComponent: YouTubeDownloader\nComponent Status: Loaded`);
+            return;
         }
+        this.getData();
     }
 
     /**
-     * Sending a request to check the availability of a video file on the server.
-     * 
-     * - Determines the appropriate video path based on the current uniform resource locator structure (Shorts or regular).
-     * - Performs a fetch request to that path.
-     * - Returns the HTTP status code to indicate the video's availability.
-     * @param {string} identifier - The unique identifier of the video.
-     * @returns {Promise<number>} A promise that resolves to the HTTP status code of the video resource.
+     * Retrieving the data from the `localStorage` to be set as the states of the application.
+     * @returns {void}
      */
-    async checkVideoStatus(identifier) {
-        const query = (window.location.pathname.includes("/Shorts/")) ? `/Public/Video/Shorts/${identifier}.mp4` : `/Public/Video/${identifier}.mp4`;
-        try {
-            const response = await fetch(query);
-            return response.status;
-        } catch (error) {
-            console.error(`There is an error while retrieving the video status.\nError: ${error.message}`);
-            return 500;
+    getData() {
+        const {media, data_loaded} = this.main_utilities.getDownloadedMedia();
+        if (!data_loaded) {
+            setTimeout(() => this.setData(), 1000);
+            return;
         }
-    }
-
-    /**
-     * Processing the video status returned by the server and determines the final media file path or redirect uniform resource locator.
-     * 
-     * - If the status is not `200`, it returns a redirect path to the search page.
-     * - If the status is `200`, it processes and returns a cleaned-up path for the video file,
-     *   removing internal server paths based on known directory locations.
-     * 
-     * @param {number} status - HTTP status code indicating the availability of the video.
-     * @returns {Promise<string>} A promise resolving to the processed video file path or search redirection URL.
-     */
-    async handleVideoStatus(status) {
-        if (status != 200) {
-            const identifier = window.location.pathname.replace("/Download/YouTube/", "");
-            return `/Search/${identifier}`;
-        }
-        const video_path = this.state.File.video;
-        return (video_path.includes("extractio")) ? video_path.replace("/home/darkness4869/Documents/extractio", "") : video_path.replace("/var/www/html/ytd_web_app", "");
+        this.setState((previous) => ({
+            ...previous,
+            uniform_resource_locator: media.uniform_resource_locator,
+            author: media.author,
+            title: media.title,
+            identifier: media.identifier,
+            author_channel: media.author_channel,
+            views: media.views,
+            published_at: media.published_at,
+            thumbnail: media.thumbnail,
+            duration: media.duration,
+            File: {
+                ...previous.File,
+                audio: media.audio,
+                video: media.video,
+            },
+            data_loaded: data_loaded,
+        }));
+        this.tracker = window.Tracker;
+        this.verifyFile(media.video);
     }
 
     /**
@@ -174,15 +117,15 @@ class YouTubeDownloader extends Component {
      * - Checks the video status from the server.
      * - Handles the video status to determine the correct route (file path or search redirect).
      * - Manages the result by either updating the component state or redirecting the user.
-     * @param {HTMLDivElement} loading_icon - The DOM element representing the loading indicator.
+     * @param {?string} video_file_path - The file path of the video.
      * @returns {void}
      */
-    verifyFile(loading_icon) {
+    verifyFile(video_file_path) {
         const path_name = window.location.pathname;
         const identifier = (path_name.includes("/Shorts/")) ? path_name.replace("/Download/YouTube/Shorts/", "") : path_name.replace("/Download/YouTube/", "");
-        this.checkVideoStatus(identifier)
-        .then((status) => this.handleVideoStatus(status, loading_icon))
-        .then((route) => this.manageRoute(route, loading_icon));
+        this.main_utilities.checkVideoStatus(identifier)
+        .then((status) => this.main_utilities.handleVideoStatus(status, video_file_path))
+        .then((route) => this.manageRoute(route));
     }
 
     /**
@@ -192,16 +135,14 @@ class YouTubeDownloader extends Component {
      * - Otherwise, the loading icon is hidden and the state is updated with the corrected file uniform resource locator.
      * - Adjusts the route casing for Shorts uniform resource locators to maintain consistency.
      * @param {string} route - A uniform resource locator route, either a search path or a direct media file path.
-     * @param {HTMLDivElement} loading_icon - The DOM element representing the loading indicator.
      * @returns {void}
      */
-    manageRoute(route, loading_icon) {
+    manageRoute(route) {
         if (route.includes("/Search/")) {
             window.location.href = route;
             return;
         }
         const file_path = (window.location.pathname.includes("/Shorts/")) ? route.replace("/shorts/", "/Shorts/") : route;
-        loading_icon.style.display = "none";
         this.setState((previous) => ({
             ...previous,
             File: {
@@ -209,46 +150,7 @@ class YouTubeDownloader extends Component {
                 uniform_resource_locator: file_path,
             },
         }));
-    }
-
-    /**
-     * Sending the request to the server to download the file
-     * needed.
-     * @param {string} file_location The location of the file.
-     * @param {string} file_name The name of the file.
-     * @returns {Promise<Blob>}
-     */
-    async downloadFileServer(file_location, file_name) {
-        try {
-            const response = await fetch("/Download/", {
-                method: "POST",
-                body: JSON.stringify({
-                    file: file_location,
-                    file_name: file_name,
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!response.ok) {
-                throw new Error(`Failed to download file: ${response.statusText}`);
-            }
-            const reader = response.body.getReader();
-            const chunks = [];
-            let done = false;
-            while (!done) {
-                const {value, done: is_done} = await reader.read();
-                done = is_done;
-                if (value) {
-                    chunks.push(value);
-                }
-            }
-            const blob = new Blob(chunks);
-            return blob;
-        } catch (error) {
-            console.error("Fetch Error: ", error);
-            throw error;
-        }
+        setTimeout(() => this.setData(), 1000);
     }
 
     /**
@@ -270,48 +172,6 @@ class YouTubeDownloader extends Component {
             console.error("Download Failed: ", error);
         }
     }
-
-    /**
-     * Downloading the file retrieved from the server.
-     * @param {MouseEvent} event The on-click event.
-     * @returns {void}
-     */
-    getFile(event) {
-        const button = event.target.parentElement;
-        const file_location = button.value;
-        const file_name = (file_location.includes("/Public/Audio/")) ? `${this.state.title}.mp3` : `${this.state.title}.mp4`;
-        const uniform_resource_locator = (file_location.includes("/Public/Audio/")) ? `/Public/Audio/${this.state.identifier}.mp3` : `/Public/Video/${this.state.identifier}.mp4`;
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            return this.downloadFileServer(file_location, file_name);
-        })
-        .then((data) => this.downloadFileClient(data, file_name))
-        .catch((error) => console.error("Download Failed: ", error));
-    }
-
-    /**
-     * Handles the click event on a component.
-     * @param {MouseEvent} event The click event.
-     * @returns {void}
-     */
-    handleClick = (event) => {
-        event.preventDefault();
-        const uniform_resource_locator = (String(event.target.localName) == "a") ? String(event.target.href) : String(event.target.parentElement.href);
-        this.tracker.sendEvent("click", {
-            uniform_resource_locator: uniform_resource_locator,
-        })
-        .then(() => {
-            window.open(uniform_resource_locator, "_blank");
-        })
-        .catch((error) => {
-            console.error("An error occurred while sending the event or setting the route!\nError: ", error);
-            setTimeout(() => {
-                window.location.href = window.location.href;
-            }, delay);
-        });
-    };
 
     /**
      * Calculating the height of the title based on its length and the height of the component.
@@ -357,7 +217,11 @@ class YouTubeDownloader extends Component {
         }
         return (
             <div className="button">
-                <button name="file_downloader" value={file_path} onClick={this.getFile.bind(this)}>
+                <button
+                    name="file_downloader"
+                    value={file_path}
+                    onClick={(event) => this.main_utilities.getFile(event, this.tracker, this.state.title, this.state.identifier)}
+                >
                     {this.renderDownloadIcon(type)}
                 </button>
             </div>
@@ -390,10 +254,10 @@ class YouTubeDownloader extends Component {
                     </div>
                     <div id="data">
                         <div id="title" style={{"--title-height": this.getTitleHeight(this.state.title)}}>
-                            <a href={this.state.uniform_resource_locator} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.title}</a>
+                            <a href={this.state.uniform_resource_locator} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{this.state.title}</a>
                         </div>
                         <div id="author">
-                            <a href={this.state.author_channel} target="__blank" onClick={this.handleClick.bind(this)}>{this.state.author}</a>
+                            <a href={this.state.author_channel} target="__blank" onClick={(event) => this.main_utilities.handleClick(event, this.tracker)}>{this.state.author}</a>
                         </div>
                         <div id="actions">
                             <div id="metrics">

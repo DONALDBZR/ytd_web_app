@@ -43,6 +43,34 @@ class Extractio_Logger:
     def setLogger(self, logger: Logger) -> None:
         self.__logger = logger
 
+    def __configureLogging(
+        self,
+        filepath: str,
+        format: str = "[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
+        encoding: str = "utf-8",
+        filemode: str = "a",
+        configurator: Callable = basicConfig
+    ) -> None:
+        """
+        Configuring the logging settings.
+
+        Args:
+            filepath (str): Path to the log file.
+            format (str): Log message format.
+            encoding (str): File encoding.
+            filemode (str): File open mode.
+            configurator (Callable): Function to apply configuration (default: logging.basicConfig)
+
+        Returns:
+            None
+        """
+        configurator(
+            filename=filepath,
+            encoding=encoding,
+            filemode=filemode,
+            format=format
+        )
+
     def debug(self, message: str) -> None:
         """
         Logging a debug message.

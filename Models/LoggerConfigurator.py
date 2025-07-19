@@ -1,3 +1,6 @@
+"""
+Implementation of the Logger_Configurator class for configuring logging settings in the Extractio application.
+"""
 from Environment import Environment
 from logging import Logger, getLogger, FileHandler, Formatter, DEBUG
 

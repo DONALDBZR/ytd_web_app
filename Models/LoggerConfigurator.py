@@ -1,10 +1,14 @@
 """
-Implementation of the Logger_Configurator class for configuring logging settings in the Extractio application.
+It is the configuration module for the Extractio application logging system.
+
+Authors:
+    Darkness4869
 """
 from Environment import Environment
 from logging import Logger, getLogger, FileHandler, Formatter, DEBUG, Handler
 from typing import List, Optional
 from os import makedirs
+from os.path import join
 
 
 class Logger_Configurator:
@@ -23,7 +27,7 @@ class Logger_Configurator:
 
     Methods:
         configure(logger_name: str) -> Logger:
-            Configuring the logger with the specified parameters and returns the logger instance.
+            Configuring and retrieving a logger instance based on the stored settings.
     """
     __directory: str
     """
@@ -121,23 +125,33 @@ class Logger_Configurator:
 
     def configure(self, logger_name: str) -> Logger:
         """
-        Configuring the logger with the specified parameters and returns the logger instance.
+        Configuring and retrieving a logger instance based on the stored settings.
+
+        This method gets a logger by its name.  If the logger has already been configured with handlers, it is returned immediately to prevent duplicate handler attachment.
+
+        Otherwise, it creates a new `FileHandler` using the path, mode, and encoding specified in this configurator instance.  It also attaches any additional handlers provided during initialization.
 
         Args:
-            logger_name (str): Name of the logger to be configured.
+            logger_name (str): The name of the logger to configure, typically the `__name__` of the calling module.
 
         Returns:
-            Logger: Configured logger instance.
+            Logger: The configured logger instance, ready for use.
         """
         logger: Logger = getLogger(logger_name)
         logger.setLevel(DEBUG)
-        if not logger.handlers:
-            file_handler: FileHandler = FileHandler(
-                f"{self.getDirectory()}/{self.getFilename()}",
-                mode=self.getFileMode(),
-                encoding=self.getEncoding()
-            )
-            formatter: Formatter = Formatter(self.getFormat())
-            file_handler.setFormatter(formatter)
-            logger.addHandler(file_handler)
+        if logger.hasHandlers():
+            return logger
+        file_handler: FileHandler = FileHandler(
+            join(
+                self.getDirectory(),
+                self.getFilename()
+            ),
+            mode=self.getFileMode(),
+            encoding=self.getEncoding()
+        )
+        formatter: Formatter = Formatter(self.getFormat())
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+        for handler in self.getHandlers():
+            logger.addHandler(handler)
         return logger

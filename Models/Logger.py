@@ -117,10 +117,7 @@ class Extractio_Logger:
         """
         Logging an error message.
 
-        This method logs a message at the ERROR level after sanitizing it.  It also prints the message to the console.
-
         Parameters:
             message (str): The message to log.
         """
-        self.getLogger().setLevel(ERROR)
-        self.getLogger().error(message)
+        self.__log(ERROR, message)

@@ -1,5 +1,5 @@
 """
-The module for the custom logger of the application.
+Custom logger for the Extractio application.
 
 Authors:
     Darkness4869

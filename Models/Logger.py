@@ -71,6 +71,21 @@ class Extractio_Logger:
             format=format
         )
 
+    def __log(self, level: int, message: str) -> None:
+        """
+        Logging a message at the specified logging level.
+
+        Args:
+            level (int): The severity level to be used for logging.
+            message (str): The message to log.
+
+        Returns:
+            None
+        """
+        if not self.getLogger().isEnabledFor(level):
+            return
+        self.getLogger().log(level, message)
+
     def debug(self, message: str) -> None:
         """
         Logging a debug message.

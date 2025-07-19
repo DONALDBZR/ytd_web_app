@@ -90,13 +90,10 @@ class Extractio_Logger:
         """
         Logging a debug message.
 
-        This method logs a message at the DEBUG level after sanitizing it.  It also prints the message to the console.
-
         Parameters:
             message (str): The message to log.
         """
-        self.getLogger().setLevel(DEBUG)
-        self.getLogger().debug(message)
+        self.__log(DEBUG, message)
 
     def inform(self, message: str) -> None:
         """

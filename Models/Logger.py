@@ -21,7 +21,7 @@ class Extractio_Logger:
     The underlying logger instance from Python's logging module.
     """
 
-    def __init__(self, name: str, env: Environment):
+    def __init__(self, name: str):
         """
         Initializing the ExtractioLogger.
 
@@ -31,8 +31,8 @@ class Extractio_Logger:
 
         Args:
             name (str): Name of the logger.
-            env (Environment): An environment instance used to get directory paths.
         """
+        env = Environment()
         log_filepath: str = f"{env.getDirectory()}/Logs/Extractio.log"
         self.__configureLogging(log_filepath)
         self.setLogger(get_logger(name))

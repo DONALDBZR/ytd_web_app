@@ -2,7 +2,7 @@
 Implementation of the Logger_Configurator class for configuring logging settings in the Extractio application.
 """
 from Environment import Environment
-from logging import Logger, getLogger, FileHandler, Formatter, DEBUG
+from logging import Logger, getLogger, FileHandler, Formatter, DEBUG, Handler
 from typing import List, Optional
 from os import makedirs
 
@@ -19,7 +19,7 @@ class Logger_Configurator:
         log_format (str): Format string for log messages.
         encoding (str): Encoding for the log file.
         file_mode (str): File mode for opening the log file.
-        handlers (List[FileHandler]): List of additional logging handlers to be added to the logger.
+        handlers (List[Handler]): List of additional logging handlers to be added to the logger.
 
     Methods:
         configure(logger_name: str) -> Logger:
@@ -45,7 +45,7 @@ class Logger_Configurator:
     """
     Mode in which the log file is opened.
     """
-    __handlers: List[FileHandler]
+    __handlers: List[Handler]
     """
     List of additional logging handlers to be added to the logger.
     """
@@ -57,7 +57,7 @@ class Logger_Configurator:
         format: str = "[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
         encoding: str = "utf-8",
         file_mode: str = "a",
-        handlers: Optional[List[FileHandler]] = None
+        handlers: Optional[List[Handler]] = None
     ):
         """
         Initializing the Logger_Configurator with specified or default settings.
@@ -72,7 +72,7 @@ class Logger_Configurator:
             format (str): The format string for log messages.
             encoding (str): The character encoding for the log file.
             file_mode (str): The file mode for opening the log file.
-            handlers (Optional[List[FileHandler]]): A list of additional logging handlers to add to the logger.
+            handlers (Optional[List[Handler]]): A list of additional logging handlers to add to the logger.
         """
         env: Environment = Environment()
         self.setDirectory(directory if directory else f"{env.getDirectory()}/Logs")
@@ -113,10 +113,10 @@ class Logger_Configurator:
     def setFileMode(self, file_mode: str) -> None:
         self.__file_mode = file_mode
 
-    def getHandlers(self) -> List[FileHandler]:
+    def getHandlers(self) -> List[Handler]:
         return self.__handlers
 
-    def setHandlers(self, handlers: List[FileHandler]) -> None:
+    def setHandlers(self, handlers: List[Handler]) -> None:
         self.__handlers = handlers
 
     def configure(self, logger_name: str) -> Logger:

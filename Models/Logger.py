@@ -99,13 +99,10 @@ class Extractio_Logger:
         """
         Logging an informational message.
 
-        This method logs a message at the INFO level after sanitizing it.  It also prints the message to the console.
-
         Parameters:
             message (str): The message to log.
         """
-        self.getLogger().setLevel(INFO)
-        self.getLogger().info(message)
+        self.__log(INFO, message)
 
     def warn(self, message: str) -> None:
         """

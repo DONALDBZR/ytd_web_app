@@ -1,10 +1,20 @@
+"""
+The Extractio_Logger module provides a logger class for the Extractio application.
+
+Author:
+    Darkness4869
+"""
 from logging.__init__ import Logger
-from logging import basicConfig, DEBUG, INFO, WARNING, ERROR
-from typing import Callable, Optional
+from typing import Optional
 from Models.LoggerConfigurator import Logger_Configurator
 
 
 class Extractio_Logger:
+    """
+    A class to create and manage a logger instance for the Extractio application.
+    
+    This class encapsulates a logger instance and provides methods to log messages at different severity levels (debug, info, warning, error).
+    """
     __logger: Logger
     """
     The underlying logger instance from Python's logging module.
@@ -41,49 +51,6 @@ class Extractio_Logger:
     def setConfigurator(self, configurator: Logger_Configurator) -> None:
         self.__configurator = configurator
 
-    def __configureLogging(
-        self,
-        filepath: str,
-        format: str = "[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
-        encoding: str = "utf-8",
-        filemode: str = "a",
-        configurator: Callable = basicConfig
-    ) -> None:
-        """
-        Configuring the logging settings.
-
-        Args:
-            filepath (str): Path to the log file.
-            format (str): Log message format.
-            encoding (str): File encoding.
-            filemode (str): File open mode.
-            configurator (Callable): Function to apply configuration (default: logging.basicConfig)
-
-        Returns:
-            None
-        """
-        configurator(
-            filename=filepath,
-            encoding=encoding,
-            filemode=filemode,
-            format=format
-        )
-
-    def __log(self, level: int, message: str) -> None:
-        """
-        Logging a message at the specified logging level.
-
-        Args:
-            level (int): The severity level to be used for logging.
-            message (str): The message to log.
-
-        Returns:
-            None
-        """
-        if not self.getLogger().isEnabledFor(level):
-            return
-        self.getLogger().log(level, message)
-
     def debug(self, message: str) -> None:
         """
         Logging a debug message.
@@ -91,7 +58,7 @@ class Extractio_Logger:
         Parameters:
             message (str): The message to log.
         """
-        self.__log(DEBUG, message)
+        self.getLogger().debug(message)
 
     def inform(self, message: str) -> None:
         """
@@ -100,7 +67,7 @@ class Extractio_Logger:
         Parameters:
             message (str): The message to log.
         """
-        self.__log(INFO, message)
+        self.getLogger().info(message)
 
     def warn(self, message: str) -> None:
         """
@@ -109,7 +76,7 @@ class Extractio_Logger:
         Parameters:
             message (str): The message to log.
         """
-        self.__log(WARNING, message)
+        self.getLogger().warning(message)
 
     def error(self, message: str) -> None:
         """
@@ -118,4 +85,4 @@ class Extractio_Logger:
         Parameters:
             message (str): The message to log.
         """
-        self.__log(ERROR, message)
+        self.getLogger().error(message)

@@ -108,13 +108,10 @@ class Extractio_Logger:
         """
         Logging a warning message.
 
-        This method logs a message at the WARNING level after sanitizing it.  It also prints the message to the console.
-
         Parameters:
             message (str): The message to log.
         """
-        self.getLogger().setLevel(WARNING)
-        self.getLogger().warning(message)
+        self.__log(WARNING, message)
 
     def error(self, message: str) -> None:
         """

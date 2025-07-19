@@ -4,8 +4,10 @@ object-relational mapper.
 """
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
+from mysql.connector.abstracts import MySQLConnectionAbstract, MySQLCursorAbstract
 from mysql.connector.cursor import MySQLCursor
-from Models.Logger import Extractio_Logger, Environment
+from Models.Logger import Extractio_Logger
+from Environment import Environment
 from mysql.connector.types import RowType
 from typing import Union, Tuple, Any, List
 from mysql.connector import connect, Error as Relational_Database_Error
@@ -35,11 +37,11 @@ class Database_Handler:
     The password that allows the required user to connect to the
     database.
     """
-    __database_handler: Union[PooledMySQLConnection, MySQLConnection]
+    __database_handler: Union[PooledMySQLConnection, MySQLConnectionAbstract]
     """
     The database handler needed to execute the queries needed.
     """
-    __statement: MySQLCursor
+    __statement: MySQLCursorAbstract
     """
     The statement to be used to execute all of the requests to
     the database server.
@@ -157,16 +159,16 @@ class Database_Handler:
     def __setPassword(self, password: str) -> None:
         self.__password = password
 
-    def __getDatabaseHandler(self) -> Union[PooledMySQLConnection, MySQLConnection]:
+    def __getDatabaseHandler(self) -> Union[PooledMySQLConnection, MySQLConnectionAbstract]:
         return self.__database_handler
 
-    def __setDatabaseHandler(self, database_handler: Union[PooledMySQLConnection, MySQLConnection]) -> None:
+    def __setDatabaseHandler(self, database_handler: Union[PooledMySQLConnection, MySQLConnectionAbstract]) -> None:
         self.__database_handler = database_handler
 
-    def __getStatement(self) -> MySQLCursor:
+    def __getStatement(self) -> MySQLCursorAbstract:
         return self.__statement
 
-    def __setStatement(self, statement: MySQLCursor) -> None:
+    def __setStatement(self, statement: MySQLCursorAbstract) -> None:
         self.__statement = statement
 
     def getQuery(self) -> str:
@@ -212,7 +214,7 @@ class Database_Handler:
                     dictionary=True
                 )
             )
-            self.__getStatement().execute(query, parameters)
+            self.__getStatement().execute(query, parameters) # type: ignore
         except Relational_Database_Error as error:
             self.getLogger().error(f"Query Execution Failed!\nError: {error}\nQuery: {query}\nParameters: {parameters}")
             raise error
@@ -251,7 +253,7 @@ class Database_Handler:
             Relational_Database_Error: If fetching the result set fails.
         """
         try:
-            result_set: List[RowType] = self.__getStatement().fetchall()
+            result_set: List[RowType] = self.__getStatement().fetchall() # type: ignore
             self.getLogger().debug("The data has been successfully retrieved!")
             return result_set
         except Relational_Database_Error as error:

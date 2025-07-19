@@ -1,47 +1,45 @@
-"""
-Custom logger for the Extractio application.
-
-Authors:
-    Darkness4869
-"""
 from logging.__init__ import Logger
-from logging import basicConfig, getLogger as get_logger, DEBUG, INFO, WARNING, ERROR
-from Environment import Environment
-from typing import Callable
+from logging import basicConfig, DEBUG, INFO, WARNING, ERROR
+from typing import Callable, Optional
+from Models.LoggerConfigurator import Logger_Configurator
 
 
 class Extractio_Logger:
-    """
-    A custom logger class for the Extractio application.
-
-    This class provides methods for logging messages at different levels and sanitizes log messages to remove control characters.  It utilizes Python's built-in logging module and is configured to write log messages to a file specified in the application's environment.
-    """
     __logger: Logger
     """
     The underlying logger instance from Python's logging module.
     """
+    __configurator: Logger_Configurator
+    """
+    The configurator instance that manages the logging settings.
+    """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, configurator: Optional[Logger_Configurator] = None):
         """
-        Initializing the ExtractioLogger.
+        Initializing the Extractio_Logger instance.
 
-        This method functions as follows:
-            - It configures the logger to used the directory provided by the environment.
-            - It sets the logger instance.
+        This constructor creates a logger instance tied to a specific name, typically the `__name__` of the calling module.  It uses a `Logger_Configurator` instance to apply the logging configuration, such as setting up file handlers and formatters.
+
+        If a `configurator` is not provided, a default `Logger_Configurator` is created and used.
 
         Args:
-            name (str): Name of the logger.
+            name (str): The name to associate with the logger instance.
+            configurator (Optional[Logger_Configurator]): The configuration object to use for setting up the logger.
         """
-        env = Environment()
-        log_filepath: str = f"{env.getDirectory()}/Logs/Extractio.log"
-        self.__configureLogging(log_filepath)
-        self.setLogger(get_logger(name))
+        self.setConfigurator(configurator or Logger_Configurator())
+        self.setLogger(self.getConfigurator().configure(name))
 
     def getLogger(self) -> Logger:
         return self.__logger
 
     def setLogger(self, logger: Logger) -> None:
         self.__logger = logger
+
+    def getConfigurator(self) -> Logger_Configurator:
+        return self.__configurator
+
+    def setConfigurator(self, configurator: Logger_Configurator) -> None:
+        self.__configurator = configurator
 
     def __configureLogging(
         self,

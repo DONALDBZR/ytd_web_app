@@ -11,9 +11,23 @@ from Models.LoggerConfigurator import Logger_Configurator
 
 class Extractio_Logger:
     """
-    A class to create and manage a logger instance for the Extractio application.
-    
-    This class encapsulates a logger instance and provides methods to log messages at different severity levels (debug, info, warning, error).
+    This class manages a logger instance for the Extractio application.
+
+    It provides methods for logging messages at different severity levels and is configured using a Logger_Configurator instance.
+
+    Attributes:
+        __logger (Logger): The underlying logger instance from Python's logging module.
+        __configurator (Logger_Configurator): A class to configure logging settings for the Extractio application.
+
+    Methods:
+        debug(message: str) -> None:
+            Logging a debug message.
+        inform(message: str) -> None:
+            Logging an informational message.
+        warn(message: str) -> None:
+            Logging a warning message.
+        error(message: str) -> None:
+            Logging an error message.
     """
     __logger: Logger
     """
@@ -21,7 +35,7 @@ class Extractio_Logger:
     """
     __configurator: Logger_Configurator
     """
-    The configurator instance that manages the logging settings.
+    A class to configure logging settings for the Extractio application.
     """
 
     def __init__(self, name: str, configurator: Optional[Logger_Configurator] = None):

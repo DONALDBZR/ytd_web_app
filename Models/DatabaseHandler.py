@@ -112,6 +112,20 @@ class Database_Handler:
     def setSanitizer(self, sanitizer: Data_Sanitizer) -> None:
         self.__sanitizer = sanitizer
 
+    def __sanitizeParameters(self, parameters: Optional[Tuple[Any, ...]]) -> Optional[Tuple[Any, ...]]:
+        """
+        Sanitizing the parameters using the Data_Sanitizer instance.
+
+        Args:
+            parameters (Optional[Tuple[Any, ...]]): Parameters to sanitize.
+
+        Returns:
+            Optional[Tuple[Any, ...]]: Sanitized parameters.
+        """
+        if parameters is None:
+            return None
+        return tuple(self.getSanitizer().sanitize(parameter) for parameter in parameters)
+
     def __connect(self) -> MySQLConnection:
         """
         Establishing a connection to the MySQL database using the provided environment configuration.

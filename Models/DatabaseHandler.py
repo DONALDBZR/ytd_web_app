@@ -1,7 +1,3 @@
-"""
-The module of the database handler which will act as the
-object-relational mapper.
-"""
 from mysql.connector.pooling import PooledMySQLConnection
 from mysql.connector.connection import MySQLConnection
 from mysql.connector.abstracts import MySQLConnectionAbstract, MySQLCursorAbstract
@@ -9,161 +5,55 @@ from mysql.connector.cursor import MySQLCursor
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
-from typing import Union, Tuple, Any, List
+from typing import Union, Tuple, Any, List, Optional
 from mysql.connector import connect, Error as Relational_Database_Error
 from inspect import stack
 from re import match
 
 
 class Database_Handler:
+    __logger: Extractio_Logger
     """
-    The database handler that will communicate with the database
-    server.
+    A logger instance for logging database operations and errors.
     """
-    __host: str
+    __env: Environment
     """
-    The host of the application.
+    An instance of the Environment class to retrieve database connection parameters.
     """
-    __database: str
+    __connection: MySQLConnection
     """
-    The database of the application.
+    The MySQL connection object used to interact with the database.
     """
-    __username: str
+    __cursor: Optional[MySQLCursor]
     """
-    The user that have access to the database.
-    """
-    __password: str
-    """
-    The password that allows the required user to connect to the
-    database.
-    """
-    __database_handler: Union[PooledMySQLConnection, MySQLConnectionAbstract]
-    """
-    The database handler needed to execute the queries needed.
-    """
-    __statement: MySQLCursorAbstract
-    """
-    The statement to be used to execute all of the requests to
-    the database server.
-    """
-    __query: str
-    """
-    The query to be used to be sent to the database server to
-    either get, post, update or delete data.
-    """
-    __parameters: Union[Tuple[Any], None]
-    """
-    Parameters that the will be used to sanitize the query which
-    is either get, post, update or delete.
-    """
-    __Logger: Extractio_Logger
-    """
-    The logger that will all the action of the application.
-    """
-    __keywords: List[str]
-    """
-    The list of SQL Keywords
+    The MySQL cursor object used to execute database queries.
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        logger: Optional[Extractio_Logger] = None,
+        environment: Optional[Environment] = None
+    ):
         """
-        Initializing the database connection and logging for the
-        application.  This constructor sets up the logger, retrieves
-        database connection parameters from the `Environment`
-        instance, and attempts to establish a database connection.
-        If the connection fails, an error is logged and the
-        exception is raised.
-        
-        Raises:
-            Relational_Database_Error: If the database connection fails.
-        """
-        self.setLogger(Extractio_Logger(__name__))
-        self.__setDatabaseConnectionParameters(Environment())
-        try:
-            self.__connectDatabase()
-            self.getLogger().inform("The application has been successfully connected to the database server!")
-        except Relational_Database_Error as error:
-            self.getLogger().error(f"Database Connection Failed!\nError: {error}")
-            raise
+        Initializing the database handler.
 
-    def __setDatabaseConnectionParameters(self, environment: Environment) -> None:
-        """
-        Setting the database connection parameters from the provided
-        environment instance.  This method retrieves the database
-        host, schema, username, and password from the `Environment`
-        instance and assigns them to the respective internal
-        attributes.
-
-        Parameters:
-            environment (Environment): An instance of the `Environment` class containing the database connection details.
-
-        Returns:
-            None
-        """
-        self.__setHost(environment.getDatabaseHost())
-        self.__setDatabase(environment.getDatabaseSchema())
-        self.__setUsername(environment.getDatabaseUsername())
-        self.__setPassword(environment.getDatabasePassword())
-
-    def __connectDatabase(self) -> None:
-        """
-        Establishing a connection to the database server and sets up
-        the database handler.  This method uses the connection
-        details retrieved from the environment to establish the
-        connection to the database and initialize the database
-        handler for interacting with the database.
-
-        Returns:
-            void
+        Args:
+            logger (ExtractioLogger): Logger instance.
+            environment (Environment): Environment instance for DB config.
 
         Raises:
-            Relational_Database_Error: If the connection to the database server fails.
+            RelationalDatabaseError: If the database connection fails.
         """
-        self.__setDatabaseHandler(
-            connect(
-                host=self.__getHost(),
-                database=self.__getDatabase(),
-                username=self.__getUsername(),
-                password=self.__getPassword(),
-                connect_timeout=10
-            )
-        )
+        self.setLogger(logger or Extractio_Logger(__name__))
+        self.setEnv(environment or Environment())
+        self.setConnection(self.__connect())
+        self.setCursor(None)
 
     def getKeywords(self) -> List[str]:
         return self.__keywords
 
     def setKeywords(self, keywords: List[str]) -> None:
         self.__keywords = keywords
-
-    def __getHost(self) -> str:
-        return self.__host
-
-    def __setHost(self, host: str) -> None:
-        self.__host = host
-
-    def __getDatabase(self) -> str:
-        return self.__database
-
-    def __setDatabase(self, database: str) -> None:
-        self.__database = database
-
-    def __getUsername(self) -> str:
-        return self.__username
-
-    def __setUsername(self, username: str) -> None:
-        self.__username = username
-
-    def __getPassword(self) -> str:
-        return self.__password
-
-    def __setPassword(self, password: str) -> None:
-        self.__password = password
-
-    def __getDatabaseHandler(self) -> Union[PooledMySQLConnection, MySQLConnectionAbstract]:
-        return self.__database_handler
-
-    def __setDatabaseHandler(self, database_handler: Union[PooledMySQLConnection, MySQLConnectionAbstract]) -> None:
-        self.__database_handler = database_handler
 
     def __getStatement(self) -> MySQLCursorAbstract:
         return self.__statement
@@ -184,10 +74,28 @@ class Database_Handler:
         self.__parameters = parameters
 
     def getLogger(self) -> Extractio_Logger:
-        return self.__Logger
+        return self.__logger
 
     def setLogger(self, logger: Extractio_Logger) -> None:
-        self.__Logger = logger
+        self.__logger = logger
+
+    def getEnv(self) -> Environment:
+        return self.__env
+
+    def setEnv(self, env: Environment) -> None:
+        self.__env = env
+
+    def getConnection(self) -> MySQLConnection:
+        return self.__connection
+
+    def setConnection(self, connection: MySQLConnection) -> None:
+        self.__connection = connection
+
+    def getCursor(self) -> Optional[MySQLCursor]:
+        return self.__cursor
+
+    def setCursor(self, cursor: Optional[MySQLCursor]) -> None:
+        self.__cursor = cursor
 
     def _query(self, query: str, parameters: Union[Tuple[Any], None]) -> None:
         """

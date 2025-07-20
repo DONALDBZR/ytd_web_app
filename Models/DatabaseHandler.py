@@ -245,3 +245,28 @@ class Database_Handler:
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to post data. - Query: {query} - Parameters: {parameters} - Error: {error}")
             return False
+
+    def updateData(
+        self,
+        query: str,
+        parameters: Optional[Tuple[Any, ...]] = None
+    ) -> bool:
+        """
+        Updating data in the database by executing a query with optional parameters.
+
+        Args:
+            query (str): The SQL query to execute.
+            parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
+
+        Raises:
+            Relational_Database_Error: If the execution or commit operation fails.
+        """
+        try:
+            self._execute(query, parameters)
+            self._commit()
+            self._closeCursor()
+            self._closeConnection()
+            return True
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"The database handler has failed to update data. - Query: {query} - Parameters: {parameters} - Error: {error}")
+            return False

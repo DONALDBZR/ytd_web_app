@@ -33,10 +33,12 @@ class Database_Handler:
         _commit() -> None: Commits the current transaction to the database.
         _fetchAll() -> List[RowType]: Fetches all rows from the last executed query.
         _closeConnection() -> None: Closes the database connection.
+        __sanitizeParameters(parameters: Optional[Tuple[Any, ...]]) -> Optional[Tuple[Any, ...]]: Sanitizes the parameters using the Data_Sanitizer instance.
         getData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> List[RowType]: Fetches data from the database by executing a query with optional parameters.
         postData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> bool: Posts data to the database by executing a query with optional parameters.
         updateData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> bool: Updates data in the database by executing a query with optional parameters.
         deleteData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> bool: Deletes data from the database by executing a query with optional parameters.
+        createTable(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> bool: Creates a table in the database by executing a query with optional parameters.
     """
     __logger: Extractio_Logger
     """

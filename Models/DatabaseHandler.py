@@ -124,9 +124,23 @@ class Database_Handler:
             self.getLogger().error(f"The database handler has failed to execute the query. - Query: {query} - Parameters: {parameters} - Error: {error}")
             raise error
         finally:
-            if self.getCursor() is not None:
-                self.getCursor().close() # type: ignore
-                self.setCursor(None)
+            self.__closeCursor()
+
+    def __closeCursor(self) -> None:
+        """
+        Closing the current cursor if it exists.
+
+        Raises:
+            Relational_Database_Error: If the cursor closing operation fails.
+        """
+        if self.getCursor() is None:
+            return
+        try:
+            self.getCursor().close() # type: ignore
+            self.setCursor(None)
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"Failed to close the cursor.\nError: {error}")
+            raise error
 
     def _commit(self) -> None:
         """

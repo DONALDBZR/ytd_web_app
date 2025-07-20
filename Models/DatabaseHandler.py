@@ -172,7 +172,7 @@ class Database_Handler:
                 )
             )
         try:
-            self.getCursor().execute(query, parameters) # type: ignore
+            self.getCursor().execute(query, self.__sanitizeParameters(parameters)) # type: ignore
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to execute the query. - Query: {query} - Parameters: {parameters} - Error: {error}")
             raise error

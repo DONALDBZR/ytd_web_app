@@ -1,17 +1,41 @@
-from mysql.connector.pooling import PooledMySQLConnection
+"""
+The Module provides a class to handle database operations such as connecting, executing queries, and managing transactions.
+
+Author:
+    Darkness4869
+"""
+
 from mysql.connector.connection import MySQLConnection
-from mysql.connector.abstracts import MySQLConnectionAbstract, MySQLCursorAbstract
 from mysql.connector.cursor import MySQLCursor
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from mysql.connector.types import RowType
-from typing import Union, Tuple, Any, List, Optional
+from typing import Tuple, Any, List, Optional
 from mysql.connector import connect, Error as Relational_Database_Error
-from inspect import stack
-from re import match
 
 
 class Database_Handler:
+    """
+    A class to handle database operations such as connecting, executing queries, and managing transactions.
+    
+    Attributes:
+        __logger (Extractio_Logger): A logger instance for logging database operations and errors.
+        __env (Environment): An instance of the Environment class to retrieve database connection parameters.
+        __connection (MySQLConnection): The MySQL connection object used to interact with the database.
+        __cursor (Optional[MySQLCursor]): The MySQL cursor object used to execute database queries.
+
+    Methods:
+        __connect() -> MySQLConnection: Establishes a connection to the MySQL database.
+        _execute(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> None: Executes a SQL query with optional parameters.
+        _closeCursor() -> None: Closes the current cursor if it exists.
+        _commit() -> None: Commits the current transaction to the database.
+        _fetchAll() -> List[RowType]: Fetches all rows from the last executed query.
+        _closeConnection() -> None: Closes the database connection.
+        getData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> List[RowType]: Fetches data from the database by executing a query with optional parameters.
+        postData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> bool: Posts data to the database by executing a query with optional parameters.
+        updateData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> bool: Updates data in the database by executing a query with optional parameters.
+        deleteData(query: str, parameters: Optional[Tuple[Any, ...]] = None) -> bool: Deletes data from the database by executing a query with optional parameters.
+    """
     __logger: Extractio_Logger
     """
     A logger instance for logging database operations and errors.

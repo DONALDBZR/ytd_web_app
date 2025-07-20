@@ -124,9 +124,9 @@ class Database_Handler:
             self.getLogger().error(f"The database handler has failed to execute the query. - Query: {query} - Parameters: {parameters} - Error: {error}")
             raise error
         finally:
-            self.__closeCursor()
+            self._closeCursor()
 
-    def __closeCursor(self) -> None:
+    def _closeCursor(self) -> None:
         """
         Closing the current cursor if it exists.
 
@@ -157,7 +157,7 @@ class Database_Handler:
             self.getLogger().error(f"The database handler has failed to commit the transaction. - Error: {error}")
             raise error
 
-    def fetchAll(self) -> List[RowType]:
+    def _fetchAll(self) -> List[RowType]:
         """
         Fetching all rows from the last executed query.
 
@@ -172,8 +172,25 @@ class Database_Handler:
         try:
             response: List[RowType] = self.getCursor().fetchall() # type: ignore
             self.getLogger().inform(f"The database handler has successfully fetched the required data.")
-            self.__closeCursor()
+            self._closeCursor()
             return response
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to fetch all rows. - Error: {error}")
+            raise error
+
+    def _closeConnection(self) -> None:
+        """
+        Closing the database connection.
+
+        Raises:
+            Relational_Database_Error: If the connection closing operation fails.
+        """
+        if not self.getConnection().is_connected():
+            self.getLogger().warn("The database connection is already closed.")
+            return
+        try:
+            self.getConnection().close()
+            self.getLogger().inform("The database handler has successfully closed the connection.")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"The database handler has failed to close the connection. - Error: {error}")
             raise error

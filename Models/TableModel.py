@@ -11,13 +11,17 @@ class TableModel:
     """
     The database handler instance to interact with the database.
     """
-    __fields: Tuple[List[str], Dict[str, str]]
+    __fields: List[str]
     """
     A list of fields in the table.
     """
     __mysql_field_types: Dict[str, Any]
     """
     A dictionary mapping field names to their MySQL types.
+    """
+    __field_types: Dict[str, str]
+    """
+    A dictionary mapping field names to their types, used for validation and sanitization.
     """
 
     def __init__(
@@ -33,7 +37,9 @@ class TableModel:
             **kwargs: Optional keyword arguments for table name and fields.
         """
         self.setDatabaseHandler(database_handler)
-        self.setFields(self._getFields())
+        fields, field_types = self._getFields()
+        self.setFields(fields)
+        self.setFieldTypes(field_types)
         self.setMySqlFieldTypes({
             "int": int,
             "bigint": int,
@@ -72,11 +78,17 @@ class TableModel:
     def setDatabaseHandler(self, database_handler: Database_Handler) -> None:
         self.__database_handler = database_handler
 
-    def getFields(self) -> Tuple[List[str], Dict[str, str]]:
+    def getFields(self) -> List[str]:
         return self.__fields
 
-    def setFields(self, fields: Tuple[List[str], Dict[str, str]]) -> None:
+    def setFields(self, fields: List[str]) -> None:
         self.__fields = fields
+
+    def getFieldTypes(self) -> Dict[str, str]:
+        return self.__field_types
+
+    def setFieldTypes(self, field_types: Dict[str, str]) -> None:
+        self.__field_types = field_types
 
     def getMySqlFieldTypes(self) -> Dict[str, Any]:
         return self.__mysql_field_types
@@ -95,3 +107,13 @@ class TableModel:
         fields: List[str] = [str(column["Field"]) for column in database_response] # type: ignore
         field_types: Dict[str, str] = {str(column["Field"]): str(column["Type"]) for column in database_response} # type: ignore
         return fields, field_types
+
+    def setModelAttributes(self, kwargs: Dict[str, Any]) -> None:
+        """
+        Setting the model attributes based on the provided keyword arguments.
+
+        Args:
+            kwargs (Dict[str, Any]): Keyword arguments containing the attributes to set.
+        """
+        for field in self.getFields():
+            setattr(self, field, kwargs.get(field))

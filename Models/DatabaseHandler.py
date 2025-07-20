@@ -123,3 +123,7 @@ class Database_Handler:
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to execute the query. - Query: {query} - Parameters: {parameters} - Error: {error}")
             raise error
+        finally:
+            if self.getCursor() is not None:
+                self.getCursor().close() # type: ignore
+                self.setCursor(None)

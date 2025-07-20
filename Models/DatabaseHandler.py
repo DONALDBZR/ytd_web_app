@@ -12,6 +12,7 @@ from Environment import Environment
 from mysql.connector.types import RowType
 from typing import Tuple, Any, List, Optional
 from mysql.connector import connect, Error as Relational_Database_Error
+from Models.DataSanitizer import Data_Sanitizer
 
 
 class Database_Handler:
@@ -23,6 +24,7 @@ class Database_Handler:
         __env (Environment): An instance of the Environment class to retrieve database connection parameters.
         __connection (MySQLConnection): The MySQL connection object used to interact with the database.
         __cursor (Optional[MySQLCursor]): The MySQL cursor object used to execute database queries.
+        __sanitizer (Data_Sanitizer): An instance of Data_Sanitizer for sanitizing user input data to prevent SQL injection attacks and ensure safe string usage.
 
     Methods:
         __connect() -> MySQLConnection: Establishes a connection to the MySQL database.
@@ -52,11 +54,16 @@ class Database_Handler:
     """
     The MySQL cursor object used to execute database queries.
     """
+    __sanitizer: Data_Sanitizer
+    """
+    An instance of Data_Sanitizer for sanitizing user input data to prevent SQL injection attacks and ensure safe string usage.
+    """
 
     def __init__(
         self,
         logger: Optional[Extractio_Logger] = None,
-        environment: Optional[Environment] = None
+        environment: Optional[Environment] = None,
+        sanitizer: Optional[Data_Sanitizer] = None
     ):
         """
         Initializing the database handler.
@@ -64,6 +71,7 @@ class Database_Handler:
         Args:
             logger (ExtractioLogger): Logger instance.
             environment (Environment): Environment instance for DB config.
+            sanitizer (Data_Sanitizer): Data sanitizer instance for sanitizing user input data.
 
         Raises:
             RelationalDatabaseError: If the database connection fails.
@@ -72,6 +80,7 @@ class Database_Handler:
         self.setEnv(environment or Environment())
         self.setConnection(self.__connect())
         self.setCursor(None)
+        self.setSanitizer(sanitizer or Data_Sanitizer())
 
     def getLogger(self) -> Extractio_Logger:
         return self.__logger
@@ -96,6 +105,12 @@ class Database_Handler:
 
     def setCursor(self, cursor: Optional[MySQLCursor]) -> None:
         self.__cursor = cursor
+
+    def getSanitizer(self) -> Data_Sanitizer:
+        return self.__sanitizer
+
+    def setSanitizer(self, sanitizer: Data_Sanitizer) -> None:
+        self.__sanitizer = sanitizer
 
     def __connect(self) -> MySQLConnection:
         """

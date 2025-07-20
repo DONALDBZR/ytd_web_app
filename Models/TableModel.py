@@ -15,7 +15,7 @@ class TableModel:
     """
     A list of fields in the table.
     """
-    __mysql_field_types: Dict[str, Any]
+    __mysql_field_types: Dict[str, type]
     """
     A dictionary mapping field names to their MySQL types.
     """
@@ -90,10 +90,10 @@ class TableModel:
     def setFieldTypes(self, field_types: Dict[str, str]) -> None:
         self.__field_types = field_types
 
-    def getMySqlFieldTypes(self) -> Dict[str, Any]:
+    def getMySqlFieldTypes(self) -> Dict[str, type]:
         return self.__mysql_field_types
 
-    def setMySqlFieldTypes(self, mysql_field_types: Dict[str, Any]) -> None:
+    def setMySqlFieldTypes(self, mysql_field_types: Dict[str, type]) -> None:
         self.__mysql_field_types = mysql_field_types
 
     def _getFields(self) -> Tuple[List[str], Dict[str, str]]:
@@ -117,3 +117,16 @@ class TableModel:
         """
         for field in self.getFields():
             setattr(self, field, kwargs.get(field))
+
+    def mySqlTypeToPython(self, mysql_type: str) -> type:
+        """
+        Converting a MySQL type to its corresponding Python type.
+
+        Args:
+            mysql_type (str): The MySQL type as a string.
+
+        Returns:
+            type: The corresponding Python type.
+        """
+        base: str = mysql_type.split("(")[0].lower()
+        return self.getMySqlFieldTypes().get(base, type)

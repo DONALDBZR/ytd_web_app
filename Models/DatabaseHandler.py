@@ -93,7 +93,7 @@ class Database_Handler:
             self.getLogger().inform("The application has successfully connected to the database.")
             return connection
         except Relational_Database_Error as error:
-            self.getLogger().error(f"Failed to connect to the database.\nError: {error}")
+            self.getLogger().error(f"The application has failed to connect to the database.\nError: {error}")
             raise error
 
     def _execute(
@@ -137,9 +137,10 @@ class Database_Handler:
             return
         try:
             self.getCursor().close() # type: ignore
+            self.getLogger().inform("The database handler has successfully closed the cursor.")
             self.setCursor(None)
         except Relational_Database_Error as error:
-            self.getLogger().error(f"Failed to close the cursor.\nError: {error}")
+            self.getLogger().error(f"The database handler has failed to close the cursor. - Error: {error}")
             raise error
 
     def _commit(self) -> None:
@@ -153,5 +154,26 @@ class Database_Handler:
             self.getConnection().commit()
             self.getLogger().inform("The transaction has been successfully committed.")
         except Relational_Database_Error as error:
-            self.getLogger().error(f"Failed to commit the transaction.\nError: {error}")
+            self.getLogger().error(f"The database handler has failed to commit the transaction. - Error: {error}")
+            raise error
+
+    def fetchAll(self) -> List[RowType]:
+        """
+        Fetching all rows from the last executed query.
+
+        Returns:
+            List[RowType]: A list of rows returned by the last executed query.
+
+        Raises:
+            Relational_Database_Error: If fetching rows fails.
+        """
+        if self.getCursor() is None:
+            raise Relational_Database_Error("No cursor available to fetch data.")
+        try:
+            response: List[RowType] = self.getCursor().fetchall() # type: ignore
+            self.getLogger().inform(f"The database handler has successfully fetched the required data.")
+            self.__closeCursor()
+            return response
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"The database handler has failed to fetch all rows. - Error: {error}")
             raise error

@@ -147,4 +147,4 @@ class TableModel:
         response: List[RowType] = database_handler.getData(query, (primary_key,))
         if not response:
             return None
-        return cls(database_handler, **response[0])
+        return cls(database_handler, **response[0]) # type: ignore

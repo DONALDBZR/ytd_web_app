@@ -123,8 +123,6 @@ class Database_Handler:
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to execute the query. - Query: {query} - Parameters: {parameters} - Error: {error}")
             raise error
-        finally:
-            self._closeCursor()
 
     def _closeCursor(self) -> None:
         """
@@ -194,3 +192,27 @@ class Database_Handler:
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to close the connection. - Error: {error}")
             raise error
+
+    def getData(
+        self,
+        query: str,
+        parameters: Optional[Tuple[Any, ...]] = None
+    ) -> List[RowType]:
+        """
+        Fetching data from the database by executing a query with optional parameters.
+
+        Args:
+            query (str): The SQL query to execute.
+            parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
+
+        Returns:
+            List[RowType]: A list of rows returned by the executed query.
+
+        Raises:
+            Relational_Database_Error: If the execution or fetching of data fails.
+        """
+        self._execute(query, parameters)
+        response: List[RowType] = self._fetchAll()
+        self._closeCursor()
+        self._closeConnection()
+        return response

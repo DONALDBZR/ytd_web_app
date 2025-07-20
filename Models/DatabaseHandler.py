@@ -176,7 +176,8 @@ class Database_Handler:
             self.getConnection().commit()
             self.getLogger().inform("The transaction has been successfully committed.")
         except Relational_Database_Error as error:
-            self.getLogger().error(f"The database handler has failed to commit the transaction. - Error: {error}")
+            self.getConnection().rollback()
+            self.getLogger().error(f"The database handler has failed to commit the transaction, hence, the trasaction will roolback. - Error: {error}")
             raise error
 
     def _fetchAll(self) -> List[RowType]:

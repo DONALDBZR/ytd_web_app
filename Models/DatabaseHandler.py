@@ -127,3 +127,17 @@ class Database_Handler:
             if self.getCursor() is not None:
                 self.getCursor().close() # type: ignore
                 self.setCursor(None)
+
+    def _commit(self) -> None:
+        """
+        Committing the current transaction to the database.
+
+        Raises:
+            Relational_Database_Error: If the commit operation fails.
+        """
+        try:
+            self.getConnection().commit()
+            self.getLogger().inform("The transaction has been successfully committed.")
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"Failed to commit the transaction.\nError: {error}")
+            raise error

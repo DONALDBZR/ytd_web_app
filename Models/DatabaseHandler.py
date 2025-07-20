@@ -97,6 +97,29 @@ class Database_Handler:
     def setCursor(self, cursor: Optional[MySQLCursor]) -> None:
         self.__cursor = cursor
 
+    def __connect(self) -> MySQLConnection:
+        """
+        Establishing a connection to the MySQL database using the provided environment configuration.
+
+        Returns:
+            MySQLConnection: The established MySQL connection object.
+
+        Raises:
+            Relational_Database_Error: If the connection to the database fails.
+        """
+        try:
+            connection: MySQLConnection = connect(
+                host=self.getEnv().getDatabaseHost(),
+                user=self.getEnv().getDatabaseUsername(),
+                password=self.getEnv().getDatabasePassword(),
+                database=self.getEnv().getDatabaseSchema()
+            ) # type: ignore
+            self.getLogger().inform("The application has successfully connected to the database.")
+            return connection
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"Failed to connect to the database.\nError: {error}")
+            raise error
+
     def _query(self, query: str, parameters: Union[Tuple[Any], None]) -> None:
         """
         Executing a database query with the provided parameters.

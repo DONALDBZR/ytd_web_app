@@ -211,11 +211,15 @@ class Database_Handler:
         Raises:
             Relational_Database_Error: If the execution or fetching of data fails.
         """
-        self._execute(query, parameters)
-        response: List[RowType] = self._fetchAll()
-        self._closeCursor()
-        self._closeConnection()
-        return response
+        try:
+            self._execute(query, parameters)
+            response: List[RowType] = self._fetchAll()
+            self._closeCursor()
+            self._closeConnection()
+            return response
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"The database handler has failed to get data. - Query: {query} - Parameters: {parameters} - Error: {error}")
+            return []
 
     def postData(
         self,

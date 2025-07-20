@@ -132,11 +132,7 @@ class TableModel:
         return self.getMySqlFieldTypes().get(base, type)
 
     @classmethod
-    def getById(
-        cls,
-        database_handler: Database_Handler,
-        primary_key: Any
-    ) -> Optional["TableModel"]:
+    def getById(cls, database_handler: Database_Handler,primary_key: Any) -> Optional["TableModel"]:
         """
         Retrieving a model instance by its primary key.
 
@@ -147,7 +143,7 @@ class TableModel:
         Returns:
             Optional[TableModel]: The model instance if found, otherwise None.
         """
-        query: str = f"SELECT * FROM {self.getTableName()} WHERE id = %s"
+        query: str = f"SELECT * FROM {cls.__table_name} WHERE id = %s"
         response: List[RowType] = database_handler.getData(query, (primary_key,))
         if not response:
             return None

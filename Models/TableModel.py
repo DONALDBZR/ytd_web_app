@@ -144,10 +144,10 @@ class TableModel:
             Optional[TableModel]: The model instance if found, otherwise None.
         """
         query: str = f"SELECT * FROM {cls.__table_name} WHERE id = %s"
-        response: List[RowType] = database_handler.getData(query, (primary_key,))
+        response: List[RowType] = cls.__database_handler.getData(query, (primary_key,))
         if not response:
             return None
-        return cls(database_handler, **response[0]) # type: ignore
+        return cls(cls.__database_handler, **response[0]) # type: ignore
     
     @classmethod
     def getAll(cls, database_handler: Database_Handler) -> List["TableModel"]:
@@ -161,5 +161,18 @@ class TableModel:
             List[TableModel]: A list of model instances.
         """
         query: str = f"SELECT * FROM {cls.__table_name}"
-        response: List[RowType] = database_handler.getData(query)
-        return [cls(database_handler, **row) for row in response] # type: ignore
+        response: List[RowType] = cls.__database_handler.getData(query)
+        return [cls(cls.__database_handler, **row) for row in response] # type: ignore
+
+    def save(self) -> bool:
+        """
+        Saving the model instance to the database.
+
+        Returns:
+            bool: True if the save operation was successful, otherwise False.
+        """
+        fields: List[str] = [field for field in self.getFields() if field != "id"]
+        values: Tuple[Any, ...] = tuple(getattr(self, field) for field in fields)
+        placeholders: str = ", ".join(["%s"] * len(fields))
+        query: str = f"INSERT INTO {self.getTableName()} ({', '.join(fields)}) VALUES ({placeholders})"
+        return self.getDatabaseHandler().postData(query, values)

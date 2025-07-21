@@ -148,3 +148,18 @@ class TableModel:
         if not response:
             return None
         return cls(database_handler, **response[0]) # type: ignore
+    
+    @classmethod
+    def getAll(cls, database_handler: Database_Handler) -> List["TableModel"]:
+        """
+        Retrieving all model instances from the table.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance to interact with the database.
+
+        Returns:
+            List[TableModel]: A list of model instances.
+        """
+        query: str = f"SELECT * FROM {cls.__table_name}"
+        response: List[RowType] = database_handler.getData(query)
+        return [cls(database_handler, **row) for row in response] # type: ignore

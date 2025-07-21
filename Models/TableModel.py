@@ -223,15 +223,24 @@ class TableModel:
         for column in columns:
             class_type: type = cls.mySqlTypeToPython(str(column["Type"])) # type: ignore
             annotations[str(column["Field"])] = class_type # type: ignore
-        attributes: Dict[str, Any] = {"__table_name": table_name, "__annotations__": annotations}
 
         def __init__(self, **kwargs):
             """
             Initializing the dynamically created model class with attributes from kwargs.
             """
             self.__database_handler = database_handler
-            for field in annotations:
+            self.__table_name = table_name
+            self.__fields = list(annotations.keys())
+            self.__field_types = annotations
+            for field in self.__fields:
                 setattr(self, field, kwargs.get(field))
 
-        attributes["__init__"] = __init__
+        attributes: Dict[str, Any] = {
+            "__table_name": table_name,
+            "__database_handler": database_handler,
+            "__fields": list(annotations.keys()),
+            "__field_types": annotations,
+            "__init__": __init__,
+            "__annotations__": annotations
+        }
         return type(table_name.capitalize(), (cls,), attributes)

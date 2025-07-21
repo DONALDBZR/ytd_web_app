@@ -176,3 +176,16 @@ class TableModel:
         placeholders: str = ", ".join(["%s"] * len(fields))
         query: str = f"INSERT INTO {self.getTableName()} ({', '.join(fields)}) VALUES ({placeholders})"
         return self.getDatabaseHandler().postData(query, values)
+
+    def update(self) -> bool:
+        """
+        Updating the model instance in the database.
+
+        Returns:
+            bool: True if the update operation was successful, otherwise False.
+        """
+        fields: List[str] = [field for field in self.getFields() if field != "id"]
+        values: Tuple[Any, ...] = tuple(getattr(self, field) for field in fields)
+        set_clause: str = ", ".join([f"{field} = %s" for field in fields])
+        query: str = f"UPDATE {self.getTableName()} SET {set_clause} WHERE id = %s"
+        return self.getDatabaseHandler().updateData(query, values + (getattr(self, "id"),))

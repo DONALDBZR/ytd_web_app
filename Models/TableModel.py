@@ -1,5 +1,5 @@
 from Models.DatabaseHandler import Database_Handler, List, RowType, Tuple, Any, Optional
-from typing import Dict
+from typing import Dict, Type
 
 
 class TableModel:
@@ -199,3 +199,33 @@ class TableModel:
         """
         query: str = f"DELETE FROM {self.getTableName()} WHERE id = %s"
         return self.getDatabaseHandler().deleteData(query, (getattr(self, "id"),))
+
+    @classmethod
+    def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type:
+        """
+        Dynamically creating a model class for a given table name.
+
+        Args:
+            table_name (str): The name of the table.
+            database_handler (Database_Handler): The database handler instance to interact with the database.
+
+        Returns:
+            Type: A new model class for the specified table.
+        """
+        columns: List[RowType] = database_handler.getData(f"SHOW COLUMNS FROM {table_name}")
+        annotations: Dict[str, type] = {}
+        for column in columns:
+            class_type: type = cls.mySqlTypeToPython(str(column["Type"])) # type: ignore
+            annotations[str(column["Field"])] = class_type # type: ignore
+        attributes: Dict[str, Any] = {"__table_name": table_name, "__annotations__": annotations}
+
+        def __init__(self, **kwargs):
+            """
+            Initializing the dynamically created model class with attributes from kwargs.
+            """
+            self.__database_handler = database_handler
+            for field in annotations:
+                setattr(self, field, kwargs.get(field))
+
+        attributes["__init__"] = __init__
+        return type(table_name.capitalize(), (cls,), attributes)

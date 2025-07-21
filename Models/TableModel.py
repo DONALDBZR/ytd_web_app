@@ -189,3 +189,13 @@ class TableModel:
         set_clause: str = ", ".join([f"{field} = %s" for field in fields])
         query: str = f"UPDATE {self.getTableName()} SET {set_clause} WHERE id = %s"
         return self.getDatabaseHandler().updateData(query, values + (getattr(self, "id"),))
+
+    def delete(self) -> bool:
+        """
+        Deleting the model instance from the database.
+
+        Returns:
+            bool: True if the delete operation was successful, otherwise False.
+        """
+        query: str = f"DELETE FROM {self.getTableName()} WHERE id = %s"
+        return self.getDatabaseHandler().deleteData(query, (getattr(self, "id"),))

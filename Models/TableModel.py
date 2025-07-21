@@ -1,8 +1,35 @@
+"""
+The module provides a base class for database table models, allowing interaction with the database through methods for CRUD operations.
+
+Author:
+    Darkness4869
+"""
 from Models.DatabaseHandler import Database_Handler, List, RowType, Tuple, Any, Optional
 from typing import Dict, Type
 
 
 class TableModel:
+    """
+    A base class for database table models, providing methods to interact with the database.
+
+    Attributes:
+        __table_name (str): The name of the table.
+        __database_handler (Database_Handler): The database handler instance to interact with the database.
+        __fields (List[str]): A list of fields in the table.
+        __mysql_field_types (Dict[str, type]): A dictionary mapping field names to their MySQL types.
+        __field_types (Dict[str, str]): A dictionary mapping field names to their types, used for validation and sanitization.
+
+    Methods:
+        _getFields() -> Tuple[List[str], Dict[str, str]]: Fetches the column names and types for the table from the database.
+        setModelAttributes(kwargs: Dict[str, Any]) -> None: Sets the model attributes based on the provided keyword arguments.
+        mySqlTypeToPython(mysql_type: str) -> type: Converts a MySQL type to its corresponding Python type.
+        getById(database_handler: Database_Handler, primary_key: Any) -> Optional["TableModel"]: Retrieves a model instance by its primary key.
+        getAll(database_handler: Database_Handler) -> List["TableModel"]: Retrieves all model instances from the table.
+        save() -> bool: Saves the model instance to the database.
+        update() -> bool: Updates the model instance in the database.
+        delete() -> bool: Deletes the model instance from the database.
+        createModelClass(table_name: str, database_handler: Database_Handler) -> Type["TableModel"]: Dynamically creates a model class for a given table name.
+    """
     __table_name: str
     """
     The name of the table.
@@ -150,10 +177,10 @@ class TableModel:
             Optional[TableModel]: The model instance if found, otherwise None.
         """
         query: str = f"SELECT * FROM {cls.__table_name} WHERE id = %s"
-        response: List[RowType] = cls.__database_handler.getData(query, (primary_key,))
+        response: List[RowType] = database_handler.getData(query, (primary_key,))
         if not response:
             return None
-        return cls(cls.__database_handler, **response[0]) # type: ignore
+        return cls(database_handler, **response[0]) # type: ignore
     
     @classmethod
     def getAll(cls, database_handler: Database_Handler) -> List["TableModel"]:
@@ -167,8 +194,8 @@ class TableModel:
             List[TableModel]: A list of model instances.
         """
         query: str = f"SELECT * FROM {cls.__table_name}"
-        response: List[RowType] = cls.__database_handler.getData(query)
-        return [cls(cls.__database_handler, **row) for row in response] # type: ignore
+        response: List[RowType] = database_handler.getData(query)
+        return [cls(database_handler, **row) for row in response] # type: ignore
 
     def save(self) -> bool:
         """

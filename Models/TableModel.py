@@ -27,6 +27,7 @@ class TableModel:
     def __init__(
         self,
         database_handler: Database_Handler,
+        table_name: str = "",
         **kwargs
     ):
         """
@@ -34,9 +35,14 @@ class TableModel:
 
         Args:
             database_handler (Database_Handler): The database handler instance to interact with the database.
+            table_name (str, optional): The name of the table. If not provided, it will be set later.
             **kwargs: Optional keyword arguments for table name and fields.
         """
         self.setDatabaseHandler(database_handler)
+        self.setTableName(table_name)
+        if self.getTableName():
+            model_class: Type["TableModel"] = self.createModelClass(self.getTableName(), self.getDatabaseHandler())
+            self.__class__ = model_class # type: ignore
         fields, field_types = self._getFields()
         self.setFields(fields)
         self.setFieldTypes(field_types)
@@ -201,7 +207,7 @@ class TableModel:
         return self.getDatabaseHandler().deleteData(query, (getattr(self, "id"),))
 
     @classmethod
-    def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type:
+    def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type["TableModel"]:
         """
         Dynamically creating a model class for a given table name.
 

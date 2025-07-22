@@ -10,10 +10,10 @@ Link:
 from flask import Flask, render_template, Request, Response, send_from_directory, request
 from flask_compress import Compress
 from flask_cors import CORS
-from Models.SecurityManagementSystem import Security_Management_System, Database_Handler, Environment
+from Models.SecurityManagementSystem import Security_Management_System, Database_Handler, Environment, Session
 from re import match
 from os.path import join, exists, isfile, normpath, relpath, splitext
-from typing import List, Union, Dict
+from typing import List, Union
 from urllib.parse import ParseResult, urlparse
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -37,15 +37,8 @@ DatabaseHandler: Database_Handler = Database_Handler()
 The database handler that will communicate with the database
 server.
 """
-data: List[Dict[str, str]] = DatabaseHandler.getData(
-    parameters=None,
-    table_name="Session",
-    filter_condition="date_created = CURDATE()",
-    column_names="hash",
-    sort_condition="identifier ASC",
-    limit_condition=1
-) # type: ignore
-key: str = str(data[0]["hash"])
+session: Session = Session.getTodaySession(DatabaseHandler)
+key: str = str(session.hash) # type: ignore
 """
 Encryption key of the application
 """

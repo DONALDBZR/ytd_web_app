@@ -14,15 +14,27 @@ from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
-from typing import Union, Tuple
+from typing import Union
 from base64 import b64encode
-from hashlib import sha256
 
 
 class Security_Management_System:
     """
-    It will be a major component that will assure the security
-    of the data that will be stored across the application.
+    It is a major component that will assure the security of the data that will be stored across the application.
+
+    Attributes:
+        __Database_Handler: Database_Handler
+        __application_name: str
+        __datestamp: int
+        __hash: str
+        __password_hasher: PasswordHasher
+        __date_created: Union[str, int]
+        __logger: Extractio_Logger
+        __nonce: str
+
+    Methods:
+        hash() -> None: Generating, storing, and cleaning up a security hash.
+        generateNonce() -> None: Generating a random nonce that will be used to authenticate the user.
     """
     __Database_Handler: Database_Handler
     """
@@ -171,8 +183,7 @@ class Security_Management_System:
 
     def generateNonce(self) -> None:
         """
-        It will generate a random nonce that will be used to
-        authenticate the user.
+        It will generate a random nonce that will be used to authenticate the user.
 
         Returns:
             void

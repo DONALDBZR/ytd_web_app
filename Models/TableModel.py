@@ -243,8 +243,8 @@ class TableModel:
         Returns:
             bool: True if the delete operation was successful, otherwise False.
         """
-        query: str = f"DELETE FROM {self.getTableName()} WHERE id = %s"
-        return self.getDatabaseHandler().deleteData(query, (getattr(self, "id"),))
+        query: str = f"DELETE FROM {self.getTableName()} WHERE {self.getPrimaryField()} = %s"
+        return self.getDatabaseHandler().deleteData(query, (getattr(self, self.getPrimaryField()),))
 
     @classmethod
     def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type["TableModel"]:

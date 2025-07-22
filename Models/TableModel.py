@@ -230,11 +230,11 @@ class TableModel:
         Returns:
             bool: True if the update operation was successful, otherwise False.
         """
-        fields: List[str] = [field for field in self.getFields() if field != "id"]
+        fields: List[str] = [field for field in self.getFields() if field != self.getPrimaryField()]
         values: Tuple[Any, ...] = tuple(getattr(self, field) for field in fields)
         set_clause: str = ", ".join([f"{field} = %s" for field in fields])
-        query: str = f"UPDATE {self.getTableName()} SET {set_clause} WHERE id = %s"
-        return self.getDatabaseHandler().updateData(query, values + (getattr(self, "id"),))
+        query: str = f"UPDATE {self.getTableName()} SET {set_clause} WHERE {self.getPrimaryField()} = %s"
+        return self.getDatabaseHandler().updateData(query, values + (getattr(self, self.getPrimaryField()),))
 
     def delete(self) -> bool:
         """

@@ -18,6 +18,7 @@ class TableModel:
         __fields (List[str]): A list of fields in the table.
         __mysql_field_types (Dict[str, type]): A dictionary mapping field names to their MySQL types.
         __field_types (Dict[str, str]): A dictionary mapping field names to their types, used for validation and sanitization.
+        __primary_field (str): The field that is the primary key of the table.
 
     Methods:
         _getFields() -> Tuple[List[str], Dict[str, str]]: Fetches the column names and types for the table from the database.
@@ -50,6 +51,10 @@ class TableModel:
     """
     A dictionary mapping field names to their types, used for validation and sanitization.
     """
+    __primary_field: str
+    """
+    The field that is the primary key of the table.
+    """
 
     def __init__(
         self,
@@ -70,9 +75,10 @@ class TableModel:
         if self.getTableName():
             model_class: Type["TableModel"] = self.createModelClass(self.getTableName(), self.getDatabaseHandler())
             self.__class__ = model_class # type: ignore
-        fields, field_types = self._getFields()
+        fields, field_types, primary_field = self._getFields()
         self.setFields(fields)
         self.setFieldTypes(field_types)
+        self.setPrimaryField(primary_field)
         self.setMySqlFieldTypes({
             "int": int,
             "bigint": int,
@@ -128,6 +134,12 @@ class TableModel:
 
     def setMySqlFieldTypes(self, mysql_field_types: Dict[str, type]) -> None:
         self.__mysql_field_types = mysql_field_types
+
+    def getPrimaryField(self) -> str:
+        return self.__primary_field
+
+    def setPrimaryField(self, primary_field: str) -> None:
+        self.__primary_field = primary_field
 
     def _getFields(self) -> Tuple[List[str], Dict[str, str]]:
         """

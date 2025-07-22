@@ -206,7 +206,8 @@ class TableModel:
         Returns:
             List[TableModel]: A list of model instances.
         """
-        query: str = f"SELECT * FROM {cls.__table_name}"
+        temporary_instance: "TableModel" = cls(database_handler)
+        query: str = f"SELECT * FROM {temporary_instance.getPrimaryField()}"
         response: List[RowType] = database_handler.getData(query)
         return [cls(database_handler, **row) for row in response] # type: ignore
 

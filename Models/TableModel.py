@@ -261,7 +261,7 @@ class TableModel:
         """
         columns: List[RowType] = database_handler.getData(f"SHOW COLUMNS FROM {table_name}")
         annotations: Dict[str, type] = {}
-        primary_field: str = next((str(column["Field"]) for column in columns if str(column["Key"]) == "PRI"), "identifier")
+        primary_field: str = next((str(column["Field"]) for column in columns if str(column["Key"]) == "PRI"), "identifier") # type: ignore
         for column in columns:
             class_type: type = cls.mySqlTypeToPython(str(column["Type"])) # type: ignore
             annotations[str(column["Field"])] = class_type # type: ignore

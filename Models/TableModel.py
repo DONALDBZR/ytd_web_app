@@ -189,7 +189,7 @@ class TableModel:
         Returns:
             Optional[TableModel]: The model instance if found, otherwise None.
         """
-        query: str = f"SELECT * FROM {cls.__table_name} WHERE id = %s"
+        query: str = f"SELECT * FROM {cls.__table_name} WHERE {cls.__primary_field} = %s"
         response: List[RowType] = database_handler.getData(query, (primary_key,))
         if not response:
             return None

@@ -73,7 +73,7 @@ class Table_Model:
         self.setDatabaseHandler(database_handler)
         self.setTableName(table_name)
         if self.getTableName():
-            model_class: Type["TableModel"] = self.createModelClass(self.getTableName(), self.getDatabaseHandler())
+            model_class: Type["Table_Model"] = self.createModelClass(self.getTableName(), self.getDatabaseHandler())
             self.__class__ = model_class # type: ignore
         fields, field_types, primary_field = self._getFields()
         self.setFields(fields)
@@ -178,7 +178,7 @@ class Table_Model:
         return self.getMySqlFieldTypes().get(base, type)
 
     @classmethod
-    def getById(cls, database_handler: Database_Handler,primary_key: Any) -> Optional["TableModel"]:
+    def getById(cls, database_handler: Database_Handler,primary_key: Any) -> Optional["Table_Model"]:
         """
         Retrieving a model instance by its primary key.
 
@@ -196,7 +196,7 @@ class Table_Model:
         return cls(database_handler, **response[0]) # type: ignore
     
     @classmethod
-    def getAll(cls, database_handler: Database_Handler) -> List["TableModel"]:
+    def getAll(cls, database_handler: Database_Handler) -> List["Table_Model"]:
         """
         Retrieving all model instances from the table.
 
@@ -204,9 +204,9 @@ class Table_Model:
             database_handler (Database_Handler): The database handler instance to interact with the database.
 
         Returns:
-            List[TableModel]: A list of model instances.
+            List[Table_Model]: A list of model instances.
         """
-        temporary_instance: "TableModel" = cls(database_handler)
+        temporary_instance: "Table_Model" = cls(database_handler)
         query: str = f"SELECT * FROM {temporary_instance.getPrimaryField()}"
         response: List[RowType] = database_handler.getData(query)
         return [cls(database_handler, **row) for row in response] # type: ignore
@@ -248,7 +248,7 @@ class Table_Model:
         return self.getDatabaseHandler().deleteData(query, (getattr(self, self.getPrimaryField()),))
 
     @classmethod
-    def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type["TableModel"]:
+    def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type["Table_Model"]:
         """
         Dynamically creating a model class for a given table name.
 

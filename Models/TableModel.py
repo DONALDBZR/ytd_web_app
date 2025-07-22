@@ -217,7 +217,7 @@ class TableModel:
         Returns:
             bool: True if the save operation was successful, otherwise False.
         """
-        fields: List[str] = [field for field in self.getFields() if field != "id"]
+        fields: List[str] = [field for field in self.getFields() if field != self.getPrimaryField()]
         values: Tuple[Any, ...] = tuple(getattr(self, field) for field in fields)
         placeholders: str = ", ".join(["%s"] * len(fields))
         query: str = f"INSERT INTO {self.getTableName()} ({', '.join(fields)}) VALUES ({placeholders})"

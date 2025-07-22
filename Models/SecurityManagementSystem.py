@@ -8,7 +8,7 @@ Authors:
 """
 
 
-from Models.DatabaseHandler import Database_Handler
+from Models.SessionModel import Database_Handler, Session
 from Models.Logger import Extractio_Logger
 from Environment import Environment
 from time import time
@@ -137,30 +137,37 @@ class Security_Management_System:
 
     def hash(self) -> None:
         """
-        It is a one-way encryption function that will generate a
-        hash based on the Argon 2 hashing algorithm.
+        Generating, storing, and cleaning up a security hash.
 
-        Returns:
-            void
+        This method performs the following sequence of operations:
+            1.  Initializing a new `PasswordHasher` instance.
+            2.  Creating a unique string by concatenating the application name with the current datestamp.
+            3.  Hashing this unique string to generate a secure key.
+            4.  Setting the creation date based on the datestamp.
+            5.  Creating a new `Session` object with the generated hash and creation date.
+            6.  Saving the new session record to the database.
+            7.  If the save is successful, it proceeds to delete all session records from previous days to maintain a clean session table.
+            8.  Logging the outcome of both the creation and deletion operations.
         """
         self.setPasswordHasher(PasswordHasher())
         self.setApplicationName(f"{self.getApplicationName()}{str(self.getDatestamp())}")
         self.setHash(self.getPasswordHasher().hash(self.getApplicationName()))
         self.setDateCreated(datetime.fromtimestamp(self.getDatestamp()).strftime("%Y-%m-%d"))
-        data: Tuple[str, str] = (self.getHash(), str(self.getDateCreated()))
-        self.getDatabaseHandler().postData(
-            table="Session",
-            columns="hash, date_created",
-            values="%s, %s",
-            parameters=data # type: ignore
+        session: Session = Session(
+            self.getDatabaseHandler(),
+            hash=self.getHash(),
+            date_created=self.getDateCreated()
         )
-        self.getLogger().inform("The key has been created!")
-        self.getDatabaseHandler().deleteData(
-            table="Session",
-            parameters=None,
-            condition="date_created < CURDATE()"
-        )
-        self.getLogger().inform("The older keys are deleted!")
+        response: bool = session.save()
+        if not response:
+            self.getLogger().error("The key cannot be created.")
+            return
+        self.getLogger().inform("The key has been created.")
+        response: bool = session.deleteOtherThanToday()
+        if not response:
+            self.getLogger().error("The older keys cannot be deleted.")
+            return
+        self.getLogger().inform("The older keys are deleted.")
 
     def generateNonce(self) -> None:
         """

@@ -27,3 +27,15 @@ class Session(Table_Model):
             table_name="Session",
             **kwargs
         )
+
+    def deleteOtherThanToday(self) -> bool:
+        """
+        Deleting all session records created before the current day.
+
+        This method constructs and executes a SQL query to remove all entries from the 'Session' table where the 'date_created' field is earlier than the current date.  This is useful for cleaning up old, expired session records.
+
+        Returns:
+            bool: True if the deletion was successful, False otherwise.
+        """
+        query: str = f"DELETE FROM {self.getTableName()} WHERE date_created < CURDATE()"
+        return self.getDatabaseHandler().deleteData(query)

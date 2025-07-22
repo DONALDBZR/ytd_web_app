@@ -151,7 +151,7 @@ class TableModel:
         database_response: List[RowType] = self.getDatabaseHandler().getData(f"SHOW COLUMNS FROM {self.getTableName()}")
         fields: List[str] = [str(column["Field"]) for column in database_response] # type: ignore
         field_types: Dict[str, str] = {str(column["Field"]): str(column["Type"]) for column in database_response} # type: ignore
-        primary_field: str = next(str(column["Field"]) for column in database_response if str(col.get("Key")) == "PRI", "identifier")
+        primary_field: str = next((str(column["Field"]) for column in database_response if str(column["Key"]) == "PRI"), "identifier") # type: ignore
         return fields, field_types, primary_field
 
     def setModelAttributes(self, kwargs: Dict[str, Any]) -> None:

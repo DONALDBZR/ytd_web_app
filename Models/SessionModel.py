@@ -1,12 +1,16 @@
 """
 The module that has the data model for the `Session`.
 """
-from Models.TableModel import Table_Model, Database_Handler
+from Models.TableModel import Table_Model, Database_Handler, RowType, List
 
 
 class Session(Table_Model):
     """
     The model that is used as model to interact with the database for the Session Table.
+
+    Methods:
+        deleteOtherThanToday() -> bool: Deleting all session records created before the current day.
+        getTodaySession(database_handler: Database_Handler) -> Session: Retrieving the earliest session record for the current day.
     """
     def __init__(
         self,
@@ -39,3 +43,26 @@ class Session(Table_Model):
         """
         query: str = f"DELETE FROM {self.getTableName()} WHERE date_created < CURDATE()"
         return self.getDatabaseHandler().deleteData(query)
+
+    @classmethod
+    def getTodaySession(cls, database_handler: Database_Handler) -> "Session":
+        """
+        Retrieving the earliest session record for the current day.
+
+        This class method queries the database to find the first session entry created on the current date, ordering by the primary identifier to ensure consistency.  It is useful for retrieving the active session for the day.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance used to execute the query.
+
+        Returns:
+            Session: An instance of the `Session` class populated with the data for today's session.
+        """
+        temporary_instance: "Session" = cls(database_handler)
+        query: str = f"SELECT * FROM {temporary_instance.getTableName()} WHERE date_created = CURDATE() ORDER BY identifier ASC LIMIT 1"
+        database_response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query)
+        if not database_response:
+            return cls(
+                temporary_instance.getDatabaseHandler(),
+                table_name=temporary_instance.getTableName()
+            )
+        return [cls(temporary_instance.getDatabaseHandler(), **row) for row in database_response][0] # type: ignore

@@ -8,7 +8,7 @@ from Models.DatabaseHandler import Database_Handler, List, RowType, Tuple, Any, 
 from typing import Dict, Type
 
 
-class TableModel:
+class Table_Model:
     """
     A base class for database table models, providing methods to interact with the database.
 

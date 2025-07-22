@@ -261,6 +261,7 @@ class TableModel:
         """
         columns: List[RowType] = database_handler.getData(f"SHOW COLUMNS FROM {table_name}")
         annotations: Dict[str, type] = {}
+        primary_field: str = next((str(column["Field"]) for column in columns if str(column["Key"]) == "PRI"), "identifier")
         for column in columns:
             class_type: type = cls.mySqlTypeToPython(str(column["Type"])) # type: ignore
             annotations[str(column["Field"])] = class_type # type: ignore
@@ -273,6 +274,7 @@ class TableModel:
             self.__table_name = table_name
             self.__fields = list(annotations.keys())
             self.__field_types = annotations
+            self.__primary_key = primary_field
             for field in self.__fields:
                 setattr(self, field, kwargs.get(field))
 
@@ -281,6 +283,7 @@ class TableModel:
             "__database_handler": database_handler,
             "__fields": list(annotations.keys()),
             "__field_types": annotations,
+            "__primary_field": primary_field,
             "__init__": __init__,
             "__annotations__": annotations
         }

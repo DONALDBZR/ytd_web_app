@@ -141,17 +141,18 @@ class TableModel:
     def setPrimaryField(self, primary_field: str) -> None:
         self.__primary_field = primary_field
 
-    def _getFields(self) -> Tuple[List[str], Dict[str, str]]:
+    def _getFields(self) -> Tuple[List[str], Dict[str, str], str]:
         """
         Fetching the column names and types for the table from the database.
 
         Returns:
-            Tuple[List[str], Dict[str, str]]: A tuple containing a list of field names and a dictionary mapping field names to their MySQL types.
+            Tuple[List[str], Dict[str, str], str]: A tuple containing a list of field names and a dictionary mapping field names to their MySQL types.
         """
         database_response: List[RowType] = self.getDatabaseHandler().getData(f"SHOW COLUMNS FROM {self.getTableName()}")
         fields: List[str] = [str(column["Field"]) for column in database_response] # type: ignore
         field_types: Dict[str, str] = {str(column["Field"]): str(column["Type"]) for column in database_response} # type: ignore
-        return fields, field_types
+        primary_field: str = next(str(column["Field"]) for column in database_response if str(col.get("Key")) == "PRI", "identifier")
+        return fields, field_types, primary_field
 
     def setModelAttributes(self, kwargs: Dict[str, Any]) -> None:
         """

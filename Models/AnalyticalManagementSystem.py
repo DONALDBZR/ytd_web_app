@@ -509,25 +509,33 @@ class AnalyticalManagementSystem:
 
     def manageSearchSubmitted(self, status: int) -> Dict[str, int]:
         """
-        Managing the search submitted of the event.
+        Managing the insertion or retrieval of a search submission event.
 
-        Parameters:
-            status: int: The status of the previous processing.
+        This method:
+            - Checks if the prior operation was successful based on the given status.
+            - If successful, attempts to retrieve the most recent `Search_Submitted` entry.
+            - If retrieval succeeds, returns its identifier.
+            - If retrieval fails or the prior operation was not successful, inserts a new record.
+
+        Args:
+            status (int): The status of the previous processing.
 
         Returns:
-            {status: int, identifier: int}
+            Dict[str, int]: A dictionary containing:
+                - 'status': the final HTTP-like status code.
+                - 'identifier': the ID of the relevant `Search_Submitted` row (or 0 if failed).
         """
-        if status != self.ok and status != self.created:
+        if status not in (self.ok, self.created):
             return {
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str]]]]] = self.getSearchSubmitted()
+        database_response: Dict[str, Union[int, List[Search_Submitted]]] = self.getSearchSubmitted()
         if database_response["status"] == self.ok:
-            network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
+            latest_entry: Search_Submitted = database_response["data"][-1] # type: ignore
             return {
                 "status": int(database_response["status"]), # type: ignore
-                "identifier": int(network_location["identifier"]) # type: ignore
+                "identifier": latest_entry.identifier # type: ignore
             }
         return self.postSearchSubmitted()
 

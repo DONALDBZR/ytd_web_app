@@ -6,6 +6,7 @@ from urllib import response
 from Models.ClickModel import Click, Database_Handler, List
 from Models.SearchSubmittedModel import Search_Submitted
 from Models.ColorSchemeUpdatedModel import Color_Scheme_Updated
+from Models.EventsModel import Event
 from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
 from time import mktime
 from datetime import datetime
@@ -740,9 +741,9 @@ class AnalyticalManagementSystem:
         Inserting a new event click record into the `"Events"` table of the database.
 
         This method:
-        - Inserts data related to the click event into the `"Events"` table.
-        - Logs success or failure messages.
-        - Returns a status code representing the result of the operation.
+            - Inserts data related to the click event into the `"Events"` table.
+            - Logs success or failure messages.
+            - Returns a status code representing the result of the operation.
 
         Parameters:
             device (int): The device identifier where the event occurred.
@@ -751,16 +752,23 @@ class AnalyticalManagementSystem:
             click (int): The identifier for the event.
 
         Returns:
-            int
+            int: The status code indicating success (self.created) or failure (self.service_unavailable).
         """
-        parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, click)
-        response: bool = self.getDatabaseHandler().postData(
-            table="Events",
-            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, Click",
-            values="%s, %s, %s, %s, %s, %s, %s",
-            parameters=parameters # type: ignore
+        event: Event = Event(
+            self.getDatabaseHandler(),
+            uniform_resource_locator=self.getUniformResourceLocator(),
+            referrer=self.getReferrer(),
+            timestamp=self.getTimestamp(),
+            Device=device,
+            EventType=event_type,
+            NetworkLocation=network_location,
+            Click=click
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
+        response: bool = event.save()
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
     def postEventSearchSubmitted(self, device: int, event_type: int, network_location: int, search_submitted: int) -> int:

@@ -523,31 +523,30 @@ class Crawler:
             self.getLogger().error(f"The directory contains path traversal!\nDirectory: {self.getDirectory()}")
             raise ValueError("The directory contains path traversal!")
 
-    def prepareFirstRun(self, identifiers: List[RowType]) -> None:
+    def prepareFirstRun(self, identifiers: List[str]) -> None:
         """
-        Preparing the data for the first run by fetching and
-        processing YouTube data.  This method processes the
-        identifiers, retrieves YouTube data from the database, and
-        updates the dataset.  It then sets the processed dataset to
-        be used later in the web crawler.
+        Preparing the dataset for the first run by fetching and processing YouTube data.
 
-        Parameters:
-            identifiers (List[RowType]): A list of identifiers used to fetch YouTube data from the database.
+        This method processes the provided YouTube identifiers, retrieves corresponding data from the database (filtered by allowed platforms), and stores the processed result for later use by the web crawler.
 
-        Returns:
-            void
+        Args:
+            identifiers (List[str]): A list of YouTube video identifiers to process.
 
         Raises:
-            Exception: If there is an error while retrieving data from the database or processing it.
+            Exception: If an error occurs while retrieving or processing data from the database.
         """
         allowed_platforms: List[str] = ["youtube", "youtu.be"]
-        dataset: List[Dict[str, Union[str, int, None]]] = []
         try:
-            dataset = self.__getYoutubeData(dataset, identifiers, allowed_platforms)
-            self.setData(dataset)
+            self.setData(
+                self.__getYoutubeData(
+                    [],
+                    identifiers,
+                    allowed_platforms
+                )
+            )
         except Exception as error:
             self.getLogger().error(f"An error occured while retrieving data from the database server.\nError: {error}")
-            raise error
+            raise
 
     def __getYoutubeData(self, dataset: List[Dict[str, Union[str, int, None]]], identifiers: List[RowType], allowed_platforms: List[str]) -> List[Dict[str, Union[str, int, None]]]:
         """

@@ -773,30 +773,38 @@ class AnalyticalManagementSystem:
 
     def postEventSearchSubmitted(self, device: int, event_type: int, network_location: int, search_submitted: int) -> int:
         """
-        Inserting a new event search submitted record into the `"Events"` table of the database.
+        Inserting a new event record indicating a search submission into the `"Events"` table.
 
         This method:
-        - Inserts data related to the search submitted event into the `"Events"` table.
-        - Logs success or failure messages.
-        - Returns a status code representing the result of the operation.
+            - Constructs an `Event` model with relevant search submission data.
+            - Persists it to the database using the `save()` method.
+            - Logs the result of the operation.
+            - Returns a corresponding HTTP-style status code.
 
         Parameters:
-            device (int): The device identifier where the event occurred.
-            event_type (int): The type of the event.
-            network_location (int): The network location identifier.
-            search_submitted (int): The identifier for the event.
+            device (int): Identifier of the device where the search was submitted.
+            event_type (int): The type of event (e.g., "SearchSubmitted").
+            network_location (int): Network location or IP context of the request.
+            search_submitted (int): Identifier or flag indicating search submission details.
 
         Returns:
-            int
+            int: Status code indicating success (`self.created`) or failure (`self.service_unavailable`).
         """
-        parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, search_submitted)
-        response: bool = self.getDatabaseHandler().postData(
-            table="Events",
-            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, SearchSubmitted",
-            values="%s, %s, %s, %s, %s, %s, %s",
-            parameters=parameters # type: ignore
+        event: Event = Event(
+            self.getDatabaseHandler(),
+            uniform_resource_locator=self.getUniformResourceLocator(),
+            referrer=self.getReferrer(),
+            timestamp=self.getTimestamp(),
+            Device=device,
+            EventType=event_type,
+            NetworkLocation=network_location,
+            SearchSubmitted=search_submitted
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
+        response: bool = event.save()
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
     def postEventColorSchemeUpdated(self, device: int, event_type: int, network_location: int, color_scheme: int) -> int:

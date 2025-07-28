@@ -178,7 +178,7 @@ class Table_Model:
         return self.getMySqlFieldTypes().get(base, type)
 
     @classmethod
-    def getById(cls, database_handler: Database_Handler,primary_key: Any) -> Optional["Table_Model"]:
+    def getById(cls, database_handler: Database_Handler, primary_key: Any) -> Optional["Table_Model"]:
         """
         Retrieving a model instance by its primary key.
 

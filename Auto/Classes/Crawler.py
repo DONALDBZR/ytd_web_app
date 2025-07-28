@@ -5,8 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
-from os import chmod, getcwd
-from typing import cast
+from os import chmod
+from typing import cast, Union
 from inspect import stack
 from time import time, sleep
 from json import dumps
@@ -22,7 +22,8 @@ from os.path import abspath, join, dirname
 
 
 path.append(abspath(join(dirname(__file__), "../../")))
-from Models.Media import Media, Database_Handler, RowType, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Union, Tuple
+from Models.MediaFileModel import Media_File, Database_Handler
+from Models.Media import Media, RowType, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Tuple
 from Errors.ExtractioErrors import CrawlerNotAllowedError
 
 
@@ -299,43 +300,23 @@ class Crawler:
 
     def setUpData(self) -> None:
         """
-        Setting up the data to be used by the web crawler.  This
-        method retrieves the relevant data from the database
-        (with a filter for content downloaded in the past 2 weeks),
-        prepares the data for the crawling process, and invokes
-        different crawling procedures based on the state of the
-        system.  The referrer is checked to determine which phase
-        the crawler is in (first run or second run), and the
-        appropriate methods for the first and second runs are
-        invoked.  If no new data is found, a log message is
-        generated indicating no content was downloaded.  If there is
-        an error during any step, it is logged for further
-        investigation.
-
-        Returns:
-            void
-
-        Raises:
-            Relational_Database_Error: If an error occurs while setting up the data.
+        Setting up the internal data structures by retrieving recent media file identifiers and executing two setup and initialization passes.  Logs outcome or raises an error if database access fails.
         """
         try:
-            identifiers: List[RowType] = self.getDatabaseHandler().getData(
-                parameters=None,
-                table_name="MediaFile",
-                filter_condition="date_downloaded >= NOW() - INTERVAL 2 WEEK",
-                column_names="YouTube",
-                group_condition="YouTube"
-            )
+            identifiers: List[str] = self.__collectRecentFileIdentifiers()
             dataset: List[Dict[str, Union[str, int, None]]] = self.getData()
             referrer: str = stack()[1][3]
             self.__setUpFirstRun(referrer, identifiers)
             self.__setUpSecondRun(referrer, dataset)
             self.__initializeFirstRun(referrer)
             self.__initializeSecondRun(referrer)
-            self.getLogger().inform(f"No new data has been found.\nWeekly Content Downloaded Amount: {len(identifiers)}") if len(identifiers) == 0 else exit()
+            if len(identifiers) == 0:
+                self.getLogger().inform("No new data has been found.")
+                return
+            self.getLogger().inform(f"Weekly Content Downloaded Amount: {len(identifiers)}")
         except Relational_Database_Error as error:
             self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
-            raise error
+            raise
 
     def __initializeSecondRun(self, referrer: str) -> None:
         """

@@ -298,6 +298,16 @@ class Crawler:
             ignore_errors=True
         )
 
+    def __collectRecentFileIdentifiers(self) -> List[str]:
+        """
+        Collecting and returning a list of YouTube identifiers from media files downloaded in the last two weeks.
+
+        Returns:
+            List[str]: A list of YouTube video identifiers as strings.
+        """
+        recent_files: List[Media_File] = Media_File.getRecentFiles(self.getDatabaseHandler())
+        return [str(getattr(recent_file, "YouTube", "")) for recent_file in recent_files]
+
     def setUpData(self) -> None:
         """
         Setting up the internal data structures by retrieving recent media file identifiers and executing two setup and initialization passes.  Logs outcome or raises an error if database access fails.

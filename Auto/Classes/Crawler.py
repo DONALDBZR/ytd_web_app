@@ -390,25 +390,22 @@ class Crawler:
             return
         self.prepareSecondRun(dataset)
 
-    def __setUpFirstRun(self, referrer: str, dataset: List[RowType]) -> None:
+    def __setUpFirstRun(self, referrer: str, identifiers: List[str]) -> None:
         """
-        Preparing the system for the first run by initializing the
-        data.  This method checks if the referrer is `"__init__"`,
-        indicating that the system is in the initialization phase.
-        If this condition is met, it proceeds to prepare the system
-        for the first run by calling `prepareFirstRun` with the
-        provided dataset.
+        Preparing the system for the first run by initializing relevant data.
 
-        Parameters:
-            referrer (string): The referrer string that indicates the state of the system.
-            dataset (List[RowType]): The data that needs to be processed for the first run.
+        This method checks if the referrer is `__init__`, indicating that the system is in the initialization phase.  If true, it invokes `prepareFirstRun` with the provided identifiers.
+
+        Args:
+            referrer (str): The referrer string that indicates the current state.
+            identifiers (List[str]): List of media identifiers to initialize.
 
         Returns:
-            void
+            None
         """
         if referrer != "__init__":
             return
-        self.prepareFirstRun(dataset)
+        self.prepareFirstRun(identifiers)
 
     def prepareSecondRun(self, dataset: list[dict[str, str | int | None]]) -> None:
         """

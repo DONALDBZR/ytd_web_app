@@ -288,3 +288,25 @@ class Table_Model:
             "__annotations__": annotations
         }
         return type(table_name.capitalize(), (cls,), attributes)
+
+    @classmethod
+    def getLastRowIdentifier(cls, database_handler: Database_Handler) -> int:
+        """
+        Retrieving the last inserted row identifier from the database.
+
+        Parameters:
+            database_handler (Database_Handler): The database handler used to execute the query.
+
+        Returns:
+            int: The last inserted identifier if available, or 0 if the query fails or no ID is present.
+        """
+        query: str = "SELECT LAST_INSERT_ID() AS last_identifier"
+        response: List[RowType] = database_handler.getData(query)
+        if not response or "last_identifier" not in response[0]:
+            database_handler.getLogger().warn("Could not retrieve last inserted identifier.")
+            return 0
+        last_identifier: Any = response[0]["last_identifier"] # type: ignore
+        if not isinstance(last_identifier, int):
+            database_handler.getLogger().warn(f"The identifier is invalid. - Type: {type(last_identifier)}")
+            return 0
+        return last_identifier

@@ -14,7 +14,7 @@ from sys import path
 from urllib.parse import ParseResult, urlparse
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
-from re import search
+from re import search, fullmatch
 from html import escape
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -129,7 +129,7 @@ class Crawler:
             self.setRobotParsers({})
             self.setUpData()
         except Exception as error:
-            self.getLogger().error(f"An error occurred while setting the crawler.\nError: {error}")
+            self.getLogger().error(f"An error occurred while setting the crawler. - Error: {error}")
             raise error
 
     def __del__(self) -> None:
@@ -162,7 +162,7 @@ class Crawler:
             self.setUserAgents([line.strip() for line in file.readlines()])
             file.close()
         except OSError as error:
-            self.getLogger().error(f"An error occurred while setting up the user agents.\nError: {error}")
+            self.getLogger().error(f"An error occurred while setting up the user agents. - Error: {error}")
             raise error
 
     def getTemporaryUserDataDirectory(self) -> Union[str, None]:
@@ -269,7 +269,7 @@ class Crawler:
             self.setService(Service(ChromeDriverManager().install()))
             self.getLogger().inform("The Crawler's Service has been installed!")
         except WebDriverException as error:
-            self.getLogger().error(f"An error occurred while setting the service.\nError: {error}")
+            self.getLogger().error(f"An error occurred while setting the service. - Error: {error}")
             raise error
 
     def __setOptions(self) -> None:
@@ -331,7 +331,7 @@ class Crawler:
                 return
             self.getLogger().inform(f"Weekly Content Downloaded Amount: {len(identifiers)}")
         except Relational_Database_Error as error:
-            self.getLogger().error(f"An error occurred while setting up the data.\nError: {str(error)}")
+            self.getLogger().error(f"An error occurred while setting up the data. - Error: {str(error)}")
             raise
 
     def __initializeSecondRun(self, referrer: str) -> None:
@@ -349,7 +349,7 @@ class Crawler:
         """
         if referrer != "firstRun" or len(self.getData()) == 0:
             return
-        self.getLogger().inform(f"Latest Content to be displayed on the application.\nNew Content Amount: {len(self.getData())}")
+        self.getLogger().inform(f"Latest Content to be displayed on the application. - New Content Amount: {len(self.getData())}")
         self.secondRun()
 
     def __initializeFirstRun(self, referrer: str) -> None:
@@ -368,7 +368,7 @@ class Crawler:
         """
         if referrer != "__init__" or len(self.getData()) == 0:
             return
-        self.getLogger().inform(f"Data has been successfully retrieved from the database server.\nWeekly Content Downloaded Amount: {len(self.getData())}\n")
+        self.getLogger().inform(f"Data has been successfully retrieved from the database server. - Weekly Content Downloaded Amount: {len(self.getData())} - ")
         self.firstRun()
 
     def __setUpSecondRun(self, referrer: str, dataset: List[Dict[str, Union[str, int, None]]]) -> None:
@@ -430,7 +430,7 @@ class Crawler:
         """
         for index in range(0, len(self.getData()), 1):
             delay: float = self.getDelay(str(self.getData()[index]["author_channel"]))
-            self.getLogger().debug(f"The delay has been calculated for Crawler to process the data.\nDelay: {delay:.3f} s\nUniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
+            self.getLogger().debug(f"The delay has been calculated for Crawler to process the data. - Delay: {delay:.3f} s - Uniform Resource Locator: {str(self.getData()[index]['author_channel'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["author_channel"]), delay, index)
         self.buildData()
@@ -446,7 +446,7 @@ class Crawler:
         new_data: List[Dict[str, Union[str, int, None]]] = []
         try:
             for index in range(0, len(self.getData()), 1):
-                self.getLogger().inform(f"The latest content from YouTube has been retrieved according the usage of the users!\nLatest Content: {self.getData()[index]['latest_content']}")
+                self.getLogger().inform(f"The latest content from YouTube has been retrieved according the usage of the users! - Latest Content: {self.getData()[index]['latest_content']}")
                 request: Dict[str, Union[None, str]] = {
                     "referer": None,
                     "search": str(self.getData()[index]["latest_content"]),
@@ -460,7 +460,7 @@ class Crawler:
             self.setData(new_data)
             self.save()
         except Exception as error:
-            self.getLogger().error(f"An error occurred while building the data!\nError: {error}")
+            self.getLogger().error(f"An error occurred while building the data! - Error: {error}")
             raise error
 
     def save(self) -> None:
@@ -492,13 +492,13 @@ class Crawler:
             file.close()
             chmod(file_name, 0o644)
         except OSError as error:
-            self.getLogger().error(f"An error occurred while saving the data!\nError: {error}\nFile name: {file_name}")
+            self.getLogger().error(f"An error occurred while saving the data! - Error: {error} - File name: {file_name}")
             raise error
         except ValueError as error:
-            self.getLogger().error(f"An error occurred while trying to validate the data before saving it!\nError: {error}\nFile name: {file_name}")
+            self.getLogger().error(f"An error occurred while trying to validate the data before saving it! - Error: {error} - File name: {file_name}")
             raise error
         finally:
-            self.getLogger().inform(f"The latest content has been saved!\nFile Name: {file_name}")
+            self.getLogger().inform(f"The latest content has been saved! - File Name: {file_name}")
             self.getDriver().quit()
             self.cleanTemporaryUserDataDirectory()
 
@@ -515,13 +515,13 @@ class Crawler:
             ValueError: If the data is empty, the directory is empty, or if the directory contains potential path traversal attempts.
         """
         if not self.getData():
-            self.getLogger().error(f"The data is empty!\nData: {self.getData()}")
+            self.getLogger().error(f"The data is empty! - Data: {self.getData()}")
             raise ValueError("The data is empty!")
         if not self.getDirectory():
-            self.getLogger().error(f"The directory is empty!\nDirectory: {self.getDirectory()}")
+            self.getLogger().error(f"The directory is empty! - Directory: {self.getDirectory()}")
             raise ValueError("The directory is empty!")
         if "../" in self.getDirectory() or "..\'" in self.getDirectory():
-            self.getLogger().error(f"The directory contains path traversal!\nDirectory: {self.getDirectory()}")
+            self.getLogger().error(f"The directory contains path traversal! - Directory: {self.getDirectory()}")
             raise ValueError("The directory contains path traversal!")
 
     def prepareFirstRun(self, identifiers: List[str]) -> None:
@@ -546,7 +546,7 @@ class Crawler:
                 )
             )
         except Exception as error:
-            self.getLogger().error(f"An error occured while retrieving data from the database server.\nError: {error}")
+            self.getLogger().error(f"An error occured while retrieving data from the database server. - Error: {error}")
             raise
 
     def __getYoutubeData(
@@ -570,10 +570,10 @@ class Crawler:
             ValueError: If input is invalid or contains non-string elements.
         """
         if not isinstance(identifiers, list):
-            self.getLogger().error(f"Invalid data from the relational database server.\nIdentifiers: {identifiers}")
+            self.getLogger().error(f"Invalid data from the relational database server. - Identifiers: {identifiers}")
             raise ValueError("Invalid data from the relational database server.")
         if not all(isinstance(identifier, str) for identifier in identifiers):
-            self.getLogger().error(f"The dataset contains non-string values!\nIdentifiers: {identifiers}")
+            self.getLogger().error(f"The dataset contains non-string values! - Identifiers: {identifiers}")
             raise ValueError("The identifiers contains non-string values!")
         if not identifiers:
             self.getLogger().debug("No identifiers provided.")
@@ -586,59 +586,51 @@ class Crawler:
                 self.getLogger().error(f"There is an error while processing the identifier. - Identifier: {identifier} - Index: {index} - Error: {error}")
         return dataset
 
-    def __processYouTubeData(self, youtube: List[RowType], allowed_platforms: List[str], dataset: List[Dict[str, Union[str, int, None]]]) -> List[Dict[str, Union[str, int, None]]]:
+    def __processYouTubeData(
+        self,
+        youtube_entries: List[YouTube],
+        allowed_platforms: List[str],
+        dataset: List[Dict[str, Union[str, int, None]]]
+    ) -> List[Dict[str, Union[str, int, None]]]:
         """
-        Processing YouTube data and append valid entries to the
-        dataset.
-
-        This method verifies and processes YouTube data retrieved from a relational database.  It ensures that:
-        - The YouTube data is a list of dictionaries.
-        - The dataset consists of valid objects.
-        - Each entry in the YouTube data has a valid identifier, platform, and metadata.
-
-        If the data is valid, a properly formatted dictionary containing the YouTube video's identifier, author, uniform resource locator, and author channel is added to the dataset.
+        Validating and processing YouTube data retrieved from the database.  If valid, appends formatted entries to the dataset.
 
         Parameters:
-            youtube (List[Dict[string, Union[string, int, None]]]): The list of YouTube video data.
-            allowed_platforms (List[string]): A list of allowed platforms.
-            dataset (List[Dict[string, Union[string, int, None]]]): The dataset where valid video entries will be added.
+            youtube_entries (List[YouTube]): List of YouTube model instances.
+            allowed_platforms (List[str]): List of allowed platform identifiers.
+            dataset (List[Dict[str, Union[str, int, None]]]): The dataset to append processed video entries to.
 
         Returns:
-            List[Dict[string, Union[string, int, None]]]
+            List[Dict[str, Union[str, int, None]]]: Updated dataset with valid YouTube entries.
 
         Raises:
-            ValueError: If the YouTube data, dataset, or platform format is invalid.
+            ValueError: If YouTube data or platform is invalid.
         """
-        if not isinstance(youtube, list):
-            self.getLogger().error(f"Invalid data from the relational database server.\nYouTube: {youtube}")
+        if not isinstance(youtube_entries, list):
+            self.getLogger().error(f"Invalid data from the relational database server. - Type: {type(youtube_entries)}")
             raise ValueError("Invalid data from the relational database server.")
+        if not all(isinstance(entry, YouTube) for entry in youtube_entries):
+            self.getLogger().error(f"Non-YouTube objects found in data. - Data: {youtube_entries}")
+            raise ValueError("Non-YouTube objects found in data!")
         if not all(isinstance(data, dict) for data in dataset):
-            self.getLogger().error(f"The dataset contains non-object values!\nDataset: {dataset}")
+            self.getLogger().error(f"The dataset contains non-object values! - Dataset: {dataset}")
             raise ValueError("The dataset contains non-object values!")
-        if not all(isinstance(data, dict) for data in youtube):
-            self.getLogger().error(f"The YouTube data contains non-object values!\nYouTube: {youtube}")
-            raise ValueError("The YouTube data contains non-object values!")
-        if not youtube:
-            self.getLogger().debug("No YouTube data found.")
-            return dataset
-        if not youtube[0]:
-            self.getLogger().error("The youtube list is empty!\nyoutube: {youtube}")
-            raise ValueError("The youtube list is empty!")
-        video: Dict[str, str] = youtube[0] # type: ignore
-        if bool(search(r"^[a-zA-Z0-9_-]$", video["identifier"])) != False:
-            self.getLogger().error(f"Invalid identifier format!\nIdentifier: {video['identifier']}")
-            raise ValueError("Invalid identifier format!")
-        if video["platform"] not in allowed_platforms:
-            self.getLogger().error(f"Invalid platform!\nPlatform: {video['platform']}")
-            raise ValueError("Invalid platform!")
-        uniform_resource_locator: str = f"{self.getEnvironment().getYouTubeVideoUniformResourceLocator()}{video['identifier']}"
-        author: str = escape(video["author"])
-        dataset.append({
-            "identifier": video["identifier"],
-            "author": author,
-            "uniform_resource_locator": uniform_resource_locator,
-            "author_channel": None
-        })
+        for video in youtube_entries:
+            if not video.identifier or not isinstance(video.identifier, str): # type: ignore
+                self.getLogger().error(f"Invalid Identifier. - YouTube: {video}")
+                raise ValueError("Invalid Identifier!")
+            if not fullmatch(r"^[a-zA-Z0-9_-]+$", video.identifier): # type: ignore
+                self.getLogger().error(f"Invalid Identifier Format. - Identifier: {video.identifier}") # type: ignore
+                raise ValueError("Invalid Identifier Format")
+            if video.platform not in allowed_platforms: # type: ignore
+                self.getLogger().error(f"Invalid Platform. - Platform: {video.platform}") # type: ignore
+                raise ValueError("Invalid Platform!")
+            dataset.append({
+                "identifier": video.identifier, # type: ignore
+                "author": video.author, # type: ignore
+                "uniform_resource_locator": f"{self.getEnvironment().getYouTubeVideoUniformResourceLocator()}{video.identifier}", # type: ignore
+                "author_channel": None
+            })
         return dataset
 
     def firstRun(self) -> None:
@@ -650,7 +642,7 @@ class Crawler:
         """
         for index in range(0, len(self.getData()), 1):
             delay: float = self.getDelay(str(self.getData()[index]["uniform_resource_locator"]))
-            self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data.\nDelay: {delay:.3f} s\nUniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
+            self.getLogger().inform(f"The delay has been calculated for the Crawler to process the data. - Delay: {delay:.3f} s - Uniform Resource Locator: {str(self.getData()[index]['uniform_resource_locator'])}")
             sleep(delay)
             self.enterTarget(str(self.getData()[index]["uniform_resource_locator"]), delay, index)
         self.setUpData()
@@ -691,7 +683,7 @@ class Crawler:
         retries: int = 3
         try:
             for attempt in range(0, retries, 1):
-                self.getLogger().debug(f"Attempting to enter the target!\nAttempt: {attempt + 1}\nUniform Resource Locator: {target}")
+                self.getLogger().debug(f"Attempting to enter the target! - Attempt: {attempt + 1} - Uniform Resource Locator: {target}")
                 parsed_uniform_resource_locator: ParseResult = urlparse(target)
                 base_uniform_resource_locator: str = f"{parsed_uniform_resource_locator.scheme}://{parsed_uniform_resource_locator.netloc}"
                 if self.__attemptNavigation(target, base_uniform_resource_locator, referrer, index, attempt, retries, delay):
@@ -699,7 +691,7 @@ class Crawler:
                 sleep(delay)
                 delay *= 1.1
         except (TimeoutException, WebDriverException, NoSuchElementException, Exception) as error:
-            self.getLogger().error(f"An error occurred while trying to enter the target.\nError: {error}\nUniform Resource Locator: {target}")
+            self.getLogger().error(f"An error occurred while trying to enter the target. - Error: {error} - Uniform Resource Locator: {target}")
 
     def __attemptNavigation(self, target: str, base_uniform_resource_locator: str, referrer: str, index: int, attempt: int, retries: int, delay: float) -> bool:
         """
@@ -736,12 +728,12 @@ class Crawler:
             self.retrieveData(referrer, delay, index)
             return True
         except (TimeoutException, WebDriverException, NoSuchElementException) as error:
-            self.getLogger().error(f"The current attempt on crawling has failed.\nError: {error}\nAttempt: {attempt + 1}")
+            self.getLogger().error(f"The current attempt on crawling has failed. - Error: {error} - Attempt: {attempt + 1}")
             if attempt >= retries - 1:
-                self.getLogger().error(f"Failing to navigate the current target!\nError: {error}\nAttempts: {retries}\nUniform Resource Locator: {target}")
+                self.getLogger().error(f"Failing to navigate the current target! - Error: {error} - Attempts: {retries} - Uniform Resource Locator: {target}")
             return False
         except Exception as error:
-            self.getLogger().error(f"An unexpected error occurred!\nError: {error}\nUniform Resource Locator: {target}")
+            self.getLogger().error(f"An unexpected error occurred! - Error: {error} - Uniform Resource Locator: {target}")
             return False
 
     def __robotTxtNotParsed(self, parser: Union[RobotFileParser, None], target: str) -> None:
@@ -762,7 +754,7 @@ class Crawler:
         """
         if parser:
             return
-        self.getLogger().error(f"The robots.txt file has not been parsed!\nUniform Resource Locator: {target}")
+        self.getLogger().error(f"The robots.txt file has not been parsed! - Uniform Resource Locator: {target}")
         raise Exception("The robots.txt file has not been parsed!")
 
     def __notAllowedCrawl(self, parser: Union[RobotFileParser, None], target: str) -> None:
@@ -788,8 +780,8 @@ class Crawler:
         user_agent: str = self.getDriver().execute_script("return navigator.userAgent;")
         if parser.can_fetch(user_agent, target): # type: ignore
             return
-        self.getLogger().error(f"The crawler is not allowed to access the target.\nUniform Resource Locator: {target}")
-        raise CrawlerNotAllowedError(f"The crawler is not allowed to access the target!\nUniform Resource Locator: {target}")
+        self.getLogger().error(f"The crawler is not allowed to access the target. - Uniform Resource Locator: {target}")
+        raise CrawlerNotAllowedError(f"The crawler is not allowed to access the target! - Uniform Resource Locator: {target}")
 
     def __enterTargetFirstRun(self, referrer: str, target: str, delay: float) -> None:
         """
@@ -811,13 +803,13 @@ class Crawler:
         if referrer != "firstRun":
             return
         try:
-            self.getLogger().inform(f"Entering the target!\nTarget: {target}")
+            self.getLogger().inform(f"Entering the target! - Target: {target}")
             self.getDriver().get(target)
             sleep(delay)
             self.isDriverOnTarget(target, delay)
-            self.getLogger().inform(f"Entering the correct target!\nTarget: {target}")
+            self.getLogger().inform(f"Entering the correct target! - Target: {target}")
         except WebDriverException as error:
-            self.getLogger().error(f"An error occurred while entering the first target!\nError: {error}\nTarget: {target}")
+            self.getLogger().error(f"An error occurred while entering the first target! - Error: {error} - Target: {target}")
             raise error
 
     def isDriverOnTarget(self, target: str, delay: float) -> None:
@@ -856,13 +848,13 @@ class Crawler:
             return
         uniform_resource_locator: str = f"{target}/videos"
         try:
-            self.getLogger().inform(f"Entering the target!\nTarget: {uniform_resource_locator}")
+            self.getLogger().inform(f"Entering the target! - Target: {uniform_resource_locator}")
             self.getDriver().get(f"{uniform_resource_locator}")
             sleep(delay)
             self.isDriverOnTarget(uniform_resource_locator, delay)
-            self.getLogger().inform(f"Entering the correct target!\nTarget: {uniform_resource_locator}")
+            self.getLogger().inform(f"Entering the correct target! - Target: {uniform_resource_locator}")
         except WebDriverException as error:
-            self.getLogger().error(f"An error occurred while entering the second target!\nError: {error}\nTarget: {target}")
+            self.getLogger().error(f"An error occurred while entering the second target! - Error: {error} - Target: {target}")
             raise error
 
     def __checkRobotsParser(self, uniform_resource_locator: str) -> Union[RobotFileParser, None]:
@@ -881,7 +873,7 @@ class Crawler:
         Returns:
             Union[RobotFileParser, None]
         """
-        self.getLogger().debug(f"Checking robots parser.\nUniform Resource Locator: {uniform_resource_locator}")
+        self.getLogger().debug(f"Checking robots parser. - Uniform Resource Locator: {uniform_resource_locator}")
         if uniform_resource_locator not in self.getRobotParsers():
             robots_uniform_resource_locator: str = f"{uniform_resource_locator}/robots.txt"
             parser: RobotFileParser = RobotFileParser()
@@ -915,7 +907,7 @@ class Crawler:
             parser.read()
             self.getRobotParsers()[uniform_resource_locator] = parser
         except OSError as error:
-            self.getLogger().error(f"An error occured while reading the robots.txt file.\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")
+            self.getLogger().error(f"An error occured while reading the robots.txt file. - Error: {error} - Uniform Resource Locator: {uniform_resource_locator}")
             if uniform_resource_locator in self.getRobotParsers():
                 del self.getRobotParsers()[uniform_resource_locator]
             raise error
@@ -923,7 +915,7 @@ class Crawler:
             end: float = time()
             elasped: float = end - start
             delay: float = 1.0 - elasped
-            sleep(delay) if elasped < 1.0 else self.getLogger().debug(f"The elapsed time is greater than 1 second.\nTime Elasped: {elasped:.3f} s")
+            sleep(delay) if elasped < 1.0 else self.getLogger().debug(f"The elapsed time is greater than 1 second. - Time Elasped: {elasped:.3f} s")
 
     def retrieveData(self, referrer: str, delay: float, index: int = 0) -> None:
         """
@@ -944,7 +936,7 @@ class Crawler:
             self.__getDataFirstRun(referrer, index, delay)
             self.__getDataSecondRun(referrer, index)
         except (TimeoutException, WebDriverException, NoSuchElementException) as error:
-            self.getLogger().error(f"An error occurred while retrieving data!\nError: {error}")
+            self.getLogger().error(f"An error occurred while retrieving data! - Error: {error}")
             raise error
 
     def __getDataSecondRun(self, referrer: str, index: int) -> None:
@@ -970,7 +962,7 @@ class Crawler:
             latest_content_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
             self.getData()[index]["latest_content"] = self.sanitizeUniformResourceLocator(latest_content_uniform_resource_locator)
         except (WebDriverException, NoSuchElementException) as error:
-            self.getLogger().error(f"An error occurred while retrieving data for the second run!\nError: {error}")
+            self.getLogger().error(f"An error occurred while retrieving data for the second run! - Error: {error}")
             raise error
 
     def __getDataFirstRun(self, referrer: str, index: int, delay: float) -> None:
@@ -996,7 +988,7 @@ class Crawler:
             author_channel_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
             self.getData()[index]["author_channel"] = self.sanitizeUniformResourceLocator(author_channel_uniform_resource_locator)
         except (TimeoutException, WebDriverException, NoSuchElementException) as error:
-            self.getLogger().error(f"An error occurred while retrieving data for the first run!\nError: {error}\nX-PATH: {xpath}\nHTML Tag: {self.getHtmlTag()}\nDelay: {delay:.3f} s")
+            self.getLogger().error(f"An error occurred while retrieving data for the first run! - Error: {error} - X-PATH: {xpath} - HTML Tag: {self.getHtmlTag()} - Delay: {delay:.3f} s")
             raise error
 
     def sanitizeUniformResourceLocator(self, uniform_resource_locator: str) -> str:
@@ -1019,7 +1011,7 @@ class Crawler:
             parsed_uniform_resource_locator: ParseResult = urlparse(uniform_resource_locator)
             return self.validateUniformResourceLocator(parsed_uniform_resource_locator, allowed_domains, uniform_resource_locator)
         except (ValueError, Exception) as error:
-            self.getLogger().error(f"Error occurred while sanitizing the Uniform Resource Locator!\nError: {error}\nUniform Resource Locator: {uniform_resource_locator}")
+            self.getLogger().error(f"Error occurred while sanitizing the Uniform Resource Locator! - Error: {error} - Uniform Resource Locator: {uniform_resource_locator}")
             raise error
 
     def validateUniformResourceLocator(self, parsed_uniform_resource_locator: ParseResult, allowed_domains: List[str], uniform_resource_locator: str) -> str:
@@ -1041,18 +1033,18 @@ class Crawler:
             ValueError: If the uniform resource locator is invalid.
         """
         if parsed_uniform_resource_locator.scheme != "https":
-            self.getLogger().error(f"Invalid scheme in URL. Only HTTPS is allowed.\nUniform Resource Locator: {uniform_resource_locator}")
+            self.getLogger().error(f"Invalid scheme in URL. Only HTTPS is allowed. - Uniform Resource Locator: {uniform_resource_locator}")
             raise ValueError("Invalid scheme in URL. Only HTTPS is allowed.")
         if parsed_uniform_resource_locator.netloc not in allowed_domains:
-            self.getLogger().error(f"Invalid domain in URL. Domain is not allowed.\nUniform Resource Locator: {uniform_resource_locator}\nDomain: {parsed_uniform_resource_locator.netloc}")
+            self.getLogger().error(f"Invalid domain in URL. Domain is not allowed. - Uniform Resource Locator: {uniform_resource_locator} - Domain: {parsed_uniform_resource_locator.netloc}")
             raise ValueError("Invalid domain in URL. Domain is not allowed.")
         if parsed_uniform_resource_locator.port is not None:
-            self.getLogger().error(f"Port number is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
+            self.getLogger().error(f"Port number is not allowed in URL. - Uniform Resource Locator: {uniform_resource_locator}")
             raise ValueError("Port number is not allowed in URL.")
         if parsed_uniform_resource_locator.username or parsed_uniform_resource_locator.password:
-            self.getLogger().error(f"User information is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
+            self.getLogger().error(f"User information is not allowed in URL. - Uniform Resource Locator: {uniform_resource_locator}")
             raise ValueError("User information is not allowed in URL.")
         if parsed_uniform_resource_locator.fragment:
-            self.getLogger().error(f"Fragment is not allowed in URL.\nUniform Resource Locator: {uniform_resource_locator}")
+            self.getLogger().error(f"Fragment is not allowed in URL. - Uniform Resource Locator: {uniform_resource_locator}")
             raise ValueError("Fragment is not allowed in URL.")
         return uniform_resource_locator

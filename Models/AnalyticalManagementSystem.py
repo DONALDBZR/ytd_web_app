@@ -1,9 +1,10 @@
 """
 The module that has the Analytical Management System.
 """
-from typing import Dict
+from typing import Dict, Union
 from urllib import response
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, RowType, List, Tuple, Any, Union
+from Models.ClickModel import Click, Database_Handler, List
+from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
 from time import mktime
 from datetime import datetime
 from user_agents import parse
@@ -367,10 +368,10 @@ class AnalyticalManagementSystem:
         required_keys: List[str] = ["event_name", "page_url", "timestamp", "user_agent", "screen_resolution"]
         allowed_events: List[str] = ["page_view", "search_submitted", "color_scheme_updated", "click"]
         if not all(key in data for key in required_keys):
-            self.getLogger().error(f"This request is forged as the required keys are missing and the required data will be logged.\nIP Address: {data['ip_address']}")
+            self.getLogger().error(f"This request is forged as the required keys are missing and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         if data["event_name"] not in allowed_events:
-            self.getLogger().error(f"This request is forged as this event is not allowed and the required data will be logged.\nIP Address: {data['ip_address']}")
+            self.getLogger().error(f"This request is forged as this event is not allowed and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         self.setEventName(str(data["event_name"]))
         self.setUniformResourceLocator(str(data["page_url"]))
@@ -447,25 +448,27 @@ class AnalyticalManagementSystem:
         """
         Inserting a new click event into the `"Click"` table of the database.
 
-        This method:
-        - Retrieves the forwarded uniform resource locator.
-        - Attempts to insert the URL into the database's `"Click"` table.
-        - Logs success or failure messages.
-        - Returns a dictionary containing the status code and the last inserted row's identifier.
+        Steps:
+            - Retrieves the forwarded URL.
+            - Attempts to save the click event.
+            - Logs appropriate messages.
+            - Returns status and identifier.
 
         Returns:
-            Dict[str, int]
+            Dict[str, int]: A dictionary with the HTTP-like status code and the inserted row's identifier.
         """
-        parameters: Tuple[str] = (self.getForwardedUniformResourceLocator(),)
-        response: bool = self.getDatabaseHandler().postData(
-            table="Click",
-            columns="uniform_resource_locator",
-            values="%s",
-            parameters=parameters # type: ignore
+        click: Click = Click(
+            self.getDatabaseHandler(),
+            uniform_resource_locator=self.getForwardedUniformResourceLocator()
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Click table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Click table.\nStatus: {self.service_unavailable}")
+        response: bool = click.save()
         status: int = self.created if response else self.service_unavailable
-        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        message: str = "The data has been successfully inserted in the Click table." if response else "An error occurred while inserting data in the Click table."
+        if response:
+            self.getLogger().inform(f"{message} - Status: {status}")
+        else:
+            self.getLogger().error(f"{message} - Status: {status}")
+        identifier: int = Click.getLastRowIdentifier(self.getDatabaseHandler()) if response else 0
         return {
             "status": status,
             "identifier": identifier
@@ -547,7 +550,7 @@ class AnalyticalManagementSystem:
             values="%s",
             parameters=parameters # type: ignore
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Search Submitted table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Search Submitted table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Search Submitted table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Search Submitted table. - Status: {self.service_unavailable}")
         status: int = self.created if response else self.service_unavailable
         identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
         return {
@@ -647,7 +650,7 @@ class AnalyticalManagementSystem:
             values="%s",
             parameters=parameters
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table. - Status: {self.service_unavailable}")
         status: int = self.created if response else self.service_unavailable
         identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
         return {
@@ -743,7 +746,7 @@ class AnalyticalManagementSystem:
             values="%s, %s, %s, %s, %s, %s, %s",
             parameters=parameters # type: ignore
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
     def postEventSearchSubmitted(self, device: int, event_type: int, network_location: int, search_submitted: int) -> int:
@@ -771,7 +774,7 @@ class AnalyticalManagementSystem:
             values="%s, %s, %s, %s, %s, %s, %s",
             parameters=parameters # type: ignore
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
     def postEventColorSchemeUpdated(self, device: int, event_type: int, network_location: int, color_scheme: int) -> int:
@@ -799,7 +802,7 @@ class AnalyticalManagementSystem:
             values="%s, %s, %s, %s, %s, %s, %s",
             parameters=parameters # type: ignore
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
     def postEventPageView(self, device: int, event_type: int, network_location: int, page_view: int) -> int:
@@ -827,7 +830,7 @@ class AnalyticalManagementSystem:
             values="%s, %s, %s, %s, %s, %s, %s",
             parameters=parameters # type: ignore
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
     def managePageView(self, status: int) -> Dict[str, int]:
@@ -866,7 +869,7 @@ class AnalyticalManagementSystem:
             values="%s",
             parameters=parameters
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Page View table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Page View table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Page View table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Page View table. - Status: {self.service_unavailable}")
         return {
             "status": self.created if response else self.service_unavailable,
             "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
@@ -943,7 +946,7 @@ class AnalyticalManagementSystem:
             values=values,
             parameters=parameters # type: ignore
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Network and Location table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Network and Location table. - Status: {self.service_unavailable}")
         return {
             "status": self.created if response else self.service_unavailable,
             "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
@@ -1013,7 +1016,7 @@ class AnalyticalManagementSystem:
             values="%s",
             parameters=parameters
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event Types table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event Types table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Event Types table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event Types table. - Status: {self.service_unavailable}")
         return {
             "status": self.created if response else self.service_unavailable,
             "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
@@ -1061,7 +1064,7 @@ class AnalyticalManagementSystem:
             values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
             parameters=parameters # type: ignore
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Devices table.\nStatus: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Devices table.\nStatus: {self.service_unavailable}")
+        self.getLogger().inform(f"The data has been successfully inserted in the Devices table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Devices table. - Status: {self.service_unavailable}")
         return {
             "status": self.created if response else self.service_unavailable,
             "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
@@ -1112,10 +1115,10 @@ class AnalyticalManagementSystem:
             self.setTimezone(str(geolocation_data.get("timezone")))
             return self.ok
         except RequestException as error:
-            self.getLogger().error(f"The Analytical Management System cannot retrieve data from the IP Address.\nError: {error}")
+            self.getLogger().error(f"The Analytical Management System cannot retrieve data from the IP Address. - Error: {error}")
             return self.service_unavailable
         except JSONDecodeError as error:
-            self.getLogger().error(f"The Analytical Management System cannot decode the JSON response.\nError: {error}")
+            self.getLogger().error(f"The Analytical Management System cannot decode the JSON response. - Error: {error}")
             return self.service_unavailable
         except Exception as error:
             self.getLogger().error(f"A general error occurred: {error}")
@@ -1143,7 +1146,7 @@ class AnalyticalManagementSystem:
             self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
             return self.ok
         except ValueError as error:
-            self.getLogger().warn(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address.\nError: {error}")
+            self.getLogger().warn(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address. - Error: {error}")
             return self.service_unavailable
 
     def sanitizeIpAddress(self) -> int:
@@ -1177,7 +1180,7 @@ class AnalyticalManagementSystem:
             self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
             return self.ok
         except gaierror as error:
-            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is neither an IP Address nor a host name.\nError: {error}")
+            self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is neither an IP Address nor a host name. - Error: {error}")
             return self.service_unavailable
 
     def setDeviceType(self) -> int:
@@ -1222,7 +1225,7 @@ class AnalyticalManagementSystem:
             self.setAspectRatio(self.getWidth() / self.getHeight() if self.getHeight() != 0 else None)
             return self.ok
         except ValueError as error:
-            self.getLogger().error(f"The Analytical Management System cannot parse the screen resolution data.\nError: {error}")
+            self.getLogger().error(f"The Analytical Management System cannot parse the screen resolution data. - Error: {error}")
             return self.service_unavailable
 
     def getUserAgentData(self) -> int:
@@ -1242,5 +1245,5 @@ class AnalyticalManagementSystem:
             self.getLogger().inform("The Analytical Management System has successfully parsed the data from the User Agent.")
             return self.ok
         except Exception as error:
-            self.getLogger().error(f"The Analytical Management System cannot parse the data from the User Agent.\nError: {error}")
+            self.getLogger().error(f"The Analytical Management System cannot parse the data from the User Agent. - Error: {error}")
             return self.service_unavailable

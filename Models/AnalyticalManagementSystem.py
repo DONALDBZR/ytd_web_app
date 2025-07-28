@@ -5,6 +5,7 @@ from typing import Dict, Union
 from urllib import response
 from Models.ClickModel import Click, Database_Handler, List
 from Models.SearchSubmittedModel import Search_Submitted
+from Models.ColorSchemeUpdatedModel import Color_Scheme_Updated
 from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
 from time import mktime
 from datetime import datetime
@@ -645,24 +646,27 @@ class AnalyticalManagementSystem:
         Inserting a new color scheme update event into the `"ColorSchemeUpdated"` table of the database.
 
         This method:
-        - Retrieves the updated color scheme.
-        - Attempts to insert the color scheme into the database's `"ColorSchemeUpdated"` table.
-        - Logs success or failure messages.
-        - Returns a dictionary containing the status code and the last inserted row's identifier.
+            - Retrieves the updated color scheme.
+            - Attempts to insert the color scheme into the database's `"ColorSchemeUpdated"` table.
+            - Logs success or failure messages.
+            - Returns a dictionary containing the status code and the last inserted row's identifier.
 
         Returns:
-            Dict[str, int]
+            Dict[str, int]: A dictionary with keys:
+                - "status": HTTP-style status code indicating result (201 or 503).
+                - "identifier": ID of the inserted row or 0 if failed.
         """
-        parameters: Tuple[str] = (self.getColorScheme(),)
-        response: bool = self.getDatabaseHandler().postData(
-            table="ColorSchemeUpdated",
-            columns="color_scheme",
-            values="%s",
-            parameters=parameters
+        color_scheme_updated: Color_Scheme_Updated = Color_Scheme_Updated(
+            self.getDatabaseHandler(),
+            color_scheme=self.getColorScheme()
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table. - Status: {self.service_unavailable}")
+        response: bool = color_scheme_updated.save()
         status: int = self.created if response else self.service_unavailable
-        identifier: int = int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+        identifier: int = Color_Scheme_Updated.getLastRowIdentifier(self.getDatabaseHandler()) if response else 0
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Color Scheme table. - Status: {self.created}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Color Scheme table. - Status: {self.service_unavailable}")
         return {
             "status": status,
             "identifier": identifier

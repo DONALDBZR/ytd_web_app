@@ -34,7 +34,7 @@ class Media_File(Table_Model):
             List[Media_File]: A list of Media_File objects matching the time filter.
         """
         temporary_instance: "Media_File" = cls(database_handler)
-        query: str = f"SELECT YouTube FROM {temporary_instance.getTableName()} WHERE date_downloaded >= NOW() - INTERVAL 2 WEEK"
+        query: str = f"SELECT YouTube FROM {temporary_instance.getTableName()} WHERE date_downloaded >= NOW() - INTERVAL 2 WEEK GROUP BY YouTube"
         database_response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query)
         if not database_response:
             return []

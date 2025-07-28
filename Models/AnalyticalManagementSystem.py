@@ -563,27 +563,24 @@ class AnalyticalManagementSystem:
             "identifier": identifier
         }
 
-    def getSearchSubmitted(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]:
+    def getSearchSubmitted(self) -> Dict[str, Union[int, List[Search_Submitted]]]:
         """
-        Retrieving search submission data from the `"SearchSubmitted"` table in the database.
+        Retrieving search submission entries from the `"SearchSubmitted"` table matching the current search term.
 
         This method:
-        - Retrieves all rows from the `"SearchSubmitted"` table where the `search_term` matches the current search term.
-        - Returns a dictionary containing the status code and the data fetched.
-        - If no data is found, it returns a status of `204` and an empty list.
+            - Queries the database for entries matching `search_term`.
+            - Returns a dictionary containing:
+                - A status code: `200` if entries found, otherwise `204`.
+                - A list of `Search_Submitted` model instances, or an empty list if none are found.
 
         Returns:
-            Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]]
+            Dict[str, Union[int, List[Search_Submitted]]]: Response with status and model data.
         """
-        parameters: Tuple[str] = (self.getSearchTerm(),)
-        data: List[Dict[str, Union[int, str]]] = self.getDatabaseHandler().getData(
-            table_name="SearchSubmitted",
-            filter_condition="search_term = %s",
-            parameters=parameters # type: ignore
-        )
+        data: List[Search_Submitted] = Search_Submitted.getBySearchTerm(self.getDatabaseHandler(), self.getSearchTerm())
+        status: int = self.ok if len(data) > 0 else self.no_content
         return {
-            "status": self.ok if len(data) > 0 else self.no_content,
-            "data": data if len(data) > 0 else []
+            "status": status,
+            "data": data
         }
 
     def processColorSchemeUpdated(self, data: Dict[str, Union[str, float]], status: int) -> int:

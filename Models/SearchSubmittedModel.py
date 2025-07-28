@@ -19,7 +19,7 @@ class Search_Submitted(Table_Model):
         """
         super().__init__(
             database_handler,
-            table_name="Search_Submitted",
+            table_name="SearchSubmitted",
             **kwargs
         )
 

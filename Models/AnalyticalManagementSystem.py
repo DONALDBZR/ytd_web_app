@@ -736,7 +736,13 @@ class AnalyticalManagementSystem:
             return self.postEventClick(device, event_type, network_location, click)
         return self.service_unavailable
 
-    def postEventClick(self, device: int, event_type: int, network_location: int, click: int) -> int:
+    def postEventClick(
+        self,
+        device: int,
+        event_type: int,
+        network_location: int,
+        click: int
+    ) -> int:
         """
         Inserting a new event click record into the `"Events"` table of the database.
 
@@ -771,7 +777,13 @@ class AnalyticalManagementSystem:
             self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
-    def postEventSearchSubmitted(self, device: int, event_type: int, network_location: int, search_submitted: int) -> int:
+    def postEventSearchSubmitted(
+        self,
+        device: int,
+        event_type: int,
+        network_location: int,
+        search_submitted: int
+    ) -> int:
         """
         Inserting a new event record indicating a search submission into the `"Events"` table.
 
@@ -807,14 +819,20 @@ class AnalyticalManagementSystem:
             self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
-    def postEventColorSchemeUpdated(self, device: int, event_type: int, network_location: int, color_scheme: int) -> int:
+    def postEventColorSchemeUpdated(
+        self,
+        device: int,
+        event_type: int,
+        network_location: int,
+        color_scheme: int
+    ) -> int:
         """
         Inserting a new event color scheme updated record into the `"Events"` table of the database.
 
         This method:
-        - Inserts data related to the color scheme updated event into the `"Events"` table.
-        - Logs success or failure messages.
-        - Returns a status code representing the result of the operation.
+            - Inserts data related to the color scheme updated event into the `"Events"` table.
+            - Logs success or failure messages.
+            - Returns a status code representing the result of the operation.
 
         Parameters:
             device (int): The device identifier where the event occurred.
@@ -823,16 +841,23 @@ class AnalyticalManagementSystem:
             color_scheme (int): The color scheme identifier.
 
         Returns:
-            int
+            int: Status code indicating success (`self.created`) or failure (`self.service_unavailable`).
         """
-        parameters: Tuple[str, Union[str, None], int, int, int, int, int] = (self.getUniformResourceLocator(), self.getReferrer(), self.getTimestamp(), device, event_type, network_location, color_scheme)
-        response: bool = self.getDatabaseHandler().postData(
-            table="Events",
-            columns="uniform_resource_locator, referrer, timestamp, Device, EventType, NetworkLocation, color_scheme_updated",
-            values="%s, %s, %s, %s, %s, %s, %s",
-            parameters=parameters # type: ignore
+        event: Event = Event(
+            self.getDatabaseHandler(),
+            uniform_resource_locator=self.getUniformResourceLocator(),
+            referrer=self.getReferrer(),
+            timestamp=self.getTimestamp(),
+            Device=device,
+            EventType=event_type,
+            NetworkLocation=network_location,
+            ColorSchemeUpdated=color_scheme
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
+        response: bool = event.save()
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Event table. - Status: {self.created}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Event table. - Status: {self.service_unavailable}")
         return self.created if response else self.service_unavailable
 
     def postEventPageView(self, device: int, event_type: int, network_location: int, page_view: int) -> int:

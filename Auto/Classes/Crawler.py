@@ -310,7 +310,12 @@ class Crawler:
 
     def setUpData(self) -> None:
         """
-        Setting up the internal data structures by retrieving recent media file identifiers and executing two setup and initialization passes.  Logs outcome or raises an error if database access fails.
+        Setting up the internal data structures by:
+            - Retrieving recent media file identifiers from the database,
+            - Executing the first and second setup and initialization passes,
+            - Logging the results or raising an error if the database operation fails.
+
+        If no new identifiers are found, it logs a notice instead of proceeding with further logic.
         """
         try:
             identifiers: List[str] = self.__collectRecentFileIdentifiers()

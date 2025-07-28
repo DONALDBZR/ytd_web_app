@@ -7,6 +7,7 @@ from Models.ClickModel import Click, Database_Handler, List
 from Models.SearchSubmittedModel import Search_Submitted
 from Models.ColorSchemeUpdatedModel import Color_Scheme_Updated
 from Models.EventsModel import Event
+from Models.PageViewModel import Page_View
 from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
 from time import mktime
 from datetime import datetime
@@ -924,24 +925,29 @@ class AnalyticalManagementSystem:
         Inserting a new page view record into the `"PageView"` table of the database.
 
         This method:
-        - Inserts the page loading time into the `"PageView"` table in the database.
-        - Logs success or failure messages based on whether the insertion is successful.
-        - Returns a dictionary with the status code and the identifier of the inserted record.
+            - Inserts the page loading time into the `"PageView"` table in the database.
+            - Logs success or failure messages based on whether the insertion is successful.
+            - Returns a dictionary with the status code and the identifier of the inserted record.
 
         Returns:
-            Dict[str, int]
+            Dict[str, int]: A dictionary containing:
+                - "status" (int): HTTP-like status code for operation success or failure.
+                - "identifier" (int): The last inserted row's identifier, or 0 if failed.
         """
-        parameters: Tuple[float] = (self.getLoadingTime(),)
-        response: bool = self.getDatabaseHandler().postData(
-            table="PageView",
-            columns="loading_time",
-            values="%s",
-            parameters=parameters
+        page_view: Page_View = Page_View(
+            self.getDatabaseHandler(),
+            loading_time=self.getLoadingTime()
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Page View table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Page View table. - Status: {self.service_unavailable}")
+        response: bool = page_view.save()
+        identifier: int = Page_View.getLastRowIdentifier(self.getDatabaseHandler()) if response else 0
+        status: int = self.created if response else self.service_unavailable
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Page View table. - Status: {self.created}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Page View table. - Status: {self.service_unavailable}")
         return {
-            "status": self.created if response else self.service_unavailable,
-            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0
+            "status": status,
+            "identifier": identifier
         }
 
     def manageNetworkLocation(self, status: int) -> Dict[str, int]:

@@ -23,6 +23,7 @@ from os.path import abspath, join, dirname
 
 path.append(abspath(join(dirname(__file__), "../../")))
 from Models.MediaFileModel import Media_File, Database_Handler
+from Models.YouTubeModel import YouTube
 from Models.Media import Media, RowType, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Tuple
 from Errors.ExtractioErrors import CrawlerNotAllowedError
 
@@ -548,46 +549,41 @@ class Crawler:
             self.getLogger().error(f"An error occured while retrieving data from the database server.\nError: {error}")
             raise
 
-    def __getYoutubeData(self, dataset: List[Dict[str, Union[str, int, None]]], identifiers: List[RowType], allowed_platforms: List[str]) -> List[Dict[str, Union[str, int, None]]]:
+    def __getYoutubeData(
+        self,
+        dataset: List[Dict[str, Union[str, int, None]]],
+        identifiers: List[str],
+        allowed_platforms: List[str]
+    ) -> List[Dict[str, Union[str, int, None]]]:
         """
-        Retrieving and process YouTube data based on provided
-        identifiers.
-
-        This method fetches YouTube data from the relational database server using provided identifiers, validates them, and appends the results to the dataset.
+        Retrieving and processing YouTube data from the relational database server based on provided string identifiers.
 
         Parameters:
-            dataset (List[Dict[string, Union[string, int, None]]]): The dataset where YouTube data will be stored.
-            identifiers (List[RowType]): List of identifiers containing YouTube video references.
-            allowed_platforms (List[string]): A list of allowed platforms.
+            dataset (List[Dict[str, Union[str, int, None]]]): Initial dataset to append results to.
+            identifiers (List[str]): A list of string identifiers referencing YouTube videos.
+            allowed_platforms (List[str]): A list of allowed platform values (e.g., "youtube", "youtu.be").
 
         Returns:
-            List[Dict[string, Union[string, int, None]]]
+            List[Dict[str, Union[str, int, None]]]: The updated dataset after processing valid YouTube entries.
 
         Raises:
-            ValueError: If identifiers are not a list, contain non-object values, or lack the 'YouTube' key.
+            ValueError: If input is invalid or contains non-string elements.
         """
         if not isinstance(identifiers, list):
             self.getLogger().error(f"Invalid data from the relational database server.\nIdentifiers: {identifiers}")
             raise ValueError("Invalid data from the relational database server.")
-        if not all(isinstance(data, dict) for data in identifiers):
-            self.getLogger().error(f"The dataset contains non-object values!\nIdentifiers: {identifiers}")
-            raise ValueError("The identifiers contains non-object values!")
+        if not all(isinstance(identifier, str) for identifier in identifiers):
+            self.getLogger().error(f"The dataset contains non-string values!\nIdentifiers: {identifiers}")
+            raise ValueError("The identifiers contains non-string values!")
         if not identifiers:
             self.getLogger().debug("No identifiers provided.")
             return dataset
-        if "YouTube" not in identifiers[0]:
-            self.getLogger().error(f"Missing key YouTube in identifier.\nIdentifiers: {identifiers[0]}")
-            raise ValueError("Missing key YouTube in identifier.")
-        for index in range(0, len(identifiers), 1):
-            parameters: Tuple[str] = (identifiers[index]["YouTube"],) # type: ignore
-            youtube_data: List[RowType] = self.getDatabaseHandler().getData(
-                parameters=parameters,
-                table_name="YouTube",
-                join_condition="Media ON YouTube.Media = Media.identifier",
-                filter_condition="YouTube.identifier = %s",
-                column_names="YouTube.identifier AS identifier, YouTube.author AS author, Media.value AS platform"
-            )
-            dataset = self.__processYouTubeData(youtube_data, allowed_platforms, dataset)
+        for index, identifier in enumerate(identifiers):
+            try:
+                metadata: List[YouTube] = YouTube.getMetadata(self.getDatabaseHandler(), "Media", (identifier,))
+                dataset = self.__processYouTubeData(metadata, allowed_platforms, dataset)
+            except Exception as error:
+                self.getLogger().error(f"There is an error while processing the identifier. - Identifier: {identifier} - Index: {index} - Error: {error}")
         return dataset
 
     def __processYouTubeData(self, youtube: List[RowType], allowed_platforms: List[str], dataset: List[Dict[str, Union[str, int, None]]]) -> List[Dict[str, Union[str, int, None]]]:

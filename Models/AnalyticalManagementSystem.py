@@ -1159,26 +1159,20 @@ class AnalyticalManagementSystem:
             "identifier": identifier
         }
 
-    def getDatabaseDevice(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]]:
+    def getDatabaseDevice(self) -> Dict[str, Union[int, List[Device]]]:
         """
-        Retrieving device information from the `"Devices"` table based on the user agent and screen resolution.
-
-        This method:
-        - Queries the `"Devices"` table to retrieve records where the user agent and screen resolution match the provided values.
-        - Returns a dictionary containing the status of the operation and the retrieved device data.
+        Retrieving device records from the database based on the current instance's user agent and screen resolution.
 
         Returns:
-            Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]]
+            Dict[str, Union[int, List[Device]]]: 
+                A dictionary containing:
+                - 'status': Integer status code (`self.ok` if records are found, otherwise `self.no_content`).
+                - 'data': A list of Device instances if any match the criteria, otherwise an empty list.
         """
-        parameters: Tuple[str, str] = (self.getUserAgent(), self.getScreenResolution())
-        data: List[Dict[str, Union[int, str, None, float]]] = self.getDatabaseHandler().getData(
-            table_name="Devices",
-            filter_condition="user_agent = %s AND screen_resolution = %s",
-            parameters=parameters # type: ignore
-        )
+        data: List[Device] = Device.getByDeviceType(self.getDatabaseHandler(), self.getUserAgent(), self.getScreenResolution())
         return {
-            "status": self.ok if len(data) > 0 else self.no_content,
-            "data": data if len(data) > 0 else []
+            "status": self.ok if data else self.no_content,
+            "data": data or []
         }
 
     def getGeolocationData(self) -> int:

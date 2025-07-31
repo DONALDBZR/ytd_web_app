@@ -1001,31 +1001,35 @@ class AnalyticalManagementSystem:
 
     def postNetworkLocation(self) -> Dict[str, int]:
         """
-        Posting network location data to the `"NetworkLocation"` table in the database.
-
-        This method:
-        - Collects information regarding the network location.
-        - Inserts the collected data into the `"NetworkLocation"` table in the database.
-        - Returns a dictionary containing the status and the identifier of the inserted row.
-        - The method conditionally includes the hostname based on whether the `AnalyticalManagementSystem` class has the 
-        attribute `__hostname`.
+        Inserting the current IP and location information into the Network_Location table.
 
         Returns:
-            Dict[str, int]
+            Dict[str, int]: A dictionary containing:
+                - 'status': HTTP-like status code (`self.created` if inserted, else `self.service_unavailable`)
+                - 'identifier': The last inserted row ID from the Network_Location table.
         """
-        parameters: Union[Tuple[str, Union[str, None], float, float, str, str, str, str, str], Tuple[str, float, float, str, str, str, str, str]] = (self.getIpAddress(), self.getHostname(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})") if hasattr(AnalyticalManagementSystem, "__hostname") else (self.getIpAddress(), self.getLatitude(), self.getLongitude(), self.getCity(), self.getRegion(), self.getCountry(), self.getTimezone(), f"POINT({self.getLatitude()} {self.getLongitude()})")
-        columns: str = "ip_address, hostname, latitude, longitude, city, region, country, timezone, location" if hasattr(AnalyticalManagementSystem, "__hostname") else "ip_address, latitude, longitude, city, region, country, timezone, location"
-        values: str = "%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)" if hasattr(AnalyticalManagementSystem, "__hostname") else "%s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(%s, 4326)"
-        response: bool = self.getDatabaseHandler().postData(
-            table="NetworkLocation",
-            columns=columns,
-            values=values,
-            parameters=parameters # type: ignore
+        network_location: Network_Location = Network_Location(
+            database_handler=self.getDatabaseHandler(),
+            ip_address=self.getIpAddress(),
+            hostname=self.getHostname(),
+            latitude=self.getLatitude(),
+            longitude=self.getLongitude(),
+            city=self.getCity(),
+            region=self.getRegion(),
+            country=self.getCountry(),
+            timezone=self.getTimezone(),
+            location=f"ST_GeomFromText(POINT({self.getLatitude()} {self.getLongitude()}))"
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Network and Location table. - Status: {self.service_unavailable}")
+        response: bool = network_location.save()
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = Network_Location.getLastRowIdentifier(self.getDatabaseHandler())
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Network and Location table. - Status: {status}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Network and Location table. - Status: {status}")
         return {
-            "status": self.created if response else self.service_unavailable,
-            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+            "status": status,
+            "identifier": identifier
         }
 
     def manageEventType(self, status: int) -> Dict[str, int]:

@@ -2,6 +2,12 @@ from Models.TableModel import Table_Model, Database_Handler, List, RowType, Tupl
 
 
 class Device(Table_Model):
+    """
+    The model which will interact exclusively with the Devices table.
+
+    Methods:
+        `getByDeviceType(database_handler: Database_Handler, user_agent: str, screen_resolution: str)`: Fetching device records from the database that match the given user agent and screen resolution.
+    """
     def __init__(
         self,
         database_handler: Database_Handler,

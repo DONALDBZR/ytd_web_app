@@ -1084,17 +1084,20 @@ class AnalyticalManagementSystem:
         Returns:
             Dict[str, int]
         """
-        parameters: Tuple[str] = (self.getEventName(),)
-        response: bool = self.getDatabaseHandler().postData(
-            table="EventTypes",
-            columns="name",
-            values="%s",
-            parameters=parameters
+        event_types: Event_Types = Event_Types(
+            database_handler=self.getDatabaseHandler(),
+            name=self.getEventName()
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Event Types table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Event Types table. - Status: {self.service_unavailable}")
+        response: bool = event_types.save()
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = Event_Types.getLastRowIdentifier(self.getDatabaseHandler())
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Event Types table. - Status: {status}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Event Types table. - Status: {status}")
         return {
-            "status": self.created if response else self.service_unavailable,
-            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+            "status": status,
+            "identifier": identifier
         }
 
     def manageDevice(self, status: int) -> Dict[str, int]:

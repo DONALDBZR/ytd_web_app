@@ -1116,12 +1116,12 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]] = self.getDatabaseDevice()
+        database_response: Dict[str, Union[int, List[Device]]] = self.getDatabaseDevice()
         if database_response["status"] == self.ok:
             device: Dict[str, Union[int, str, None, float]] = database_response["data"][-1] # type: ignore
             return {
                 "status": int(database_response["status"]), # type: ignore
-                "identifier": int(device["identifier"]) # type: ignore
+                "identifier": int(device.identifier) # type: ignore
             }
         return self.postDevice()
 

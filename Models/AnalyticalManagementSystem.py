@@ -966,12 +966,12 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]] = self.getDatabaseNetworkLocation()
+        database_response: Dict[str, Union[int, List[Network_Location]]] = self.getDatabaseNetworkLocation()
         if database_response["status"] == self.ok:
             network_location: Dict[str, Union[int, str, float]] = database_response["data"][-1] # type: ignore
             return {
                 "status": int(database_response["status"]), # type: ignore
-                "identifier": int(network_location["identifier"]) # type: ignore
+                "identifier": int(network_location.identifier) # type: ignore
             }
         return self.postNetworkLocation()
 

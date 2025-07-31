@@ -1048,12 +1048,12 @@ class AnalyticalManagementSystem:
                 "status": status,
                 "identifier": 0
             }
-        database_response: Dict[str, Union[int, List[Dict[str, Union[int, str]]]]] = self.getDatabaseEventType()
+        database_response: Dict[str, Union[int, List[Event_Types]]] = self.getDatabaseEventType()
         if database_response["status"] == self.ok:
-            event_type: Dict[str, Union[int, str]] = database_response["data"][-1] # type: ignore
+            event_type: Event_Types = database_response["data"][-1] # type: ignore
             return {
                 "status": int(database_response["status"]), # type: ignore
-                "identifier": int(event_type["identifier"]) # type: ignore
+                "identifier": int(event_type.identifier) # type: ignore
             }
         return self.postEventType()
 

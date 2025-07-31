@@ -10,6 +10,7 @@ from Models.EventsModel import Event
 from Models.PageViewModel import Page_View
 from Models.NetworkLocationModel import Network_Location
 from Models.EventTypesModel import Event_Types
+from Models.DeviceModel import Device
 from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
 from time import mktime
 from datetime import datetime
@@ -1126,26 +1127,36 @@ class AnalyticalManagementSystem:
 
     def postDevice(self) -> Dict[str, int]:
         """
-        Inserting device information into the `"Devices"` table.
-
-        This method:
-        - Inserts a new device record into the `"Devices"` table using various device details.
-        - Returns a dictionary containing the status of the operation and the identifier of the inserted device record.
+        Inserting the current device information into the Devices table in the database.
 
         Returns:
-            Dict[str, int]
+            Dict[str, int]: A dictionary containing:
+                - 'status': HTTP-like status code indicating creation success (`self.created`) or failure (`self.service_unavailable`).
+                - 'identifier': The last inserted row ID from the Devices table.
         """
-        parameters: Tuple[str, str, str, str, Union[str, None], str, str, int, int, Union[float, None]] = (self.getUserAgent(), self.getBrowser(), self.getBrowserVersion(), self.getOperatingSystem(), self.getOperatingSystemVersion(), self.getDevice(), self.getScreenResolution(), self.getWidth(), self.getHeight(), self.getAspectRatio())
-        response: bool = self.getDatabaseHandler().postData(
-            table="Devices",
-            columns="user_agent, browser, browser_version, operating_system, operating_system_version, device, screen_resolution, width, height, aspect_ratio",
-            values="%s, %s, %s, %s, %s, %s, %s, %s, %s, %s",
-            parameters=parameters # type: ignore
+        device: Device = Device(
+            database_handler=self.getDatabaseHandler(),
+            user_agent=self.getUserAgent(),
+            browser=self.getBrowser(),
+            browser_version=self.getBrowserVersion(),
+            operating_system=self.getOperatingSystem(),
+            operating_system_version=self.getOperatingSystemVersion(),
+            device=self.getDevice(),
+            screen_resolution=self.getScreenResolution(),
+            width=self.getWidth(),
+            height=self.getHeight(),
+            aspect_ratio=self.getAspectRatio()
         )
-        self.getLogger().inform(f"The data has been successfully inserted in the Devices table. - Status: {self.created}") if response else self.getLogger().error(f"An error occurred while inserting data in the Devices table. - Status: {self.service_unavailable}")
+        response: bool = device.save()
+        status: int = self.created if response else self.service_unavailable
+        identifier: int = Device.getLastRowIdentifier(self.getDatabaseHandler())
+        if response:
+            self.getLogger().inform(f"The data has been successfully inserted in the Devices table. - Status: {status}")
+        else:
+            self.getLogger().error(f"An error occurred while inserting data in the Devices table. - Status: {status}")
         return {
-            "status": self.created if response else self.service_unavailable,
-            "identifier": int(str(self.getDatabaseHandler().getLastRowIdentifier())) if response else 0,
+            "status": status,
+            "identifier": identifier
         }
 
     def getDatabaseDevice(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str, None, float]]]]]:

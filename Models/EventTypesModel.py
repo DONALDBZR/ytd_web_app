@@ -2,6 +2,12 @@ from Models.TableModel import Table_Model, Database_Handler, List, RowType, Tupl
 
 
 class Event_Types(Table_Model):
+    """
+    The model which will interact exclusively with the EventTypes table.
+
+    Methods:
+        `getByName(cls, database_handler: Database_Handler, name: str) -> List["Event_Types"]`: Fetching event type records from the database by their name.
+    """
     def __init__(
         self,
         database_handler: Database_Handler,

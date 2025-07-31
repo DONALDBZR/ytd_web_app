@@ -30,6 +30,7 @@ class Table_Model:
         update() -> bool: Updates the model instance in the database.
         delete() -> bool: Deletes the model instance from the database.
         createModelClass(table_name: str, database_handler: Database_Handler) -> Type["TableModel"]: Dynamically creates a model class for a given table name.
+        getLastRowIdentifier(database_handler: Database_Handler) -> int: Retrieves the last inserted row identifier from the database.
     """
     __table_name: str
     """

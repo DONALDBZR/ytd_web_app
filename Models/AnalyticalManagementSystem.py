@@ -9,6 +9,7 @@ from Models.ColorSchemeUpdatedModel import Color_Scheme_Updated
 from Models.EventsModel import Event
 from Models.PageViewModel import Page_View
 from Models.NetworkLocationModel import Network_Location
+from Models.EventTypesModel import Event_Types
 from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
 from time import mktime
 from datetime import datetime
@@ -1056,26 +1057,20 @@ class AnalyticalManagementSystem:
             }
         return self.postEventType()
 
-    def getDatabaseEventType(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]:
+    def getDatabaseEventType(self) -> Dict[str, Union[int, List[Event_Types]]]:
         """
-        Retrieving event type data from the `"EventTypes"` table based on the event name.
-
-        This method:
-        - Queries the `"EventTypes"` table in the database to retrieve event types corresponding to the provided event name.
-        - Returns a dictionary containing the status of the operation and the event type data if found.
+        Fetching event type data from the database based on the current instance's event name.
 
         Returns:
-            Dict[str, Union[int, List[Dict[str, Union[int, str]]]]]
+            Dict[str, Union[int, List[Event_Types]]]: A dictionary with:
+                - 'status': An integer representing the result status (`self.ok` if data is found, else `self.no_content`).
+                - 'data': A list of Event_Types instances if available, otherwise an empty list.
         """
-        parameters: Tuple[str] = (self.getEventName(),)
-        data: List[Dict[str, Union[int, str]]] = self.getDatabaseHandler().getData(
-            table_name="EventTypes",
-            filter_condition="name = %s",
-            parameters=parameters # type: ignore
-        )
+        data: List[Event_Types] = Event_Types.getByName(self.getDatabaseHandler(), self.getEventName())
+        has_data: bool = len(data) > 0
         return {
-            "status": self.ok if len(data) > 0 else self.no_content,
-            "data": data if len(data) > 0 else []
+            "status": self.ok if has_data else self.no_content,
+            "data": data if has_data else []
         }
 
     def postEventType(self) -> Dict[str, int]:

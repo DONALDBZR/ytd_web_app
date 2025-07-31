@@ -8,6 +8,7 @@ from Models.SearchSubmittedModel import Search_Submitted
 from Models.ColorSchemeUpdatedModel import Color_Scheme_Updated
 from Models.EventsModel import Event
 from Models.PageViewModel import Page_View
+from Models.NetworkLocationModel import Network_Location
 from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
 from time import mktime
 from datetime import datetime
@@ -974,28 +975,28 @@ class AnalyticalManagementSystem:
             }
         return self.postNetworkLocation()
 
-    def getDatabaseNetworkLocation(self) -> Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]]:
+    def getDatabaseNetworkLocation(self) -> Dict[str, Union[int, List[Network_Location]]]:
         """
-        Retrieving network location data from the `"NetworkLocation"` table in the database.
-
-        This method:
-        - Queries the `"NetworkLocation"` table based on the provided IP address, latitude, and longitude.
-        - Returns a dictionary containing the status and the network location data.
-        - If data is found, returns it along with a success status.
-        - If no data is found, returns an empty list and a "no content" status.
+        Fetching network location data from the database based on the current instance's IP address and coordinates.
 
         Returns:
-            Dict[str, Union[int, List[Dict[str, Union[int, str, float]]]]]
+            Dict[str, Union[int, List[Network_Location]]]: 
+                A dictionary containing:
+                - 'status': An integer status code (`self.ok` if data is found, otherwise `self.no_content`)
+                - 'data': A list of `Network_Location` instances if found, otherwise an empty list.
         """
-        parameters: Tuple[str, float, float] = (self.getIpAddress(), self.getLatitude(), self.getLongitude())
-        data: List[Dict[str, Union[int, str, float]]] = self.getDatabaseHandler().getData(
-            table_name="NetworkLocation",
-            filter_condition="ip_address = %s AND latitude = %s AND longitude = %s",
-            parameters=parameters # type: ignore
+        data: List[Network_Location] = Network_Location.getByIpAndLocation(
+            self.getDatabaseHandler(),
+            self.getIpAddress(),
+            [
+                self.getLatitude(),
+                self.getLongitude()
+            ]
         )
+        has_data: bool = len(data) > 0
         return {
-            "status": self.ok if len(data) > 0 else self.no_content,
-            "data": data if len(data) > 0 else []
+            "status": self.ok if has_data else self.no_content,
+            "data": data if has_data else []
         }
 
     def postNetworkLocation(self) -> Dict[str, int]:

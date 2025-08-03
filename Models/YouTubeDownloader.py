@@ -357,33 +357,12 @@ class YouTube_Downloader:
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
-        Extracting metadata for a YouTube video using `yt-dlp` and returning relevant information.
+        Searching for YouTube media retrieval and store metadata.
 
-        This method attempts to retrieve video metadata either from YouTube directly or from a local/internal cache.  The retrieved data includes title, author, view count, publish date, thumbnail, duration, and file locations.
-
-        Key Features:
-            - Uses yt-dlp to extract video metadata without downloading.
-            - Attempts to use internal database metadata if available.
-            - Constructs and returns a clean dictionary of metadata for front-end consumption.
-            - Handles unexpected errors gracefully and logs details.
+        This method initializes a YouTube downloader instance, retrieves media details, and saves them as a JSON file.  If the request has a referer, it fetches available streams; otherwise, it performs a search.
 
         Returns:
-            Dict[str, Union[str, int, None]]: A dictionary containing video metadata, including:
-                - 'uniform_resource_locator': str — Original URL
-                - 'author': str — Author/uploader name
-                - 'title': str — Video title
-                - 'identifier': str — Sanitized video ID
-                - 'author_channel': str — URL to the author's channel
-                - 'views': int — Number of views
-                - 'published_at': str — ISO date string of publication
-                - 'thumbnail': str — URL to the thumbnail
-                - 'duration': str — Video duration in HH:MM:SS
-                - 'audio_file': Optional[str] — Path to stored audio file (if found)
-                - 'video_file': Optional[str] — Path to stored video file (if found)
-
-        Raises:
-            ValueError: If the video metadata cannot be parsed correctly.
-            Exception: For any other unexpected errors.
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         """
         options: Dict[str, bool] = {
             "quiet": True,
@@ -403,12 +382,12 @@ class YouTube_Downloader:
             youtube: Dict[str, Any] = {
                 key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
             }
-            meta_data: Dict[str, Union[int, List[RowType], str]] = self.getYouTube()
+            meta_data: Dict[str, Union[int, List[YouTube], str]] = self.getYouTube()
             has_metadata: bool = meta_data["status"] == 200
-            self.setLength(int(meta_data["data"][0]["length"]) if has_metadata else int(youtube["duration"])) # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0]["published_at"]) if has_metadata else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
-            self.setAuthor(str(meta_data["data"][0]["author"]) if has_metadata else str(youtube["uploader"])) # type: ignore
-            self.setTitle(str(meta_data["data"][0]["title"]) if has_metadata else str(youtube["title"])) # type: ignore
+            self.setLength(int(meta_data["data"][0].length) if has_metadata else int(youtube["duration"])) # type: ignore
+            self.setPublishedAt(str(meta_data["data"][0].published_at) if has_metadata else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
+            self.setAuthor(str(meta_data["data"][0].author) if has_metadata else str(youtube["uploader"])) # type: ignore
+            self.setTitle(str(meta_data["data"][0].title) if has_metadata else str(youtube["title"])) # type: ignore
             self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
             file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if has_metadata else {} # type: ignore
             audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if has_metadata else None

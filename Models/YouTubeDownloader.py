@@ -819,22 +819,7 @@ class YouTube_Downloader:
             }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-            media_file: Media_File = Media_File(
-                database_handler=self.getDatabaseHandler(),
-                type=self.getMimeType(),
-                date_downloaded=self.getTimestamp(),
-                location=file_path,
-                YouTube=self.getIdentifier()
-            )
-            response: bool = media_file.save()
-            status: int = 201 if response else 503
-            message: str = "The files related have been stored in the relational database server." if response else "There is an error between the model and the relational database server."
-            if response:
-                self.getLogger().inform(f"{message} - Status: {status}")
-            else:
-                self.getLogger().error(f"{message} - Status: {status}")
-            if not response:
-                raise Relational_Database_Error("The files related have not been stored in the relational database server.")
+            self.__postVideo(file_path)
             return file_path
         except DownloadError as error:
             self.getLogger().error(f"The downloading of the video file has failed. - Error: {error}")
@@ -842,6 +827,33 @@ class YouTube_Downloader:
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an issue between the relational database server and the API. - Error: {error}")
             raise error
+
+    def __postVideo(self, file_path: str) -> None:
+        """
+        Persisting video metadata to the relational database.
+
+        This method creates a new `Media_File` instance with attributes such as MIME type, download timestamp, file path location, and associated YouTube identifier.  It attempts to save this metadata in the database, logging an informative message on success or an error message with a raised exception on failure.
+
+        Args:
+            file_path (str): The file path where the downloaded video is saved.
+
+        Raises:
+            Relational_Database_Error: If the metadata could not be saved in the database.
+        """
+        media_file: Media_File = Media_File(
+            database_handler=self.getDatabaseHandler(),
+            type=self.getMimeType(),
+            date_downloaded=self.getTimestamp(),
+            location=file_path,
+            YouTube=self.getIdentifier()
+        )
+        response: bool = media_file.save()
+        status: int = 201 if response else 503
+        message: str = "The files related have been stored in the relational database server." if response else "The files related have not been stored in the relational database server."
+        if not response:
+            self.getLogger().error(f"{message} - Status: {status}")
+            raise Relational_Database_Error(message)
+        self.getLogger().inform(f"{message} - Status: {status}")
 
     def __getVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_in_resolution: bool, is_in_size: bool, video_codec: str) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
         """

@@ -894,22 +894,6 @@ class YouTube_Downloader:
             raise error
 
     def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], file_path: str) -> str:
-        """
-        Downloading an audio stream and saving it to the specified file path.
-
-        This method configures `yt-dlp` with the correct format specification based on the provided stream metadata.  It handles edge cases such as missing format IDs or HLS (m3u8) streams by falling back to the best available format.  After a successful download, it records metadata into the `MediaFile` table of a relational database.
-
-        Args:
-            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Dictionary containing metadata of the audio stream, including format ID and protocol.
-            file_path (str): Path where the downloaded audio file should be saved.
-
-        Returns:
-            str: The absolute file path of the saved audio file.
-
-        Raises:
-            DownloadError: If the audio download fails.
-            Relational_Database_Error: If insertion into the database fails.
-        """
         try:
             self.getLogger().inform("Downloading the audio file. - File Path: {file_path}")
             format_identifier: str = stream.get("format_id") # type: ignore
@@ -921,13 +905,7 @@ class YouTube_Downloader:
             }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-            self.getDatabaseHandler().postData(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data # type: ignore
-            )
+            self.__postAudio(file_path)
             return file_path
         except DownloadError as error:
             self.getLogger().error(f"The downloading of the audio file has failed. - Error: {error}")
@@ -935,6 +913,33 @@ class YouTube_Downloader:
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an issue between the relational database server and the API. - Error: {error}")
             raise error
+
+    def __postAudio(self, file_path: str) -> None:
+        """
+        Saving the downloaded audio file to the relational database server.
+
+        This method takes a file path and uses it to create a `Media_File` instance.  It then logs an informative message if the file is successfully saved to the database or an error if it fails.
+
+        Args:
+            file_path (str): The path to the downloaded audio file.
+
+        Raises:
+            Relational_Database_Error: If there is an issue communicating with the database.
+        """
+        media_file: Media_File = Media_File(
+            database_handler=self.getDatabaseHandler(),
+            type=self.getMimeType(),
+            date_downloaded=self.getTimestamp(),
+            location=file_path,
+            YouTube=self.getIdentifier()
+        )
+        response: bool = media_file.save()
+        status: int = 201 if response else 503
+        message: str = "The files related have been stored in the relational database server." if response else "The files related have not been stored in the relational database server."
+        if not response:
+            self.getLogger().error(f"{message} - Status: {status}")
+            raise Relational_Database_Error(message)
+        self.getLogger().inform(f"{message} - Status: {status}")
 
     def getAudioFormatSpecification(self, format_identifier: Union[str, None], protocol: str) -> str:
         """

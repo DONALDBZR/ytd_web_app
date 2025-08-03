@@ -452,37 +452,27 @@ class YouTube_Downloader:
             "video_file": None
         }
 
-    def getYouTube(self) -> Dict[str, Union[int, List[RowType], str]]:
+    def getYouTube(self) -> Dict[str, Union[int, List[YouTube], str]]:
         """
-        Retrieving YouTube video metadata from the database.
+        Retrieving YouTube video metadata from the relational database.
 
-        This method queries the relational database to fetch metadata related to a YouTube video based on its identifier.  It performs a join operation with the `MediaFile` table to retrieve associated media files.  The results are sorted in ascending order by the `MediaFile.identifier` column and limited to 2 entries.
+        This method retrieves data from the "YouTube" table in the relational database using the identifier.  It returns a status code of 200 if data is found, 204 if no data is found but the query was successful, or 503 if there is an unexpected error.  The response includes the timestamp when the query was made.
 
         Returns:
-            Dict[str, Union[int, List[RowType], str]]: A dictionary containing:
-                - `"status"` (int): HTTP-like status code (200 if data exists, 204 if no data).
-                - `"data"` (List[RowType]): A list of database rows containing the video metadata.
-                - `"timestamp"` (str): The timestamp of when the data retrieval occurred.
+            Dict[str, Union[int, List[YouTube], str]]: A dictionary containing the status of the query, the metadata of the YouTube video, and the timestamp when the query was made.
 
         Raises:
-            Relational_Database_Error: If there is an issue communicating with the database.
+            Relational_Database_Error: If there is an unexpected error when communicating with the database.
         """
-        filter_parameters: Tuple[str] = (self.getIdentifier(),)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         try:
-            media: List[RowType] = self.getDatabaseHandler().getData(
-                parameters=filter_parameters, # type: ignore
-                table_name="YouTube",
-                join_condition="MediaFile ON MediaFile.YouTube = YouTube.identifier",
-                filter_condition="YouTube.identifier = %s",
-                column_names="author, title, YouTube.identifier, published_at, length, location",
-                sort_condition="MediaFile.identifier ASC",
-                limit_condition=2
-            )
-            status: int = 200 if len(media) != 0 else 204
+            media: Optional[List[YouTube]] = YouTube.getYouTubeDataByIdentifier(self.getDatabaseHandler(), "MediaFile", self.getIdentifier())
+            data_found: bool = (media and len(media) == 2) # type: ignore
+            status: int = 200 if data_found else 204
+            data: List[YouTube] = media if data_found else [] # type: ignore
             return {
                 "status": status,
-                "data": media,
+                "data": data,
                 "timestamp": self.getTimestamp()
             }
         except Relational_Database_Error as error:

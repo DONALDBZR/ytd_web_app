@@ -148,7 +148,7 @@ class Database_Handler:
             self.getLogger().inform("The application has successfully connected to the database.")
             return connection
         except Relational_Database_Error as error:
-            self.getLogger().error(f"The application has failed to connect to the database.\nError: {error}")
+            self.getLogger().error(f"The application has failed to connect to the database. - Error: {error}")
             raise error
 
     def _execute(

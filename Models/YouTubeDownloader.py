@@ -808,6 +808,7 @@ class YouTube_Downloader:
         Raises:
             DownloadError: If there is an error during the download process.
             Relational_Database_Error: If there is an error saving metadata to the database.
+            Relational_Database_Error: If the metadata could not be saved in the database.
         """
         try:
             self.getLogger().inform(f"Downloading the video file. - File Path: {file_path}")

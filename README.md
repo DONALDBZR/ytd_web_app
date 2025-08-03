@@ -39,11 +39,16 @@ Ensure you have the following installed on your system:
 2. Click the "Download" button to retrieve the media.
 
 ## Commit History (Latest Major Updates)
-- **[UPDATE 4.1.18]** Introduced a new class to manage a logger instance specifically for the Extractio application.  This marks a formalized separation of logging responsibilities within the system.
-- **[UPDATE 4.1.16]** Added initialization logic for the Logger_Configurator class.  Allows use of default or user-defined settings for flexible logging configuration.
-- **[UPDATE 4.1.12]** Defined a dedicated class to configure logging settings, promoting separation of concerns and configurability.
-- **[UPDATE 4.1.10]** Established a custom logger specific to Extractio.  Sets up a standardized logging format and possibly introduces future support for log routing.
-- **[UPDATE 4.0.4]** Major improvements in video retrieval and download logic.  Enhances selection of video streams based on resolution, file size, and codec compatibility.  Introduces constraints that ensure only high-quality videos are downloaded with matching audio.
+- **[UPDATE 4.2.145]** YouTube Download Operations: Full video/audio download pipeline, Combination of audio/video streams, Saving files and metadata to database.
+- **[UPDATE 4.2.134]** Database Structure Initialization: Conditional table creation for YouTube and MediaFile.
+- **[UPDATE 4.2.129]** Delete & Cleanup Operations: Deletion of media records by identifier.
+- **[UPDATE 4.2.126]** Session and Security System: Session table and management, Security layer initialization and session lifecycle management.
+- **[UPDATE 4.2.121]** YouTube Data Pipeline: End-to-end pipeline for storing, retrieving, and processing YouTube metadata, Support for related content search.
+- **[UPDATE 4.2.113]** Media Management System: Comprehensive media management layer, Retrieval and insertion of metadata and Query capabilities by author, channel, title.
+- **[UPDATE 4.2.97]** Event & Analytics Tracking: Event tracking: clicks, search submissions, color scheme changes, Device, event type, and network location models.
+- **[UPDATE 4.2.73]** Media System Integration: Download and store media files, metadata persistence and retrieval and YouTube downloader initialized.
+- **[UPDATE 4.2.54]** Implementation of a dynamic model system allowing CRUD operations on database tables, dynamic model class creation for any table and consistent base `Table_Model` for inheritance.
+- **[UPDATE 4.2.24]** Creation of a comprehensive database handler system, including query execution, transaction management, connection handling, sanitization layer to protect against SQL injection and foundation for a table model system (like an ORM).
 
 ## Contributing
 Contributions, feedback, and testing are welcome! Please open a pull request or issue for any modifications. The main branch is reserved for production; development should be done in separate branches.

@@ -41,7 +41,7 @@ class Media_File(Table_Model):
         return [cls(database_handler, **row) for row in database_response] # type: ignore
 
     @classmethod
-    def deleteByIdentifier(cls, database_handler: Database_Handler, identifier: str) -> bool:
+    def deleteByYouTube(cls, database_handler: Database_Handler, identifier: str) -> bool:
         """
         Deleting a media file record by its YouTube identifier.
 

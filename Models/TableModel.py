@@ -166,9 +166,16 @@ class Table_Model:
             setattr(self, field, kwargs.get(field))
 
     def mySqlTypeToPython(self, mysql_type: str) -> type:
-        print(f"{mysql_type=}")
+        """
+        Converting a MySQL type to a Python type.
+
+        Args:
+            mysql_type (str): The MySQL type to convert.
+
+        Returns:
+            type: The corresponding Python type.
+        """
         base: str = mysql_type.split("(")[0].lower()
-        print(f"{base=}")
         return self.getMySqlFieldTypes().get(base, type)
 
     @classmethod

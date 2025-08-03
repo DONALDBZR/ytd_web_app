@@ -1,5 +1,6 @@
 from flask import Blueprint, Response, request, Request
-from Models.Logger import Extractio_Logger, Environment
+from Models.Logger import Extractio_Logger
+from Environment import Environment
 from Errors.ExtractioErrors import ForgedRequestError, NotFoundError
 from typing import List
 from os import listdir

@@ -7,7 +7,7 @@ application.
 from flask.sessions import SessionMixin
 from Models.VisitorModel import Visitor
 from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Tuple
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 from json import JSONDecodeError, load, dumps
 from os import remove
 from time import time
@@ -196,28 +196,37 @@ class Session_Manager:
             age: int = int(time()) - int(data["Client"]["timestamp"]) if data != None else 0
             self.verifyInactiveSession(age, data, file_name)
 
-    def verifyInactiveSession(self, age: int, session: Union[Dict[str, Dict[str, Union[str, int]]], None], file_name: str) -> None:
+    def verifyInactiveSession(
+        self,
+        age: int,
+        session: Optional[Dict[str, Dict[str, Union[str, int]]]],
+        file_name: str
+    ) -> None:
         """
-        Retrieving the session data that will be used to verify
-        existing sessions.
+        Verifying if a session is inactive and processing it accordingly.
+
+        This method checks the age of the session and if it exceeds a certain threshold which is one hour, it considers the session inactive.  If inactive, it saves the visitor information to the database and deletes the session file.  If the session data is None, the method returns immediately.
 
         Parameters:
-            age: int: Age of the session.
-            session: {Client: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, timestamp: int, color_scheme: string}} | null: The data of the session.
-            file_name: string: The name of the file.
+            age (int): The age of the session in seconds.
+            session (Optional[Dict[str, Dict[str, Union[str, int]]]]): The session data containing client information.
+            file_name (str): The name of the file where the session data is stored.
 
         Returns:
-            void
+            None
         """
-        if age > 3600 and session != None:
-            expired_sessions: Tuple[int, str] = (int(session["Client"]["timestamp"]), str(session["Client"]["ip_address"]))
-            self.getDatabaseHandler().postData(
-                table="Visitors",
-                columns="timestamp, client",
-                values="%s, %s",
-                parameters=expired_sessions # type: ignore
-            )
-            remove(file_name)
+        if age <= 3600 or session == None:
+            return
+        visitor: Visitor = Visitor(
+            database_handler=self.getDatabaseHandler(),
+            timestamp=int(session["Client"]["timestamp"]),
+            client=str(session["Client"]["ip_address"])
+        )
+        response: bool = visitor.save()
+        if not response:
+            self.getLogger().error(f"The data about the visitor cannot be saved. - IP Address: {str(session['Client']['ip_address'])}")
+            return
+        remove(file_name)
 
     def createSession(self) -> SessionMixin:
         """

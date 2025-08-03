@@ -64,18 +64,15 @@ class Table_Model:
         **kwargs
     ):
         """
-        Initializing the TableModel with a database handler and optional table name and fields.
+        Initializing a `Table_Model` instance with the specified database handler and table name.
 
-        Args:
-            database_handler (Database_Handler): The database handler instance to interact with the database.
-            table_name (str, optional): The name of the table. If not provided, it will be set later.
-            **kwargs: Optional keyword arguments for table name and fields.
+        Parameters:
+            database_handler (Database_Handler): The handler for interacting with the database.
+            table_name (str): The name of the table, defaults to an empty string.
+            **kwargs: Additional keyword arguments to set the model's fields.
         """
         self.setDatabaseHandler(database_handler)
         self.setTableName(table_name)
-        if self.getTableName():
-            model_class: Type["Table_Model"] = self.createModelClass(self.getTableName(), self.getDatabaseHandler())
-            self.__class__ = model_class # type: ignore
         fields, field_types, primary_field = self._getFields()
         self.setFields(fields)
         self.setFieldTypes(field_types)
@@ -105,6 +102,9 @@ class Table_Model:
             "varbinary": bytes
         })
         self.setModelAttributes(kwargs)
+        if self.getTableName() and self.__class__.__name__ == "Table_Model":
+            model_class: Type["Table_Model"] = self.createModelClass(self.getTableName(), self.getDatabaseHandler())
+            self.__class__ = model_class # type: ignore
 
     def getTableName(self) -> str:
         return self.__table_name

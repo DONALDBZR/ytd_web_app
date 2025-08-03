@@ -245,11 +245,11 @@ class Database_Handler:
         Raises:
             Relational_Database_Error: If the connection closing operation fails.
         """
-        if not self.getConnection().is_connected(): # type: ignore
+        if not self.getConnection().is_connected():
             self.getLogger().warn("The database connection is already closed.")
             return
         try:
-            self.getConnection().close() # type: ignore
+            self.getConnection().close()
             self.getLogger().inform("The database handler has successfully closed the connection.")
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to close the connection. - Error: {error}")

@@ -242,14 +242,16 @@ class Database_Handler:
         """
         Closing the database connection.
 
+        This method closes the established database connection.  If the connection is already closed, it logs a warning message.
+
         Raises:
             Relational_Database_Error: If the connection closing operation fails.
         """
-        if not self.getConnection().is_connected():
+        if not self.getConnection().is_connected(): # type: ignore
             self.getLogger().warn("The database connection is already closed.")
             return
         try:
-            self.getConnection().close()
+            self.getConnection().close() # type: ignore
             self.getLogger().inform("The database handler has successfully closed the connection.")
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to close the connection. - Error: {error}")

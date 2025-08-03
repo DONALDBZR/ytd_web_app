@@ -48,7 +48,7 @@ class Database_Handler:
     """
     An instance of the Environment class to retrieve database connection parameters.
     """
-    __connection: MySQLConnection
+    __connection: Optional[MySQLConnection]
     """
     The MySQL connection object used to interact with the database.
     """
@@ -96,10 +96,10 @@ class Database_Handler:
     def setEnv(self, env: Environment) -> None:
         self.__env = env
 
-    def getConnection(self) -> MySQLConnection:
+    def getConnection(self) -> Optional[MySQLConnection]:
         return self.__connection
 
-    def setConnection(self, connection: MySQLConnection) -> None:
+    def setConnection(self, connection: Optional[MySQLConnection]) -> None:
         self.__connection = connection
 
     def getCursor(self) -> Optional[MySQLCursor]:
@@ -157,18 +157,22 @@ class Database_Handler:
         parameters: Optional[Tuple[Any, ...]] = None
     ) -> None:
         """
-        Executing a SQL query with optional parameters.
+        Executing a query on the database using the provided query and optional parameters.
+
+        The method first checks if a connection and cursor are established.  If not, it establishes a connection and creates a cursor.  The query is then executed with the sanitized parameters.
 
         Args:
-            query (str): The SQL query to execute.
-            parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
+            query (str): The query to execute.
+            parameters (Optional[Tuple[Any, ...]]): Optional parameters to pass to the query.
 
         Raises:
-            Relational_Database_Error: If the execution of the query fails.
+            Relational_Database_Error: If the query execution fails.
         """
+        if self.getConnection() is None:
+            self.setConnection(self.__connect())
         if self.getCursor() is None:
             self.setCursor(
-                self.getConnection().cursor(
+                self.getConnection().cursor( # type: ignore
                     prepared=True,
                     dictionary=True
                 )

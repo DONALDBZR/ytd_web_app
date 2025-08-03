@@ -1,7 +1,7 @@
 from time import time
 from typing import Optional
 from Models.DatabaseHandler import Database_Handler, Extractio_Logger
-from Models.EventsModel import Event, List
+from Models.EventsModel import Event
 
 
 class Rate_Limiter:
@@ -67,7 +67,6 @@ class Rate_Limiter:
             database_handler=self.getDatabaseHandler(),
             ip_address=ip_address,
             endpoint=endpoint,
-            limit=limit,
             start_window=start_window
         )
         return connections >= limit

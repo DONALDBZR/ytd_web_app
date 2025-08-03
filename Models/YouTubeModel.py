@@ -69,3 +69,25 @@ class YouTube(Table_Model):
         if not response:
             return []
         return [cls(database_handler, **row) for row in response] # type: ignore
+
+    @classmethod
+    def getByChannel(cls, database_handler: Database_Handler, channel: str) -> List["YouTube"]:
+        """
+        Retrieving YouTube video records from the database based on a channel name.
+
+        This method queries the YouTube table to find videos whose authors match the given channel name.  It returns a list of YouTube instances, each containing metadata such as identifier, duration, author, title, and a URL to the video.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance for executing the query.
+            channel (str): The channel name to search for in the database.
+
+        Returns:
+            List[YouTube]: A list of YouTube instances with metadata matching the given channel name.
+        """
+        temporary_instance: "YouTube" = cls(database_handler)
+        query: str = f"SELECT identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CASE WHEN identifier LIKE 'shorts/%' THEN CONCAT('https://www.youtube.com/', identifier) ELSE CONCAT('https://www.youtube.com/watch?v=', identifier) END AS uniform_resource_locator, Media AS media_identifier FROM {temporary_instance.getTableName()} WHERE author = %s"
+        parameters: Tuple[str] = (channel,)
+        response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
+        if not response:
+            return []
+        return [cls(database_handler, **row) for row in response] # type: ignore

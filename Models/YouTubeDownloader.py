@@ -1,16 +1,16 @@
-from email.mime import audio
-from requests import get
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, Union, List, Tuple, Any, Relational_Database_Error
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, List, Tuple, Any, Relational_Database_Error
 from datetime import datetime
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict
+from typing import Dict, Union, Optional
 from time import strftime, gmtime
 from os.path import isfile, exists
 from os import makedirs
 from html import escape
 from Errors.ExtractioErrors import NotFoundError
 from yt_dlp.utils import DownloadError, ExtractorError
+from Models.YouTubeModel import YouTube
+from Models.MediaFileModel import Media_File
 
 
 class YouTube_Downloader:
@@ -102,14 +102,21 @@ class YouTube_Downloader:
 
     def __init__(self, uniform_resource_locator: str, media_identifier: int):
         """
-        Initializing the YouTube Downloader class, setting up directories, logging, database tables, and default configurations.
-
-        Parameters:
-            uniform_resource_locator (string): The URL of the YouTube video to be processed.
-            media_identifier (int): The identifier for the media type.
-
+        Initializing the YouTube Downloader.
+        
+        It sets up the core components of the system.  It performs the following actions:
+            1.  Loading environment variables.
+            2.  Initializing the application logger.
+            3.  Establishing a database connection handler.
+            4.  Setting the application name and the current timestamp.
+            5.  Extracting the referer, search, platform, and IP address from the request.
+        
+        Args:
+            uniform_resource_locator (str): The uniform resource locator of the video.
+            media_identifier (int): The type of the media.
+        
         Raises:
-            Relational_Database_Error: If an error occurs while setting up the database.
+            Relational_Database_Error: If the YouTube table could not be created.
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Public")
@@ -117,16 +124,14 @@ class YouTube_Downloader:
         self.mediaDirectory()
         try:
             self.setDatabaseHandler(Database_Handler())
-            self.getDatabaseHandler()._query(
-                query="CREATE TABLE IF NOT EXISTS `YouTube` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))",
-                parameters=None
-            )
-            self.getDatabaseHandler()._execute()
-            self.getDatabaseHandler()._query(
-                query="CREATE TABLE IF NOT EXISTS `MediaFile` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))",
-                parameters=None
-            )
-            self.getDatabaseHandler()._execute()
+            youtube: YouTube = YouTube(self.getDatabaseHandler())
+            response: bool = youtube.create()
+            if not response:
+                raise Relational_Database_Error("The YouTube table could not be created.")
+            media_file: Media_File = Media_File(self.getDatabaseHandler())
+            response = media_file.create()
+            if not response:
+                raise Relational_Database_Error("The MediaFile table could not be created.")
             self.setBaseUniformResourceLocator("https://www.youtube.com")
             self.setAudioCodec("mp4a")
             self.setVideoCodec("avc")
@@ -134,7 +139,7 @@ class YouTube_Downloader:
             self.setMediaIdentifier(media_identifier)
             self.getLogger().inform("The YouTube Downloader has been successfully been initialized!")
         except Relational_Database_Error as error:
-            self.getLogger().error(f"The iniatialization of the model has failed.\nError: {error}")
+            self.getLogger().error(f"The iniatialization of the model has failed. - Error: {error}")
             raise error
 
     def getVideoCodec(self) -> str:
@@ -401,7 +406,7 @@ class YouTube_Downloader:
                 "video_file": video_file
             }
         except Exception as error:
-            self.getLogger().error(f"There is an error in the search function.\nError: {error}")
+            self.getLogger().error(f"There is an error in the search function. - Error: {error}")
             return {}
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
@@ -459,7 +464,7 @@ class YouTube_Downloader:
                 "timestamp": self.getTimestamp()
             }
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
             return {
                 "status": 503,
                 "data": [],
@@ -487,7 +492,7 @@ class YouTube_Downloader:
                 parameters=data # type: ignore
             )
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
 
     def mediaDirectory(self) -> None:
         """
@@ -540,7 +545,7 @@ class YouTube_Downloader:
                 "listformats": True
             }
             files: Dict[str, str] = self.__getFiles(audio_file_location, video_file_location, options)
-            self.getLogger().inform(f"The media content has been downloaded!\nAudio: {audio_file_location}\nVideo: {video_file_location}")
+            self.getLogger().inform(f"The media content has been downloaded! - Audio: {audio_file_location} - Video: {video_file_location}")
             audio_file_location = files["audio"]
             video_file_location = files["video"]
             return {
@@ -557,7 +562,7 @@ class YouTube_Downloader:
                 "video": video_file_location
             }
         except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:
-            self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
+            self.getLogger().error(f"There is an error while retrieving the streams. - Error: {error}")
             return {}
 
     def __getFiles(self, audio: str, video: str, options: Dict[str, bool]) -> Dict[str, str]:
@@ -600,7 +605,7 @@ class YouTube_Downloader:
                 "video": self.getVideoFile(video)
             }
         except (NotFoundError, DownloadError, Relational_Database_Error, ExtractorError) as error:
-            self.getLogger().error(f"There is an error while retrieving the streams.\nError: {error}")
+            self.getLogger().error(f"There is an error while retrieving the streams. - Error: {error}")
             raise error
 
     def getAudioFile(self, file_path: str) -> str:
@@ -674,7 +679,7 @@ class YouTube_Downloader:
             An updated list of audio streams including the candidate stream if it passed validation.
         """
         if is_audio_only:
-            self.getLogger().warn(f"Audio stream missing metadata\nStream: {stream}") if adaptive_bitrate == 0 or audio_codec in ("unknown", "") else None
+            self.getLogger().warn(f"Audio stream missing metadata - Stream: {stream}") if adaptive_bitrate == 0 or audio_codec in ("unknown", "") else None
             streams.append(stream)
         return streams
 
@@ -795,7 +800,7 @@ class YouTube_Downloader:
             Relational_Database_Error: If storing metadata in the relational database fails.
         """
         try:
-            self.getLogger().inform(f"Downloading the video file.\nFile Path: {file_path}")
+            self.getLogger().inform(f"Downloading the video file. - File Path: {file_path}")
             format_identifier: str = f"{video['format_id']}+{audio['format_id']}" # type: ignore
             options: Dict[str, str] = {
                 "format": format_identifier,
@@ -813,10 +818,10 @@ class YouTube_Downloader:
             )
             return file_path
         except DownloadError as error:
-            self.getLogger().error(f"The downloading of the video file has failed.\nError: {error}")
+            self.getLogger().error(f"The downloading of the video file has failed. - Error: {error}")
             raise error
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
+            self.getLogger().error(f"There is an issue between the relational database server and the API. - Error: {error}")
             raise error
 
     def __getVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_in_resolution: bool, is_in_size: bool, video_codec: str) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
@@ -852,7 +857,7 @@ class YouTube_Downloader:
         Raises:
             HTTPError: If the error is not a 403 Forbidden error.
         """
-        self.getLogger().error(f"An HTTP error occurred.\nError: {error}")
+        self.getLogger().error(f"An HTTP error occurred. - Error: {error}")
         if "403" not in str(error):
             raise error
 
@@ -874,7 +879,7 @@ class YouTube_Downloader:
             Relational_Database_Error: If insertion into the database fails.
         """
         try:
-            self.getLogger().inform("Downloading the audio file.\nFile Path: {file_path}")
+            self.getLogger().inform("Downloading the audio file. - File Path: {file_path}")
             format_identifier: str = stream.get("format_id") # type: ignore
             protocol: str = stream.get("protocol", "") # type: ignore
             format_specification: str = self.getAudioFormatSpecification(format_identifier, protocol)
@@ -893,10 +898,10 @@ class YouTube_Downloader:
             )
             return file_path
         except DownloadError as error:
-            self.getLogger().error(f"The downloading of the audio file has failed.\nError: {error}")
+            self.getLogger().error(f"The downloading of the audio file has failed. - Error: {error}")
             raise error
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an issue between the relational database server and the API.\nError: {error}")
+            self.getLogger().error(f"There is an issue between the relational database server and the API. - Error: {error}")
             raise error
 
     def getAudioFormatSpecification(self, format_identifier: Union[str, None], protocol: str) -> str:

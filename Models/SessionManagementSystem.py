@@ -5,8 +5,9 @@ application.
 
 
 from flask.sessions import SessionMixin
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Union, Tuple
-from typing import Dict
+from Models.VisitorModel import Visitor
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Tuple
+from typing import Dict, Union
 from json import JSONDecodeError, load, dumps
 from os import remove
 from time import time
@@ -163,17 +164,20 @@ class Session_Manager:
 
     def __maintain(self) -> None:
         """
-        Maintaining the database of the Session Management System by
-        doing regular checks to keep only the active sessions and
-        store inactive sessions in the database.
+        Maintaining the session files and verifying existing ones.
+
+        It creates the Visitor table if it does not exist and then retrieves the list of session files.  It counts the length
+        of the session files and if it has sessions, it verifies existing ones.
 
         Returns:
             void
         """
-        self.getDatabaseHandler()._query(
-            query="CREATE TABLE IF NOT EXISTS `Visitors` (identifier INT PRIMARY KEY AUTO_INCREMENT, `timestamp` INT, client VARCHAR(16))",
-            parameters=None
-        )
+        visitor: Visitor = Visitor(self.getDatabaseHandler())
+        response: bool = visitor.create()
+        if not response:
+            self.getLogger().error("The required table cannot be created.")
+            return
+        self.getLogger().inform("The required table has been created.")
         self.setSessionFiles(os.listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
         if self.getLength() > 0:
@@ -422,13 +426,13 @@ class Session_Manager:
             file = open(file_path, "r")
             data: Dict[str, Dict[str, Union[str, int]]] = load(file)
             file.close()
-            self.getLogger().inform(f"The file has been successfully read.\nFile Path: {file_path}")
+            self.getLogger().inform(f"The file has been successfully read. - File Path: {file_path}")
             return data
         except JSONDecodeError as error:
-            self.getLogger().error(f"Failed to decode the JSON file.\nFile Path: {file_path}\nError: {error}")
+            self.getLogger().error(f"Failed to decode the JSON file. - File Path: {file_path} - Error: {error}")
             return None
         except Exception as error:
-            self.getLogger().error(f"An unexpected error has occurred.\nFile Path: {file_path}\nError: {error}")
+            self.getLogger().error(f"An unexpected error has occurred. - File Path: {file_path} - Error: {error}")
             return None
 
     def handleSession(self, status: int, name: str) -> Dict[str, int]:

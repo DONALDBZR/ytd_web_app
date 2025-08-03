@@ -50,16 +50,18 @@ class Rate_Limiter:
         time_window: int
     ) -> bool:
         """
-        Checking if the rate limit has been exceeded for the given IP address and endpoint.
+        Checking if a request should be rate limited.
+
+        This method checks if the number of requests within a given time window exceeds a specified limit.
 
         Args:
-            ip_address (str): The IP address to check.
-            endpoint (str): The endpoint to check.
-            limit (int): The rate limit.
+            ip_address (str): The IP address to check the rate limit for.
+            endpoint (str): The endpoint to check the rate limit for.
+            limit (int): The number of requests allowed within the given time window.
             time_window (int): The time window in seconds.
 
         Returns:
-            bool: True if the rate limit has been exceeded, False otherwise.
+            bool: True if the request should be rate limited, False otherwise.
         """
         current_time: int = int(time())
         start_window: int = current_time - time_window
@@ -69,4 +71,7 @@ class Rate_Limiter:
             endpoint=endpoint,
             start_window=start_window
         )
+        is_limited: bool = connections >= limit
+        if is_limited:
+            self.getLogger().warn(f"The request is being rate limited. - IP address {ip_address} - Endpoint {endpoint}")
         return connections >= limit

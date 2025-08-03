@@ -63,15 +63,28 @@ class Media:
     """
 
     def __init__(self, request: Dict[str, Union[str, None]]):
+        """
+        Initializing the Media Management System.
+
+        It sets up the core components of the system.  It performs the following actions:
+            1.  Loading environment variables.
+            2.  Initializing the application logger.
+            3.  Establishing a database connection handler.
+            4.  Setting the application name and the current timestamp.
+            5.  Extracting the referer, search, platform, and IP address from the request.
+
+        Args:
+            request (Dict[str, Union[str, None]]): The request from the application.
+
+        Raises:
+            ValueError: If the request does not contain the correct keys.
+            Relational_Database_Error: If the Media table could not be created.
+        """
         self.__setEnvironment(Environment())
         self.setDirectory(f"{self.__getEnvironment().getDirectory()}/Cache/Media")
         self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
-        self.getDatabaseHandler()._query(
-            query="CREATE TABLE IF NOT EXISTS `Media` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))",
-            parameters=None
-        )
-        self.getDatabaseHandler()._execute()
+        self.__setTable()
         if not all(key in request for key in ("referer", "search", "platform", "ip_address")):
             self.getLogger().error(f"The request does not contain the correct keys.\nRequest: {request}")
             raise ValueError("The request does not contain the correct keys.")

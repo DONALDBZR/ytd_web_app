@@ -56,3 +56,15 @@ class Media_File(Table_Model):
         query: str = f"DELETE FROM {temporary_instance.getTableName()} WHERE YouTube = %s"
         parameters: Tuple[str] = (identifier,)
         return temporary_instance.getDatabaseHandler().deleteData(query, parameters)
+
+    def create(self) -> bool:
+        """
+        Creating the MediaFile table in the database if it does not already exist.
+
+        This method constructs and executes a SQL query to create the `MediaFile` table with columns for identifier, type, downloaded date, deleted date, location, and a foreign key reference to the `YouTube` table.
+
+        Returns:
+            bool: True if the table was created or already exists, False otherwise.
+        """
+        query: str = f"CREATE TABLE IF NOT EXISTS `{self.getTableName()}` (identifier INT PRIMARY KEY AUTO_INCREMENT, `type` VARCHAR(64), date_downloaded VARCHAR(32), date_deleted VARCHAR(32) NULL, location VARCHAR(128), `YouTube` VARCHAR(16), CONSTRAINT fk_source FOREIGN KEY (`YouTube`) REFERENCES `YouTube` (identifier))"
+        return self.getDatabaseHandler().createTable(query)

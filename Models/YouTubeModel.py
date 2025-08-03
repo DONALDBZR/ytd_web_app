@@ -113,3 +113,15 @@ class YouTube(Table_Model):
         if not response:
             return None
         return [cls(database_handler, **row) for row in response][0] # type: ignore
+
+    def create(self) -> bool:
+        """
+        Creating the YouTube table in the database if it does not already exist.
+
+        This method constructs and executes a SQL query to create the `YouTube` table with columns for identifier, length, publication date, author, title, and a foreign key reference to the `Media` table.
+
+        Returns:
+            bool: True if the table was created or already exists, False otherwise.
+        """
+        query: str = f"CREATE TABLE IF NOT EXISTS `{self.getTableName()}` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))"
+        return self.getDatabaseHandler().createTable(query)

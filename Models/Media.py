@@ -5,6 +5,7 @@ Authors:
     Darkness4869
 """
 from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, Union, List, Tuple, Relational_Database_Error
+from Models.MediaModel import Media as Media_Model
 from datetime import datetime
 from json import dumps
 from re import match, Match
@@ -61,22 +62,7 @@ class Media:
     ENV File of the application
     """
 
-    def __init__(self, request: Dict[str, Union[str, None]]) -> None:
-        """
-        Initializing the Media Management System.
-
-        This constructor sets up the necessary environment, logging, database handler, and validates the incoming request data.  It also ensures that the required database table (`Media`) exists before proceeding.
-
-        Parameters:
-            request (Dict[str, Union[str, None]]): A dictionary containing the request details with the following keys:
-                - "referer" (Optional[str]): The referring uniform resource locator.
-                - "search" (str): The search query or target uniform resource locator.
-                - "platform" (str): The media platform.
-                - "ip_address" (str): The client's IP address.
-
-        Raises:
-            ValueError: If the request dictionary does not contain all required keys.
-        """
+    def __init__(self, request: Dict[str, Union[str, None]]):
         self.__setEnvironment(Environment())
         self.setDirectory(f"{self.__getEnvironment().getDirectory()}/Cache/Media")
         self.setLogger(Extractio_Logger(__name__))
@@ -154,6 +140,22 @@ class Media:
 
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
+
+    def __setTable(self) -> None:
+        """
+        Setting up the Media table in the database.
+
+        This function creates a `Media_Model` instance and calls its `create` method to create the Media table in the database.  If the creation fails, it raises a `Relational_Database_Error`.
+
+        Raises:
+            Relational_Database_Error: If the Media table could not be created.
+        """
+        media: Media_Model = Media_Model(self.getDatabaseHandler())
+        response: bool = media.create()
+        if not response:
+            self.getLogger().error("The Media table could not be created.")
+            raise Relational_Database_Error("The Media table could not be created.")
+        self.getLogger().inform("The Media table has been successfully been created!")
 
     def __verifyPlatform(self, status: int) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """

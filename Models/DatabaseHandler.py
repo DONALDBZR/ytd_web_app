@@ -208,10 +208,10 @@ class Database_Handler:
             Relational_Database_Error: If the commit operation fails.
         """
         try:
-            self.getConnection().commit() # type: ignore
+            self.getConnection().commit()
             self.getLogger().inform("The transaction has been successfully committed.")
         except Relational_Database_Error as error:
-            self.getConnection().rollback() # type: ignore
+            self.getConnection().rollback()
             self.getLogger().error(f"The database handler has failed to commit the transaction, hence, the trasaction will roolback. - Error: {error}")
             raise error
 

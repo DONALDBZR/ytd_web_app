@@ -4,13 +4,13 @@ The module which has the model of the Media Management System.
 Authors:
     Darkness4869
 """
-from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, Union, List, Tuple, Relational_Database_Error
+from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extractio_Logger, Environment, RowType, Dict, List, Tuple, Relational_Database_Error
 from Models.MediaModel import Media as Media_Model
 from datetime import datetime
 from json import dumps
 from re import match, Match
 from html import escape
-from typing import Optional
+from typing import Optional, Union
 
 
 class Media:
@@ -250,26 +250,21 @@ class Media:
         status = self.postMedia()
         return self.__verifyPlatform(status)
 
-    def getMedia(self) -> Dict[str, Union[int, List[RowType], str]]:
+    def getMedia(self) -> Dict[str, Union[int, List[Media_Model], str]]:
         """
-        Retrieving media data from the Media table in the database based on a specified value.
+        Retrieving media records from the database based on the current platform value.
 
-        The function filters the data by a given value and returns the status of the query along with the retrieved data.  The function also captures the current timestamp when the data is retrieved and returns it along with the result.
+        This function fetches media records associated with the platform value stored in the instance.  It logs the current timestamp and attempts to retrieve media records from the database.  If no records are found, it returns a status of 404.  If records are found, it returns a status of 200 along with the media data.  In case of a database error, it logs the error and returns a status of 503.
 
         Returns:
-            Dict[str, Union[int, List[RowType], str]]
-
-        Raises:
-            Relational_Database_Error: If there is an issue with the database query, an error will be logged, and the function will return a 503 status with an empty data list.
+            Dict[str, Union[int, List[Media_Model], str]]: A dictionary containing:
+                - "status" (int): HTTP-like status code (200 if data exists, 404 if not found, 503 if a database error occurs).
+                - "data" (List[Media_Model]): A list of media model instances or an empty list.
+                - "timestamp" (str): The timestamp of when the data retrieval attempt occurred.
         """
-        filter_data: Tuple[str] = (self.getValue(),)
         self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
         try:
-            media: List[RowType] = self.getDatabaseHandler().getData(
-                parameters=filter_data,
-                table_name="Media",
-                filter_condition="value = %s"
-            )
+            media: List[Media_Model] = Media_Model.getByValue(self.getDatabaseHandler(), self.getValue())
             status: int = 404 if len(media) == 0 else 200
             return {
                 "status": status,

@@ -249,20 +249,24 @@ class Table_Model:
         return self.getDatabaseHandler().deleteData(query, (getattr(self, self.getPrimaryField()),))
 
     @classmethod
-    def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type["Table_Model"]:
+    def createModelClass(
+        cls,
+        table_name: str,
+        database_handler: Database_Handler
+    ) -> Type["Table_Model"]:
         """
-        Dynamically creating a model class for interacting with a database table.
+        Dynamically creating a model class based on the table schema.
 
-        This method constructs a new class with attributes and methods specific to the given table name.  It retrieves the columns from the specified table and maps their types to Python types.  The resulting class can be used to instantiate objects that represent rows in the table.
+        This method is used to create a model class for each table in the database.  The model class is a subclass of `Table_Model` and has the same name as the table name.  The model class has the same attributes as `Table_Model`, but with the table name and fields set automatically based on the table schema.
 
-        Args:
-            table_name (str): The name of the table for which to create the model class.
+        Parameters:
+            table_name (str): The name of the table to create the model class for.
             database_handler (Database_Handler): The database handler instance to interact with the database.
 
         Returns:
-            Type[Table_Model]: A dynamically created subclass of `Table_Model` representing the specified table.
+            Type[Table_Model]: A model class that is a subclass of `Table_Model` with the same name as the table name.
         """
-        temporary_instance: "Table_Model" = cls(database_handler, table_name)
+        temporary_instance: "Table_Model" = cls(database_handler)
         columns: List[RowType] = temporary_instance.getDatabaseHandler().getData(f"SHOW COLUMNS FROM {temporary_instance.getTableName()}")
         annotations: Dict[str, type] = {}
         primary_field: str = next((str(column["Field"]) for column in columns if str(column["Key"]) == "PRI"), "identifier") # type: ignore

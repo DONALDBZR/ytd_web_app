@@ -175,7 +175,9 @@ class Table_Model:
         Returns:
             type: The corresponding Python type.
         """
+        print(f"{mysql_type=}")
         base: str = mysql_type.split("(")[0].lower()
+        print(f"{base=}")
         return self.getMySqlFieldTypes().get(base, type)
 
     @classmethod
@@ -251,14 +253,16 @@ class Table_Model:
     @classmethod
     def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type["Table_Model"]:
         """
-        Dynamically creating a model class for a given table name.
+        Dynamically creating a Table_Model subclass for a specified table name.
+
+        This method constructs a new class type that represents a database table model with fields and types inferred from the database schema.  It utilizes the provided table name to fetch column information and establish the class's attributes and primary key.
 
         Args:
-            table_name (str): The name of the table.
-            database_handler (Database_Handler): The database handler instance to interact with the database.
+            table_name (str): The name of the database table to model.
+            database_handler (Database_Handler): The handler for database interactions.
 
         Returns:
-            Type: A new model class for the specified table.
+            Type[Table_Model]: A newly created subclass of Table_Model with tailored attributes and an initializer for the specified table.
         """
         columns: List[RowType] = database_handler.getData(f"SHOW COLUMNS FROM {table_name}")
         annotations: Dict[str, type] = {}
@@ -269,7 +273,17 @@ class Table_Model:
 
         def __init__(self, **kwargs):
             """
-            Initializing the dynamically created model class with attributes from kwargs.
+            Initializing a `TableModel` instance with a database handler, table name, fields, field types, primary key, and keyword arguments.
+
+            Parameters:
+                **kwargs: Additional keyword arguments to set the model's fields.
+
+            Attributes:
+                __database_handler (Database_Handler): The database handler instance to interact with the database.
+                __table_name (str): The name of the table.
+                __fields (List[str]): The names of the fields in the table.
+                __field_types (Dict[str, type]): A mapping of field names to their corresponding types.
+                __primary_key (str): The name of the primary key field.
             """
             self.__database_handler = database_handler
             self.__table_name = table_name

@@ -1,4 +1,4 @@
-from Models.TableModel import Table_Model, Database_Handler, RowType, List
+from Models.TableModel import Table_Model, Database_Handler, RowType, List, Tuple
 
 
 class Media_File(Table_Model):
@@ -40,3 +40,19 @@ class Media_File(Table_Model):
             return []
         return [cls(database_handler, **row) for row in database_response] # type: ignore
 
+    @classmethod
+    def deleteByIdentifier(cls, database_handler: Database_Handler, identifier: str) -> bool:
+        """
+        Deleting a media file record by its YouTube identifier.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance used to delete the record.
+            identifier (str): The YouTube identifier to search for in the database.
+
+        Returns:
+            bool: True if the deletion was successful, False otherwise.
+        """
+        temporary_instance: "Media_File" = cls(database_handler)
+        query: str = f"DELETE FROM {temporary_instance.getTableName()} WHERE YouTube = %s"
+        parameters: Tuple[str] = (identifier,)
+        return temporary_instance.getDatabaseHandler().deleteData(query, parameters)

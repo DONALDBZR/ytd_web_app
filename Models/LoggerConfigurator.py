@@ -83,7 +83,6 @@ class Logger_Configurator:
         self.setEncoding(encoding)
         self.setFileMode(file_mode)
         self.setHandlers(handlers or [])
-        print(f"{self.getDirectory()=}")
         makedirs(self.getDirectory(), exist_ok=True)
 
     def getDirectory(self) -> str:

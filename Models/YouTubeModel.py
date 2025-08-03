@@ -48,3 +48,24 @@ class YouTube(Table_Model):
             return []
         return [cls(database_handler, **row) for row in database_response] # type: ignore
 
+    @classmethod
+    def getByTitle(cls, database_handler: Database_Handler, title: str) -> List["YouTube"]:
+        """
+        Retrieving YouTube video records from the database based on a title.
+
+        This method queries the YouTube table to find videos whose titles match the given pattern.  It returns a list of YouTube instances, each containing metadata such as identifier, duration, author, title, and a URL to the video.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance for executing the query.
+            title (str): The title pattern to search for in the database.
+
+        Returns:
+            List[YouTube]: A list of YouTube instances with metadata matching the given title pattern.
+        """
+        temporary_instance: "YouTube" = cls(database_handler)
+        query: str = f"SELECT identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier FROM {temporary_instance.getTableName()} WHERE title LIKE %s"
+        parameters: Tuple[str] = (title,)
+        response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
+        if not response:
+            return []
+        return [cls(database_handler, **row) for row in response] # type: ignore

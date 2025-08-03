@@ -112,11 +112,11 @@ class YouTube_Downloader:
             5.  Extracting the referer, search, platform, and IP address from the request.
         
         Args:
-            uniform_resource_locator (str): The uniform resource locator of the video.
-            media_identifier (int): The type of the media.
+            uniform_resource_locator (str): The uniform resource locator of the media.
+            media_identifier (int): The identifier of the media type.
         
         Raises:
-            Relational_Database_Error: If the YouTube table could not be created.
+            Relational_Database_Error: If the Media table could not be created.
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Public")

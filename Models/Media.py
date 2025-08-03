@@ -191,22 +191,29 @@ class Media:
 
     def verifyPlatform(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         """
-        Verifying the media platform and process the request accordingly.
+        Verifying the platform based on the provided search query.
 
-        This method sanitizes input values, retrieves media information, and determines whether the requested platform is supported.  If the media is not found, it attempts to post the media and verify its platform again. Currently, only YouTube links are processed.
+        This method performs the following actions:
+            1.  Sanitizes the search query and value.
+            2.  Retrieves the media records from the database.
+            3.  Handles verification of the platform.
+            4.  Sets the identifier of the media record.
 
         Returns:
-            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]: 
+                A dictionary containing:
+                - 'status': Integer status code indicating the outcome of the verification (200 if successful, otherwise 400).
+                - 'data': A dictionary containing the retrieved media record if the verification was successful, otherwise an empty dictionary.
 
         Raises:
-            ValueError: The platform cannot be verified.
+            ValueError: If an error occurs while verifying the platform.
         """
         try:
             self.sanitizeValue()
             self.sanitizeSearch()
-            media: Dict[str, Union[int, List[RowType], str]] = self.getMedia()
+            media: Dict[str, Union[int, List[Media_Model], str]] = self.getMedia()
             self.handleVerifyPlatform(int(str(media["status"])))
-            self.setIdentifier(int(media["data"][0]["identifier"])) # type: ignore
+            self.setIdentifier(int(media["data"][0].identifier)) # type: ignore
             return self.__handleVerifyPlatform()
         except ValueError as error:
             self.getLogger().error(f"An error occurred while verifying the platform.\nError: {error}")

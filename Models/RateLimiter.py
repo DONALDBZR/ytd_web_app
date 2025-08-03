@@ -1,6 +1,7 @@
 from time import time
 from typing import Optional
 from Models.DatabaseHandler import Database_Handler, Extractio_Logger
+from Models.EventsModel import Event, List
 
 
 class Rate_Limiter:
@@ -40,3 +41,33 @@ class Rate_Limiter:
 
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
+
+    def isLimited(
+        self,
+        ip_address: str,
+        endpoint: str,
+        limit: int,
+        time_window: int
+    ) -> bool:
+        """
+        Checking if the rate limit has been exceeded for the given IP address and endpoint.
+
+        Args:
+            ip_address (str): The IP address to check.
+            endpoint (str): The endpoint to check.
+            limit (int): The rate limit.
+            time_window (int): The time window in seconds.
+
+        Returns:
+            bool: True if the rate limit has been exceeded, False otherwise.
+        """
+        current_time: int = int(time())
+        start_window: int = current_time - time_window
+        connections: int = Event.countConnections(
+            database_handler=self.getDatabaseHandler(),
+            ip_address=ip_address,
+            endpoint=endpoint,
+            limit=limit,
+            start_window=start_window
+        )
+        return connections >= limit

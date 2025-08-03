@@ -4,6 +4,9 @@ from Models.TableModel import Table_Model, Database_Handler
 class Media(Table_Model):
     """
     It inherits from `Table_Model` and is used to interact with a `Media` table in a database.
+
+    Methods:
+        `create()`: Creating the Media table in the database if it does not already exist.
     """
     def __init__(
         self,

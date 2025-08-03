@@ -76,23 +76,23 @@ class Security_Management_System:
         """
         Initializing the Security Management System.
 
-        This constructor sets up the core components of the security system.  It performs the following actions:
-        1.  Loading environment variables.
-        2.  Initializing the application logger.
-        3.  Establishing a database connection handler.
-        4.  Setting the application name and the current timestamp.
-        5.  Ensuring that the `Session` table exists in the database, creating it if necessary.  If the table cannot be created, the application will exit with a 503 status code.
-        6.  Calling the `hash()` method to generate and store an initial security key.
+        It sets up the core components of the system.  It performs the following actions:
+            1.  Loading environment variables.
+            2.  Initializing the application logger.
+            3.  Establishing a database connection handler.
+            4.  Setting the application name and the current timestamp.
+            5.  Creating the Session table if it does not exist.
+
+        Raises:
+            SystemExit: If the Session table could not be created.
         """
         ENV: Environment = Environment()
         self.setLogger(Extractio_Logger(__name__))
         self.setDatabaseHandler(Database_Handler())
         self.setApplicationName(ENV.getApplicationName())
         self.setDatestamp(int(time()))
-        response: bool = self.getDatabaseHandler().createTable(
-            query="CREATE TABLE IF NOT EXISTS `Session` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))",
-            parameters=None
-        )
+        session: Session = Session(self.getDatabaseHandler())
+        response: bool = session.create()
         if not response:
             self.getLogger().error("The table cannot be created.")
             exit(503)

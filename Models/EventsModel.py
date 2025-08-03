@@ -2,6 +2,12 @@ from Models.TableModel import Table_Model, Database_Handler, List, RowType, Tupl
 
 
 class Event(Table_Model):
+    """
+    The class which interacts for all of the database operations for the `Events` table.
+
+    Methods:
+        `countConnections()`: Counting the number of event connections for a specific IP address and endpoint within a given time window.
+    """
     def __init__(
         self,
         database_handler: Database_Handler,

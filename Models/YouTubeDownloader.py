@@ -781,23 +781,33 @@ class YouTube_Downloader:
             streams.append(stream)
         return streams
 
-    def __downloadVideo(self, audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], file_path: str) -> str:
+    def __downloadVideo(
+        self,
+        audio: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]],
+        video: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]],
+        file_path: str
+    ) -> str:
         """
-        Downloading and merging a video file with its corresponding audio stream, then save it to the specified path.
+        Downloading a video file by combining audio and video streams and saving it to the specified file path.
 
-        This method configures `yt-dlp` with appropriate format options to combine a selected video and audio stream and save the result in MP4 format.  After download, it logs metadata into a relational database.
+        This method performs the following tasks:
+            - Logging the start of the download process.
+            - Configuring the download options to merge audio and video streams into an MP4 file.
+            - Initiating the download using the YouTubeDL library.
+            - Saving metadata related to the downloaded file into the relational database.
+            - Logging the success or failure of saving metadata.
 
         Args:
-            audio (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Metadata dictionary for the selected audio stream.
-            video (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): Metadata dictionary for the selected video stream.
-            file_path (str): Path where the resulting video file should be saved.
+            audio (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): The audio stream information.
+            video (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): The video stream information.
+            file_path (str): The path where the merged video file should be saved.
 
         Returns:
-            str: The file path of the downloaded and merged video.
+            str: The file path to the downloaded and merged video file.
 
         Raises:
-            DownloadError: If the video download or merge process fails.
-            Relational_Database_Error: If storing metadata in the relational database fails.
+            DownloadError: If there is an error during the download process.
+            Relational_Database_Error: If there is an error saving metadata to the database.
         """
         try:
             self.getLogger().inform(f"Downloading the video file. - File Path: {file_path}")
@@ -809,13 +819,22 @@ class YouTube_Downloader:
             }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
-            data: Tuple[str, str, str, str] = (self.getMimeType(), self.getTimestamp(), file_path, self.getIdentifier())
-            self.getDatabaseHandler().postData(
-                table="MediaFile",
-                columns="type, date_downloaded, location, YouTube",
-                values="%s, %s, %s, %s",
-                parameters=data # type: ignore
+            media_file: Media_File = Media_File(
+                database_handler=self.getDatabaseHandler(),
+                type=self.getMimeType(),
+                date_downloaded=self.getTimestamp(),
+                location=file_path,
+                YouTube=self.getIdentifier()
             )
+            response: bool = media_file.save()
+            status: int = 201 if response else 503
+            message: str = "The files related have been stored in the relational database server." if response else "There is an error between the model and the relational database server."
+            if response:
+                self.getLogger().inform(f"{message} - Status: {status}")
+            else:
+                self.getLogger().error(f"{message} - Status: {status}")
+            if not response:
+                raise Relational_Database_Error("The files related have not been stored in the relational database server.")
             return file_path
         except DownloadError as error:
             self.getLogger().error(f"The downloading of the video file has failed. - Error: {error}")

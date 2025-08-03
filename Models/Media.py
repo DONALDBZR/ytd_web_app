@@ -281,26 +281,29 @@ class Media:
 
     def postMedia(self) -> int:
         """
-        Creating a record in the Media table of the database with the provided media value.
+        Inserting media records into the database.
 
-        The function inserts the media value into the "Media" table and logs the result.  If the data is successfully inserted, it returns a status code of 201 (Created).  In case of an error during the database interaction, it returns a status code of 503 (Service Unavailable).
+        This method creates a new `Media_Model` instance with the current platform value and attempts to save it to the database.  It logs an informative message if the insertion is successful, or an error message if it fails.
 
         Returns:
-            int
+            int: HTTP-like status code indicating success (201) or failure (503).
 
         Raises:
-            Relational_Database_Error: If there is an error while posting the data to the database, the error is logged, and the function returns a 503 status code.
+            Relational_Database_Error: If there is an issue communicating with the database.
         """
-        data: Tuple[str] = (self.getValue(),)
         try:
-            self.getDatabaseHandler().postData(
-                table="Media",
-                columns="value",
-                values="%s",
-                parameters=data
+            media: Media_Model = Media_Model(
+                database_handler=self.getDatabaseHandler(),
+                value=self.getValue()
             )
-            self.getLogger().inform("The data has been inserted in the relational database server.")
-            return 201
+            response: bool = media.save()
+            status: int = 201 if response else 503
+            message: str = "The data has been inserted in the relational database server." if response else "The data cannot be inserted in the relational database server."
+            if response:
+                self.getLogger().inform(message)
+            else:
+                self.getLogger().error(message)
+            return status
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
             return 503

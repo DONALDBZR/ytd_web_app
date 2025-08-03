@@ -369,17 +369,20 @@ class Media:
 
     def getRelatedContents(self, identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
         """
-        Retrieving related media content based on an identifier.
-
-        This method fetches related content from both the media's channel and its author(s).  It merges and deduplicates the results before returning them.
+        Retrieving related media contents for a specific media identifier.
 
         Parameters:
-            identifier (str): The unique identifier of the media item.
+            identifier (str): A unique media identifier consisting of alphanumeric characters, dashes (`-`), or underscores (`_`).
 
         Returns:
             Dict[str, Union[int, List[Dict[str, str]]]]
         """
-        payload: Dict[str, str] = self._getPayload(identifier)
+        payload: Optional[Dict[str, str]] = self._getPayload(identifier)
+        if not payload:
+            return {
+                "status": 204,
+                "data": []
+            }
         related_channel_contents: List[Dict[str, Union[str, int]]] = self.getRelatedChannelContents(payload["channel"])
         related_author_contents: List[Dict[str, Union[str, int]]] = []
         payload["author"] = payload["author"].split(", ") # type: ignore

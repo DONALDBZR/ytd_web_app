@@ -447,28 +447,25 @@ class Media:
 
     def getRelatedChannelContents(self, channel: str) -> List[Dict[str, Union[str, int]]]:
         """
-        Retrieving the related content for a given channel from the YouTube database.
+        Retrieving related content based on a channel name.
 
-        This function queries the database to find content associated with the provided channel name.  It returns a list of dictionaries with the content's identifier, duration, channel name, title, URL, and media identifier.
+        This method takes a channel name as input and retrieves their related content from the relational database.  It queries the `YouTube` table using the `getByChannel` method and returns a list of dictionaries containing the following metadata:
+            - "identifier" (str): The unique identifier of the media item.
+            - "duration" (str): The duration of the media item.
+            - "channel" (str): The channel name of the media item.
+            - "title" (str): The title of the media item.
+            - "uniform_resource_locator" (str): The URL of the media item.
+            - "media_identifier" (int): The corresponding identifier in the `Media` table.
 
         Parameters:
-            channel (string): The name of the channel whose related content is being retrieved.
+            channel (str): The name of the channel.
 
         Returns:
-            List[Dict[string, Union[string, int]]]
-
-        Raises:
-            Relational_Database_Error: If there is an issue with querying the database, an error will be logged, and the function will return an empty list.
+            List[Dict[str, Union[str, int]]]
         """
-        parameters: Tuple[str] = (channel,)
         try:
-            database_response: List[Dict[str, Union[str, int]]] = self.getDatabaseHandler().getData(
-                parameters=parameters,
-                table_name="YouTube",
-                filter_condition="author = %s",
-                column_names="identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CASE WHEN identifier LIKE 'shorts/%' THEN CONCAT('https://www.youtube.com/', identifier) ELSE CONCAT('https://www.youtube.com/watch?v=', identifier) END AS uniform_resource_locator, Media AS media_identifier"
-            ) # type: ignore
-            response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(channel_content["identifier"])), "duration": escape(str(channel_content["duration"])), "channel": escape(str(channel_content["channel"])), "title": escape(str(channel_content["title"])), "uniform_resource_locator": escape(str(channel_content["uniform_resource_locator"])), "media_identifier": int(channel_content["media_identifier"])} for channel_content in database_response]
+            database_response: List[YouTube] = YouTube.getByChannel(self.getDatabaseHandler(), channel)
+            response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(youtube.identifier)), "duration": escape(str(youtube.duration)), "channel": escape(str(youtube.channel)), "title": escape(str(youtube.title)), "uniform_resource_locator": escape(str(youtube.uniform_resource_locator)), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
             self.getLogger().inform(f"The related channel contents have been successfully retrieved.\nStatus: 200\nChannel: {channel}\nAmount: {len(response)}")
             return response
         except Relational_Database_Error as error:

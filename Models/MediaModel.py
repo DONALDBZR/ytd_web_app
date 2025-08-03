@@ -1,4 +1,4 @@
-from Models.TableModel import Table_Model, Database_Handler
+from Models.TableModel import Table_Model, Database_Handler, List, Tuple, RowType
 
 
 class Media(Table_Model):
@@ -7,6 +7,7 @@ class Media(Table_Model):
 
     Methods:
         `create()`: Creating the Media table in the database if it does not already exist.
+        `getByValue()`: Retrieving Media records from the database with a given value.
     """
     def __init__(
         self,
@@ -38,3 +39,23 @@ class Media(Table_Model):
         """
         query: str = f"CREATE TABLE IF NOT EXISTS `{self.getTableName()}` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))"
         return self.getDatabaseHandler().createTable(query, None)
+
+    @classmethod
+    def getByValue(cls, database_handler: Database_Handler, value: str) -> List["Media"]:
+        """
+        Retrieving Media records from the database with a given value.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance to interact with the database.
+            value (str): The value to search for in the database.
+
+        Returns:
+            List[Media]: A list of Media instances matching the given value.
+        """
+        temporary_instance: "Media" = cls(database_handler)
+        query: str = f"SELECT * FROM {temporary_instance.getTableName()} WHERE value = %s"
+        parameters: Tuple[str] = (value,)
+        response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
+        if not response:
+            return []
+        return [cls(database_handler, **row) for row in response] # type: ignore

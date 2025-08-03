@@ -125,3 +125,31 @@ class YouTube(Table_Model):
         """
         query: str = f"CREATE TABLE IF NOT EXISTS `{self.getTableName()}` (identifier VARCHAR(16) PRIMARY KEY, `length` INT, published_at VARCHAR(32), author VARCHAR(64), title VARCHAR(128), `Media` INT, CONSTRAINT fk_Media_type FOREIGN KEY (`Media`) REFERENCES `Media` (identifier))"
         return self.getDatabaseHandler().createTable(query)
+
+    @classmethod
+    def getYouTubeDataByIdentifier(
+        cls,
+        database_handler: Database_Handler,
+        join_table: str,
+        identifier: str
+    ) -> Optional[List["YouTube"]]:
+        """
+        Retrieving YouTube video metadata from the database based on a given identifier.
+
+        This method queries the relational database to fetch metadata related to a YouTube video based on its identifier.  It performs a join operation with the given `join_table` to retrieve associated media files.  The results are limited to 2 entries.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance used to run the query.
+            join_table (str): The name of the table to join for additional metadata.
+            identifier (str): The YouTube identifier to search for in the database.
+
+        Returns:
+            Optional[List[YouTube]]: A list of YouTube instances containing the fetched metadata, or None if no data exists.
+        """
+        temporary_instance: "YouTube" = cls(database_handler)
+        query: str = f"SELECT author, title, {temporary_instance.getTableName()}.identifier, published_at, length, location FROM {temporary_instance.getTableName()} LEFT JOIN {join_table} ON {join_table}.YouTube = {temporary_instance.getTableName()}.identifier WHERE {temporary_instance.getTableName()}.identifier = %s LIMIT 2"
+        parameters: Tuple[str] = (identifier,)
+        response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
+        if not response or len(response) < 2:
+            return None
+        return [cls(database_handler, **row) for row in response] # type: ignore

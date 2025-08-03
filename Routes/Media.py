@@ -9,7 +9,6 @@ from Models.Media import Media, Extractio_Logger, Environment, Dict, Union, List
 from json import loads
 from os.path import join, realpath
 from html import escape
-from index import limiter
 from re import fullmatch
 from typing import Any
 
@@ -106,7 +105,6 @@ def sanitizeStringData(data: Dict[str, Any]):
     return data
 
 @Media_Portal.route("/Search", methods=["GET"])
-@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def search() -> Response:
     """
     Handling GET requests to the /Search endpoint for retrieving media metadata.
@@ -191,7 +189,6 @@ def search() -> Response:
     )
 
 @Media_Portal.route('/<string:identifier>', methods=["GET"])
-@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def getMedia(identifier: str) -> Response:
     """
     Retrieving media metadata based on a unique identifier.
@@ -240,7 +237,6 @@ def getMedia(identifier: str) -> Response:
     )
 
 @Media_Portal.route('/Download', methods=['POST'])
-@limiter.limit("20 per 7 days", error_message="Rate Limit Exceeded")
 def retrieveMedia() -> Response:
     """
     Handling media retrieval requests.
@@ -297,7 +293,6 @@ def retrieveMedia() -> Response:
     )
 
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
-@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def getRelatedContents(identifier: str) -> Response:
     """
     Retrieving the related contents of the media content that has been downloaded from the application.
@@ -394,7 +389,6 @@ def rateLimited(error: Exception) -> Response:
     )
 
 @Media_Portal.route('/Shorts/<string:identifier>', methods=["GET"])
-@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def getMediaShorts(identifier: str) -> Response:
     """
     Retrieving metadata for a specific media short by identifier.
@@ -446,7 +440,6 @@ def getMediaShorts(identifier: str) -> Response:
     )
 
 @Media_Portal.route('/RelatedContents/Shorts/<string:identifier>', methods=["GET"])
-@limiter.limit("100 per day", error_message="Rate Limit Exceeded")
 def getRelatedContentsShorts(identifier: str) -> Response:
     """
     Retrieving related media contents for a specific short video.

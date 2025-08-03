@@ -202,16 +202,18 @@ class Database_Handler:
 
     def _commit(self) -> None:
         """
-        Committing the current transaction to the database.
+        Committing the current database transaction.
+
+        This method commits the current transaction.  If an error occurs during the commit operation, the transaction is rolled back.
 
         Raises:
             Relational_Database_Error: If the commit operation fails.
         """
         try:
-            self.getConnection().commit()
+            self.getConnection().commit() # type: ignore
             self.getLogger().inform("The transaction has been successfully committed.")
         except Relational_Database_Error as error:
-            self.getConnection().rollback()
+            self.getConnection().rollback() # type: ignore
             self.getLogger().error(f"The database handler has failed to commit the transaction, hence, the trasaction will roolback. - Error: {error}")
             raise error
 

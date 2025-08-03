@@ -27,5 +27,11 @@ class Media(Table_Model):
         )
 
     def create(self) -> bool:
+        """
+        Creating the Media table in the database if it does not already exist.
+
+        Returns:
+            bool: True if the table was created, False otherwise.
+        """
         query: str = f"CREATE TABLE IF NOT EXISTS `{self.getTableName()}` (identifier INT PRIMARY KEY AUTO_INCREMENT, `value` VARCHAR(8))"
         return self.getDatabaseHandler().createTable(query, None)

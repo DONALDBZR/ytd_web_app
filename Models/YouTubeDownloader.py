@@ -893,7 +893,28 @@ class YouTube_Downloader:
         if "403" not in str(error):
             raise error
 
-    def __downloadAudio(self, stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], file_path: str) -> str:
+    def __downloadAudio(
+        self,
+        stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]],
+        file_path: str
+    ) -> str:
+        """
+        Downloading an audio file from a given media stream and saves it to a specified file path.
+
+        This method configures download options based on the provided stream's format identifier and protocol, initiates the download using the YoutubeDL library, and saves the audio file to the specified path.  It logs the success or failure of the download and attempts to persist metadata in a relational database.
+
+        Args:
+            stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): The audio stream information including format ID and protocol.
+            file_path (str): The path where the audio file should be saved.
+
+        Returns:
+            str: The file path to the downloaded audio file.
+
+        Raises:
+            DownloadError: If an error occurs during the download process.
+            Relational_Database_Error: If an error occurs while saving metadata to the database.
+            Relational_Database_Error: If there is an issue communicating with the database.
+        """
         try:
             self.getLogger().inform("Downloading the audio file. - File Path: {file_path}")
             format_identifier: str = stream.get("format_id") # type: ignore

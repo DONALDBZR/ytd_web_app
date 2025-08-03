@@ -66,3 +66,15 @@ class Session(Table_Model):
                 table_name=temporary_instance.getTableName()
             )
         return [cls(temporary_instance.getDatabaseHandler(), **row) for row in database_response][0] # type: ignore
+
+    def create(self) -> bool:
+        """
+        Creating the Session table if it does not already exist.
+
+        This method creates the Session table according to the defined structure.  It is useful for setting up the database schema.
+
+        Returns:
+            bool: True if the table creation was successful, False otherwise.
+        """
+        query: str = f"CREATE TABLE IF NOT EXISTS `{self.getTableName()}` (identifier INT PRIMARY KEY AUTO_INCREMENT, hash VARCHAR(256) NOT NULL, date_created VARCHAR(16), CONSTRAINT unique_constraint_session UNIQUE (hash))"
+        return self.getDatabaseHandler().createTable(query, None)

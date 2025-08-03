@@ -56,7 +56,7 @@ class Logger_Configurator:
 
     def __init__(
         self,
-        directory: str = "Logs",
+        directory: str = "",
         filename: str = "Extractio.log",
         format: str = "[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s",
         encoding: str = "utf-8",
@@ -64,19 +64,17 @@ class Logger_Configurator:
         handlers: Optional[List[Handler]] = None
     ):
         """
-        Initializing the Logger_Configurator with specified or default settings.
+        Initializing the Logger_Configurator instance.
 
-        This constructor sets up the configuration used to create and configure logger instances.  It allows customization of the log file's location, name, message format, and other properties.
+        It sets up the logging configuration with the provided parameters and creates the log directory if it does not exist.
 
-        If a `directory` is not provided, it defaults to a 'Logs' subdirectory within the application's main directory, as determined by the `Environment` class.  The directory is created if it does not exist.
-
-        Args:
-            directory (str): The directory to store the log file.
-            filename (str): The name of the log file.
-            format (str): The format string for log messages.
-            encoding (str): The character encoding for the log file.
-            file_mode (str): The file mode for opening the log file.
-            handlers (Optional[List[Handler]]): A list of additional logging handlers to add to the logger.
+        Parameters:
+            directory (str): Directory where log files are stored. (default: "")
+            filename (str): Name of the log file. (default: "Extractio.log")
+            format (str): Format string for log messages. (default: "[%(asctime)s] [%(name)s] [%(levelname)s] %(message)s")
+            encoding (str): Encoding used for the log file. (default: "utf-8")
+            file_mode (str): Mode in which the log file is opened. (default: "a")
+            handlers (List[Handler]): List of additional logging handlers to be added to the logger. (default: None)
         """
         env: Environment = Environment()
         self.setDirectory(directory if directory else f"{env.getDirectory()}/Logs")
@@ -85,6 +83,7 @@ class Logger_Configurator:
         self.setEncoding(encoding)
         self.setFileMode(file_mode)
         self.setHandlers(handlers or [])
+        print(f"{self.getDirectory()=}")
         makedirs(self.getDirectory(), exist_ok=True)
 
     def getDirectory(self) -> str:

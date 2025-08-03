@@ -166,15 +166,6 @@ class Table_Model:
             setattr(self, field, kwargs.get(field))
 
     def mySqlTypeToPython(self, mysql_type: str) -> type:
-        """
-        Converting a MySQL type to its corresponding Python type.
-
-        Args:
-            mysql_type (str): The MySQL type as a string.
-
-        Returns:
-            type: The corresponding Python type.
-        """
         print(f"{mysql_type=}")
         base: str = mysql_type.split("(")[0].lower()
         print(f"{base=}")
@@ -253,22 +244,23 @@ class Table_Model:
     @classmethod
     def createModelClass(cls, table_name: str, database_handler: Database_Handler) -> Type["Table_Model"]:
         """
-        Dynamically creating a Table_Model subclass for a specified table name.
+        Dynamically creating a model class for interacting with a database table.
 
-        This method constructs a new class type that represents a database table model with fields and types inferred from the database schema.  It utilizes the provided table name to fetch column information and establish the class's attributes and primary key.
+        This method constructs a new class with attributes and methods specific to the given table name.  It retrieves the columns from the specified table and maps their types to Python types.  The resulting class can be used to instantiate objects that represent rows in the table.
 
         Args:
-            table_name (str): The name of the database table to model.
-            database_handler (Database_Handler): The handler for database interactions.
+            table_name (str): The name of the table for which to create the model class.
+            database_handler (Database_Handler): The database handler instance to interact with the database.
 
         Returns:
-            Type[Table_Model]: A newly created subclass of Table_Model with tailored attributes and an initializer for the specified table.
+            Type[Table_Model]: A dynamically created subclass of `Table_Model` representing the specified table.
         """
-        columns: List[RowType] = database_handler.getData(f"SHOW COLUMNS FROM {table_name}")
+        temporary_instance: "Table_Model" = cls(database_handler, table_name)
+        columns: List[RowType] = temporary_instance.getDatabaseHandler().getData(f"SHOW COLUMNS FROM {temporary_instance.getTableName()}")
         annotations: Dict[str, type] = {}
         primary_field: str = next((str(column["Field"]) for column in columns if str(column["Key"]) == "PRI"), "identifier") # type: ignore
         for column in columns:
-            class_type: type = cls.mySqlTypeToPython(str(column["Type"])) # type: ignore
+            class_type: type = temporary_instance.mySqlTypeToPython(str(column["Type"])) # type: ignore
             annotations[str(column["Field"])] = class_type # type: ignore
 
         def __init__(self, **kwargs):

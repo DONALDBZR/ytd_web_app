@@ -1,4 +1,4 @@
-from Models.TableModel import Table_Model, Database_Handler, RowType, List, Tuple, Any
+from Models.TableModel import Table_Model, Database_Handler, RowType, List, Tuple, Any, Optional
 
 
 class YouTube(Table_Model):
@@ -91,3 +91,25 @@ class YouTube(Table_Model):
         if not response:
             return []
         return [cls(database_handler, **row) for row in response] # type: ignore
+
+    @classmethod
+    def getByIdentifier(cls, database_handler: Database_Handler, identifier: str) -> Optional["YouTube"]:
+        """
+        Retrieving a YouTube video record from the database by its identifier.
+
+        This method queries the YouTube table to find a video with the given identifier.  It returns a YouTube instance, containing metadata such as author, title, and a URL to the video.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance for executing the query.
+            identifier (str): The unique identifier of the video to retrieve.
+
+        Returns:
+            Optional[YouTube]: A YouTube instance with metadata matching the given identifier, or None if no record is found.
+        """
+        temporary_instance: "YouTube" = cls(database_handler)
+        query: str = f"SELECT author, title FROM {temporary_instance.getTableName()} WHERE identifier = %s LIMIT 1"
+        parameters: Tuple[str] = (identifier,)
+        response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
+        if not response:
+            return None
+        return [cls(database_handler, **row) for row in response][0] # type: ignore

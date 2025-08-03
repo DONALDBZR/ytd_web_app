@@ -57,20 +57,26 @@ class Data_Sanitizer:
 
     def sanitize(self, data: Any) -> Any:
         """
-        Sanitizing the input data by checking for safe characters and restricted SQL keywords.
+        Sanitizing the input data to prevent SQL injection and ensure it adheres to safe string patterns.
+
+        This method performs the following checks and operations:
+            - If the data is `None`, it returns `None`.
+            - If the data is not a string, it returns the data as is.
+            - Validates the data against a predefined safe string regex pattern.
+            - Converts the data to uppercase and checks against restricted SQL keywords.
 
         Args:
-            data (Any): The data to sanitize.
+            data (Any): The input data to be sanitized.
 
         Returns:
-            Any: The sanitized data.
+            Any: The sanitized data or original data if no sanitization is required.
 
         Raises:
-            ValueError: If the data contains invalid characters or restricted SQL keywords.
+            ValueError: If the data does not match the safe string pattern or contains restricted SQL keywords.
         """
         if data is None:
             return None
-        if isinstance(data, str):
+        if not isinstance(data, str):
             return data
         if not match(self.getSafeString(), data):
             raise ValueError("The provided data is invalid.")

@@ -87,7 +87,7 @@ class Media:
         self.setDatabaseHandler(Database_Handler())
         self.__setTable()
         if not all(key in request for key in ("referer", "search", "platform", "ip_address")):
-            self.getLogger().error(f"The request does not contain the correct keys.\nRequest: {request}")
+            self.getLogger().error(f"The request does not contain the correct keys. - Request: {request}")
             raise ValueError("The request does not contain the correct keys.")
         self.setSearch(str(request["search"]))
         self.setReferer(request["referer"])
@@ -217,7 +217,7 @@ class Media:
             self.setIdentifier(int(media["data"][0].identifier)) # type: ignore
             return self.__handleVerifyPlatform()
         except ValueError as error:
-            self.getLogger().error(f"An error occurred while verifying the platform.\nError: {error}")
+            self.getLogger().error(f"An error occurred while verifying the platform. - Error: {error}")
             return {
                 "status": 400,
                 "data": {}
@@ -238,7 +238,7 @@ class Media:
         """
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             return self.handleYouTube()
-        self.getLogger().error(f"This platform is not supported by the application!\nStatus: 403")
+        self.getLogger().error(f"This platform is not supported by the application! - Status: 403")
         raise ValueError("This platform is not supported by the application!")
 
     def handleVerifyPlatform(self, status: int) -> Optional[Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]:
@@ -280,7 +280,7 @@ class Media:
                 "timestamp": self.getTimestamp()
             }
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
             return {
                 "status": 503,
                 "data": [],
@@ -313,7 +313,7 @@ class Media:
                 self.getLogger().error(message)
             return status
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
             return 503
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
@@ -358,13 +358,13 @@ class Media:
             ValueError: If the search URL is not a valid YouTube link or does not contain a valid video identifier.
         """
         if "youtube" not in self.getSearch():
-            self.getLogger().error(f"The uniform resource locator is not supported!\nStatus: 400\nSearch: {self.getSearch()}")
+            self.getLogger().error(f"The uniform resource locator is not supported! - Status: 400 - Search: {self.getSearch()}")
             raise ValueError("The uniform resource locator is not supported.")
         identifier_regex: str = r"(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})"
         match_identifier: Union[Match[str], None] = match(identifier_regex, self.getSearch())
         if not match_identifier:
-            self.getLogger().error(f"The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
-            raise ValueError(f"The uniform resource locator is not supported.\nStatus: 400\nSearch: {self.getSearch()}")
+            self.getLogger().error(f"The uniform resource locator is not supported. - Status: 400 - Search: {self.getSearch()}")
+            raise ValueError(f"The uniform resource locator is not supported. - Status: 400 - Search: {self.getSearch()}")
         return f"shorts/{match_identifier.group(1)}" if "/shorts/" in self.getSearch() else match_identifier.group(1)
 
     def getRelatedContents(self, identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
@@ -439,10 +439,10 @@ class Media:
         try:
             database_response: List[YouTube] = YouTube.getByTitle(self.getDatabaseHandler(), author)
             response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(youtube.identifier)), "duration": escape(str(youtube.duration)), "channel": escape(str(youtube.channel)), "title": escape(str(youtube.title)), "uniform_resource_locator": escape(str(youtube.uniform_resource_locator)), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
-            self.getLogger().inform(f"The related author contents have been successfully retrieved.\nStatus: 200\nAuthor: {author}\nAmount: {len(response)}")
+            self.getLogger().inform(f"The related author contents have been successfully retrieved. - Status: 200 - Author: {author} - Amount: {len(response)}")
             return response
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
             return []
 
     def getRelatedChannelContents(self, channel: str) -> List[Dict[str, Union[str, int]]]:
@@ -466,48 +466,32 @@ class Media:
         try:
             database_response: List[YouTube] = YouTube.getByChannel(self.getDatabaseHandler(), channel)
             response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(youtube.identifier)), "duration": escape(str(youtube.duration)), "channel": escape(str(youtube.channel)), "title": escape(str(youtube.title)), "uniform_resource_locator": escape(str(youtube.uniform_resource_locator)), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
-            self.getLogger().inform(f"The related channel contents have been successfully retrieved.\nStatus: 200\nChannel: {channel}\nAmount: {len(response)}")
+            self.getLogger().inform(f"The related channel contents have been successfully retrieved. - Status: 200 - Channel: {channel} - Amount: {len(response)}")
             return response
         except Relational_Database_Error as error:
-            self.getLogger().error(f"There is an error between the model and the relational database server.\nError: {error}")
+            self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
             return response
 
-    def _getPayload(self, identifier: str) -> Dict[str, str]:
+    def _getPayload(self, identifier: str) -> Optional[Dict[str, str]]:
         """
-        Retrieving and processing metadata payload for a given YouTube video identifier.
+        Retrieving metadata for a given media identifier.
 
-        This method queries the database to fetch the video's author and title using the provided video identifier.  It then extracts the channel name and author from the retrieved data.
+        This method retrieves the metadata related to a given media identifier from the relational database.  It queries the `YouTube` table and returns a dictionary containing the following metadata:
+            - "channel" (str): The channel name of the media item.
+            - "author" (str): The author of the media item.
 
         Parameters:
-            identifier (string): The YouTube video identifier.
+            identifier (str): The unique identifier of the media item.
 
         Returns:
-            Dict[string, string]: A dictionary containing:
-                - "channel" (string): The escaped channel name from the database.
-                - "author" (string): The author's name extracted from the title.
-
-        Raises:
-            KeyError: If the expected keys ("author", "title") are missing in the database response.
-            IndexError: If no data is returned from the database query.
+            Optional[Dict[str, str]]
         """
-        parameters: Tuple[str] = (identifier,)
-        try:
-            database_response: Union[RowType, Dict[str, str]] = self.getDatabaseHandler().getData(
-                parameters=parameters,
-                table_name="YouTube",
-                filter_condition="identifier = %s",
-                column_names="author, title",
-                limit_condition=1
-            )[0]
-        except IndexError as error:
-            self.getLogger().error(f"There is no data for a given identifier.\nError: {error}\nIdentifier: {identifier}")
-            raise IndexError("There is no data for a given identifier.")
-        try:
-            channel: str = escape(str(database_response["author"])) # type: ignore
-            title: str = escape(str(database_response["title"])) # type: ignore
-        except KeyError as error:
-            self.getLogger().error(f"Missing expected keys in database response: {error}")
-            raise KeyError(f"Missing expected keys in database response: {error}")
+        response: Optional[YouTube] = YouTube.getByIdentifier(self.getDatabaseHandler(), identifier)
+        if not response:
+            self.getLogger().error(f"There is no data for a given identifier. - Identifier: {identifier}")
+            return None
+        channel: str = escape(str(response.channel)) # type: ignore
+        title: str = escape(str(response.title)) # type: ignore
         author: str = title.split(" - ")[0]
         return {
             "channel": channel,
@@ -533,13 +517,13 @@ class Media:
         """
         allowed_platforms: List[str] = ["youtube", "youtu.be"]
         if not self.getValue():
-            self.getLogger().error(f"Failed to sanitize the value.\nStatus: 400\nValue: {self.getValue()}")
+            self.getLogger().error(f"Failed to sanitize the value. - Status: 400 - Value: {self.getValue()}")
             raise ValueError("Failed to sanitize the value.")
         if not self.getValue() in allowed_platforms:
-            self.getLogger().error(f"The platform is not supported!\nStatus: 400\nValue: {self.getValue()}")
+            self.getLogger().error(f"The platform is not supported! - Status: 400 - Value: {self.getValue()}")
             raise ValueError("The platform is not supported!")
         if not match(r"^[a-z.]+$", self.getValue()):
-            self.getLogger().error(f"Incorrect characters in value!\nStatus: 400\nValue: {self.getValue()}")
+            self.getLogger().error(f"Incorrect characters in value! - Status: 400 - Value: {self.getValue()}")
             raise ValueError("Incorrect characters in value!")
         self.setValue(self.getValue())
 
@@ -559,12 +543,12 @@ class Media:
         """
         regular_expression: str = r"^[a-zA-Z0-9\s\-_.,:/?=&]*$"
         if not self.getSearch():
-            self.getLogger().error(f"The value to be searched is empty.\nStatus: 400\nSearch: {self.getSearch()}")
+            self.getLogger().error(f"The value to be searched is empty. - Status: 400 - Search: {self.getSearch()}")
             raise ValueError("The value to be searched is empty.")
         if not match(regular_expression, self.getSearch()):
-            self.getLogger().error(f"Invalid characters in search term!\nStatus: 400\nSearch: {self.getSearch()}")
+            self.getLogger().error(f"Invalid characters in search term! - Status: 400 - Search: {self.getSearch()}")
             raise ValueError("Invalid characters in search term")
         if len(self.getSearch()) > 64:
-            self.getLogger().error(f"The search query is too long.\nStatus: 400\nSearch: {self.getSearch()}")
+            self.getLogger().error(f"The search query is too long. - Status: 400 - Search: {self.getSearch()}")
             raise ValueError("The search query is too long.")
         self.setSearch(self.getSearch())

@@ -124,10 +124,7 @@ class YouTube_Downloader:
         self.mediaDirectory()
         try:
             self.setDatabaseHandler(Database_Handler())
-            youtube: YouTube = YouTube(self.getDatabaseHandler())
-            response: bool = youtube.create()
-            if not response:
-                raise Relational_Database_Error("The YouTube table could not be created.")
+            self.__setYouTube()
             media_file: Media_File = Media_File(self.getDatabaseHandler())
             response = media_file.create()
             if not response:
@@ -261,6 +258,20 @@ class YouTube_Downloader:
 
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
+
+    def __setYouTube(self) -> None:
+        """
+        Creating the YouTube table in the relational database if it does not already exist.
+
+        This method constructs and executes a SQL query to create the `YouTube` table with columns for identifier, length, publication date, author, title, and a foreign key reference to the `Media` table.  If the table already exists, this method does not modify it.
+
+        Raises:
+            Relational_Database_Error: If the table could not be created.
+        """
+        youtube: YouTube = YouTube(self.getDatabaseHandler())
+        response: bool = youtube.create()
+        if not response:
+            raise Relational_Database_Error("The YouTube table could not be created.")
 
     def retrieveIdentifier(self, identifier: str) -> str:
         """

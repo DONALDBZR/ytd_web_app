@@ -1,22 +1,12 @@
-"""
-The main entrypoint of the application.
-
-Link:
-    https://omnitechbros.ddns.net:591/
-    http://omnitechbros.ddns.net:5000/
-"""
-
-
 from flask import Flask, render_template, Request, Response, send_from_directory, request
 from flask_compress import Compress
 from flask_cors import CORS
 from Models.SecurityManagementSystem import Security_Management_System, Database_Handler, Environment, Session
-from re import match
+from re import match, fullmatch
 from os.path import join, exists, isfile, normpath, relpath, splitext
-from typing import List, Union
+from typing import List, Union, Dict, Tuple, Optional
 from urllib.parse import ParseResult, urlparse
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from Models.RateLimiter import Rate_Limiter
 
 
 Application: Flask = Flask(__name__)
@@ -46,14 +36,6 @@ ENV: Environment = Environment()
 """
 ENV File of the application
 """
-limiter: Limiter = Limiter(
-    app=Application,
-    key_func=get_remote_address,
-    default_limits=["100 per second"],
-)
-"""
-The Limiter class initializes the Flask-Limiter extension.
-"""
 from Routes.Session import Session_Portal
 from Routes.Search import Search_Portal
 from Routes.Media import Media_Portal
@@ -79,18 +61,28 @@ Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Application.register_blueprint(Track_Portal, url_prefix="/Track")
 Compress(Application)
 CORS(Application, origins=ENV.getAllowedOrigins())
-limiter.init_app(Application)
 
 
 @Application.before_request
-def before_request() -> None:
+def before_request() -> Optional[Response]:
     """
-    Preparing the data before the request is made.
+    Executed before each request to the application.
 
-    Returns:
-        void
+    This method is responsible for the following tasks:
+        1. Generating a random nonce for the request.
+        2. Checking if a request should be rate limited.
+        3. Returning a 429 Too Many Requests response if the request is rate limited.
     """
     SecurityManagementSystem.generateNonce()
+    ip_address: str = request.remote_addr # type: ignore
+    endpoint: str = request.path
+    rate_limiter: Rate_Limiter = Rate_Limiter(DatabaseHandler)
+    for pattern, (limit, time_window) in ENV.getLimits().items():
+        if not fullmatch(pattern, endpoint):
+            continue
+        if rate_limiter.isLimited(ip_address, endpoint, limit, time_window):
+            return Response("Too Many Requests", 429)
+    return None
 
 @Application.route('/', methods=['GET'])
 def homepage() -> Response:

@@ -464,24 +464,33 @@ class YouTube_Downloader:
 
     def postYouTube(self) -> None:
         """
-        Inserting YouTube video metadata into the database.
+        Creating a new YouTube video metadata record in the relational database.
 
-        This method extracts relevant metadata (identifier, length, publication date, author, title, and media identifier) and inserts it into the "YouTube" table in the relational database. If an error occurs during the process, it logs the issue.
+        This method takes the current identifier, length, publication date, author, title, and media identifier and uses them to create a new record in the relational database.  If the record is created successfully, it logs an informative message with a status of 201.  If there is an unexpected error, it logs an error message with a status of 503.
 
         Returns:
-            void
+            None
 
         Raises:
-            Relational_Database_Error: If there is an issue communicating with the database.
+            Relational_Database_Error: If there is an unexpected error when communicating with the database.
         """
         try:
-            data: Tuple[str, int, Union[str, datetime, None], str, str, int] = (self.getIdentifier(), self.getLength(), self.getPublishedAt(), self.getAuthor(), self.getTitle(), self.getMediaIdentifier())
-            self.getDatabaseHandler().postData(
-                table="YouTube",
-                columns="identifier, length, published_at, author, title, Media",
-                values="%s, %s, %s, %s, %s, %s",
-                parameters=data # type: ignore
+            youtube: YouTube = YouTube(
+                database_handler=self.getDatabaseHandler(),
+                identifier=self.getIdentifier(),
+                length=self.getLength(),
+                published_at=self.getPublishedAt(),
+                author=self.getAuthor(),
+                title=self.getTitle(),
+                Media=self.getMediaIdentifier()
             )
+            response: bool = youtube.save()
+            status: int = 201 if response else 503
+            message: str = "The data has been inserted successfully." if response else "There is an error between the model and the relational database server."
+            if response:
+                self.getLogger().inform(f"{message} - Status: {status}")
+            else:
+                self.getLogger().error(f"{message} - Status: {status}")
         except Relational_Database_Error as error:
             self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
 

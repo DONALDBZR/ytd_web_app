@@ -31,14 +31,14 @@ class Data_Sanitizer:
     def __init__(
         self,
         structured_query_language_keywords: Optional[List[str]] = None,
-        safe_string: str = r"^[a-zA-Z0-9\s\-_.,:/?=<>!%+\(\)\"']*$"
+        safe_string: str = r"^[a-zA-Z0-9\s\-$_.,:/?=<>!%+\(\)\"']*$"
     ) -> None:
         """
-        Initializing the Data_Sanitizer with optional SQL keywords and a safe string pattern.
+        Initializing a `Data_Sanitizer` instance with optional SQL keywords and a regex pattern for safe strings.
 
         Args:
-            structured_query_language_keywords (Optional[List[str]], optional): A list of SQL keywords to be considered restricted.
-            safe_string (str, optional): A regex pattern for validating safe strings.
+            structured_query_language_keywords (Optional[List[str]]): A list of SQL keywords to check against user input.
+            safe_string (str): A regex pattern defining allowed characters in user input. Defaults to a pattern allowing alphanumeric characters, spaces, and some special characters.
         """
         self.setSqlKeywords(structured_query_language_keywords or ["ALTER", "DROP", "TRUNCATE", "RENAME", "INSERT", "UPDATE", "DELETE", "MERGE", "SELECT", "GRANT", "REVOKE", "COMMIT", "ROLLBACK", "SAVEPOINT", "RELEASE SAVEPOINT"])
         self.setSafeString(safe_string)

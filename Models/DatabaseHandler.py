@@ -151,23 +151,31 @@ class Database_Handler:
             self.getLogger().error(f"The application has failed to connect to the database. - Error: {error}")
             raise error
 
+    def __ensureConnection(self) -> None:
+        """
+        Ensuring the database connection is active.
+
+        This method checks if the database connection is active.  If no connection is present, it establishes a new connection.  If the connection is inactive, it attempts to reconnect up to 3 times with a 2-second delay between attempts.  Logs the outcome of the connection check and reconnection attempts.
+        """
+        if self.getConnection() is None:
+            self.setConnection(self.__connect())
+            self.getLogger().inform("The database handler has successfully reconnected to the database.")
+            return
+        if not self.getConnection().is_connected():
+            self.getConnection().reconnect(
+                attempts=3,
+                delay=2
+            )
+            self.getLogger().inform("The database handler has successfully reconnected to the database.")
+            return
+        self.getLogger().inform("The database handler is already connected to the database.")
+
     def _execute(
         self,
         query: str,
         parameters: Optional[Tuple[Any, ...]] = None
     ) -> None:
-        """
-        Executing a query on the database with optional parameters.
-
-        Args:
-            query (str): The SQL query to execute.
-            parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
-
-        Raises:
-            Relational_Database_Error: If the query execution fails.
-        """
-        if not self.getConnection().is_connected():
-            self.getConnection().connect()
+        self.__ensureConnection()
         if self.getCursor() is None:
             self.setCursor(
                 self.getConnection().cursor( # type: ignore

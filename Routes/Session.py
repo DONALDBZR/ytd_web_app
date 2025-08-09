@@ -65,7 +65,7 @@ def getSession() -> Response:
             "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR")),
             "port": str(request.environ.get("SERVER_PORT"))
         }
-        SessionManager: Session_Manager = Session_Manager(user_request, session)
+        SessionManager: Session_Manager = Session_Manager(user_request, session, database_handler)
         session_data: Dict[str, Dict[str, Union[int, str]]] = {
             "Client": {
                 "timestamp": int(SessionManager.getSession()["Client"]["timestamp"]),

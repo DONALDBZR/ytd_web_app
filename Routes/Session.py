@@ -73,7 +73,7 @@ def getSession() -> Response:
                 "color_scheme": str(SessionManager.getSession()["Client"]["color_scheme"])
             }
         }
-        Logger.inform(f"The session data has been retrieved.\nStatus: {status}")
+        Logger.inform(f"The session data has been retrieved. - Status: {status}")
         closeDatabase()
         return Response(
             response=dumps(
@@ -84,7 +84,7 @@ def getSession() -> Response:
             mimetype=mime_type
         )
     except Exception as error:
-        Logger.error(f"An unexpected error has occurred and the service is currently unavailable.\nError: {error}")
+        Logger.error(f"An unexpected error has occurred and the service is currently unavailable. - Error: {error}")
         closeDatabase()
         data: Dict[str, str] = {
             "error": "Service Unavailble"
@@ -128,6 +128,7 @@ def setSession() -> Response:
             obj=session_data,
             indent=4
         )
+        Logger.inform(f"The session data has been updated. - Status: {status}")
         closeDatabase()
         return Response(
             response=response,
@@ -135,7 +136,7 @@ def setSession() -> Response:
             mimetype=mime_type
         )
     except ValidationError as error:
-        Logger.error(f"An invalid JSON has been received as payload.\nError: {error}")
+        Logger.error(f"An invalid JSON has been received as payload. - Error: {error}")
         closeDatabase()
         return Response(
             response=dumps(
@@ -148,7 +149,7 @@ def setSession() -> Response:
             mimetype=mime_type
         )
     except (JSONDecodeError, ValueError) as error:
-        Logger.error(f"An invalid JSON has been received as payload.\nError: {error}")
+        Logger.error(f"An invalid JSON has been received as payload. - Error: {error}")
         closeDatabase()
         return Response(
             response=dumps(
@@ -161,7 +162,7 @@ def setSession() -> Response:
             mimetype=mime_type
         )
     except Exception as error:
-        Logger.error(f"An unexpected error has occured.\nError: {error}")
+        Logger.error(f"An unexpected error has occured. - Error: {error}")
         closeDatabase()
         return Response(
             response=dumps(

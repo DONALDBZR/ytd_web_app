@@ -106,8 +106,20 @@ def sanitizeStringData(data: Dict[str, Any]):
         data[key] = escape(value) if isinstance(value, str) else value
     return data
 
+def closeDatabase():
+    """
+    Closing the database connection.
+
+    This function is called when the application is being torn down, such as when the server is being shut down.  It closes the database connection and cursor to ensure that resources are released properly.
+    """
+    if DatabaseHandler.getCursor() is not None:
+        DatabaseHandler.closeCursor()
+    if DatabaseHandler.getConnection() is not None and DatabaseHandler.getConnection().is_connected():
+        DatabaseHandler.closeConnection()
+
 @Media_Portal.route("/Search", methods=["GET"])
 def search() -> Response:
+    start_time: float = perf_counter()
     platform: str = escape(str(request.args.get("platform")))
     type: str = escape(str(request.args.get("type")))
     identifier: str = escape(str(request.args.get("identifier")))

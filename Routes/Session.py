@@ -48,17 +48,6 @@ def closeDatabase():
 
 @Session_Portal.route('/', methods=['GET'])
 def getSession() -> Response:
-    """
-    Retrieving session data for the client.
-
-    This function gathers information about the client's request, including IP addresses and port number.  It then initializes a `Session_Manager` instance to retrieve session-related data such as timestamp and color scheme.  If the session is successfully retrieved, the function returns a JSON response containing the session data.  Otherwise, it handles exceptions and returns a 503 Service Unavailable response.
-
-    Returns:
-        Response
-
-    Raises:
-        Exception: If an unexpected error occurs during session retrieval.
-    """
     mime_type: str = "application/json"
     status: int = 200
     try:
@@ -75,6 +64,7 @@ def getSession() -> Response:
                 "color_scheme": str(SessionManager.getSession()["Client"]["color_scheme"])
             }
         }
+        closeDatabase()
         Logger.inform(f"The session data has been retrieved.\nStatus: {status}")
         return Response(
             response=dumps(
@@ -85,6 +75,7 @@ def getSession() -> Response:
             mimetype=mime_type
         )
     except Exception as error:
+        closeDatabase()
         Logger.error(f"An unexpected error has occurred and the service is currently unavailable.\nError: {error}")
         data: Dict[str, str] = {
             "error": "Service Unavailble"

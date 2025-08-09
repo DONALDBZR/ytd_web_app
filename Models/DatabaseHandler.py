@@ -375,17 +375,18 @@ class Database_Handler:
         Creating a table in the database by executing a query with optional parameters.
 
         Args:
-            query (str): The SQL query to execute for creating the table.
+            query (str): The SQL query to execute.
             parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
 
+        Returns:
+            bool: True if the table was created successfully, False otherwise.
+
         Raises:
-            Relational_Database_Error: If the execution or commit operation fails.
+            Relational_Database_Error: If the table creation fails.
         """
         try:
             self._execute(query, parameters)
             self._commit()
-            self._closeCursor()
-            self._closeConnection()
             return True
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to create the table. - Query: {query} - Parameters: {parameters} - Error: {error}")

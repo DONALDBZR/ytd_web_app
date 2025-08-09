@@ -1294,48 +1294,45 @@ class AnalyticalManagementSystem:
         Returns:
             Optional[str]: The IP address if found, otherwise None.
         """
-        ip_addresses: List[str] = Network_Location.getByHostname(self.getDatabaseHandler(), self.getHostname()) # type: ignore
+        ip_addresses: List[str] = Network_Location.getByHostname(self.getDatabaseHandler(), str(self.getHostname()))
         return ip_addresses[-1] if ip_addresses else None
 
     def __getResolvedIp(self) -> str:
-        """
-        Resolving the IP address of the stored hostname.
-
-        This private method will attempt to retrieve the IP address from the database first.  If not found, it will use the `gethostbyname` function to resolve the IP address.  If the resolved IP address is "127.0.0.1", it will resort to using `curl` to query an external service to retrieve the public IP address.
-
-        Returns:
-            str: The resolved IP address.
-        """
-        ip_address: Optional[str]
         start_time: float = perf_counter()
-        ip_address = self.__getIpFromDatabase()
-        get_ip_from_database_time: float = perf_counter()
-        if ip_address:
-            duration: float = get_ip_from_database_time - start_time
-            total_duration: float = get_ip_from_database_time - start_time
-            self.getLogger().debug(f"Function: __getResolvedIp - Get IP Address From Database Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
+        try:
+            ip_address: Optional[str] = self.__getIpFromDatabase()
+            database_time: float = perf_counter()
+            if ip_address:
+                duration: float = database_time - start_time
+                self.getLogger().debug(f"Function: __getResolvedIp - Relational Database Duration: {duration:.3f}s")
+                return ip_address
+            ip_address = gethostbyname(str(self.getHostname()))
+            dns_time: float = perf_counter()
+            if ip_address != "127.0.0.1":
+                duration: float = dns_time - database_time
+                total_duration: float = dns_time - start_time
+                self.getLogger().debug(f"Function: __getResolvedIp - Domain Name System Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
+                return ip_address
+            ip_address = run(
+                [
+                    "curl",
+                    "ifconfig.me"
+                ],
+                capture_output=True,
+                text=True,
+                check=True
+            ).stdout.strip()
+            curl_time: float = perf_counter()
+            duration: float = curl_time - dns_time
+            total_duration: float = curl_time - start_time
+            self.getLogger().debug(f"Function: __getResolvedIp - cURL Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
             return ip_address
-        ip_address = gethostbyname(str(self.getHostname()))
-        if ip_address != "127.0.0.1":
+        except Exception as error:
             end_time: float = perf_counter()
-            duration: float = end_time - get_ip_from_database_time
-            total_duration: float = end_time - start_time
-            self.getLogger().debug(f"Function: __getResolvedIp - Get IP Address From Host Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
-            return ip_address
-        ip_address = run(
-            [
-                "curl",
-                "ifconfig.me"
-            ],
-            capture_output=True,
-            text=True,
-            check=True
-        ).stdout.strip()
-        end_time: float = perf_counter()
-        duration: float = end_time - get_ip_from_database_time
-        total_duration: float = end_time - start_time
-        self.getLogger().debug(f"Function: __getResolvedIp - Get IP Address From Host Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
-        return ip_address
+            duration: float = end_time - start_time
+            self.getLogger().debug(f"Function: __getResolvedIp - Get IP Address From Host Duration: {duration:.3f}s")
+            self.getLogger().error(f"The Analytical Management System cannot resolve the IP Address. - Error: {error}")
+            return ""
 
     def sanitizeIpAddress(self) -> int:
         """

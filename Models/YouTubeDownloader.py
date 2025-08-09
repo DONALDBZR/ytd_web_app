@@ -385,6 +385,20 @@ class YouTube_Downloader:
         }
 
     def search(self) -> Dict[str, Union[str, int, None]]:
+        """
+        Searching for YouTube metadata.
+
+        This method performs the following actions:
+            1. Sanitizes the YouTube identifier.
+            2. Retrieves the YouTube metadata from the database.
+            3. If the data is found, it formats it into a structured response.
+            4. If the data is not found, it performs a GET request using the YouTube-DL library to retrieve the metadata.
+            5. Sets the duration, published date, author, title, and identifier.
+            6. Returns a structured response with YouTube metadata.
+
+        Returns:
+            Dict[str, Union[str, int, None]]: A dictionary containing YouTube metadata for client use.
+        """
         start_time: float = perf_counter()
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
         meta_data: Dict[str, Union[int, List[YouTube], str]] = self.getYouTube()

@@ -1299,24 +1299,14 @@ class AnalyticalManagementSystem:
 
     def __getResolvedIp(self) -> str:
         """
-        Resolving the IP address from the stored hostname.
+        Resolving the IP address of the stored hostname.
 
-        This function:
-            - Tries to retrieve the IP address from the database.
-            - If the IP address is found, it logs success and returns the IP address.
-            - If the IP address is not found:
-                - It attempts to resolve the IP address from the hostname.
-                - If the IP address is found and not 127.0.0.1, it logs success and returns the IP address.
-                - If the IP address is not found or is 127.0.0.1, it attempts to obtain the external IP address using an external service.
-                - Logs and raises an error if the external IP cannot be retrieved.
+        This private method will attempt to retrieve the IP address from the database first.  If not found, it will use the `gethostbyname` function to resolve the IP address.  If the resolved IP address is "127.0.0.1", it will resort to using `curl` to query an external service to retrieve the public IP address.
 
         Returns:
             str: The resolved IP address.
-
-        Raises:
-            CalledProcessError: If the external IP cannot be retrieved.
         """
-        ip_address: str
+        ip_address: Optional[str]
         start_time: float = perf_counter()
         ip_address = self.__getIpFromDatabase()
         get_ip_from_database_time: float = perf_counter()

@@ -48,6 +48,14 @@ def closeDatabase():
 
 @Session_Portal.route('/', methods=['GET'])
 def getSession() -> Response:
+    """
+    Retrieving the session data for the client.
+
+    This function receives a request to retrieve the session data and returns it in a JSON format.
+
+    Returns:
+        Response: A Flask response object containing the session data in JSON format.
+    """
     mime_type: str = "application/json"
     status: int = 200
     try:

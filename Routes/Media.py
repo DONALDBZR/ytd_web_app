@@ -44,7 +44,7 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     identifier: str = r"^[a-zA-Z0-9\-_]+$"
     file_name = escape(file_name)
     if not fullmatch(identifier, file_name.replace(".json", "").replace(f"{allowed_directory}/", "")):
-        Routing_Logger.error(f"The file name is invalid.\nFile Name: {file_name}")
+        Routing_Logger.error(f"The file name is invalid. - File Name: {file_name}")
         return {
             "status": 400,
             "data": {}
@@ -52,7 +52,7 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
     file_name = join(allowed_directory, file_name)
     file_path: str = realpath(file_name)
     if not file_path.startswith(realpath(allowed_directory)):
-        Routing_Logger.error(f"Path traversal has been detected.\nFile Name: {file_name}")
+        Routing_Logger.error(f"Path traversal has been detected. - File Name: {file_name}")
         return {
             "status": 403,
             "data": {}
@@ -68,7 +68,7 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
             "data": data
         }
     except FileNotFoundError as error:
-        Routing_Logger.error(f"The file is not found.\nFile Name: {file_name}\nError: {error}")
+        Routing_Logger.error(f"The file is not found. - File Name: {file_name} - Error: {error}")
         identifier: str = file_name.replace(f"{ENV.getDirectory()}/Cache/Media/", "").replace(".json", "")
         user_request: Dict[str, Union[str, None]] = {
             "referer": None,
@@ -84,7 +84,7 @@ def getMetaData(file_name: str) -> Dict[str, Union[int, Dict[str, Union[str, int
             "data": model_response["data"]
         }
     except Exception as error:
-        Routing_Logger.error(f"The metadata cannot be retrieved.\nFile Name: {file_name}\nError: {error}")
+        Routing_Logger.error(f"The metadata cannot be retrieved. - File Name: {file_name} - Error: {error}")
         return {
             "status": 503,
             "data": {}
@@ -108,27 +108,6 @@ def sanitizeStringData(data: Dict[str, Any]):
 
 @Media_Portal.route("/Search", methods=["GET"])
 def search() -> Response:
-    """
-    Handling GET requests to the /Search endpoint for retrieving media metadata.
-
-    This endpoint validates the incoming query parameters and constructs a media search request.  If validation passes, it delegates to the media verification system and returns a structured JSON response.
-
-    Route:
-        - GET /Search
-
-    Query Parameters:
-        - platform (str): The name of the platform to search on.
-        - type (str): The type of media to search for.
-        - identifier (str): The identifier of the media.
-
-    Response Codes:
-        - 200: Successful response with search results.
-        - 400: Bad request due to missing or invalid parameters.
-        - 429: Rate limit exceeded.
-
-    Returns:
-        Response
-    """
     platform: str = escape(str(request.args.get("platform")))
     type: str = escape(str(request.args.get("type")))
     identifier: str = escape(str(request.args.get("identifier")))
@@ -158,7 +137,7 @@ def search() -> Response:
             mimetype=mime_type
         )
     if type not in ENV.getAllowedYoutubeContents():
-        Routing_Logger.error(f"The type is invalid.\nType: {type}")
+        Routing_Logger.error(f"The type is invalid. - Type: {type}")
         return Response(
             response=dumps(
                 obj={
@@ -180,7 +159,7 @@ def search() -> Response:
     media: Media = Media(user_request)
     response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
     status: int = int(response["status"])  # type: ignore
-    Routing_Logger.inform(f"The response has been sent.\nStatus: {status}\nData: {response['data']}")
+    Routing_Logger.inform(f"The response has been sent. - Status: {status} - Data: {response['data']}")
     return Response(
         response=dumps(
             obj=response,
@@ -215,7 +194,7 @@ def getMedia(identifier: str) -> Response:
     mime_type: str = "application/json"
     identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
     if not fullmatch(identifier_regex, identifier):
-        Routing_Logger.error(f"The identifier is invalid.\nIdentifier: {identifier}")
+        Routing_Logger.error(f"The identifier is invalid. - Identifier: {identifier}")
         data: Dict[str, str] = {
             "error": "The identifier is invalid."
         }
@@ -261,7 +240,7 @@ def retrieveMedia() -> Response:
     payload: Dict[str, Dict[str, str]] = request.json  # type: ignore
     data: Dict[str, str] = payload["Media"]
     if data.get("uniform_resource_locator") is None or data.get("platform") is None:
-        Routing_Logger.error(f"The parameters are invalid.\nData: {data}")
+        Routing_Logger.error(f"The parameters are invalid. - Data: {data}")
         data: Dict[str, str] = {
             "error": "The parameters are invalid."
         }
@@ -308,7 +287,7 @@ def getRelatedContents(identifier: str) -> Response:
     mime_type: str = "application/json"
     identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
     if not fullmatch(identifier_regex, identifier):
-        Routing_Logger.error(f"The format for the identifier is invalid identifier.\nIdentifier: {identifier}\nStatus: 400")
+        Routing_Logger.error(f"The format for the identifier is invalid identifier. - Identifier: {identifier} - Status: 400")
         data: Dict[str, str] = {
             "error": "The format for the identifier is invalid."
         }
@@ -418,7 +397,7 @@ def getMediaShorts(identifier: str) -> Response:
     mime_type: str = "application/json"
     identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
     if not fullmatch(identifier_regex, identifier):
-        Routing_Logger.error(f"The identifier is invalid.\nIdentifier: {identifier}")
+        Routing_Logger.error(f"The identifier is invalid. - Identifier: {identifier}")
         data: Dict[str, str] = {
             "error": "The identifier is invalid."
         }
@@ -469,7 +448,7 @@ def getRelatedContentsShorts(identifier: str) -> Response:
     mime_type: str = "application/json"
     identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
     if not fullmatch(identifier_regex, identifier):
-        Routing_Logger.error(f"The format for the identifier is invalid identifier.\nIdentifier: {identifier}\nStatus: 400")
+        Routing_Logger.error(f"The format for the identifier is invalid identifier. - Identifier: {identifier} - Status: 400")
         data: Dict[str, str] = {
             "error": "The format for the identifier is invalid."
         }

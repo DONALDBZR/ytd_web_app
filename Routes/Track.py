@@ -5,6 +5,7 @@ from flask import Blueprint, Response, request
 from Models.AnalyticalManagementSystem import AnalyticalManagementSystem, Dict, Union, Extractio_Logger, Database_Handler
 from json import JSONDecodeError
 from index import DatabaseHandler
+from time import perf_counter
 
 
 Track_Portal: Blueprint = Blueprint("Track", __name__)
@@ -53,16 +54,16 @@ def postEvent() -> Response:
         data["ip_address"] = request.environ.get('REMOTE_ADDR', request.remote_addr)
         system: AnalyticalManagementSystem = AnalyticalManagementSystem(database_handler)
         status: int = system.processEvent(data)
-        Logger.inform(f"The event has been stored in the database. - Status: {status}")
         closeDatabase()
+        Logger.inform(f"The event has been stored in the database. - Status: {status}")
         return Response(
             response=None,
             status=status,
             mimetype=mime_type
         )
     except (JSONDecodeError, ValueError) as error:
-        Logger.error(f"The payload in the request data is invalid.\nError: {error}")
         closeDatabase()
+        Logger.error(f"The payload in the request data is invalid.\nError: {error}")
         return Response(
             response=None,
             status=400,

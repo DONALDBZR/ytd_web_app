@@ -2,7 +2,7 @@
 The module that has the routing for the analytics.
 """
 from flask import Blueprint, Response, request
-from Models.AnalyticalManagementSystem import AnalyticalManagementSystem, Dict, Union, Extractio_Logger
+from Models.AnalyticalManagementSystem import AnalyticalManagementSystem, Dict, Union, Extractio_Logger, Database_Handler
 from json import JSONDecodeError
 from index import DatabaseHandler
 
@@ -17,6 +17,21 @@ Logger: Extractio_Logger = Extractio_Logger(__name__)
 """
 The logger that will all the action of the application.
 """
+database_handler: Database_Handler = DatabaseHandler
+"""
+A class to handle database operations such as connecting, executing queries, and managing transactions.
+"""
+
+def closeDatabase():
+    """
+    Closing the database connection.
+
+    This function is called when the application is being torn down, such as when the server is being shut down.  It closes the database connection and cursor to ensure that resources are released properly.
+    """
+    if database_handler.getCursor() is not None:
+        database_handler.closeCursor()
+    if database_handler.getConnection() is not None and database_handler.getConnection().is_connected():
+        database_handler.closeConnection()
 
 @Track_Portal.route('/', methods=['POST'])
 def postEvent() -> Response:
@@ -36,8 +51,10 @@ def postEvent() -> Response:
         data: Dict[str, Union[str, float]] = request.get_json()
         isEmpty(data)
         data["ip_address"] = request.environ.get('REMOTE_ADDR', request.remote_addr)
-        system: AnalyticalManagementSystem = AnalyticalManagementSystem(DatabaseHandler)
+        system: AnalyticalManagementSystem = AnalyticalManagementSystem(database_handler)
         status: int = system.processEvent(data)
+        Logger.inform(f"The event has been stored in the database. - Status: {status}")
+        closeDatabase()
         return Response(
             response=None,
             status=status,
@@ -45,6 +62,7 @@ def postEvent() -> Response:
         )
     except (JSONDecodeError, ValueError) as error:
         Logger.error(f"The payload in the request data is invalid.\nError: {error}")
+        closeDatabase()
         return Response(
             response=None,
             status=400,

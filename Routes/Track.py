@@ -4,6 +4,7 @@ The module that has the routing for the analytics.
 from flask import Blueprint, Response, request
 from Models.AnalyticalManagementSystem import AnalyticalManagementSystem, Dict, Union, Extractio_Logger
 from json import JSONDecodeError
+from index import DatabaseHandler
 
 
 Track_Portal: Blueprint = Blueprint("Track", __name__)
@@ -20,27 +21,22 @@ The logger that will all the action of the application.
 @Track_Portal.route('/', methods=['POST'])
 def postEvent() -> Response:
     """
-    Handling an incoming HTTP POST request to process an event.
+    This endpoint is used to track any event that happens on the application.  Any incoming request to this endpoint will be processed and the event will be saved in the database.  The event name and timestamp are required for the event to be saved.  The event name should be one of the following: `page_view`, `search_submitted`, `color_scheme_updated`, or `click`.
 
-    This function:
-    - Extracts JSON data from the request body.
-    - Logs an error and returns a `400 Bad Request` response if the payload is empty.
-    - Adds the client's IP address to the extracted data.
-    - Processes the event using an `AnalyticalManagementSystem` instance.
-    - Returns an HTTP response with the appropriate status.
+    The endpoint will return a JSON response with the HTTP status code indicating the result of the operation.  If the request is successful, the HTTP status code will be `201` and the response will be an empty JSON object.  If the request is not valid, the HTTP status code will be `400` and the response will contain the error message.
+
+    Parameters:
+        data (Dict[str, Union[str, float]]): The request data as a JSON object.
 
     Returns:
-        Response
-
-    Raises:
-        JSONDecodeError: If the request data is not valid JSON.
+        Response: A JSON response with the result of the operation.
     """
     mime_type: str = "application/json"
     try:
         data: Dict[str, Union[str, float]] = request.get_json()
         isEmpty(data)
         data["ip_address"] = request.environ.get('REMOTE_ADDR', request.remote_addr)
-        system: AnalyticalManagementSystem = AnalyticalManagementSystem()
+        system: AnalyticalManagementSystem = AnalyticalManagementSystem(DatabaseHandler)
         status: int = system.processEvent(data)
         return Response(
             response=None,

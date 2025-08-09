@@ -1311,6 +1311,22 @@ class AnalyticalManagementSystem:
             raise error
 
     def sanitizeIpAddress(self) -> int:
+        """
+        Sanitizing the IP address.
+
+        This method:
+            - Checks if the stored IP address is valid.
+            - If valid, updates the stored IP address in string format.
+            - Logs success if the IP address is properly sanitized.
+            - Logs an error and returns `self.service_unavailable` if the IP address is invalid.
+            - If the IP address is not valid, it attempts to resolve the IP address from the hostname.
+            - If the IP address is found and not 127.0.0.1, it returns this address.
+            - Otherwise, it attempts to obtain the external IP address using an external service.
+            - Logs and raises an error if the external IP cannot be retrieved.
+
+        Returns:
+            int: The HTTP-like status code for the operation's success or failure.
+        """
         if not self.getIpAddress():
             self.getLogger().error("The Analytical Management System cannot retrieve the IP Address.")
             return self.service_unavailable

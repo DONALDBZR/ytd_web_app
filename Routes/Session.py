@@ -5,6 +5,7 @@ from jsonschema import validate
 from typing import Any
 from jsonschema.exceptions import ValidationError
 from index import DatabaseHandler
+from time import perf_counter
 
 
 Session_Portal: Blueprint = Blueprint("Session", __name__)
@@ -100,6 +101,14 @@ def getSession() -> Response:
 
 @Session_Portal.route('/', methods=['PUT'])
 def setSession() -> Response:
+    """
+    Updating the session data for the client.
+
+    This function receives a request to update the session data and updates it in the database.  It returns the updated session data in a JSON format.
+
+    Returns:
+        Response: A Flask response object containing the updated session data in JSON format.
+    """
     mime_type: str = "application/json"
     status: int = 202
     try:
@@ -116,7 +125,7 @@ def setSession() -> Response:
             "proxy_ip_address": str(request.environ.get("HTTP_X_FORWARDED_FOR")),
             "port": str(request.environ.get("SERVER_PORT"))
         }
-        SessionManager: Session_Manager = Session_Manager(user_request, session)
+        SessionManager: Session_Manager = Session_Manager(user_request, session, database_handler)
         SessionManager.updateSession(payload)
         session_data: Dict[str, Dict[str, Union[int, str]]] = {
             "Client": {

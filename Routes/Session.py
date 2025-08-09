@@ -4,6 +4,7 @@ from json import JSONDecodeError, dumps
 from jsonschema import validate
 from typing import Any
 from jsonschema.exceptions import ValidationError
+from index import DatabaseHandler
 
 
 Session_Portal: Blueprint = Blueprint("Session", __name__)
@@ -14,7 +15,7 @@ Logger: Extractio_Logger = Extractio_Logger(__name__)
 """
 The logger that will all the action of the application.
 """
-database_handler: Database_Handler = Session_Portal.database_handler or Database_Handler(logger=Logger) # type: ignore
+database_handler: Database_Handler = DatabaseHandler or Database_Handler(logger=Logger)
 """
 A class to handle database operations such as connecting, executing queries, and managing transactions.
 """

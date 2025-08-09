@@ -9,7 +9,7 @@ from Models.VisitorModel import Visitor
 from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Tuple
 from typing import Dict, Union, Optional
 from json import JSONDecodeError, load, dumps
-from os import remove
+from os import remove, listdir
 from time import time
 import os
 
@@ -195,7 +195,7 @@ class Session_Manager:
             self.getLogger().error("The required table cannot be created.")
             return
         self.getLogger().inform("The required table has been created.")
-        self.setSessionFiles(os.listdir(self.getDirectory()))
+        self.setSessionFiles(listdir(self.getDirectory()))
         self.setLength(len(self.getSessionFiles()))
         if self.getLength() > 0:
             self.verifyExistingSessions()

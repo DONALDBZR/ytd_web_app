@@ -116,17 +116,26 @@ class Database_Handler:
 
     def __sanitizeParameters(self, parameters: Optional[Tuple[Any, ...]]) -> Optional[Tuple[Any, ...]]:
         """
-        Sanitizing the parameters using the Data_Sanitizer instance.
+        Sanitizing a tuple of parameters using the `Data_Sanitizer` instance.
+
+        This method processes each parameter in the provided tuple through the `Data_Sanitizer`'s `sanitize` method, ensuring that all parameters are safe for use in database operations.  If the parameter tuple is `None`, it returns `None`.
 
         Args:
-            parameters (Optional[Tuple[Any, ...]]): Parameters to sanitize.
+            parameters (Optional[Tuple[Any, ...]]): A tuple of parameters to be sanitized.
 
         Returns:
-            Optional[Tuple[Any, ...]]: Sanitized parameters.
+            Optional[Tuple[Any, ...]]: A tuple of sanitized parameters, or `None` if input is `None`.
+
+        Raises:
+            Relational_Database_Error: If any parameter fails the sanitization process.
         """
-        if parameters is None:
-            return None
-        return tuple(self.getSanitizer().sanitize(parameter) for parameter in parameters)
+        try:
+            if parameters is None:
+                return None
+            return tuple(self.getSanitizer().sanitize(parameter) for parameter in parameters)
+        except ValueError as error:
+            self.getLogger().error(f"The database handler has failed to sanitize the parameters. - Parameters: {parameters} - Error: {error}")
+            raise Relational_Database_Error(str(error))
 
     def __connect(self) -> MySQLConnection:
         """

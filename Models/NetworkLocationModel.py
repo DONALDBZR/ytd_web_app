@@ -60,5 +60,5 @@ class Network_Location(Table_Model):
         """
         fields: List[str] = [field for field in self.getFields() if field != self.getPrimaryField()]
         parameters: Tuple[str, str, float, float, str, str, str, str, float, float] = (self.ip_address, self.hostname, self.latitude, self.longitude, self.city, self.region, self.country, self.timezone, self.latitude, self.longitude) # type: ignore
-        query: str = f"INSERT INTO {self.getTableName()} ({', '.join(fields)}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(CONCAT('POINT(', %s, ' ', %s, ')')))"
+        query: str = f"INSERT INTO {self.getTableName()} ({', '.join(fields)}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, ST_SRID(ST_GeomFromText(CONCAT('POINT(', %s, ' ', %s, ')')), 4326))"
         return self.getDatabaseHandler().postData(query, parameters)

@@ -88,3 +88,26 @@ class Network_Location(Table_Model):
         if not response:
             return []
         return [row.ip_address for row in response] # type: ignore
+
+    @classmethod
+    def getLocationDataByIpAddress(cls, database_handler: Database_Handler, ip_address: str) -> List["Network_Location"]:
+        """
+        Retrieving location data records from the database that match the given IP address and were active within the last 24 hours.
+
+        This class method queries the `NetworkLocation` table, joining with the `Events` table, to fetch a list of location data associated with a given IP address.  The query includes a filter for timestamps within the last 24 hours and groups the results by IP address.
+
+        Args:
+            database_handler (Database_Handler): The handler for executing database queries.
+            ip_address (str): The IP address to filter network locations.
+
+        Returns:
+            List[Network_Location]: A list of Network_Location instances containing location data matching the given IP address.
+        """
+        temporary_instance: "Network_Location" = cls(database_handler)
+        indexed_table: str = "Events"
+        query: str = f"SELECT {temporary_instance.getTableName()}.latitude, {temporary_instance.getTableName()}.longitude, {temporary_instance.getTableName()}.city, {temporary_instance.getTableName()}.region, {temporary_instance.getTableName()}.country FROM {temporary_instance.getTableName()} INNER JOIN {indexed_table} ON {temporary_instance.getTableName()}.identifier = {indexed_table}.NetworkLocation AND {indexed_table}.timestamp >= UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) WHERE {temporary_instance.getTableName()}.ip_address = %s ORDER BY {indexed_table}.timestamp ASC"
+        parameters: Tuple[str] = (ip_address,)
+        response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
+        if not response:
+            return []
+        return [cls(database_handler, **row) for row in response] # type: ignore

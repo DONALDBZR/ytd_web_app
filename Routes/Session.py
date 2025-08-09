@@ -42,9 +42,9 @@ def closeDatabase():
     This function is called when the application is being torn down, such as when the server is being shut down.  It closes the database connection and cursor to ensure that resources are released properly.
     """
     if database_handler.getCursor() is not None:
-        database_handler._closeCursor()
+        database_handler.closeCursor()
     if database_handler.getConnection() is not None and database_handler.getConnection().is_connected():
-        database_handler._closeConnection()
+        database_handler.closeConnection()
 
 @Session_Portal.route('/', methods=['GET'])
 def getSession() -> Response:

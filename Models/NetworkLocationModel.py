@@ -1,4 +1,4 @@
-from Models.TableModel import Table_Model, Database_Handler, List, RowType, Tuple
+from Models.TableModel import Table_Model, Database_Handler, List, RowType, Tuple, Any
 
 
 class Network_Location(Table_Model):
@@ -48,3 +48,17 @@ class Network_Location(Table_Model):
         if not response:
             return []
         return [cls(database_handler, **row) for row in response] # type: ignore
+
+    def save(self) -> bool:
+        """
+        Inserting the current network location instance into the database.
+
+        This method constructs an SQL INSERT query using the instance's fields, excluding the primary key.  It then executes the query with the appropriate parameters to save the network location data into the `NetworkLocation` table, including geographic coordinates as a spatial point.
+
+        Returns:
+            bool: True if the data was successfully inserted, False otherwise.
+        """
+        fields: List[str] = [field for field in self.getFields() if field != self.getPrimaryField()]
+        parameters: Tuple[str, str, float, float, str, str, str, str, float, float] = (self.ip_address, self.hostname, self.latitude, self.longitude, self.city, self.region, self.country, self.timezone, self.latitude, self.longitude) # type: ignore
+        query: str = f"INSERT INTO {self.getTableName()} ({', '.join(fields)}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, ST_GeomFromText(CONCAT('POINT(', %s, ' ', %s, ')')))"
+        return self.getDatabaseHandler().postData(query, parameters)

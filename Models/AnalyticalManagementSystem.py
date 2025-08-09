@@ -1285,6 +1285,18 @@ class AnalyticalManagementSystem:
             self.getLogger().warn(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address. - Error: {error}")
             return self.service_unavailable
 
+    def __getIpFromDatabase(self) -> Optional[str]:
+        """
+        Retrieving the IP address from the database for the stored hostname.
+
+        This private method queries the `NetworkLocation` table by the hostname and returns the most recent IP address.
+
+        Returns:
+            Optional[str]: The IP address if found, otherwise None.
+        """
+        ip_addresses: List[str] = Network_Location.getByHostname(self.getDatabaseHandler(), self.getHostname())
+        return ip_addresses[-1] if ip_addresses else None
+
     def __getResolvedIp(self) -> str:
         """
         Resolving the IP address from the stored hostname.

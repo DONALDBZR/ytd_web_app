@@ -1294,7 +1294,7 @@ class AnalyticalManagementSystem:
         Returns:
             Optional[str]: The IP address if found, otherwise None.
         """
-        ip_addresses: List[str] = Network_Location.getByHostname(self.getDatabaseHandler(), self.getHostname())
+        ip_addresses: List[str] = Network_Location.getByHostname(self.getDatabaseHandler(), self.getHostname()) # type: ignore
         return ip_addresses[-1] if ip_addresses else None
 
     def __getResolvedIp(self) -> str:

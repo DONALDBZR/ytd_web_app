@@ -1253,10 +1253,15 @@ class AnalyticalManagementSystem:
         return response[-1] if response else None
 
     def getGeolocationData(self) -> int:
-        start_time: float = perf_counter()
+        """
+        Retrieving and setting geolocation data based on the current IP address.
+
+        This method first attempts to fetch geolocation data from the database using the stored IP address.  If data is found, it updates the instance's location attributes.  If no data is found, it fetches geolocation data from an external API and updates the location attributes accordingly.
+
+        Returns:
+            int: An HTTP-like status code indicating success (`self.ok`) or failure (`self.service_unavailable`).
+        """
         if not self.getIpAddress():
-            error_time: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: getGeolocationData - Error Duration: {error_time:.3f}s")
             self.getLogger().error("The Analytical Management System cannot retrieve data from the IP Address.")
             return self.service_unavailable
         data: Optional[Network_Location] = self.__getLocationDataFromDatabase()
@@ -1267,8 +1272,6 @@ class AnalyticalManagementSystem:
             self.setRegion(data.region) # type: ignore
             self.setCountry(data.country) # type: ignore
             self.setTimezone(data.timezone) # type: ignore
-            curl_time: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: getGeolocationData - MySQL Duration: {curl_time:.3f}s")
             return self.ok
         try:
             route: str = f"{self.getIpInformationApi()}/{self.getIpAddress()}/json"
@@ -1286,27 +1289,17 @@ class AnalyticalManagementSystem:
             self.setRegion(str(geolocation_data.get("region", "")))
             self.setCountry(str(geolocation_data.get("country", "")))
             self.setTimezone(str(geolocation_data.get("timezone", "")))
-            curl_time: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: getGeolocationData - cURL Duration: {curl_time:.3f}s")
             return self.ok
         except RequestException as error:
-            error_time: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: getGeolocationData - cURL Error Duration: {error_time:.3f}s")
             self.getLogger().error(f"The Analytical Management System cannot retrieve data from the IP Address. - Error: {error}")
             return self.service_unavailable
         except JSONDecodeError as error:
-            error_time: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: getGeolocationData - JSON Decode Duration: {error_time:.3f}s")
             self.getLogger().error(f"The Analytical Management System cannot decode the JSON response. - Error: {error}")
             return self.service_unavailable
         except ValueError as error:
-            error_time: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: getGeolocationData - Value Error Duration: {error_time:.3f}s")
             self.getLogger().error(f"The Analytical received an invalid response. - Error: {error}")
             return self.service_unavailable
         except Exception as error:
-            error_time: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: getGeolocationData - General Error Duration: {error_time:.3f}s")
             self.getLogger().error(f"A general error occurred in the Analytical Management System. - Error: {error}")
             return self.service_unavailable
 

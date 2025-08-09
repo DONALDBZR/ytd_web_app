@@ -1228,36 +1228,64 @@ class AnalyticalManagementSystem:
             "data": data or []
         }
 
-    def getGeolocationData(self) -> int:
+    def __validateLocationData(self, location_data: List[str]) -> None:
         """
-        Retrieving geolocation data from the IP address.
+        Validating that the location data has two elements.
 
-        Returns:
-            int
+        Args:
+            location_data (List[str]): List containing the latitude and longitude of the user.
+
+        Raises:
+            ValueError: When the location data is malformed.
         """
+        if len(location_data) == 2:
+            return
+        raise ValueError("The location data is malformed.")
+
+    def getGeolocationData(self) -> int:
+        start_time: float = perf_counter()
         if not self.getIpAddress():
+            error_time: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: getGeolocationData - Error Duration: {error_time:.3f}s")
             self.getLogger().error("The Analytical Management System cannot retrieve data from the IP Address.")
             return self.service_unavailable
         try:
             route: str = f"{self.getIpInformationApi()}/{self.getIpAddress()}/json"
-            response: Response = get(route)
+            response: Response = get(
+                route,
+                timeout=3
+            )
             response.raise_for_status()
             geolocation_data: Any = response.json()
-            self.setLatitude(float(str(geolocation_data.get("loc")).split(",")[0]))
-            self.setLongitude(float(str(geolocation_data.get("loc")).split(",")[1]))
-            self.setCity(str(geolocation_data.get("city")))
-            self.setRegion(str(geolocation_data.get("region")))
-            self.setCountry(str(geolocation_data.get("country")))
-            self.setTimezone(str(geolocation_data.get("timezone")))
+            location_data: List[str] = str(geolocation_data.get("loc", "")).split(",")
+            self.setLatitude(float(location_data[0]))
+            self.setLongitude(float(location_data[1]))
+            self.setCity(str(geolocation_data.get("city", "")))
+            self.setRegion(str(geolocation_data.get("region", "")))
+            self.setCountry(str(geolocation_data.get("country", "")))
+            self.setTimezone(str(geolocation_data.get("timezone", "")))
+            curl_time: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: getGeolocationData - cURL Duration: {curl_time:.3f}s")
             return self.ok
         except RequestException as error:
+            error_time: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: getGeolocationData - cURL Error Duration: {error_time:.3f}s")
             self.getLogger().error(f"The Analytical Management System cannot retrieve data from the IP Address. - Error: {error}")
             return self.service_unavailable
         except JSONDecodeError as error:
+            error_time: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: getGeolocationData - JSON Decode Duration: {error_time:.3f}s")
             self.getLogger().error(f"The Analytical Management System cannot decode the JSON response. - Error: {error}")
             return self.service_unavailable
+        except ValueError as error:
+            error_time: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: getGeolocationData - Value Error Duration: {error_time:.3f}s")
+            self.getLogger().error(f"The Analytical received an invalid response. - Error: {error}")
+            return self.service_unavailable
         except Exception as error:
-            self.getLogger().error(f"A general error occurred: {error}")
+            error_time: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: getGeolocationData - General Error Duration: {error_time:.3f}s")
+            self.getLogger().error(f"A general error occurred in the Analytical Management System. - Error: {error}")
             return self.service_unavailable
 
     def sanitizeRealIpAddress(self) -> int:

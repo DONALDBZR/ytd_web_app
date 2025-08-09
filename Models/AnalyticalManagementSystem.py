@@ -1020,12 +1020,17 @@ class AnalyticalManagementSystem:
 
     def postNetworkLocation(self) -> Dict[str, int]:
         """
-        Inserting the current IP and location information into the Network_Location table.
+        Inserting a new network location record into the `"NetworkLocation"` table of the database.
+
+        This method:
+            - Inserts the network location data into the `"NetworkLocation"` table in the database.
+            - Logs success or failure messages based on whether the insertion is successful.
+            - Returns a dictionary with the status code and the identifier of the inserted record.
 
         Returns:
             Dict[str, int]: A dictionary containing:
-                - 'status': HTTP-like status code (`self.created` if inserted, else `self.service_unavailable`)
-                - 'identifier': The last inserted row ID from the Network_Location table.
+                - "status" (int): HTTP-like status code for operation success or failure.
+                - "identifier" (int): The last inserted row's identifier, or 0 if failed.
         """
         network_location: Network_Location = Network_Location(
             database_handler=self.getDatabaseHandler(),
@@ -1036,8 +1041,7 @@ class AnalyticalManagementSystem:
             city=self.getCity(),
             region=self.getRegion(),
             country=self.getCountry(),
-            timezone=self.getTimezone(),
-            location=f"ST_GeomFromText(POINT({self.getLatitude()} {self.getLongitude()}))"
+            timezone=self.getTimezone()
         )
         response: bool = network_location.save()
         status: int = self.created if response else self.service_unavailable

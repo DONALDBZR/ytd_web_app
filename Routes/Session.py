@@ -1,5 +1,5 @@
 from flask import Blueprint, Response, request, session, Request
-from Models.SessionManagementSystem import Session_Manager, Extractio_Logger, Dict, Union
+from Models.SessionManagementSystem import Session_Manager, Extractio_Logger, Dict, Union, Database_Handler
 from json import JSONDecodeError, dumps
 from jsonschema import validate
 from typing import Any
@@ -13,6 +13,10 @@ The Routing for all the Sessions.
 Logger: Extractio_Logger = Extractio_Logger(__name__)
 """
 The logger that will all the action of the application.
+"""
+database_handler: Database_Handler = Database_Handler(logger=Logger)
+"""
+A class to handle database operations such as connecting, executing queries, and managing transactions.
 """
 session_payload_schema: Dict[str, Any] = {
     "type": "object",
@@ -30,6 +34,17 @@ session_payload_schema: Dict[str, Any] = {
     },
     "required": ["Client"]
 }
+
+def closeDatabase():
+    """
+    Closes the database connection.
+
+    This function is called when the application is being torn down, such as when the server is being shut down.  It closes the database connection and cursor to ensure that resources are released properly.
+    """
+    if database_handler.getCursor() is not None:
+        database_handler._closeCursor()
+    if database_handler.getConnection() is not None and database_handler.getConnection().is_connected():
+        database_handler._closeConnection()
 
 @Session_Portal.route('/', methods=['GET'])
 def getSession() -> Response:

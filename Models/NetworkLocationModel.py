@@ -62,3 +62,29 @@ class Network_Location(Table_Model):
         parameters: Tuple[str, str, float, float, str, str, str, str, float, float] = (self.ip_address, self.hostname, self.latitude, self.longitude, self.city, self.region, self.country, self.timezone, self.latitude, self.longitude) # type: ignore
         query: str = f"INSERT INTO {self.getTableName()} ({', '.join(fields)}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, ST_SRID(ST_GeomFromText(CONCAT('POINT(', %s, ' ', %s, ')')), 4326))"
         return self.getDatabaseHandler().postData(query, parameters)
+
+    @classmethod
+    def getByHostname(cls, database_handler: Database_Handler, hostname: str) -> List[str]:
+        """
+        Retrieving a list of IP addresses associated with a hostname from the database based on activity within the last 24 hours.
+
+        This class method queries the `NetworkLocation` table, joining with the `Events` table, to fetch a list of IP addresses associated with a given hostname.  The query includes a filter for timestamps within the last 24 hours and groups the results by IP address.
+
+        Args:
+            database_handler (Database_Handler): The handler for executing database queries.
+            hostname (str): The hostname to filter network locations.
+
+        Returns:
+            List[str]: A list of IP addresses associated with the given hostname.
+        """
+        temporary_instance: "Network_Location" = cls(database_handler)
+        indexed_table: str = "Events"
+        query: str = f"SELECT {temporary_instance.getTableName()}.ip_address FROM {temporary_instance.getTableName()} INNER JOIN {indexed_table} ON {temporary_instance.getTableName()}.identifier = {indexed_table}.NetworkLocation AND {indexed_table}.timestamp >=UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 DAY)) WHERE {temporary_instance.getTableName()}.hostname = %s GROUP BY {temporary_instance.getTableName()}.ip_address"
+        parameters: Tuple[str] = (hostname,)
+        database_response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
+        if not database_response:
+            return []
+        response: List["Network_Location"] = [cls(database_handler, **row) for row in response] # type: ignore
+        if not response:
+            return []
+        return [row.ip_address for row in response] # type: ignore

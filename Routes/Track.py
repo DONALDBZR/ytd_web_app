@@ -62,7 +62,7 @@ def postEvent() -> Response:
         )
     except (JSONDecodeError, ValueError) as error:
         closeDatabase()
-        Logger.error(f"The payload in the request data is invalid.\nError: {error}")
+        Logger.error(f"The payload in the request data is invalid. - Error: {error}")
         return Response(
             response=None,
             status=400,

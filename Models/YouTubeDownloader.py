@@ -1,4 +1,4 @@
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, RowType, List, Tuple, Any, Relational_Database_Error
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Any, Relational_Database_Error
 from datetime import datetime
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
@@ -11,6 +11,7 @@ from Errors.ExtractioErrors import NotFoundError
 from yt_dlp.utils import DownloadError, ExtractorError
 from Models.YouTubeModel import YouTube
 from Models.MediaFileModel import Media_File
+from time import perf_counter
 
 
 class YouTube_Downloader:
@@ -355,60 +356,78 @@ class YouTube_Downloader:
             return
         self.postYouTube()
 
-    def search(self) -> Dict[str, Union[str, int, None]]:
-        """
-        Searching for YouTube media retrieval and store metadata.
 
-        This method initializes a YouTube downloader instance, retrieves media details, and saves them as a JSON file.  If the request has a referer, it fetches available streams; otherwise, it performs a search.
+    def __prepareResponseFromDatabase(self, meta_data: Dict[str, Union[int, List[YouTube], str]]) -> Dict[str, Union[str, int, None]]:
+        """
+        Preparing a response dictionary with YouTube metadata retrieved from the database.
+
+        This method extracts relevant metadata from the provided `meta_data` dictionary and formats it into a structured response.  The response includes information such as the URL, author, title, identifier, author channel, views, publication date, thumbnail, duration, and file locations for audio and video.
+
+        Parameters:
+            meta_data (Dict[str, Union[int, List[YouTube], str]]): A dictionary containing YouTube metadata, typically retrieved from the database, where "data" is expected to be a list of YouTube instances.
 
         Returns:
-            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
+            Dict[str, Union[str, int, None]]: A dictionary containing formatted YouTube metadata for client use.
         """
+        youtube: YouTube = meta_data["data"][0] # type: ignore
+        return {
+            "uniform_resource_locator": youtube.url, # type: ignore
+            "author": youtube.author, # type: ignore
+            "title": youtube.title, # type: ignore
+            "identifier": youtube.identifier, # type: ignore
+            "author_channel": youtube.author_channel, # type: ignore
+            "views": youtube.views, # type: ignore
+            "published_at": youtube.published_at, # type: ignore
+            "thumbnail": youtube.thumbnail, # type: ignore
+            "duration": youtube.duration, # type: ignore
+            "audio_file": meta_data["data"][0].location, # type: ignore
+            "video_file": meta_data["data"][1].location # type: ignore
+        }
+
+    def search(self) -> Dict[str, Union[str, int, None]]:
+        start_time: float = perf_counter()
+        self.setIdentifier(self.sanitizeYouTubeIdentifier())
+        meta_data: Dict[str, Union[int, List[YouTube], str]] = self.getYouTube()
+        status: int = meta_data["status"] # type: ignore
+        select: float = perf_counter()
+        self.getLogger().debug(f"Function: search - Database(SELECT) Duration: {select - start_time:.3f}s")
+        if status == 200:
+            return self.__prepareResponseFromDatabase(meta_data)
         options: Dict[str, bool] = {
             "quiet": True,
             "skip_download": True,
             "nocheckcertificate": True,
-            "force_generic_extractor": False,
-            "extract_flat": False
+            "extract_flat": True,
+            "no_warnings": True
         }
         self.setVideo(YoutubeDL(options))
-        self.setIdentifier(self.sanitizeYouTubeIdentifier())
-        try:
-            raw_youtube: Dict[str, Any] = self.getVideo().extract_info(
-                url=self.getUniformResourceLocator(),
-                download=False
-            ) # type: ignore
-            self.__isRawYouTube(raw_youtube)
-            youtube: Dict[str, Any] = {
-                key: escape(value) if isinstance(value, str) else value for key, value in raw_youtube.items() # type: ignore
-            }
-            meta_data: Dict[str, Union[int, List[YouTube], str]] = self.getYouTube()
-            has_metadata: bool = meta_data["status"] == 200
-            self.setLength(int(meta_data["data"][0].length) if has_metadata else int(youtube["duration"])) # type: ignore
-            self.setPublishedAt(str(meta_data["data"][0].published_at) if has_metadata else f"{youtube['upload_date'][:4]}-{youtube['upload_date'][4:6]}-{youtube['upload_date'][6:]}") # type: ignore
-            self.setAuthor(str(meta_data["data"][0].author) if has_metadata else str(youtube["uploader"])) # type: ignore
-            self.setTitle(str(meta_data["data"][0].title) if has_metadata else str(youtube["title"])) # type: ignore
-            self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-            file_locations: Dict[str, Union[str, None]] = self._getFileLocations(list(meta_data["data"])) if has_metadata else {} # type: ignore
-            audio_file: Union[str, None] = escape(str(file_locations["audio_file"])) if has_metadata else None
-            video_file: Union[str, None] = escape(str(file_locations["video_file"])) if has_metadata else None
-            self.__presentGetYouTube(int(str(meta_data["status"])))
-            return {
-                "uniform_resource_locator": self.getUniformResourceLocator(),
-                "author": self.getAuthor(),
-                "title": self.getTitle(),
-                "identifier": self.getIdentifier(),
-                "author_channel": str(youtube["uploader_url"]),
-                "views": int(youtube["view_count"]),
-                "published_at": self.getPublishedAt(),  # type: ignore
-                "thumbnail": str(youtube["thumbnail"]),
-                "duration": self.getDuration(),
-                "audio_file": audio_file,
-                "video_file": video_file
-            }
-        except Exception as error:
-            self.getLogger().error(f"There is an error in the search function. - Error: {error}")
-            return {}
+        raw_youtube: Dict[str, Any] = self.getVideo().extract_info(
+            url=self.getUniformResourceLocator(),
+            download=False
+        ) # type: ignore
+        raw_data: float = perf_counter()
+        self.getLogger().debug(f"Function: search - Get Raw Data Duration: {raw_data - select:.3f}s")
+        self.setLength(int(raw_youtube["duration"]))
+        self.setPublishedAt(f"{raw_youtube['upload_date'][:4]}-{raw_youtube['upload_date'][4:6]}-{raw_youtube['upload_date'][6:]}")
+        self.setAuthor(raw_youtube["uploader"])
+        self.setTitle(raw_youtube["title"])
+        self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
+        set_data: float = perf_counter()
+        self.getLogger().debug(f"Function: search - Set Data Duration: {set_data - raw_data:.3f}s")
+        self.__presentGetYouTube(status)
+        return {
+            "uniform_resource_locator": self.getUniformResourceLocator(),
+            "author": self.getAuthor(),
+            "title": self.getTitle(),
+            "identifier": self.getIdentifier(),
+            "author_channel": raw_youtube.get("uploader_url"),
+            "views": raw_youtube.get("view_count"),
+            "published_at": self.getPublishedAt(), # type: ignore
+            "thumbnail": raw_youtube.get("thumbnail"),
+            "duration": self.getDuration(),
+            "audio_file": None,
+            "video_file": None
+        }
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """

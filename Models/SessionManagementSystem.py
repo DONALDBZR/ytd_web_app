@@ -95,7 +95,7 @@ class Session_Manager:
             RelationalDatabaseError: If the database connection fails.
         """
         ENV: Environment = Environment()
-        self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users/")
+        self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users")
         self.setLogger(Extractio_Logger(__name__))
         self.setPort(str(request["port"]))
         self.setDatabaseHandler(database_handler or Database_Handler())

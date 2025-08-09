@@ -416,7 +416,7 @@ class AnalyticalManagementSystem:
         status = self.setDeviceType() if status == self.ok else status
         status = self.sanitizeIpAddress() if status == self.ok else status
         status = self.getGeolocationData() if status == self.ok else status
-        extraction: float = perf_counter() - set_initial_data
+        extraction: float = perf_counter() - set_initial_data - start_time
         self.getLogger().debug(f"Function: processEvent - Extraction: {extraction:.3f}s")
         if self.getEventName() == "page_view":
             status = self.processPageView(data, status)
@@ -426,7 +426,7 @@ class AnalyticalManagementSystem:
             status = self.processSearchSubmitted(data, status)
         if self.getEventName() == "click":
             status = self.processClick(data, status)
-        get_status: float = perf_counter() - extraction
+        get_status: float = perf_counter() - extraction - start_time
         self.getLogger().debug(f"Function: processEvent - Get Status: {get_status:.3f}s")
         self.getLogger().inform(f"The event has been stored in the database. - Status: {status}")
         return status

@@ -14,7 +14,7 @@ from Environment import Environment
 from time import time
 from argon2 import PasswordHasher
 from datetime import datetime
-from typing import Union
+from typing import Union, Optional
 from base64 import b64encode
 
 
@@ -72,7 +72,7 @@ class Security_Management_System:
     cannot be reused in replay attacks.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, database_handler: Optional[Database_Handler] = None) -> None:
         """
         Initializing the Security Management System.
 
@@ -81,14 +81,18 @@ class Security_Management_System:
             2.  Initializing the application logger.
             3.  Establishing a database connection handler.
             4.  Setting the application name and the current timestamp.
-            5.  Creating the Session table if it does not exist.
+            5.  Creating the session table if it does not exist.
+            6.  Initializing the security hash.
+
+        Args:
+            database_handler (Database_Handler): The database handler instance to interact with the database.
 
         Raises:
-            SystemExit: If the Session table could not be created.
+            SystemExit: If the table cannot be created.
         """
         ENV: Environment = Environment()
         self.setLogger(Extractio_Logger(__name__))
-        self.setDatabaseHandler(Database_Handler())
+        self.setDatabaseHandler(database_handler or Database_Handler())
         self.setApplicationName(ENV.getApplicationName())
         self.setDatestamp(int(time()))
         session: Session = Session(self.getDatabaseHandler())

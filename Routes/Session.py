@@ -73,8 +73,8 @@ def getSession() -> Response:
                 "color_scheme": str(SessionManager.getSession()["Client"]["color_scheme"])
             }
         }
-        closeDatabase()
         Logger.inform(f"The session data has been retrieved.\nStatus: {status}")
+        closeDatabase()
         return Response(
             response=dumps(
                 obj=session_data,
@@ -84,8 +84,8 @@ def getSession() -> Response:
             mimetype=mime_type
         )
     except Exception as error:
-        closeDatabase()
         Logger.error(f"An unexpected error has occurred and the service is currently unavailable.\nError: {error}")
+        closeDatabase()
         data: Dict[str, str] = {
             "error": "Service Unavailble"
         }
@@ -100,18 +100,6 @@ def getSession() -> Response:
 
 @Session_Portal.route('/', methods=['PUT'])
 def setSession() -> Response:
-    """
-    Updating the session data for the client.
-
-    This function receives a JSON payload, validates it, and updates the session data using `Session_Manager`.  If the payload is invalid, it returns a 400 Bad Request response.  If the session update is successful, it returns the updated session data with a 202 Accepted status.  If an unexpected error occurs, it returns a 503 Service Unavailable response.
-
-    Returns:
-        Response: A Flask response object containing updated session data in JSON format, or an error message if the request fails.
-    
-    Raises:
-        ValueError: If the payload is empty or invalid.
-        Exception: If an unexpected error occurs during session update.
-    """
     mime_type: str = "application/json"
     status: int = 202
     try:
@@ -140,6 +128,7 @@ def setSession() -> Response:
             obj=session_data,
             indent=4
         )
+        closeDatabase()
         return Response(
             response=response,
             status=status,
@@ -147,6 +136,7 @@ def setSession() -> Response:
         )
     except ValidationError as error:
         Logger.error(f"An invalid JSON has been received as payload.\nError: {error}")
+        closeDatabase()
         return Response(
             response=dumps(
                 obj={
@@ -159,6 +149,7 @@ def setSession() -> Response:
         )
     except (JSONDecodeError, ValueError) as error:
         Logger.error(f"An invalid JSON has been received as payload.\nError: {error}")
+        closeDatabase()
         return Response(
             response=dumps(
                 obj={
@@ -171,6 +162,7 @@ def setSession() -> Response:
         )
     except Exception as error:
         Logger.error(f"An unexpected error has occured.\nError: {error}")
+        closeDatabase()
         return Response(
             response=dumps(
                 obj={

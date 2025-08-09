@@ -5,12 +5,14 @@ Authors:
     Darkness4869
 """
 from flask import Blueprint, Response, request
-from Models.Media import Media, Extractio_Logger, Environment, Dict, Union, List, dumps
+from Models.Media import Media, Extractio_Logger, Environment, Dict, Union, List, dumps, Database_Handler
 from json import loads
 from os.path import join, realpath
 from html import escape
 from re import fullmatch
 from typing import Any
+from index import DatabaseHandler
+from time import perf_counter
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)

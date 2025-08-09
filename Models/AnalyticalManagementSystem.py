@@ -1287,28 +1287,53 @@ class AnalyticalManagementSystem:
 
     def __getResolvedIp(self) -> str:
         """
-        Resolving the IP address associated with the current hostname.
+        Resolving the IP address from the stored hostname.
 
-        This method:
-            - Attempts to resolve the IP address from the hostname.
-            - If the IP address is found and not 127.0.0.1, it returns this address.
-            - Otherwise, it attempts to obtain the external IP address using an external service.
-            - Logs and raises an error if the external IP cannot be retrieved.
+        This function:
+            - Tries to retrieve the IP address from the database.
+            - If the IP address is found, it logs success and returns the IP address.
+            - If the IP address is not found:
+                - It attempts to resolve the IP address from the hostname.
+                - If the IP address is found and not 127.0.0.1, it logs success and returns the IP address.
+                - If the IP address is not found or is 127.0.0.1, it attempts to obtain the external IP address using an external service.
+                - Logs and raises an error if the external IP cannot be retrieved.
 
         Returns:
             str: The resolved IP address.
 
         Raises:
-            Exception: If an error occurs while attempting to retrieve the external IP.
+            CalledProcessError: If the external IP cannot be retrieved.
         """
-        ip_address: str = gethostbyname(str(self.getHostname()))
-        if ip_address != "127.0.0.1":
+        ip_address: str
+        start_time: float = perf_counter()
+        ip_address = self.__getIpFromDatabase()
+        get_ip_from_database_time: float = perf_counter()
+        if ip_address:
+            duration: float = get_ip_from_database_time - start_time
+            total_duration: float = get_ip_from_database_time - start_time
+            self.getLogger().debug(f"Function: __getResolvedIp - Get IP Address From Database Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
             return ip_address
-        try:
-            return run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True).stdout.strip()
-        except Exception as error:
-            self.getLogger().error(f"The Analytical Management System has failed to get the external IP. - Error: {error}")
-            raise error
+        ip_address = gethostbyname(str(self.getHostname()))
+        if ip_address != "127.0.0.1":
+            end_time: float = perf_counter()
+            duration: float = end_time - get_ip_from_database_time
+            total_duration: float = end_time - start_time
+            self.getLogger().debug(f"Function: __getResolvedIp - Get IP Address From Host Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
+            return ip_address
+        ip_address = run(
+            [
+                "curl",
+                "ifconfig.me"
+            ],
+            capture_output=True,
+            text=True,
+            check=True
+        ).stdout.strip()
+        end_time: float = perf_counter()
+        duration: float = end_time - get_ip_from_database_time
+        total_duration: float = end_time - start_time
+        self.getLogger().debug(f"Function: __getResolvedIp - Get IP Address From Host Duration: {duration:.3f}s - Total Duration: {total_duration:.3f}s")
+        return ip_address
 
     def sanitizeIpAddress(self) -> int:
         """

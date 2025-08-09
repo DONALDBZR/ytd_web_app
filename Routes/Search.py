@@ -8,13 +8,14 @@ Link:
 from flask import Blueprint, Response, render_template, request, Request
 from Models.SecurityManagementSystem import Security_Management_System, Union, Environment
 from urllib.parse import urlparse, ParseResult
+from index import DatabaseHandler
 
 
 Search_Portal: Blueprint = Blueprint("Search", __name__)
 """
 The Routing for all the Searches.
 """
-SecurityManagementSystem: Security_Management_System = Security_Management_System()
+SecurityManagementSystem: Security_Management_System = Security_Management_System(DatabaseHandler)
 """
 It will be a major component that will assure the security of the data that will be stored across the application.
 """

@@ -84,7 +84,7 @@ class Network_Location(Table_Model):
         database_response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
         if not database_response:
             return []
-        response: List["Network_Location"] = [cls(database_handler, **row) for row in response] # type: ignore
+        response: List["Network_Location"] = [cls(database_handler, **row) for row in database_response] # type: ignore
         if not response:
             return []
         return [row.ip_address for row in response] # type: ignore

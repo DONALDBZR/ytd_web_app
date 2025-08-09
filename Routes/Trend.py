@@ -57,21 +57,21 @@ def getTrend():
             mimetype=mime_type
         )
     except ForgedRequestError as error:
-        Logger.error(f"An attack attempt was attempted on this route.\nError: {error}\nIP Address: {request.remote_addr}")
+        Logger.error(f"An attack attempt was attempted on this route. - Error: {error} - IP Address: {request.remote_addr}")
         return Response(
             response={},
             status=403,
             mimetype=mime_type
         )
     except NotFoundError as error:
-        Logger.error(f"There is an unexpected error on the API.\nError: {error}")
+        Logger.error(f"There is an unexpected error on the API. - Error: {error}")
         return Response(
             response={},
             status=503,
             mimetype=mime_type
         )
     except ValueError as error:
-        Logger.error(f"There is an unexpected error on the API's cache data.\nError: {error}\nFile Name: {file_name}")
+        Logger.error(f"There is an unexpected error on the API's cache data. - Error: {error} - File Name: {file_name}")
         return Response(
             response={},
             status=503,

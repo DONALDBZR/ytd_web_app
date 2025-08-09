@@ -12,7 +12,7 @@ from Models.NetworkLocationModel import Network_Location
 from Models.EventTypesModel import Event_Types
 from Models.DeviceModel import Device
 from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
-from time import mktime
+from time import mktime, perf_counter
 from datetime import datetime
 from user_agents import parse
 from user_agents.parsers import UserAgent
@@ -389,12 +389,19 @@ class AnalyticalManagementSystem:
         Returns:
             int
         """
+        start_time: float = perf_counter()
         required_keys: List[str] = ["event_name", "page_url", "timestamp", "user_agent", "screen_resolution"]
         allowed_events: List[str] = ["page_view", "search_submitted", "color_scheme_updated", "click"]
         if not all(key in data for key in required_keys):
+            end_time: float = perf_counter()
+            duration: float = end_time - start_time
+            self.getLogger().debug(f"Function: processEvent - Duration: {duration:.3f}s")
             self.getLogger().error(f"This request is forged as the required keys are missing and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         if data["event_name"] not in allowed_events:
+            end_time: float = perf_counter()
+            duration: float = end_time - start_time
+            self.getLogger().debug(f"Function: processEvent - Duration: {duration:.3f}s")
             self.getLogger().error(f"This request is forged as this event is not allowed and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         self.setEventName(str(data["event_name"]))
@@ -404,19 +411,44 @@ class AnalyticalManagementSystem:
         self.setScreenResolution(str(data["screen_resolution"]))
         self.setReferrer(str(data["referrer"]) if "referrer" in data and data["referrer"] != "" else None)
         self.setIpAddress("omnitechbros.ddns.net" if data["ip_address"] == "127.0.0.1" or str(data["ip_address"]).startswith("192.168.") else str(data["ip_address"]))
+        set_initial_data_time: float = perf_counter()
+        set_initial_data_duration: float = set_initial_data_time - start_time
+        self.getLogger().debug(f"Function: processEvent - Set Initial Data Duration: {set_initial_data_duration:.3f}s")
         status: int = self.getUserAgentData()
+        extract_user_agent_data_time: float = perf_counter()
+        extract_user_agent_data_duration: float = extract_user_agent_data_time - set_initial_data_time
+        self.getLogger().debug(f"Function: processEvent - Extract User Agent Data Duration: {extract_user_agent_data_duration:.3f}s")
         status = self.getScreenResolutionData() if status == self.ok else status
+        extract_screen_resolution_data_time: float = perf_counter()
+        extract_screen_resolution_data_duration: float = extract_screen_resolution_data_time - extract_user_agent_data_time
+        self.getLogger().debug(f"Function: processEvent - Extract Screen Resolution Data Duration: {extract_screen_resolution_data_duration:.3f}s")
         status = self.setDeviceType() if status == self.ok else status
+        extract_device_type_data_time: float = perf_counter()
+        extract_device_type_data_duration: float = extract_device_type_data_time - extract_screen_resolution_data_time
+        self.getLogger().debug(f"Function: processEvent - Extract Device Type Data Duration: {extract_device_type_data_duration:.3f}s")
         status = self.sanitizeIpAddress() if status == self.ok else status
+        sanitize_ip_address_time: float = perf_counter()
+        sanitize_ip_address_duration: float = sanitize_ip_address_time - extract_device_type_data_time
+        self.getLogger().debug(f"Function: processEvent - Sanitize IP Address Duration: {sanitize_ip_address_duration:.3f}s")
         status = self.getGeolocationData() if status == self.ok else status
+        get_geolocation_data_time: float = perf_counter()
+        get_geolocation_data_duration: float = get_geolocation_data_time - sanitize_ip_address_time
+        self.getLogger().debug(f"Function: processEvent - Get Geolocation Data Duration: {get_geolocation_data_duration:.3f}s")
         if self.getEventName() == "page_view":
             status = self.processPageView(data, status)
+            process_event_time: float = perf_counter()
+            process_event_duration: float = process_event_time - get_geolocation_data_time
+            self.getLogger().debug(f"Function: processEvent - Process Event Duration: {process_event_duration:.3f}s")
         if self.getEventName() == "color_scheme_updated":
             status = self.processColorSchemeUpdated(data, status)
         if self.getEventName() == "search_submitted":
             status = self.processSearchSubmitted(data, status)
         if self.getEventName() == "click":
             status = self.processClick(data, status)
+        end_time: float = perf_counter()
+        duration: float = end_time - start_time
+        self.getLogger().debug(f"Function: processEvent - Duration: {duration:.3f}s")
+        self.getLogger().inform(f"The event has been stored in the database. - Status: {status}")
         return status
 
     def processClick(self, data: Dict[str, Union[str, float]], status: int) -> int:
@@ -1253,25 +1285,32 @@ class AnalyticalManagementSystem:
             self.getLogger().warn(f"The Analytical Management System cannot sanitize the IP Address as it is not an IP Address. - Error: {error}")
             return self.service_unavailable
 
-    def sanitizeIpAddress(self) -> int:
+    def __getResolvedIp(self) -> str:
         """
-        Sanitizing the stored IP address for the Analytical Management System.
+        Resolving the IP address associated with the current hostname.
 
-        This function:
-        - Checks if an IP address is available.
-        - Logs an error and returns `503` if no IP address is found.
-        - Attempts to sanitize the IP address using `sanitizeRealIpAddress()`.
-        - If successful, returns `200`.
-        - Otherwise, tries to resolve the IP address using the hostname.
-        - Logs success if the IP address is successfully resolved.
-        - Logs an error and returns `503` if the IP address cannot be resolved.
+        This method:
+            - Attempts to resolve the IP address from the hostname.
+            - If the IP address is found and not 127.0.0.1, it returns this address.
+            - Otherwise, it attempts to obtain the external IP address using an external service.
+            - Logs and raises an error if the external IP cannot be retrieved.
 
         Returns:
-            int
+            str: The resolved IP address.
 
         Raises:
-            gaierror: If the IP address is neither a valid IP nor a resolvable hostname.
+            Exception: If an error occurs while attempting to retrieve the external IP.
         """
+        ip_address: str = gethostbyname(str(self.getHostname()))
+        if ip_address != "127.0.0.1":
+            return ip_address
+        try:
+            return run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True).stdout.strip()
+        except Exception as error:
+            self.getLogger().error(f"The Analytical Management System has failed to get the external IP. - Error: {error}")
+            raise error
+
+    def sanitizeIpAddress(self) -> int:
         if not self.getIpAddress():
             self.getLogger().error("The Analytical Management System cannot retrieve the IP Address.")
             return self.service_unavailable
@@ -1279,12 +1318,15 @@ class AnalyticalManagementSystem:
             return self.ok
         try:
             self.setHostname(self.getIpAddress())
-            self.setIpAddress(gethostbyname(str(self.getHostname())))
-            self.setIpAddress(run(["curl", "ifconfig.me"], capture_output=True, text=True, check=True).stdout.strip() if self.getIpAddress() == "127.0.0.1" else self.getIpAddress())
+            resolved_ip: str = self.__getResolvedIp()
+            self.setIpAddress(resolved_ip)
             self.getLogger().inform("The Analytical Management System has successfully sanitized the IP Address.")
             return self.ok
         except gaierror as error:
             self.getLogger().error(f"The Analytical Management System cannot sanitize the IP Address as it is neither an IP Address nor a host name. - Error: {error}")
+            return self.service_unavailable
+        except Exception as error:
+            self.getLogger().error(f"The Analytical Management System has failed to get the external IP. - Error: {error}")
             return self.service_unavailable
 
     def setDeviceType(self) -> int:

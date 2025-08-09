@@ -389,17 +389,12 @@ class AnalyticalManagementSystem:
         Returns:
             int
         """
-        start_time: float = perf_counter()
         required_keys: List[str] = ["event_name", "page_url", "timestamp", "user_agent", "screen_resolution"]
         allowed_events: List[str] = ["page_view", "search_submitted", "color_scheme_updated", "click"]
         if not all(key in data for key in required_keys):
-            forged_data: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: processEvent - Forged Data: {forged_data:.3f}s")
             self.getLogger().error(f"This request is forged as the required keys are missing and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         if data["event_name"] not in allowed_events:
-            not_allowed_event: float = perf_counter() - start_time
-            self.getLogger().debug(f"Function: processEvent - Not Allowed Event: {not_allowed_event:.3f}s")
             self.getLogger().error(f"This request is forged as this event is not allowed and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         self.setEventName(str(data["event_name"]))
@@ -409,15 +404,11 @@ class AnalyticalManagementSystem:
         self.setScreenResolution(str(data["screen_resolution"]))
         self.setReferrer(str(data["referrer"]) if "referrer" in data and data["referrer"] != "" else None)
         self.setIpAddress("omnitechbros.ddns.net" if data["ip_address"] == "127.0.0.1" or str(data["ip_address"]).startswith("192.168.") else str(data["ip_address"]))
-        set_initial_data: float = perf_counter() - start_time
-        self.getLogger().debug(f"Function: processEvent - Set Initial Data: {set_initial_data:.3f}s")
         status: int = self.getUserAgentData()
         status = self.getScreenResolutionData() if status == self.ok else status
         status = self.setDeviceType() if status == self.ok else status
         status = self.sanitizeIpAddress() if status == self.ok else status
         status = self.getGeolocationData() if status == self.ok else status
-        extraction: float = perf_counter() - set_initial_data - start_time
-        self.getLogger().debug(f"Function: processEvent - Extraction: {extraction:.3f}s")
         if self.getEventName() == "page_view":
             status = self.processPageView(data, status)
         if self.getEventName() == "color_scheme_updated":
@@ -426,8 +417,6 @@ class AnalyticalManagementSystem:
             status = self.processSearchSubmitted(data, status)
         if self.getEventName() == "click":
             status = self.processClick(data, status)
-        get_status: float = perf_counter() - extraction - start_time
-        self.getLogger().debug(f"Function: processEvent - Get Status: {get_status:.3f}s")
         self.getLogger().inform(f"The event has been stored in the database. - Status: {status}")
         return status
 

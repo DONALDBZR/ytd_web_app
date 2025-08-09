@@ -14,7 +14,7 @@ Logger: Extractio_Logger = Extractio_Logger(__name__)
 """
 The logger that will all the action of the application.
 """
-database_handler: Database_Handler = Database_Handler(logger=Logger)
+database_handler: Database_Handler = Session_Portal.database_handler or Database_Handler(logger=Logger) # type: ignore
 """
 A class to handle database operations such as connecting, executing queries, and managing transactions.
 """

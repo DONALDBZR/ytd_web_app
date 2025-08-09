@@ -17,15 +17,15 @@ package of the application.  Once it is created it will act
 as a central registry for the view functions, the URL rules,
 template configuration and much more.
 """
-SecurityManagementSystem: Security_Management_System = Security_Management_System()
-"""
-It will be a major component that will assure the security
-of the data that will be stored across the application.
-"""
 DatabaseHandler: Database_Handler = Database_Handler()
 """
 The database handler that will communicate with the database
 server.
+"""
+SecurityManagementSystem: Security_Management_System = Security_Management_System(DatabaseHandler)
+"""
+It will be a major component that will assure the security
+of the data that will be stored across the application.
 """
 session: Session = Session.getTodaySession(DatabaseHandler)
 key: str = str(session.hash) # type: ignore
@@ -52,6 +52,7 @@ Application.config["COMPRESS_LEVEL"] = 6
 Application.config["COMPRESS_MIN_SIZE"] = 500
 Application.config["COMPRESS_MIMETYPES"] = ["text/html", "text/css", "text/javascript", "application/json", "text/babel"]
 Application.config["MAX_CONTENT_LENGTH"] = 256 * 1024 * 1024
+Session_Portal.database_handler = DatabaseHandler # type: ignore
 Application.register_blueprint(Session_Portal, url_prefix="/Session")
 Application.register_blueprint(Search_Portal, url_prefix="/Search")
 Application.register_blueprint(Media_Portal, url_prefix="/Media")

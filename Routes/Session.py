@@ -37,7 +37,7 @@ session_payload_schema: Dict[str, Any] = {
 
 def closeDatabase():
     """
-    Closes the database connection.
+    Closing the database connection.
 
     This function is called when the application is being torn down, such as when the server is being shut down.  It closes the database connection and cursor to ensure that resources are released properly.
     """

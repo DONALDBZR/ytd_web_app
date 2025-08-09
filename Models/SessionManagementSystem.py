@@ -202,13 +202,15 @@ class Session_Manager:
 
     def verifyExistingSessions(self) -> None:
         """
-        Verifying existing sessions to remove expired ones.
+        Verifying existing sessions.
+
+        This method iterates throughout the session files to process them depending on the response from the system.
 
         Returns:
-            void
+            None
         """
         for index in range(0, self.getLength(), 1):
-            file_name: str = f"{self.getDirectory()}{self.getSessionFiles()[index]}"
+            file_name: str = f"{self.getDirectory()}/{self.getSessionFiles()[index]}"
             data: Union[Dict[str, Dict[str, Union[str, int]]], None] = self.getData(file_name)
             age: int = int(time()) - int(data["Client"]["timestamp"]) if data != None else 0
             self.verifyInactiveSession(age, data, file_name)

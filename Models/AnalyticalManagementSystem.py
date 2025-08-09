@@ -1242,6 +1242,16 @@ class AnalyticalManagementSystem:
             return
         raise ValueError("The location data is malformed.")
 
+    def __getLocationDataFromDatabase(self) -> Optional[Network_Location]:
+        """
+        Retrieving the network and location data associated with the current instance's IP address from the database.
+
+        Returns:
+            Optional[Network_Location]: The last network location data associated with the IP address, or None if no records are found.
+        """
+        response: List[Network_Location] = Network_Location.getLocationDataByIpAddress(self.getDatabaseHandler(), self.getIpAddress())
+        return response[-1] if response else None
+
     def getGeolocationData(self) -> int:
         start_time: float = perf_counter()
         if not self.getIpAddress():
@@ -1249,6 +1259,17 @@ class AnalyticalManagementSystem:
             self.getLogger().debug(f"Function: getGeolocationData - Error Duration: {error_time:.3f}s")
             self.getLogger().error("The Analytical Management System cannot retrieve data from the IP Address.")
             return self.service_unavailable
+        data: Optional[Network_Location] = self.__getLocationDataFromDatabase()
+        if data:
+            self.setLatitude(data.latitude) # type: ignore
+            self.setLongitude(data.longitude) # type: ignore
+            self.setCity(data.city) # type: ignore
+            self.setRegion(data.region) # type: ignore
+            self.setCountry(data.country) # type: ignore
+            self.setTimezone(data.timezone) # type: ignore
+            curl_time: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: getGeolocationData - MySQL Duration: {curl_time:.3f}s")
+            return self.ok
         try:
             route: str = f"{self.getIpInformationApi()}/{self.getIpAddress()}/json"
             response: Response = get(
@@ -1258,6 +1279,7 @@ class AnalyticalManagementSystem:
             response.raise_for_status()
             geolocation_data: Any = response.json()
             location_data: List[str] = str(geolocation_data.get("loc", "")).split(",")
+            self.__validateLocationData(location_data)
             self.setLatitude(float(location_data[0]))
             self.setLongitude(float(location_data[1]))
             self.setCity(str(geolocation_data.get("city", "")))

@@ -2,7 +2,6 @@
 The module that has the Analytical Management System.
 """
 from typing import Dict, Union, Optional
-from urllib import response
 from Models.ClickModel import Click, Database_Handler, List
 from Models.SearchSubmittedModel import Search_Submitted
 from Models.ColorSchemeUpdatedModel import Color_Scheme_Updated
@@ -11,8 +10,8 @@ from Models.PageViewModel import Page_View
 from Models.NetworkLocationModel import Network_Location
 from Models.EventTypesModel import Event_Types
 from Models.DeviceModel import Device
-from Models.DatabaseHandler import Extractio_Logger, Relational_Database_Error as DatabaseHandlerError, Tuple, Any
-from time import mktime, perf_counter
+from Models.DatabaseHandler import Extractio_Logger, Any
+from time import mktime
 from datetime import datetime
 from user_agents import parse
 from user_agents.parsers import UserAgent

@@ -189,7 +189,7 @@ class Database_Handler:
             self.getLogger().error(f"The database handler has failed to execute the query. - Query: {query} - Parameters: {parameters} - Error: {error}")
             raise error
 
-    def _closeCursor(self) -> None:
+    def closeCursor(self) -> None:
         """
         Closing the current cursor if it exists.
 
@@ -238,13 +238,12 @@ class Database_Handler:
         try:
             response: List[RowType] = self.getCursor().fetchall() # type: ignore
             self.getLogger().inform(f"The database handler has successfully fetched the required data.")
-            self._closeCursor()
             return response
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to fetch all rows. - Error: {error}")
             raise error
 
-    def _closeConnection(self) -> None:
+    def closeConnection(self) -> None:
         """
         Closing the database connection.
 

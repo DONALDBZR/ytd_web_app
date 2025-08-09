@@ -5,7 +5,6 @@ from flask import Blueprint, Response, request
 from Models.AnalyticalManagementSystem import AnalyticalManagementSystem, Dict, Union, Extractio_Logger, Database_Handler
 from json import JSONDecodeError
 from index import DatabaseHandler
-from time import perf_counter
 
 
 Track_Portal: Blueprint = Blueprint("Track", __name__)

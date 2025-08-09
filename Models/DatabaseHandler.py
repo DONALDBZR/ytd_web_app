@@ -359,8 +359,6 @@ class Database_Handler:
         try:
             self._execute(query, parameters)
             self._commit()
-            self._closeCursor()
-            self._closeConnection()
             return True
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to delete data. - Query: {query} - Parameters: {parameters} - Error: {error}")

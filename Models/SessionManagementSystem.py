@@ -68,20 +68,37 @@ class Session_Manager:
     The logger that will all the action of the application.
     """
 
-    def __init__(self, request: Dict[str, str], session: SessionMixin):
+    def __init__(
+        self,
+        request: Dict[str, str],
+        session: SessionMixin,
+        database_handler: Optional[Database_Handler] = None
+    ):
         """
-        Instantiating the session's manager which will verify the
-        session of the users.
+        Initializing the Session Management System.
 
-        Parameters:
-            request: {ip_address: string, http_client_ip_address: string, proxy_ip_address: string, port: string}: The request from the application.
-            session: SessionMixin: The session of the user.
+        It sets up the core components of the system.  It performs the following actions:
+            1.  Loading environment variables.
+            2.  Initializing the application logger.
+            3.  Establishing a database connection handler.
+            4.  Setting the application name and the current timestamp.
+            5.  Initializing the session of the user.
+            6.  Maintaining the session of the user.
+            7.  Verifying the session of the user.
+
+        Args:
+            request (Dict[str, str]): The request from the application.
+            session (SessionMixin): The session of the user.
+            database_handler (Database_Handler): The database handler instance to interact with the database.
+
+        Raises:
+            RelationalDatabaseError: If the database connection fails.
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users/")
         self.setLogger(Extractio_Logger(__name__))
         self.setPort(str(request["port"]))
-        self.setDatabaseHandler(Database_Handler())
+        self.setDatabaseHandler(database_handler or Database_Handler())
         self.setIpAddress(str(request["ip_address"]))
         self.setHttpClientIpAddress(str(request["http_client_ip_address"]))
         self.setProxyIpAddress(str(request["proxy_ip_address"]))

@@ -375,13 +375,13 @@ class AnalyticalManagementSystem:
         Processing an incoming event by validating its data and executing the corresponding handler.
 
         This function:
-        - Verifies that all required keys are present.
-        - Checks if the event name is allowed.
-        - Logs an error and returns `503` if validation fails.
-        - Sets internal attributes such as event name, timestamp, user agent, screen resolution, referrer, and IP address.
-        - Performs additional data sanitization and enrichment.
-        - Calls the appropriate event processing function based on the event name.
-        - Logs an error and returns `503` if the event name is invalid.
+            - Verifies that all required keys are present.
+            - Checks if the event name is allowed.
+            - Logs an error and returns `503` if validation fails.
+            - Sets internal attributes such as event name, timestamp, user agent, screen resolution, referrer, and IP address.
+            - Performs additional data sanitization and enrichment.
+            - Calls the appropriate event processing function based on the event name.
+            - Logs an error and returns `503` if the event name is invalid.
 
         Parameters:
             data (Dict[str, Union[str, float]]): A dictionary containing event data.
@@ -393,15 +393,13 @@ class AnalyticalManagementSystem:
         required_keys: List[str] = ["event_name", "page_url", "timestamp", "user_agent", "screen_resolution"]
         allowed_events: List[str] = ["page_view", "search_submitted", "color_scheme_updated", "click"]
         if not all(key in data for key in required_keys):
-            end_time: float = perf_counter()
-            duration: float = end_time - start_time
-            self.getLogger().debug(f"Function: processEvent - Duration: {duration:.3f}s")
+            forged_data: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: processEvent - Forged Data: {forged_data:.3f}s")
             self.getLogger().error(f"This request is forged as the required keys are missing and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         if data["event_name"] not in allowed_events:
-            end_time: float = perf_counter()
-            duration: float = end_time - start_time
-            self.getLogger().debug(f"Function: processEvent - Duration: {duration:.3f}s")
+            not_allowed_event: float = perf_counter() - start_time
+            self.getLogger().debug(f"Function: processEvent - Not Allowed Event: {not_allowed_event:.3f}s")
             self.getLogger().error(f"This request is forged as this event is not allowed and the required data will be logged. - IP Address: {data['ip_address']}")
             return self.service_unavailable
         self.setEventName(str(data["event_name"]))
@@ -411,43 +409,25 @@ class AnalyticalManagementSystem:
         self.setScreenResolution(str(data["screen_resolution"]))
         self.setReferrer(str(data["referrer"]) if "referrer" in data and data["referrer"] != "" else None)
         self.setIpAddress("omnitechbros.ddns.net" if data["ip_address"] == "127.0.0.1" or str(data["ip_address"]).startswith("192.168.") else str(data["ip_address"]))
-        set_initial_data_time: float = perf_counter()
-        set_initial_data_duration: float = set_initial_data_time - start_time
-        self.getLogger().debug(f"Function: processEvent - Set Initial Data Duration: {set_initial_data_duration:.3f}s")
+        set_initial_data: float = perf_counter() - start_time
+        self.getLogger().debug(f"Function: processEvent - Set Initial Data: {set_initial_data:.3f}s")
         status: int = self.getUserAgentData()
-        extract_user_agent_data_time: float = perf_counter()
-        extract_user_agent_data_duration: float = extract_user_agent_data_time - set_initial_data_time
-        self.getLogger().debug(f"Function: processEvent - Extract User Agent Data Duration: {extract_user_agent_data_duration:.3f}s")
         status = self.getScreenResolutionData() if status == self.ok else status
-        extract_screen_resolution_data_time: float = perf_counter()
-        extract_screen_resolution_data_duration: float = extract_screen_resolution_data_time - extract_user_agent_data_time
-        self.getLogger().debug(f"Function: processEvent - Extract Screen Resolution Data Duration: {extract_screen_resolution_data_duration:.3f}s")
         status = self.setDeviceType() if status == self.ok else status
-        extract_device_type_data_time: float = perf_counter()
-        extract_device_type_data_duration: float = extract_device_type_data_time - extract_screen_resolution_data_time
-        self.getLogger().debug(f"Function: processEvent - Extract Device Type Data Duration: {extract_device_type_data_duration:.3f}s")
         status = self.sanitizeIpAddress() if status == self.ok else status
-        sanitize_ip_address_time: float = perf_counter()
-        sanitize_ip_address_duration: float = sanitize_ip_address_time - extract_device_type_data_time
-        self.getLogger().debug(f"Function: processEvent - Sanitize IP Address Duration: {sanitize_ip_address_duration:.3f}s")
         status = self.getGeolocationData() if status == self.ok else status
-        get_geolocation_data_time: float = perf_counter()
-        get_geolocation_data_duration: float = get_geolocation_data_time - sanitize_ip_address_time
-        self.getLogger().debug(f"Function: processEvent - Get Geolocation Data Duration: {get_geolocation_data_duration:.3f}s")
+        extraction: float = perf_counter() - start_time
+        self.getLogger().debug(f"Function: processEvent - Extraction: {extraction:.3f}s")
         if self.getEventName() == "page_view":
             status = self.processPageView(data, status)
-            process_event_time: float = perf_counter()
-            process_event_duration: float = process_event_time - get_geolocation_data_time
-            self.getLogger().debug(f"Function: processEvent - Process Event Duration: {process_event_duration:.3f}s")
         if self.getEventName() == "color_scheme_updated":
             status = self.processColorSchemeUpdated(data, status)
         if self.getEventName() == "search_submitted":
             status = self.processSearchSubmitted(data, status)
         if self.getEventName() == "click":
             status = self.processClick(data, status)
-        end_time: float = perf_counter()
-        duration: float = end_time - start_time
-        self.getLogger().debug(f"Function: processEvent - Duration: {duration:.3f}s")
+        get_status: float = perf_counter() - start_time
+        self.getLogger().debug(f"Function: processEvent - Get Status: {get_status:.3f}s")
         self.getLogger().inform(f"The event has been stored in the database. - Status: {status}")
         return status
 

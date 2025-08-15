@@ -361,27 +361,30 @@ class YouTube_Downloader:
 
     def __prepareResponseFromDatabase(self, meta_data: Dict[str, Union[int, List[YouTube], str]]) -> Dict[str, Union[str, int, None]]:
         """
-        Preparing a response dictionary with YouTube metadata retrieved from the database.
+        Preparing a response dictionary from data retrieved from the relational database.
 
-        This method extracts relevant metadata from the provided `meta_data` dictionary and formats it into a structured response.  The response includes information such as the URL, author, title, identifier, author channel, views, publication date, thumbnail, duration, and file locations for audio and video.
-
-        Parameters:
-            meta_data (Dict[str, Union[int, List[YouTube], str]]): A dictionary containing YouTube metadata, typically retrieved from the database, where "data" is expected to be a list of YouTube instances.
+        This method does the following:
+            1. Takes a dictionary `meta_data` containing an integer status code and a list of YouTube model instances.
+            2. Extracts the first YouTube model instance from the list and constructs a response dictionary with various properties of the YouTube video.
 
         Returns:
-            Dict[str, Union[str, int, None]]: A dictionary containing formatted YouTube metadata for client use.
+            Dict[str, Union[str, int, None]]: A dictionary containing the uniform resource locator, author, title, identifier, author channel, views, published at, thumbnail, duration, audio file, and video file of the YouTube video.
         """
         youtube: YouTube = meta_data["data"][0] # type: ignore
+        uniform_resource_locator: str = f"{self.getBaseUniformResourceLocator()}/watch?v={youtube.identifier}" if "shorts/" not in youtube.identifier else f"{self.getBaseUniformResourceLocator()}/shorts/{youtube.identifier}" # type: ignore
+        duration: str = str(
+            timedelta(seconds=youtube.length) # type: ignore
+        )
         return {
-            "uniform_resource_locator": youtube.url, # type: ignore
+            "uniform_resource_locator": uniform_resource_locator,
             "author": youtube.author, # type: ignore
             "title": youtube.title, # type: ignore
             "identifier": youtube.identifier, # type: ignore
-            "author_channel": youtube.author_channel, # type: ignore
-            "views": youtube.views, # type: ignore
+            "author_channel": "",
+            "views": 0,
             "published_at": youtube.published_at, # type: ignore
-            "thumbnail": youtube.thumbnail, # type: ignore
-            "duration": youtube.duration, # type: ignore
+            "thumbnail": "",
+            "duration": duration,
             "audio_file": meta_data["data"][0].location, # type: ignore
             "video_file": meta_data["data"][1].location # type: ignore
         }
@@ -473,28 +476,16 @@ class YouTube_Downloader:
         thread.start()
 
     def search(self) -> Dict[str, Union[str, int, None]]:
-        """
-        Searching for YouTube metadata.
-
-        This method performs the following actions:
-            1. Sanitizes the YouTube identifier.
-            2. Retrieves the YouTube metadata from the database.
-            3. If the data is found, it formats it into a structured response.
-            4. If the data is not found, it performs a GET request using the YouTube-DL library to retrieve the metadata.
-            5. Sets the duration, published date, author, title, and identifier.
-            6. Returns a structured response with YouTube metadata.
-
-        Returns:
-            Dict[str, Union[str, int, None]]: A dictionary containing YouTube metadata for client use.
-        """
+        response: Optional[Dict[str, Union[str, int, None]]]
         start_time: float = perf_counter()
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
-        meta_data: Dict[str, Union[int, List[YouTube], str]] = self.getYouTube()
-        status: int = meta_data["status"] # type: ignore
-        select: float = perf_counter()
-        self.getLogger().debug(f"Function: search - Database(SELECT) Duration: {select - start_time:.3f}s")
-        if status == 200:
-            return self.__prepareResponseFromDatabase(meta_data)
+        response = self.__loadJsonCache()
+        if response:
+            get_cache: float = perf_counter()
+            self.getLogger().debug(f"Function: search - Get Cache Duration: {get_cache - start_time:.3f}s")
+            self.__updateCache()
+            self.getLogger().inform(f"The application has successfully loaded the cache. - Identifier: {self.getIdentifier()}")
+            return response
         options: Dict[str, bool] = {
             "quiet": True,
             "skip_download": True,
@@ -508,28 +499,73 @@ class YouTube_Downloader:
             download=False
         ) # type: ignore
         raw_data: float = perf_counter()
-        self.getLogger().debug(f"Function: search - Get Raw Data Duration: {raw_data - select:.3f}s")
+        self.getLogger().debug(f"Function: search - Get Raw Data Duration: {raw_data - start_time:.3f}s")
         self.setLength(int(raw_youtube["duration"]))
         self.setPublishedAt(f"{raw_youtube['upload_date'][:4]}-{raw_youtube['upload_date'][4:6]}-{raw_youtube['upload_date'][6:]}")
-        self.setAuthor(raw_youtube["uploader"])
-        self.setTitle(raw_youtube["title"])
+        self.setAuthor(str(raw_youtube["uploader"]))
+        self.setTitle(str(raw_youtube["title"]))
         self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
         set_data: float = perf_counter()
         self.getLogger().debug(f"Function: search - Set Data Duration: {set_data - raw_data:.3f}s")
-        self.__presentGetYouTube(status)
-        return {
+        response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
             "title": self.getTitle(),
             "identifier": self.getIdentifier(),
-            "author_channel": raw_youtube.get("uploader_url"),
-            "views": raw_youtube.get("view_count"),
+            "author_channel": str(raw_youtube.get("uploader_url", "")),
+            "views": int(raw_youtube.get("view_count", 0)),
             "published_at": self.getPublishedAt(), # type: ignore
-            "thumbnail": raw_youtube.get("thumbnail"),
+            "thumbnail": str(raw_youtube.get("thumbnail", "")),
             "duration": self.getDuration(),
             "audio_file": None,
             "video_file": None
         }
+        self.__saveJsonCache(response)
+        save_json: float = perf_counter()
+        self.getLogger().debug(f"Function: search - Save Json Duration: {save_json - set_data:.3f}s")
+        self.postYouTube()
+        post: float = perf_counter()
+        self.getLogger().debug(f"Function: search - Post YouTube Duration: {post - save_json:.3f}s")
+        return response # type: ignore
+
+    def __saveJsonCache(self, data: Dict[str, Union[str, int, None]]) -> None:
+        """
+        Saving JSON cache file containing YouTube metadata.
+
+        This method performs the following actions:
+            1. Tries to create a directory if it does not exist.
+            2. Opens a cache file for writing and serializes the provided data to it.
+            3. Closes the cache file.
+            4. Logs a success message when the cache file is successfully saved.
+            5. Logs an error message when an error occurs.
+
+        Args:
+            data (Dict[str, Union[str, int, None]]): A dictionary containing formatted YouTube metadata for saving to the cache file.
+
+        Returns:
+            None
+        """
+        try:
+            if not exists(self.getDirectory()):
+                makedirs(
+                    name=self.getDirectory(),
+                    exist_ok=True
+                )
+            filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
+            file = open(filename, "w")
+            dump(
+                {
+                    "Media": {
+                        "YouTube": data
+                    }
+                },
+                file,
+                indent=4
+            )
+            file.close()
+            self.getLogger().inform(f"The application has successfully saved the cache file. - Identifier: {self.getIdentifier()}")
+        except Exception as error:
+            self.getLogger().error(f"The application has failed to save the cache file. - Identifier: {self.getIdentifier()} - Error: {error}")
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """

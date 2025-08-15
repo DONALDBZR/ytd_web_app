@@ -405,14 +405,9 @@ class YouTube_Downloader:
         for attempt in range(3):
             try:
                 file = open(filename, "r")
-                data: Dict[str, Any] = load(file)
+                data: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = load(file)
                 file.close()
-                if isinstance(data, dict) and isinstance(data.get("Media"), dict) and isinstance(data["Media"].get("YouTube"), dict):
-                    response: Dict[str, Union[str, int, None]] = data["Media"]["YouTube"] # type: ignore
-                    required_fields: Tuple[str, str, str, str, str] = ("identifier", "title", "author", "published_at", "duration")
-                    return self.__hasAllRequiredFields(response, required_fields, filename)
-                self.getLogger().warn(f"The application has failed to load the cache due to an invalid cache file.  The file will be deleted and refetched. - Identifier: {self.getIdentifier()}")
-                remove(filename)
+                return self.__isValidData(data, filename)
             except (FileNotFoundError, JSONDecodeError, OSError) as error:
                 if attempt < 2:
                     sleep(0.02)
@@ -421,12 +416,32 @@ class YouTube_Downloader:
                 self.getLogger().error(f"The application has failed to load the cache file. - Error: {error}")
                 return None
 
-    def __hasAllRequiredFields(
-        self,
-        response: Dict[str, Union[str, int, None]],
-        required_fields: Tuple[str, str, str, str, str],
-        filename: str
-    ) -> Dict[str, Union[str, int, None]]:
+    def __isValidData(self, data: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]], filename: str) -> Dict[str, Union[str, int, None]]:
+        """
+        Validating the structure of the cache file.
+
+        This method does the following:
+            1. checks if the provided data dictionary has the required structure to be a valid YouTube cache file.
+            2. It does this by checking if the data dictionary and its nested dictionaries have the correct types. 
+            3. Raises `JSONDecodeError` when the data dictionary is not a dictionary or the "Media" key is not a dictionary or the "YouTube" key is not a dictionary.
+            4. Returns the YouTube response dictionary when the data dictionary is valid.
+
+        Parameters:
+            data (Dict[str, Dict[str, Dict[str, Union[str, int, None]]]]): The data dictionary from the cache file.
+            filename (str): The name of the cache file.
+
+        Returns:
+            Dict[str, Union[str, int, None]]: The YouTube response dictionary if the data dictionary is valid.
+
+        Raises:
+            JSONDecodeError: If the data dictionary is invalid.
+        """
+        if not isinstance(data, dict) or not isinstance(data.get("Media"), dict) or not isinstance(data["Media"].get("YouTube"), dict):
+            raise JSONDecodeError("The cache file is invalid.", filename, 0)
+        response: Dict[str, Union[str, int, None]] = data["Media"]["YouTube"] # type: ignore
+        return self.__hasAllRequiredFields(response, filename)
+
+    def __hasAllRequiredFields(self, response: Dict[str, Union[str, int, None]], filename: str) -> Dict[str, Union[str, int, None]]:
         """
         Validating that a cache file contains all required fields.
 
@@ -437,7 +452,6 @@ class YouTube_Downloader:
 
         Args:
             response (Dict[str, Union[str, int, None]]): The response dictionary to be validated.
-            required_fields (Tuple[str, str, str, str, str]): The required fields to be present in the response dictionary.
             filename (str): The name of the cache file.
 
         Raises:
@@ -446,6 +460,7 @@ class YouTube_Downloader:
         Returns:
             Dict[str, Union[str, int, None]]: The validated response dictionary.
         """
+        required_fields: Tuple[str, str, str, str, str] = ("identifier", "title", "author", "published_at", "duration")
         if not all(field in response for field in required_fields):
             raise JSONDecodeError("The cache file is missing required fields.", filename, 0)
         self.getLogger().inform(f"The application has successfully loaded the cache. - Identifier: {self.getIdentifier()}")

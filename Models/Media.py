@@ -237,12 +237,9 @@ class Media:
         Raises:
             ValueError: If the platform is not supported by the application.
         """
-        start_time: float = perf_counter()
         if "youtube" in self.getValue() or "youtu.be" in self.getValue():
             return self.handleYouTube()
         self.getLogger().error(f"This platform is not supported by the application! - Status: 403")
-        error_time: float = perf_counter() - start_time
-        self.getLogger().debug(f"Function: __handleVerifyPlatform - Duration: {error_time:.3f}s")
         raise ValueError("This platform is not supported by the application!")
 
     def handleVerifyPlatform(self, status: int) -> Optional[Dict[str, Union[int, Dict[str, Union[str, int, None]]]]]:

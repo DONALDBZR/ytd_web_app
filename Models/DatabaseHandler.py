@@ -184,15 +184,30 @@ class Database_Handler:
         query: str,
         parameters: Optional[Tuple[Any, ...]] = None
     ) -> None:
+        """
+        Executing a SQL query with optional parameters.
+
+        This method does the following:
+            1. Ensures that the database connection is active.
+            2. Establishes a new cursor.
+            3. Executes the provided SQL query with optional parameters.
+            4. Raises a `Relational_Database_Error` when the execution fails.
+
+        Args:
+            query (str): The SQL query to execute.
+            parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
+
+        Raises:
+            Relational_Database_Error: If the execution of the query fails.
+        """
         self.__ensureConnection()
-        if self.getCursor() is None:
+        try:
             self.setCursor(
                 self.getConnection().cursor( # type: ignore
                     prepared=True,
                     dictionary=True
                 )
             )
-        try:
             self.getCursor().execute(query, self.__sanitizeParameters(parameters)) # type: ignore
         except Relational_Database_Error as error:
             self.getLogger().error(f"The database handler has failed to execute the query. - Query: {query} - Parameters: {parameters} - Error: {error}")

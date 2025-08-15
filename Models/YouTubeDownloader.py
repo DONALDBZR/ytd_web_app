@@ -12,7 +12,8 @@ from Models.YouTubeModel import YouTube
 from Models.MediaFileModel import Media_File
 from time import perf_counter
 from datetime import datetime, timedelta
-from json import load
+from json import load, dump
+from threading import Thread
 
 
 class YouTube_Downloader:
@@ -415,6 +416,41 @@ class YouTube_Downloader:
             file.close()
             self.getLogger().error(f"The application has failed to load the cahce file. - Error: {error}")
             return None
+
+    def __refreshCache(self) -> None:
+        """
+        Refreshing the cache file containing YouTube metadata.
+
+        This method performs the following actions:
+            1. Retrieves fresh YouTube metadata using `search()`.
+            2. Opens a cache file for writing and serializes the fresh metadata to it.
+            3. Closes the cache file.
+            4. Logs a success message.
+            5. Logs an error message when an error occurs.
+
+        Returns:
+            None
+        """
+        start_time: float = perf_counter()
+        try:
+            fresh_data: Dict[str, Union[str, int, None]] = self.search()
+            filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
+            file = open(filename, "w")
+            dump(
+                {
+                    "Media": {
+                        "YouTube": fresh_data
+                    }
+                },
+                file,
+                indent=4
+            )
+            file.close()
+            end_time: float = perf_counter()
+            self.getLogger().debug(f"Function: __refreshCache - Duration: {end_time - start_time:.3f}s")
+            self.getLogger().inform(f"The application has successfully refreshed the cache. - Identifier: {self.getIdentifier()}")
+        except Exception as error:
+            self.getLogger().error(f"The application has failed to refresh the cache. - Identifier: {self.getIdentifier()} - Error: {error}")
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """

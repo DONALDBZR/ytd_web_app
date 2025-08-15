@@ -652,7 +652,7 @@ class YouTube_Downloader:
             self.getLogger().inform(f"The application has successfully saved the cache file. - Identifier: {self.getIdentifier()}")
         except Exception as error:
             self.getLogger().error(f"The application has failed to save the cache file. - Identifier: {self.getIdentifier()} - Error: {error}")
-            raise error
+            raise
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """

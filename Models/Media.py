@@ -318,17 +318,23 @@ class Media:
             return 503
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
-        start_time: float = perf_counter()
+        """
+        Retrieving YouTube video metadata from the relational database.
+
+        This method does the following:
+            1. Delegates to a `YouTube_Downloader` instance to retrieve YouTube video metadata.
+            2. Calls `search()` when the `referer` attribute is `None`.
+            3. Calls `retrievingStreams()` when the `referer` attribute is not `None`.
+
+        Returns:
+            Dict[str, Union[int, Dict[str, Union[str, int, None]]]]: A dictionary containing the status of the query, the metadata of the YouTube video, and the timestamp when the query was made.
+        """
         response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         identifier: str = self._getIdentifier()
         filename: str = f"{self.getDirectory()}/{identifier}.json"
         status: int = 200 if self.getReferer() is None else 201
-        set_data: float = perf_counter() - start_time
-        self.getLogger().debug(f"Function: handleYouTube - Set Data Duration: {set_data:.3f}s")
         youtube: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search() if self.getReferer() is None else self._YouTubeDownloader.retrievingStreams()  # type: ignore
-        get_youtube_data: float = perf_counter() - set_data - start_time
-        self.getLogger().debug(f"Function: handleYouTube - Get YouTube Data Duration: {get_youtube_data:.3f}s")
         media: Dict[str, Dict[str, Dict[str, Union[str, int, None]]]] = {
             "Media": {
                 "YouTube": youtube
@@ -337,14 +343,10 @@ class Media:
         file = open(filename, "w")
         file.write(dumps(media, indent=4))
         file.close()
-        save_data: float = perf_counter() - get_youtube_data - start_time
-        self.getLogger().debug(f"Function: handleYouTube - Save Data Duration: {save_data:.3f}s")
         response = {
             "status": status,
             "data": youtube
         }
-        duration: float = perf_counter() - start_time
-        self.getLogger().debug(f"Function: handleYouTube - Duration: {duration:.3f}s")
         return response
 
     def _getIdentifier(self) -> str:

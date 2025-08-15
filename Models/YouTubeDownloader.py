@@ -417,7 +417,7 @@ class YouTube_Downloader:
             return data["Media"]["YouTube"] # type: ignore
         except Exception as error:
             file.close()
-            self.getLogger().error(f"The application has failed to load the cahce file. - Error: {error}")
+            self.getLogger().error(f"The application has failed to load the cache file. - Error: {error}")
             return None
 
     def __refreshCache(self) -> None:

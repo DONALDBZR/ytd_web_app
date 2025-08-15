@@ -434,7 +434,6 @@ class YouTube_Downloader:
         Returns:
             None
         """
-        start_time: float = perf_counter()
         try:
             fresh_data: Dict[str, Union[str, int, None]] = self.search()
             filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
@@ -449,8 +448,6 @@ class YouTube_Downloader:
                 indent=4
             )
             file.close()
-            end_time: float = perf_counter()
-            self.getLogger().debug(f"Function: __refreshCache - Duration: {end_time - start_time:.3f}s")
             self.getLogger().inform(f"The application has successfully refreshed the cache. - Identifier: {self.getIdentifier()}")
         except Exception as error:
             self.getLogger().error(f"The application has failed to refresh the cache. - Identifier: {self.getIdentifier()} - Error: {error}")

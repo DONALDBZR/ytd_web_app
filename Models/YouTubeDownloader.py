@@ -390,6 +390,20 @@ class YouTube_Downloader:
         }
 
     def __loadJsonCache(self) -> Optional[Dict[str, Union[str, int, None]]]:
+        """
+        Loading a JSON cache file for a YouTube video.
+
+        This method does the following:
+            1. Attempts to load a JSON cache file for a YouTube video.
+            2. Checks if the file exists and is not empty.
+            3. Removes the file when it is empty and `None` is returned.
+            4. Removes the file when it is too old and `None` is returned.
+            5. Attempts to load the file three times with a delay of 20 milliseconds between attempts when the file is not too old.
+            6. Logs an error message when the file cannot be loaded and `None` is returned.
+
+        Returns:
+            (Optional[Dict[str, Union[str, int, None]]]): A dictionary containing the uniform resource locator, author, title, identifier, author channel, views, published at, thumbnail, duration, audio file, and video file of the YouTube video, or None if the file cannot be loaded or is too old.
+        """
         filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
         if not exists(filename):
             return None

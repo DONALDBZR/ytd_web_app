@@ -557,14 +557,27 @@ class YouTube_Downloader:
         self.getLogger().inform(f"The directory has been created. - Directory: {self.getDirectory()}")
 
     def __saveJsonCache(self, data: Dict[str, Union[str, int, None]]) -> None:
+        """
+        Saving YouTube metadata to a JSON cache file.
+
+        This method does the following:
+            1. Serializes the provided YouTube metadata to a JSON file
+            2. Saves it to the specified directory.
+
+        Parameters:
+            data (Dict[str, Union[str, int, None]]): A dictionary containing the YouTube metadata to be serialized.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If an error occurs while saving the cache file.
+        """
         try:
-            if not exists(self.getDirectory()):
-                makedirs(
-                    name=self.getDirectory(),
-                    exist_ok=True
-                )
+            self.__checkDirectory()
             filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
-            file = open(filename, "w")
+            temporary_file: str = f"{filename}.tmp"
+            file = open(temporary_file, "w")
             dump(
                 {
                     "Media": {
@@ -575,9 +588,11 @@ class YouTube_Downloader:
                 indent=4
             )
             file.close()
+            replace(temporary_file, filename)
             self.getLogger().inform(f"The application has successfully saved the cache file. - Identifier: {self.getIdentifier()}")
         except Exception as error:
             self.getLogger().error(f"The application has failed to save the cache file. - Identifier: {self.getIdentifier()} - Error: {error}")
+            raise error
 
     def _getFileLocations(self, result_set: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[str, None]]:
         """

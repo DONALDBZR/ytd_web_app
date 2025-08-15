@@ -400,7 +400,25 @@ class Media:
             self.getLogger().error(f"The application has failed to refresh the data in the cache. - Identifier: {identifier} - Error: {error}")
 
     def __updateYouTubeCache(self, identifier: str) -> None:
-        pass
+        """
+        Starting a new thread to refresh the YouTube cache by fetching fresh data from the `YouTube_Downloader` and writing it to a JSON file.
+
+        This private method does the following:
+            1. Creates a new thread that runs the `__refreshYouTubeCache` method with the given identifier as an argument.
+            2. The thread is set as daemonic and immediately starts running.
+
+        Args:
+            identifier (str): The identifier of the YouTube data to be refreshed.
+
+        Returns:
+            None
+        """
+        thread: Thread = Thread(
+            target=self.__refreshYouTubeCache,
+            args=(identifier,)
+            daemon=True
+        )
+        thread.start()
 
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         start_time: float = perf_counter()

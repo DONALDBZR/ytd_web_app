@@ -357,16 +357,10 @@ class Database_Handler:
             query (str): The SQL query to execute.
             parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
 
-        Raises:
-            Relational_Database_Error: If the execution or commit operation fails.
+        Returns:
+            bool: True if the operation is successful, False otherwise.
         """
-        try:
-            self._execute(query, parameters)
-            self._commit()
-            return True
-        except Relational_Database_Error as error:
-            self.getLogger().error(f"The database handler has failed to post data. - Query: {query} - Parameters: {parameters} - Error: {error}")
-            return False
+        return self._manipulateData(query, parameters)
 
     def updateData(
         self,

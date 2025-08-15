@@ -294,17 +294,20 @@ class Database_Handler:
         """
         Fetching data from the database by executing a query with optional parameters.
 
+        This method does the following:
+            1. Executes the provided SQL query with optional parameters.
+            2. Returns a list of rows returned by the query.
+            3. Returning an empty list when the execution fails.
+
         Args:
             query (str): The SQL query to execute.
             parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
 
         Returns:
-            List[RowType]: A list of rows returned by the executed query.
-
-        Raises:
-            Relational_Database_Error: If the execution or fetching of data fails.
+            List[RowType]: A list of rows returned by the query.
         """
         try:
+            self.getCursor().reset() # type: ignore
             self._execute(query, parameters)
             response: List[RowType] = self._fetchAll()
             return response

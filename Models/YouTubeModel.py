@@ -163,6 +163,6 @@ class YouTube(Table_Model):
         Returns:
             bool
         """
-        query: str = f"INSERT INTO {self.getTableName()} (identifier, length, published_at, author, title, Media) VALUES (%s, %s, %s, %s, %s, %s)"
+        query: str = f"INSERT INTO {self.getTableName()} (identifier, length, published_at, author, title, Media) VALUES (%s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE length = VALUES(length), published_at = VALUES(published_at), author = VALUES(author), title = VALUES(title), Media = VALUES(Media)"
         parameters: Tuple[str, int, str, str, str, int] = (self.identifier, self.length, self.published_at, self.author, self.title, self.Media) # type: ignore
         return self.getDatabaseHandler().postData(query, parameters)

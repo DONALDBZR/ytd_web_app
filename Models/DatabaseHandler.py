@@ -315,6 +315,36 @@ class Database_Handler:
             self.getLogger().error(f"The database handler has failed to get data. - Query: {query} - Parameters: {parameters} - Error: {error}")
             return []
 
+    def _manipulateData(
+        self,
+        query: str,
+        parameters: Optional[Tuple[Any, ...]] = None
+    ) -> bool:
+        """
+        Executing the provided SQL query with optional parameters and committing the changes.
+
+        This method does the following:
+            1. Resets the cursor.
+            2. Executes the provided SQL query with optional parameters.
+            3. Commits the changes.
+            4. Returns True if the operation is successful, False otherwise.
+
+        Args:
+            query (str): The SQL query to execute.
+            parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
+
+        Returns:
+            bool: True if the operation is successful, False otherwise.
+        """
+        try:
+            self.getCursor().reset() # type: ignore
+            self._execute(query, parameters)
+            self._commit()
+            return True
+        except Relational_Database_Error as error:
+            self.getLogger().error(f"The database handler has failed to post data. - Query: {query} - Parameters: {parameters} - Error: {error}")
+            return False
+
     def postData(
         self,
         query: str,

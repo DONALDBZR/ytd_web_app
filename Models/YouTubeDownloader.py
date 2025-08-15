@@ -4,14 +4,15 @@ from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
 from typing import Dict, Union, Optional
 from time import strftime, gmtime
-from os.path import isfile, exists
+from os.path import isfile, exists, getmtime
 from os import makedirs
-from html import escape
 from Errors.ExtractioErrors import NotFoundError
 from yt_dlp.utils import DownloadError, ExtractorError
 from Models.YouTubeModel import YouTube
 from Models.MediaFileModel import Media_File
 from time import perf_counter
+from datetime import datetime, timedelta
+from json import load
 
 
 class YouTube_Downloader:
@@ -383,6 +384,37 @@ class YouTube_Downloader:
             "audio_file": meta_data["data"][0].location, # type: ignore
             "video_file": meta_data["data"][1].location # type: ignore
         }
+
+    def __loadJsonCache(self) -> Optional[Dict[str, Union[str, int, None]]]:
+        """
+        Loading a JSON cache file containing YouTube metadata.
+
+        This methods does the following:
+            1. Loads a JSON cache file containing YouTube metadata.
+            2. Checks that the file exists and that its age is less than one week.
+            3. Returns `None` when the file does not meet these requirements.
+            4. Returns the YouTube metadata when the file is valid.
+
+        Returns:
+            Optional[Dict[str, Union[str, int, None]]]: A dictionary containing formatted YouTube metadata for client use, or None if the file is invalid or does not exist.
+        """
+        data: Optional[Dict[str, Union[str, int, None]]]
+        filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
+        if not exists(filename):
+            return None
+        max_age: timedelta = timedelta(weeks=1)
+        file_age: timedelta = datetime.now() - datetime.fromtimestamp(getmtime(filename))
+        if file_age > max_age:
+            return None
+        file = open(filename, "r")
+        try:
+            data = load(file)
+            file.close()
+            return data["Media"]["YouTube"] # type: ignore
+        except Exception as error:
+            file.close()
+            self.getLogger().error(f"The application has failed to load the cahce file. - Error: {error}")
+            return None
 
     def search(self) -> Dict[str, Union[str, int, None]]:
         """

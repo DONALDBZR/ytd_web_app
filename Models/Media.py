@@ -8,12 +8,13 @@ from Models.YouTubeDownloader import YouTube_Downloader, Database_Handler, Extra
 from Models.MediaModel import Media as Media_Model
 from Models.YouTubeModel import YouTube
 from datetime import datetime, timedelta
-from json import dumps, load, loads
+from json import dumps, load, loads, dump
 from re import match, Match
 from html import escape
 from typing import Optional, Union
 from time import perf_counter
 from os.path import exists, getmtime
+from threading import Thread
 
 
 class Media:
@@ -364,8 +365,50 @@ class Media:
             self.getLogger().error(f"The application has failed to JSON the cache. - Error: {error}")
             return None
 
+    def __refreshYouTubeCache(self, identifier: str) -> None:
+        """
+        Refreshing the YouTube cache by fetching fresh data from the `YouTube_Downloader` and writing it to a JSON file.
+
+        This private method does the following:
+            1. Attempts to fetch fresh data from the `YouTube_Downloader`.
+            2. Writes it to a JSON file in the cache directory.
+            3. Logs an informative message when the fetch is successful.
+            4. Logs an error message when the fetch fails.
+
+        Args:
+            identifier (str): The identifier of the YouTube data to be refreshed.
+
+        Returns:
+            None
+        """
+        try:
+            fresh_data: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
+            filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
+            file = open(filename, "w")
+            dump(
+                {
+                    "Media": {
+                        "YouTube": fresh_data
+                    }
+                },
+                file,
+                indent=4
+            )
+            file.close()
+            self.getLogger().inform(f"The data has been refreshed in the cache. - Identifier: {identifier}")
+        except Exception as error:
+            self.getLogger().error(f"The application has failed to refresh the data in the cache. - Identifier: {identifier} - Error: {error}")
+
+    def __updateYouTubeCache(self, identifier: str) -> None:
+        pass
+
     def handleYouTube(self) -> Dict[str, Union[int, Dict[str, Union[str, int, None]]]]:
         start_time: float = perf_counter()
+        youtube_data: Optional[Dict[str, Union[str, int, None]]] = self.__loadCache(self.getIdentifier())
+        if youtube_data:
+            get_cache: float = perf_counter()
+            self.getLogger().debug(f"Function: handleYouTube - Get Cache Duration: {get_cache - start_time:.3f}s")
+
         response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]]
         self._YouTubeDownloader: YouTube_Downloader = YouTube_Downloader(self.getSearch(), self.getIdentifier())
         identifier: str = self._getIdentifier()

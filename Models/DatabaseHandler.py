@@ -409,15 +409,6 @@ class Database_Handler:
             parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
 
         Returns:
-            bool: True if the table was created successfully, False otherwise.
-
-        Raises:
-            Relational_Database_Error: If the table creation fails.
+            bool: True if the operation is successful, False otherwise.
         """
-        try:
-            self._execute(query, parameters)
-            self._commit()
-            return True
-        except Relational_Database_Error as error:
-            self.getLogger().error(f"The database handler has failed to create the table. - Query: {query} - Parameters: {parameters} - Error: {error}")
-            return False
+        return self._manipulateData(query, parameters)

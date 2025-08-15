@@ -2,17 +2,17 @@ from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environme
 from datetime import datetime
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict, Union, Optional
-from time import strftime, gmtime
-from os.path import isfile, exists, getmtime, join
-from os import makedirs, replace
+from typing import Dict, Union, Optional, Tuple
+from time import strftime, gmtime, sleep
+from os.path import isfile, exists, getmtime, join, getsize
+from os import makedirs, replace, remove
 from Errors.ExtractioErrors import NotFoundError
 from yt_dlp.utils import DownloadError, ExtractorError
 from Models.YouTubeModel import YouTube
 from Models.MediaFileModel import Media_File
 from time import perf_counter
 from datetime import datetime, timedelta
-from json import load, dump
+from json import load, dump, JSONDecodeError
 from threading import Thread
 
 
@@ -390,35 +390,66 @@ class YouTube_Downloader:
         }
 
     def __loadJsonCache(self) -> Optional[Dict[str, Union[str, int, None]]]:
-        """
-        Loading a JSON cache file containing YouTube metadata.
-
-        This methods does the following:
-            1. Loads a JSON cache file containing YouTube metadata.
-            2. Checks that the file exists and that its age is less than one week.
-            3. Returns `None` when the file does not meet these requirements.
-            4. Returns the YouTube metadata when the file is valid.
-
-        Returns:
-            Optional[Dict[str, Union[str, int, None]]]: A dictionary containing formatted YouTube metadata for client use, or None if the file is invalid or does not exist.
-        """
-        data: Optional[Dict[str, Union[str, int, None]]]
         filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
         if not exists(filename):
+            return None
+        size: int = getsize(filename)
+        if size < 2:
+            self.getLogger().warn(f"The cache file is empty. - File Name: {filename}")
+            remove(filename)
             return None
         max_age: timedelta = timedelta(weeks=1)
         file_age: timedelta = datetime.now() - datetime.fromtimestamp(getmtime(filename))
         if file_age > max_age:
             return None
-        file = open(filename, "r")
-        try:
-            data = load(file)
-            file.close()
-            return data["Media"]["YouTube"] # type: ignore
-        except Exception as error:
-            file.close()
-            self.getLogger().error(f"The application has failed to load the cache file. - Error: {error}")
-            return None
+        for attempt in range(3):
+            try:
+                file = open(filename, "r")
+                data: Dict[str, Any] = load(file)
+                file.close()
+                if isinstance(data, dict) and isinstance(data.get("Media"), dict) and isinstance(data["Media"].get("YouTube"), dict):
+                    response: Dict[str, Union[str, int, None]] = data["Media"]["YouTube"] # type: ignore
+                    required_fields: Tuple[str, str, str, str, str] = ("identifier", "title", "author", "published_at", "duration")
+                    return self.__hasAllRequiredFields(response, required_fields, filename)
+                self.getLogger().warn(f"The application has failed to load the cache due to an invalid cache file.  The file will be deleted and refetched. - Identifier: {self.getIdentifier()}")
+                remove(filename)
+            except (FileNotFoundError, JSONDecodeError, OSError) as error:
+                if attempt < 2:
+                    sleep(0.02)
+                    continue
+                remove(filename)
+                self.getLogger().error(f"The application has failed to load the cache file. - Error: {error}")
+                return None
+
+    def __hasAllRequiredFields(
+        self,
+        response: Dict[str, Union[str, int, None]],
+        required_fields: Tuple[str, str, str, str, str],
+        filename: str
+    ) -> Dict[str, Union[str, int, None]]:
+        """
+        Validating that a cache file contains all required fields.
+
+        This function does the following:
+            1. Checks whether the provided response dictionary contains all the required fields.
+            2. Raises a `JSONDecodeError` when any required field is missing.
+            3. Logs a success message and returns the response dictionary when all required fields are present, it logs a success message and returns the response dictionary.
+
+        Args:
+            response (Dict[str, Union[str, int, None]]): The response dictionary to be validated.
+            required_fields (Tuple[str, str, str, str, str]): The required fields to be present in the response dictionary.
+            filename (str): The name of the cache file.
+
+        Raises:
+            JSONDecodeError: If the response dictionary is missing any required field.
+
+        Returns:
+            Dict[str, Union[str, int, None]]: The validated response dictionary.
+        """
+        if not all(field in response for field in required_fields):
+            raise JSONDecodeError("The cache file is missing required fields.", filename, 0)
+        self.getLogger().inform(f"The application has successfully loaded the cache. - Identifier: {self.getIdentifier()}")
+        return response
 
     def __refreshCache(self) -> None:
         """

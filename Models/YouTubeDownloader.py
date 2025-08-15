@@ -452,6 +452,26 @@ class YouTube_Downloader:
         except Exception as error:
             self.getLogger().error(f"The application has failed to refresh the cache. - Identifier: {self.getIdentifier()} - Error: {error}")
 
+    def __updateCache(self) -> None:
+        """
+        Starting a daemon thread to refresh the cache file containing YouTube metadata.
+
+        This method does the following:
+            1. Creates a new `Thread` object.
+            2. Sets the target of the thread to the `refreshCache()` method.
+            3. Marks the thread as a daemon, which means it will exit when the main thread exits.
+            4. Starts the thread.
+
+        Returns:
+            None
+        """
+        thread: Thread = Thread(
+            target=self.__refreshCache,
+            args=(),
+            daemon=True
+        )
+        thread.start()
+
     def search(self) -> Dict[str, Union[str, int, None]]:
         """
         Searching for YouTube metadata.

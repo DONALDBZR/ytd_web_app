@@ -119,13 +119,26 @@ def closeDatabase():
 
 @Media_Portal.route("/Search", methods=["GET"])
 def search() -> Response:
-    start_time: float = perf_counter()
+    """
+    Route for searching media on a specific platform.
+
+    This route handles GET requests to search for media on a specified platform.  It expects the following query parameters:
+        - platform: The platform to search on.
+        - type: The type of media to search for (either "Video" or "Shorts").
+        - identifier: The identifier of the media to search for.
+
+    The route returns a JSON response containing the search results.
+
+    Returns:
+        Response: A JSON response containing the search results.
+    """
     platform: str = escape(str(request.args.get("platform")))
     type: str = escape(str(request.args.get("type")))
     identifier: str = escape(str(request.args.get("identifier")))
     mime_type: str = "application/json"
     if not platform or not type or not identifier:
         Routing_Logger.error("The parameters are missing.")
+        closeDatabase()
         return Response(
             response=dumps(
                 obj={
@@ -138,6 +151,7 @@ def search() -> Response:
         )
     if len(identifier) > 16:
         Routing_Logger.error("The identifier is too long.")
+        closeDatabase()
         return Response(
             response=dumps(
                 obj={
@@ -150,6 +164,7 @@ def search() -> Response:
         )
     if type not in ENV.getAllowedYoutubeContents():
         Routing_Logger.error(f"The type is invalid. - Type: {type}")
+        closeDatabase()
         return Response(
             response=dumps(
                 obj={
@@ -172,6 +187,7 @@ def search() -> Response:
     response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = media.verifyPlatform()
     status: int = int(response["status"])  # type: ignore
     Routing_Logger.inform(f"The response has been sent. - Status: {status} - Data: {response['data']}")
+    closeDatabase()
     return Response(
         response=dumps(
             obj=response,

@@ -200,8 +200,8 @@ class Database_Handler:
         Raises:
             Relational_Database_Error: If the execution of the query fails.
         """
-        self.__ensureConnection()
         try:
+            self.__ensureConnection()
             self.setCursor(
                 self.getConnection().cursor( # type: ignore
                     prepared=True,
@@ -307,7 +307,6 @@ class Database_Handler:
             List[RowType]: A list of rows returned by the query.
         """
         try:
-            self.getCursor().reset() # type: ignore
             self._execute(query, parameters)
             response: List[RowType] = self._fetchAll()
             return response
@@ -324,10 +323,9 @@ class Database_Handler:
         Executing the provided SQL query with optional parameters and committing the changes.
 
         This method does the following:
-            1. Resets the cursor.
-            2. Executes the provided SQL query with optional parameters.
-            3. Commits the changes.
-            4. Returns True if the operation is successful, False otherwise.
+            1. Executes the provided SQL query with optional parameters.
+            2. Commits the changes.
+            3. Returns True if the operation is successful, False otherwise.
 
         Args:
             query (str): The SQL query to execute.
@@ -337,7 +335,6 @@ class Database_Handler:
             bool: True if the operation is successful, False otherwise.
         """
         try:
-            self.getCursor().reset() # type: ignore
             self._execute(query, parameters)
             self._commit()
             return True

@@ -476,6 +476,32 @@ class YouTube_Downloader:
         thread.start()
 
     def search(self) -> Dict[str, Union[str, int, None]]:
+        """
+        Searching for YouTube metadata.
+
+        This method does the following actions:
+            1. Retrieves YouTube metadata using the cache file.
+            2. Loads the metadata from the cache file and updates the cache when the cache file exists.
+            3. Retrieves the raw YouTube metadata using the YouTube Data API when the cache file does not exist.
+            4. Sets the metadata in the object.
+            5. Saves the metadata to the cache file.
+            6. Posts the metadata to the backend.
+            7. Returns the metadata.
+
+        Returns:
+            A dictionary containing the metadata of the YouTube video.
+                uniform_resource_locator (str): The uniform resource locator of the YouTube video.
+                author (str): The author of the YouTube video.
+                title (str): The title of the YouTube video.
+                identifier (str): The identifier of the YouTube video.
+                author_channel (str): The channel URL of the author.
+                views (int): The number of views of the YouTube video.
+                published_at (str): The date the video was published.
+                thumbnail (str): The URL of the thumbnail image of the video.
+                duration (str): The duration of the video.
+                audio_file (None): Always None.
+                video_file (None): Always None.
+        """
         response: Optional[Dict[str, Union[str, int, None]]]
         start_time: float = perf_counter()
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
@@ -520,7 +546,7 @@ class YouTube_Downloader:
             "audio_file": None,
             "video_file": None
         }
-        self.__saveJsonCache(response)
+        self.__saveJsonCache(response) # type: ignore
         save_json: float = perf_counter()
         self.getLogger().debug(f"Function: search - Save Json Duration: {save_json - set_data:.3f}s")
         self.postYouTube()

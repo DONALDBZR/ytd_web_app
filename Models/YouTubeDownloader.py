@@ -500,12 +500,9 @@ class YouTube_Downloader:
                 video_file (None): Always None.
         """
         response: Optional[Dict[str, Union[str, int, None]]]
-        start_time: float = perf_counter()
         self.setIdentifier(self.sanitizeYouTubeIdentifier())
         response = self.__loadJsonCache()
         if response:
-            get_cache: float = perf_counter()
-            self.getLogger().debug(f"Function: search - Get Cache Duration: {get_cache - start_time:.3f}s")
             self.__updateCache()
             self.getLogger().inform(f"The application has successfully loaded the cache. - Identifier: {self.getIdentifier()}")
             return response
@@ -521,15 +518,11 @@ class YouTube_Downloader:
             url=self.getUniformResourceLocator(),
             download=False
         ) # type: ignore
-        raw_data: float = perf_counter()
-        self.getLogger().debug(f"Function: search - Get Raw Data Duration: {raw_data - start_time:.3f}s")
         self.setLength(int(raw_youtube["duration"]))
         self.setPublishedAt(f"{raw_youtube['upload_date'][:4]}-{raw_youtube['upload_date'][4:6]}-{raw_youtube['upload_date'][6:]}")
         self.setAuthor(str(raw_youtube["uploader"]))
         self.setTitle(str(raw_youtube["title"]))
         self.setDuration(strftime("%H:%M:%S", gmtime(self.getLength())))
-        set_data: float = perf_counter()
-        self.getLogger().debug(f"Function: search - Set Data Duration: {set_data - raw_data:.3f}s")
         response = {
             "uniform_resource_locator": self.getUniformResourceLocator(),
             "author": self.getAuthor(),
@@ -544,11 +537,7 @@ class YouTube_Downloader:
             "video_file": None
         }
         self.__saveJsonCache(response) # type: ignore
-        save_json: float = perf_counter()
-        self.getLogger().debug(f"Function: search - Save Json Duration: {save_json - set_data:.3f}s")
         self.postYouTube()
-        post: float = perf_counter()
-        self.getLogger().debug(f"Function: search - Post YouTube Duration: {post - save_json:.3f}s")
         return response # type: ignore
 
     def __saveJsonCache(self, data: Dict[str, Union[str, int, None]]) -> None:

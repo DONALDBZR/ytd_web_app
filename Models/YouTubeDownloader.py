@@ -4,8 +4,8 @@ from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
 from typing import Dict, Union, Optional
 from time import strftime, gmtime
-from os.path import isfile, exists, getmtime
-from os import makedirs
+from os.path import isfile, exists, getmtime, join
+from os import makedirs, replace
 from Errors.ExtractioErrors import NotFoundError
 from yt_dlp.utils import DownloadError, ExtractorError
 from Models.YouTubeModel import YouTube
@@ -540,23 +540,23 @@ class YouTube_Downloader:
         self.postYouTube()
         return response # type: ignore
 
-    def __saveJsonCache(self, data: Dict[str, Union[str, int, None]]) -> None:
+    def __checkDirectory(self) -> None:
         """
-        Saving JSON cache file containing YouTube metadata.
-
-        This method performs the following actions:
-            1. Tries to create a directory if it does not exist.
-            2. Opens a cache file for writing and serializes the provided data to it.
-            3. Closes the cache file.
-            4. Logs a success message when the cache file is successfully saved.
-            5. Logs an error message when an error occurs.
-
-        Args:
-            data (Dict[str, Union[str, int, None]]): A dictionary containing formatted YouTube metadata for saving to the cache file.
+        Checking if the directory where the media files are stored exists.  If the directory does not exist, it creates it.
 
         Returns:
             None
         """
+        if exists(self.getDirectory()):
+            self.getLogger().inform(f"The directory already exists. - Directory: {self.getDirectory()}")
+            return
+        makedirs(
+            name=self.getDirectory(),
+            exist_ok=True
+        )
+        self.getLogger().inform(f"The directory has been created. - Directory: {self.getDirectory()}")
+
+    def __saveJsonCache(self, data: Dict[str, Union[str, int, None]]) -> None:
         try:
             if not exists(self.getDirectory()):
                 makedirs(

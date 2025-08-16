@@ -337,6 +337,7 @@ def getRelatedContents(identifier: str) -> Response:
     }
     media: Media = Media(system_request)
     model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
+    Routing_Logger.inform(f"The response has been sent. - Status: {model_response['status']} - Data: {model_response['data']}")
     return Response(
         response=dumps(
             obj=model_response["data"],

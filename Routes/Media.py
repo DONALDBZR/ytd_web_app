@@ -236,6 +236,7 @@ def getMedia(identifier: str) -> Response:
         )
     file_name: str = f"{identifier}.json"
     response: Dict[str, Union[int, Dict[str, Union[str, int, None]]]] = getMetaData(file_name)
+    Routing_Logger.inform(f"The response has been sent. - Status: {response['status']} - Data: {response['data']}")
     return Response(
         response=dumps(
             obj=response["data"],

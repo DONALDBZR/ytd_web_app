@@ -1,7 +1,7 @@
 from flask import Flask, render_template, Request, Response, send_from_directory, request
 from flask_compress import Compress
 from flask_cors import CORS
-from Models.SecurityManagementSystem import Security_Management_System, Database_Handler, Environment, Session
+from Models.SecurityManagementSystem import Security_Management_System, Database_Handler, Environment, Session, Extractio_Logger
 from re import match, fullmatch
 from os.path import join, exists, isfile, normpath, relpath, splitext
 from typing import List, Union, Dict, Tuple, Optional
@@ -16,6 +16,10 @@ the central object.  It is passed the name of the module or
 package of the application.  Once it is created it will act
 as a central registry for the view functions, the URL rules,
 template configuration and much more.
+"""
+logger: Extractio_Logger = Extractio_Logger(__name__)
+"""
+This class manages a logger instance for the Extractio application.
 """
 DatabaseHandler: Database_Handler = Database_Handler()
 """
@@ -66,13 +70,20 @@ CORS(Application, origins=ENV.getAllowedOrigins())
 @Application.before_request
 def before_request() -> Optional[Response]:
     """
-    Executed before each request to the application.
+    Before every request, this function checks if the application is able to connect to the database server.  If the connection fails, it tries to reconnect.  It also generates a nonce for security purposes.  It checks if the endpoint is limited by the rate limiter.  If it is, it returns a "429 Too Many Requests" response.  Returns None otherwise.
 
-    This method is responsible for the following tasks:
-        1. Generating a random nonce for the request.
-        2. Checking if a request should be rate limited.
-        3. Returning a 429 Too Many Requests response if the request is rate limited.
+    Returns:
+        (Optional[Response])
     """
+    try:
+        DatabaseHandler.getConnection().ping(
+            reconnect=True,
+            attempts=3,
+            delay=1
+        )
+    except Exception as error:
+        logger.warn(f"The application has not been able to connect to the database server. - Error: {error}")
+        DatabaseHandler.__connect()
     SecurityManagementSystem.generateNonce()
     ip_address: str = request.remote_addr # type: ignore
     endpoint: str = request.path

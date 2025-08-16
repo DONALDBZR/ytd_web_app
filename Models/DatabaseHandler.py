@@ -137,6 +137,15 @@ class Database_Handler:
             self.getLogger().error(f"The database handler has failed to sanitize the parameters. - Parameters: {parameters} - Error: {error}")
             raise Relational_Database_Error(str(error))
 
+    def connect(self) -> MySQLConnection:
+        """
+        Establishing a connection to the MySQL database.
+
+        Returns:
+            (MySQLConnection): The established MySQL connection object.
+        """
+        return self.__connect()
+
     def __connect(self) -> MySQLConnection:
         """
         Establishing a connection to the MySQL database using the provided environment configuration.

@@ -83,7 +83,7 @@ def before_request() -> Optional[Response]:
         )
     except Exception as error:
         logger.warn(f"The application has not been able to connect to the database server. - Error: {error}")
-        DatabaseHandler.__connect()
+        DatabaseHandler.connect()
     SecurityManagementSystem.generateNonce()
     ip_address: str = request.remote_addr # type: ignore
     endpoint: str = request.path

@@ -148,20 +148,21 @@ class Database_Handler:
 
     def __connect(self) -> MySQLConnection:
         """
-        Establishing a connection to the MySQL database using the provided environment configuration.
-
-        Returns:
-            MySQLConnection: The established MySQL connection object.
+        Establishing a connection to the MySQL database.
 
         Raises:
-            Relational_Database_Error: If the connection to the database fails.
+            Relational_Database_Error: If the connection fails.
+
+        Returns:
+            (MySQLConnection): The established MySQL connection object.
         """
         try:
             connection: MySQLConnection = connect(
                 host=self.getEnv().getDatabaseHost(),
                 user=self.getEnv().getDatabaseUsername(),
                 password=self.getEnv().getDatabasePassword(),
-                database=self.getEnv().getDatabaseSchema()
+                database=self.getEnv().getDatabaseSchema(),
+                use_pure=True
             ) # type: ignore
             self.getLogger().inform("The application has successfully connected to the database.")
             return connection

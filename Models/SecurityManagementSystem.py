@@ -16,6 +16,7 @@ from argon2 import PasswordHasher
 from datetime import datetime
 from typing import Union, Optional
 from base64 import b64encode
+from werkzeug.exceptions import ServiceUnavailable
 
 
 class Security_Management_System:
@@ -76,19 +77,18 @@ class Security_Management_System:
         """
         Initializing the Security Management System.
 
-        It sets up the core components of the system.  It performs the following actions:
-            1.  Loading environment variables.
-            2.  Initializing the application logger.
-            3.  Establishing a database connection handler.
-            4.  Setting the application name and the current timestamp.
-            5.  Creating the session table if it does not exist.
-            6.  Initializing the security hash.
+        This method performs the following actions:
+            1. Sets up the core components of the system.
+            2. Establishes a database connection.
 
         Args:
-            database_handler (Database_Handler): The database handler instance to interact with the database.
+            database_handler (Optional[Database_Handler]): The database handler instance to interact with the database.
 
         Raises:
-            SystemExit: If the table cannot be created.
+            ServiceUnavailable: If the session table cannot be created.
+
+        Returns:
+            None
         """
         ENV: Environment = Environment()
         self.setLogger(Extractio_Logger(__name__))
@@ -99,7 +99,7 @@ class Security_Management_System:
         response: bool = session.create()
         if not response:
             self.getLogger().error("The table cannot be created.")
-            exit(503)
+            raise ServiceUnavailable("The table cannot be created.")
         self.getLogger().inform("The Security Management System has been successfully been initialized!")
         self.hash()
 

@@ -4,13 +4,12 @@ from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
 from typing import Dict, Union, Optional, Tuple
 from time import strftime, gmtime, sleep
-from os.path import isfile, exists, getmtime, join, getsize
+from os.path import isfile, exists, getmtime, getsize
 from os import makedirs, replace, remove
 from Errors.ExtractioErrors import NotFoundError
 from yt_dlp.utils import DownloadError, ExtractorError
 from Models.YouTubeModel import YouTube
 from Models.MediaFileModel import Media_File
-from time import perf_counter
 from datetime import datetime, timedelta
 from json import load, dump, JSONDecodeError
 from threading import Thread
@@ -640,7 +639,7 @@ class YouTube_Downloader:
             Exception: If an error occurs while saving the cache file.
         """
         try:
-            directory: str = f"{self.getDirectory()}/../Cache"
+            directory: str = f"{self.getDirectory()}/../Cache/Media"
             self.__checkDirectory(directory)
             filename: str = f"{directory}/{self.getIdentifier()}.json"
             temporary_file: str = f"{filename}.tmp"

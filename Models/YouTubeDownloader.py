@@ -600,21 +600,27 @@ class YouTube_Downloader:
         self.postYouTube()
         return response # type: ignore
 
-    def __checkDirectory(self) -> None:
+    def __checkDirectory(self, directory: str) -> None:
         """
-        Checking if the directory where the media files are stored exists.  If the directory does not exist, it creates it.
+        Checking if a directory already exists and creating it if not.
 
-        Returns:
-            None
+        This method performs the following actions:
+            1. Checks if the directory already exists.
+            2. Logs an informational message if the directory already exists.
+            3. Creates the directory if it does not exist.
+            4. Logs an informational message if the directory does not exist.
+
+        Args:
+            directory (str): The directory path to check and create.
         """
-        if exists(self.getDirectory()):
-            self.getLogger().inform(f"The directory already exists. - Directory: {self.getDirectory()}")
+        if exists(directory):
+            self.getLogger().inform(f"The directory already exists. - Directory: {directory}")
             return
         makedirs(
-            name=self.getDirectory(),
+            name=directory,
             exist_ok=True
         )
-        self.getLogger().inform(f"The directory has been created. - Directory: {self.getDirectory()}")
+        self.getLogger().inform(f"The directory has been created. - Directory: {directory}")
 
     def __saveJsonCache(self, data: Dict[str, Union[str, int, None]]) -> None:
         """

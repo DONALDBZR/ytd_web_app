@@ -31,7 +31,7 @@ class Data_Sanitizer:
     def __init__(
         self,
         structured_query_language_keywords: Optional[List[str]] = None,
-        safe_string: str = r"^[a-zA-Z0-9\s\-$_.,:|;/?=<>&!%+\(\)\"']*$"
+        safe_string: str = r"^[a-zA-Z0-9\s\-$_.,:|;/?=<>&!’%+\(\)\"']*$"
     ) -> None:
         """
         Initializing a `Data_Sanitizer` instance with optional SQL keywords and a regex pattern for safe strings.

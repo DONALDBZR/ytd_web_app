@@ -12,7 +12,6 @@ from html import escape
 from re import fullmatch
 from typing import Any
 from index import DatabaseHandler
-from time import perf_counter
 
 
 Media_Portal: Blueprint = Blueprint("Media", __name__)
@@ -305,10 +304,24 @@ def retrieveMedia() -> Response:
 @Media_Portal.route('/RelatedContents/<string:identifier>', methods=["GET"])
 def getRelatedContents(identifier: str) -> Response:
     """
-    Retrieving the related contents of the media content that has been downloaded from the application.
+    Retrieving related media contents for a specific media identifier.
+
+    This endpoint handles a GET request to fetch related content based on a given media identifier.  It validates the identifier format and uses the `Media` model to fetch related items.
+
+    URL Pattern:
+        GET /RelatedContents/<identifier>
 
     Parameters:
-        identifier (string): The identifier of the content
+        identifier (str): A unique media identifier consisting of alphanumeric characters, dashes (`-`), or underscores (`_`).
+
+    Response Status Codes:
+        200 OK: Related contents retrieved successfully.
+        400 Bad Request: Invalid identifier format.
+        404 Not Found: No related contents found.
+        429 Too Many Requests: Rate limit exceeded.
+
+    Rate Limiting:
+        Maximum 100 requests per day per IP address.
 
     Returns:
         Response
@@ -316,10 +329,11 @@ def getRelatedContents(identifier: str) -> Response:
     mime_type: str = "application/json"
     identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
     if not fullmatch(identifier_regex, identifier):
-        Routing_Logger.error(f"The format for the identifier is invalid identifier. - Identifier: {identifier} - Status: 400")
+        Routing_Logger.error(f"The format for the identifier is invalid identifier. - Identifier: {identifier} - Status: 400 - Route: {request.url}")
         data: Dict[str, str] = {
             "error": "The format for the identifier is invalid."
         }
+        closeDatabase()
         return Response(
             response=dumps(
                 obj=data,
@@ -338,6 +352,7 @@ def getRelatedContents(identifier: str) -> Response:
     media: Media = Media(system_request)
     model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
     Routing_Logger.inform(f"The response has been sent. - Status: {model_response['status']} - Data: {model_response['data']}")
+    closeDatabase()
     return Response(
         response=dumps(
             obj=model_response["data"],

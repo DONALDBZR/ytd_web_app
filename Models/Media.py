@@ -430,7 +430,6 @@ class Media:
         Raises:
             Relational_Database_Error: If there is a database-related error.
         """
-        start_time: float = perf_counter()
         status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
         max_workers: int = len(related_contents) if status == 200 else 1
@@ -438,8 +437,6 @@ class Media:
         futures: List[Future[Dict[str, str]]] = [executor.submit(self.__fetchMetadata, related_content) for related_content in related_contents]
         for future in as_completed(futures):
             data.append(future.result())
-        end_time: float = perf_counter()
-        self.getLogger().debug(f"Function: _getRelatedContents - The related contents have been processed. - Duration: {end_time - start_time:.3f}s - Status: {status} - Data: {data}")
         return {
             "status": status,
             "data": data

@@ -1009,7 +1009,12 @@ class YouTube_Downloader:
             filtered_streams = self.__getVideoStreams(filtered_streams, stream, is_in_resolution, is_in_size, video_codec)
         return filtered_streams
 
-    def _getValidVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_video: bool) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+    def _getValidVideoStreams(
+        self,
+        streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]],
+        stream: Dict[str, Union[str, int, float, None, Dict[str, str]]],
+        is_video: bool
+    ) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
         """
         Appending a stream to the list of valid video streams if it qualifies as a video.
 

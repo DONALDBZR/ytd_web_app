@@ -1,4 +1,5 @@
 from Models.TableModel import Table_Model, Database_Handler, RowType, List, Tuple, Any, Optional
+from Data.YouTube_Get_By_Channel import YouTube_Get_By_Channel
 
 
 class YouTube(Table_Model):
@@ -71,18 +72,20 @@ class YouTube(Table_Model):
         return [cls(database_handler, **row) for row in response] # type: ignore
 
     @classmethod
-    def getByChannel(cls, database_handler: Database_Handler, channel: str) -> List["YouTube"]:
+    def getByChannel(cls, database_handler: Database_Handler, channel: str) -> List[YouTube_Get_By_Channel]:
         """
         Retrieving YouTube video records from the database based on a channel name.
 
-        This method queries the YouTube table to find videos whose authors match the given channel name.  It returns a list of YouTube instances, each containing metadata such as identifier, duration, author, title, and a URL to the video.
+        This method does the following:
+            1. Queries the YouTube table to find videos whose authors match the given channel name.
+            2. Returns a list of `YouTube_Get_By_Channel` instances, each containing metadata such as `identifier`, `duration`, `channel`, `title`, and a `uniform_resource_locator` to the video.
 
         Args:
             database_handler (Database_Handler): The database handler instance for executing the query.
             channel (str): The channel name to search for in the database.
 
         Returns:
-            List[YouTube]: A list of YouTube instances with metadata matching the given channel name.
+            List[YouTube_Get_By_Channel]: A list of `YouTube_Get_By_Channel` instances with metadata matching the given channel name.
         """
         temporary_instance: "YouTube" = cls(database_handler)
         query: str = f"SELECT identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CASE WHEN identifier LIKE 'shorts/%' THEN CONCAT('https://www.youtube.com/', identifier) ELSE CONCAT('https://www.youtube.com/watch?v=', identifier) END AS uniform_resource_locator, Media AS media_identifier FROM {temporary_instance.getTableName()} WHERE author = %s"
@@ -90,7 +93,7 @@ class YouTube(Table_Model):
         response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
         if not response:
             return []
-        return [cls(database_handler, **row) for row in response] # type: ignore
+        return [YouTube_Get_By_Channel(**row) for row in response] # type: ignore
 
     @classmethod
     def getByIdentifier(cls, database_handler: Database_Handler, identifier: str) -> Optional["YouTube"]:

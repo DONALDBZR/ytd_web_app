@@ -195,23 +195,27 @@ class Database_Handler:
         parameters: Optional[Tuple[Any, ...]] = None
     ) -> None:
         """
-        Executing a SQL query with optional parameters.
+        Executing a query with optional parameters on the database connection.
 
         This method does the following:
-            1. Ensures that the database connection is active.
-            2. Establishes a new cursor.
-            3. Executes the provided SQL query with optional parameters.
-            4. Raises a `Relational_Database_Error` when the execution fails.
+            1. Ensures a database connection is present.
+            2. If a connection is not present, it establishes a new connection.
+            3. If the connection is inactive, it attempts to reconnect up to 3 times with a 2-second delay between attempts.
+            4. Logs the outcome of the connection check and reconnection attempts.
+            5. Executes the query with the provided parameters
+            6. Logs the outcome of the query execution.
+            7. If the query execution fails, it logs the error and raises a Relational_Database_Error.
 
         Args:
             query (str): The SQL query to execute.
             parameters (Optional[Tuple[Any, ...]]): Parameters for the SQL query.
 
         Raises:
-            Relational_Database_Error: If the execution of the query fails.
+            Relational_Database_Error: If the query execution fails.
         """
         try:
             self.__ensureConnection()
+            self.closeCursor()
             self.setCursor(
                 self.getConnection().cursor( # type: ignore
                     prepared=True,

@@ -50,18 +50,20 @@ class YouTube(Table_Model):
         return [cls(database_handler, **row) for row in database_response] # type: ignore
 
     @classmethod
-    def getByTitle(cls, database_handler: Database_Handler, title: str) -> List["YouTube"]:
+    def getByTitle(cls, database_handler: Database_Handler, title: str) -> List[YouTube_Get_By_Channel]:
         """
-        Retrieving YouTube video records from the database based on a title.
+        Retrieving YouTube video metadata from the database by searching for a given title.
 
-        This method queries the YouTube table to find videos whose titles match the given pattern.  It returns a list of YouTube instances, each containing metadata such as identifier, duration, author, title, and a URL to the video.
+        This method does the following:
+            1. Queries the YouTube table to find records with a matching title.
+            2. Returns a list of `YouTube_Get_By_Channel` instances containing the fetched metadata.
 
         Args:
-            database_handler (Database_Handler): The database handler instance for executing the query.
-            title (str): The title pattern to search for in the database.
+            database_handler (Database_Handler): The database handler instance to run the query.
+            title (str): The title to search for in the database.
 
         Returns:
-            List[YouTube]: A list of YouTube instances with metadata matching the given title pattern.
+            List[YouTube_Get_By_Channel]: A list of `YouTube_Get_By_Channel` instances containing the fetched metadata.
         """
         temporary_instance: "YouTube" = cls(database_handler)
         query: str = f"SELECT identifier, CONCAT(LPAD(FLOOR(length / 3600), 2, '0'), ':', LPAD(FLOOR(length / 60), 2, '0'), ':', LPAD(length % 60, 2, '0')) AS duration, author AS channel, title, CONCAT('https://www.youtube.com/watch?v=', identifier) AS uniform_resource_locator, Media AS media_identifier FROM {temporary_instance.getTableName()} WHERE title LIKE %s"
@@ -69,7 +71,7 @@ class YouTube(Table_Model):
         response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
         if not response:
             return []
-        return [cls(database_handler, **row) for row in response] # type: ignore
+        return [YouTube_Get_By_Channel(**row) for row in response] # type: ignore
 
     @classmethod
     def getByChannel(cls, database_handler: Database_Handler, channel: str) -> List[YouTube_Get_By_Channel]:

@@ -903,7 +903,14 @@ class YouTube_Downloader:
             streams = self.__getAudioStreams(streams, stream, is_audio_only, adaptive_bitrate, audio_codec)
         return streams
 
-    def __getAudioStreams(self, streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]], is_audio_only: bool, adaptive_bitrate: float, audio_codec: str) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
+    def __getAudioStreams(
+        self,
+        streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]],
+        stream: Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]],
+        is_audio_only: bool,
+        adaptive_bitrate: float,
+        audio_codec: str
+    ) -> List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]]:
         """
         Validating and appending an audio-only stream to the list of collected audio streams.
 

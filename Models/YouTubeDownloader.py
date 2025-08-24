@@ -634,8 +634,9 @@ class YouTube_Downloader:
             Exception: If an error occurs while saving the cache file.
         """
         try:
-            self.__checkDirectory()
-            filename: str = f"{self.getDirectory()}/{self.getIdentifier()}.json"
+            directory: str = f"{self.getDirectory()}/../Cache"
+            self.__checkDirectory(directory)
+            filename: str = f"{directory}/{self.getIdentifier()}.json"
             temporary_file: str = f"{filename}.tmp"
             file = open(temporary_file, "w")
             dump(

@@ -10,9 +10,7 @@ from Models.YouTubeModel import YouTube
 from datetime import datetime
 from json import dumps
 from re import match, Match
-from html import escape
 from typing import Optional, Union
-from time import perf_counter
 from Data.YouTube_Get_By_Channel import YouTube_Get_By_Channel
 from concurrent.futures import ThreadPoolExecutor, as_completed, Future
 

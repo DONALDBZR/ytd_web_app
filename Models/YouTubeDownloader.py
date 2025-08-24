@@ -1100,7 +1100,14 @@ class YouTube_Downloader:
             raise Relational_Database_Error(message)
         self.getLogger().inform(f"{message} - Status: {status}")
 
-    def __getVideoStreams(self, streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]], stream: Dict[str, Union[str, int, float, None, Dict[str, str]]], is_in_resolution: bool, is_in_size: bool, video_codec: str) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
+    def __getVideoStreams(
+        self,
+        streams: List[Dict[str, Union[str, int, float, None, Dict[str, str]]]],
+        stream: Dict[str, Union[str, int, float, None, Dict[str, str]]],
+        is_in_resolution: bool,
+        is_in_size: bool,
+        video_codec: str
+    ) -> List[Dict[str, Union[str, int, float, None, Dict[str, str]]]]:
         """
         Filtering and appending a video stream based on resolution, size, and codec preferences.
 

@@ -14,7 +14,7 @@ from html import escape
 from typing import Optional, Union
 from time import perf_counter
 from Data.YouTube_Get_By_Channel import YouTube_Get_By_Channel
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed, Future
 
 
 class Media:
@@ -425,21 +425,26 @@ class Media:
         }
 
     def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
+        """
+        Processing the related contents of a media content.
+
+        Parameters:
+            related_contents (List[Dict[str, Union[str, int]]]): A list of dictionaries containing the metadata of the media content.
+
+        Returns:
+            Dict[str, Union[int, List[Dict[str, str]]]]
+
+        Raises:
+            Relational_Database_Error: If there is a database-related error.
+        """
         start_time: float = perf_counter()
         status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
-        # 
-        for related_content in related_contents:
-            self._YouTubeDownloader = YouTube_Downloader(str(related_content["uniform_resource_locator"]), int(related_content["media_identifier"]))
-            metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
-            data.append({
-                "duration": str(related_content["duration"]),
-                "channel": str(related_content["channel"]),
-                "title": str(related_content["title"]),
-                "uniform_resource_locator": str(related_content["uniform_resource_locator"]),
-                "author_channel": str(metadata["author_channel"]),
-                "thumbnail": str(metadata["thumbnail"])
-            })
+        max_workers: int = len(related_contents) if status == 200 else 1
+        executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=max_workers)
+        futures: List[Future[Dict[str, str]]] = [executor.submit(self.__fetchMetadata, related_content) for related_content in related_contents]
+        for future in as_completed(futures):
+            data.append(future.result())
         end_time: float = perf_counter()
         self.getLogger().debug(f"Function: _getRelatedContents - The related contents have been processed. - Duration: {end_time - start_time:.3f}s - Status: {status} - Data: {data}")
         return {

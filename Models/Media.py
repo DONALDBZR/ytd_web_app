@@ -14,6 +14,7 @@ from html import escape
 from typing import Optional, Union
 from time import perf_counter
 from Data.YouTube_Get_By_Channel import YouTube_Get_By_Channel
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class Media:
@@ -403,31 +404,44 @@ class Media:
         related_contents: List[Dict[str, Union[str, int]]] = list({value["identifier"]: value for value in related_author_contents + related_channel_contents}.values())
         return self._getRelatedContents(related_contents)
 
-    def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
+    def __fetchMetadata(self, related_content: Dict[str, Union[str, int]]) -> Dict[str, str]:
         """
-        Processing and returning metadata for related media content.
-
-        This method takes a list of related media entries, retrieves additional metadata using `YouTube_Downloader`, and formats the response.
+        Fetching the metadata of a media content.
 
         Parameters:
-            related_contents (List[Dict[str, Union[str, int]]]): A list of dictionaries containing media details, including `uniform_resource_locator`, `media_identifier`, `duration`, `channel`, and `title`.
+            related_content (Dict[str, Union[str, int]]): A dictionary containing the metadata of the media content.
 
         Returns:
-            Dict[str, Union[int, List[Dict[str, str]]]]
+            Dict[str, str]
         """
+        self._YouTubeDownloader = YouTube_Downloader(str(related_content["uniform_resource_locator"]), int(related_content["media_identifier"]))
+        metadata: Dict[str, Optional[Union[str, int]]] = self._YouTubeDownloader.search()
+        return {
+            "duration": str(related_content["duration"]),
+            "channel": str(related_content["channel"]),
+            "uniform_resource_locator": str(related_content["uniform_resource_locator"]),
+            "author_channel": str(related_content["author_channel"]),
+            "thumbnail": str(related_content["thumbnail"])
+        }
+
+    def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:
+        start_time: float = perf_counter()
         status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
+        # 
         for related_content in related_contents:
             self._YouTubeDownloader = YouTube_Downloader(str(related_content["uniform_resource_locator"]), int(related_content["media_identifier"]))
             metadata: Dict[str, Union[str, int, None]] = self._YouTubeDownloader.search()
             data.append({
-                "duration": escape(str(related_content["duration"])),
-                "channel": escape(str(related_content["channel"])),
-                "title": escape(str(related_content["title"])),
-                "uniform_resource_locator": escape(str(related_content["uniform_resource_locator"])),
-                "author_channel": escape(str(metadata["author_channel"])),
-                "thumbnail": escape(str(metadata["thumbnail"]))
+                "duration": str(related_content["duration"]),
+                "channel": str(related_content["channel"]),
+                "title": str(related_content["title"]),
+                "uniform_resource_locator": str(related_content["uniform_resource_locator"]),
+                "author_channel": str(metadata["author_channel"]),
+                "thumbnail": str(metadata["thumbnail"])
             })
+        end_time: float = perf_counter()
+        self.getLogger().debug(f"Function: _getRelatedContents - The related contents have been processed. - Duration: {end_time - start_time:.3f}s - Status: {status} - Data: {data}")
         return {
             "status": status,
             "data": data

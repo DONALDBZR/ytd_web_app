@@ -381,17 +381,24 @@ class Media:
         Returns:
             Dict[str, Union[int, List[Dict[str, str]]]]
         """
+        start_time: float = perf_counter()
         payload: Optional[Dict[str, str]] = self._getPayload(identifier)
+        get_payload: float = perf_counter()
+        self.getLogger().debug(f"Function: getRelatedContents - The payload has been retrieved. - Identifier: {identifier} - Duration: {get_payload - start_time:.3f}s - Payload: {payload}")
         if not payload:
             return {
                 "status": 204,
                 "data": []
             }
         related_channel_contents: List[Dict[str, Union[str, int]]] = self.getRelatedChannelContents(payload["channel"])
+        get_related_channel_contents: float = perf_counter()
+        self.getLogger().debug(f"Function: getRelatedContents - The related channel contents have been retrieved. - Identifier: {identifier} - Duration: {get_related_channel_contents - get_payload:.3f}s - Payload: {payload} - Related Channel Contents: {related_channel_contents}")
         related_author_contents: List[Dict[str, Union[str, int]]] = []
         payload["author"] = payload["author"].split(", ") # type: ignore
         for author in payload["author"]:
             related_author_contents = list({value["identifier"]: value for value in related_author_contents + self.getRelatedAuthorContents(author)}.values())
+        get_related_author_contents: float = perf_counter()
+        self.getLogger().debug(f"Function: getRelatedContents - The related author contents have been retrieved. - Identifier: {identifier} - Duration: {get_related_author_contents - get_related_channel_contents:.3f}s - Payload: {payload} - Related Channel Contents: {related_channel_contents} - Related Author Contents: {related_author_contents}")
         related_contents: List[Dict[str, Union[str, int]]] = list({value["identifier"]: value for value in related_author_contents + related_channel_contents}.values())
         return self._getRelatedContents(related_contents)
 
@@ -493,12 +500,15 @@ class Media:
         Returns:
             Optional[Dict[str, str]]
         """
+        start_time: float = perf_counter()
         response: Optional[YouTube] = YouTube.getByIdentifier(self.getDatabaseHandler(), identifier)
+        get_response: float = perf_counter()
+        self.getLogger().debug(f"Function: _getPayload - The data has been retrieved from the database. - Identifier: {identifier} - Database Response: {response.__dict__} - Duration: {get_response - start_time:.3f}s")
         if not response:
             self.getLogger().error(f"There is no data for a given identifier. - Identifier: {identifier}")
             return None
-        channel: str = escape(str(response.channel)) # type: ignore
-        title: str = escape(str(response.title)) # type: ignore
+        channel: str = str(response.author) # type: ignore
+        title: str = str(response.title) # type: ignore
         author: str = title.split(" - ")[0]
         return {
             "channel": channel,

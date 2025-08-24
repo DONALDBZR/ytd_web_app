@@ -516,10 +516,7 @@ class Media:
         Returns:
             Optional[Dict[str, str]]
         """
-        start_time: float = perf_counter()
         response: Optional[YouTube] = YouTube.getByIdentifier(self.getDatabaseHandler(), identifier)
-        get_response: float = perf_counter()
-        self.getLogger().debug(f"Function: _getPayload - The data has been retrieved from the database. - Identifier: {identifier} - Database Response: {response.__dict__} - Duration: {get_response - start_time:.3f}s")
         if not response:
             self.getLogger().error(f"There is no data for a given identifier. - Identifier: {identifier}")
             return None

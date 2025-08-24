@@ -435,9 +435,15 @@ class Media:
 
     def getRelatedAuthorContents(self, author: str) -> List[Dict[str, Union[str, int]]]:
         """
-        Retrieving related content based on an author's name.
+        Retrieving related content based on an author name.
 
-        This method takes an author's name as input and retrieves their related content from the relational database.  It queries the `YouTube` table using the `getByTitle` method and returns a list of dictionaries containing the following metadata:
+        This method does the following:
+            1. Takes an author name as input.
+            2. Retrieves their related content from the relational database.
+            3. Queries the `YouTube` table using the `getByTitle` method.
+            4. Returns a list of dictionaries.
+
+        This method returns a list of dictionaries containing the following metadata:
             - "identifier" (str): The unique identifier of the media item.
             - "duration" (str): The duration of the media item.
             - "channel" (str): The channel name of the media item.
@@ -451,13 +457,18 @@ class Media:
         Returns:
             List[Dict[str, Union[str, int]]]
         """
+        start_time: float = perf_counter()
         try:
-            database_response: List[YouTube] = YouTube.getByTitle(self.getDatabaseHandler(), author)
-            response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(youtube.identifier)), "duration": escape(str(youtube.duration)), "channel": escape(str(youtube.channel)), "title": escape(str(youtube.title)), "uniform_resource_locator": escape(str(youtube.uniform_resource_locator)), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
+            database_response: List[YouTube_Get_By_Channel] = YouTube.getByTitle(self.getDatabaseHandler(), author)
+            response: List[Dict[str, Union[str, int]]] = [{"identifier": str(youtube.identifier), "duration": str(youtube.duration), "channel": str(youtube.channel), "title": str(youtube.title), "uniform_resource_locator": str(youtube.uniform_resource_locator), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
+            database_time: float = perf_counter()
             self.getLogger().inform(f"The related author contents have been successfully retrieved. - Status: 200 - Author: {author} - Amount: {len(response)}")
+            self.getLogger().debug(f"Function: getRelatedAuthorContents - The related author contents have been retrieved. - Author: {author} - Duration: {database_time - start_time:.3f}s - Related Author Contents: {response}")
             return response
         except Relational_Database_Error as error:
+            error_time: float = perf_counter()
             self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
+            self.getLogger().debug(f"Function: getRelatedAuthorContents - The related author contents have not been retrieved. - Author: {author} - Duration: {error_time - start_time:.3f}s")
             return []
 
     def getRelatedChannelContents(self, channel: str) -> List[Dict[str, Union[str, int]]]:
@@ -483,7 +494,7 @@ class Media:
             database_response: List[YouTube_Get_By_Channel] = YouTube.getByChannel(self.getDatabaseHandler(), channel)
             database_time: float = perf_counter()
             self.getLogger().debug(f"Function: getRelatedChannelContents - The related channel contents have been retrieved. - Channel: {channel} - Database Response: {[youtube.__dict__ for youtube in database_response]} - Duration: {database_time - start_time:.3f}s")
-            response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(youtube.identifier)), "duration": escape(str(youtube.duration)), "channel": escape(str(youtube.channel)), "title": escape(str(youtube.title)), "uniform_resource_locator": escape(str(youtube.uniform_resource_locator)), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
+            response: List[Dict[str, Union[str, int]]] = [{"identifier": str(youtube.identifier), "duration": str(youtube.duration), "channel": str(youtube.channel), "title": str(youtube.title), "uniform_resource_locator": str(youtube.uniform_resource_locator), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
             self.getLogger().inform(f"The related channel contents have been successfully retrieved. - Status: 200 - Channel: {channel} - Amount: {len(response)}")
             end_time: float = perf_counter()
             self.getLogger().debug(f"Function: getRelatedChannelContents - The related channel contents have been retrieved. - Channel: {channel} - Duration: {end_time - database_time:.3f}s")

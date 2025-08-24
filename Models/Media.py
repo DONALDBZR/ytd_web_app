@@ -13,6 +13,7 @@ from re import match, Match
 from html import escape
 from typing import Optional, Union
 from time import perf_counter
+from Data.YouTube_Get_By_Channel import YouTube_Get_By_Channel
 
 
 class Media:
@@ -477,12 +478,19 @@ class Media:
         Returns:
             List[Dict[str, Union[str, int]]]
         """
+        start_time: float = perf_counter()
         try:
-            database_response: List[YouTube] = YouTube.getByChannel(self.getDatabaseHandler(), channel)
+            database_response: List[YouTube_Get_By_Channel] = YouTube.getByChannel(self.getDatabaseHandler(), channel)
+            database_time: float = perf_counter()
+            self.getLogger().debug(f"Function: getRelatedChannelContents - The related channel contents have been retrieved. - Channel: {channel} - Database Response: {[youtube.__dict__ for youtube in database_response]} - Duration: {database_time - start_time:.3f}s")
             response: List[Dict[str, Union[str, int]]] = [{"identifier": escape(str(youtube.identifier)), "duration": escape(str(youtube.duration)), "channel": escape(str(youtube.channel)), "title": escape(str(youtube.title)), "uniform_resource_locator": escape(str(youtube.uniform_resource_locator)), "media_identifier": int(youtube.media_identifier)} for youtube in database_response] # type: ignore
             self.getLogger().inform(f"The related channel contents have been successfully retrieved. - Status: 200 - Channel: {channel} - Amount: {len(response)}")
+            end_time: float = perf_counter()
+            self.getLogger().debug(f"Function: getRelatedChannelContents - The related channel contents have been retrieved. - Channel: {channel} - Duration: {end_time - database_time:.3f}s")
             return response
         except Relational_Database_Error as error:
+            end_time: float = perf_counter()
+            self.getLogger().debug(f"Function: getRelatedChannelContents - The related channel contents have been retrieved. - Channel: {channel} - Duration: {end_time - database_time:.3f}s")
             self.getLogger().error(f"There is an error between the model and the relational database server. - Error: {error}")
             return response
 

@@ -13,6 +13,7 @@ from Models.MediaFileModel import Media_File
 from datetime import datetime, timedelta
 from json import load, dump, JSONDecodeError
 from threading import Thread
+from html import unescape
 
 
 class YouTube_Downloader:
@@ -337,25 +338,6 @@ class YouTube_Downloader:
             return
         self.getLogger().error(f"The response is invalid")
         raise ValueError("Invalid Response")
-
-    def __presentGetYouTube(self, status: int) -> None:
-        """
-        Handling the presentation logic after attempting to retrieve YouTube data.
-
-        If the HTTP status code indicates success (200 OK), the method simply returns. Otherwise, it calls `postYouTube()` to perform a fallback or alternative action.
-
-        Args:
-            status (int): The HTTP status code returned from a YouTube GET request.
-
-        Returns:
-            None
-
-        Side Effects:
-            May trigger the `postYouTube()` method if the status code is not 200.
-        """
-        if status == 200:
-            return
-        self.postYouTube()
 
 
     def __prepareResponseFromDatabase(self, meta_data: Dict[str, Union[int, List[YouTube], str]]) -> Dict[str, Union[str, int, None]]:
@@ -730,8 +712,8 @@ class YouTube_Downloader:
                 identifier=self.getIdentifier(),
                 length=self.getLength(),
                 published_at=self.getPublishedAt(),
-                author=self.getAuthor(),
-                title=self.getTitle(),
+                author=unescape(self.getAuthor()),
+                title=unescape(self.getTitle()),
                 Media=self.getMediaIdentifier()
             )
             response: bool = youtube.save()

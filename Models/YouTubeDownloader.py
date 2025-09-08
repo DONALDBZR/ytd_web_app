@@ -1177,6 +1177,7 @@ class YouTube_Downloader:
             }
             self.setVideo(YoutubeDL(options))
             self.getVideo().download([self.getUniformResourceLocator()])
+            self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             self.__postAudio(file_path)
             return file_path
         except DownloadError as error:

@@ -412,7 +412,8 @@ class Media:
             "channel": str(related_content["channel"]),
             "uniform_resource_locator": str(related_content["uniform_resource_locator"]),
             "author_channel": str(metadata["author_channel"]),
-            "thumbnail": str(metadata["thumbnail"])
+            "thumbnail": str(metadata["thumbnail"]),
+            "title": str(related_content["title"]),
         }
 
     def _getRelatedContents(self, related_contents: List[Dict[str, Union[str, int]]]) -> Dict[str, Union[int, List[Dict[str, str]]]]:

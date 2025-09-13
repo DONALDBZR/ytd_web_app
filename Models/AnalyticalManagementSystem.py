@@ -1038,7 +1038,7 @@ class AnalyticalManagementSystem:
             hostname=self.getHostname(),
             latitude=self.getLatitude(),
             longitude=self.getLongitude(),
-            city=self.getCity(),
+            city=self.getCity().encode("latin-1").decode("utf-8"),
             region=self.getRegion(),
             country=self.getCountry(),
             timezone=self.getTimezone()

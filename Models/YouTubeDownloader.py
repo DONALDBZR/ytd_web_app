@@ -713,7 +713,7 @@ class YouTube_Downloader:
                 length=self.getLength(),
                 published_at=self.getPublishedAt(),
                 author=unescape(self.getAuthor()),
-                title=unescape(self.getTitle().encode("latin-1").decode("latin-1")),
+                title=unescape(self.getTitle().encode("latin-1").decode("utf-8")),
                 Media=self.getMediaIdentifier()
             )
             response: bool = youtube.save()

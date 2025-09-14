@@ -7,6 +7,7 @@ from os.path import join, exists, isfile, normpath, relpath, splitext
 from typing import List, Union, Dict, Tuple, Optional
 from urllib.parse import ParseResult, urlparse
 from Models.RateLimiter import Rate_Limiter
+from werkzeug.exceptions import ClientDisconnected
 
 
 Application: Flask = Flask(__name__)
@@ -296,3 +297,16 @@ def isEmbeddedRequest(request: Request) -> bool:
     if origin and origin not in ENV.getAllowedOrigins():
         return True
     return False
+
+@Application.errorhandler(ClientDisconnected)
+def handleClientDisconnect(error: ClientDisconnected) -> Response:
+    """
+    Handling a `ClientDisconnected` error.
+
+    When a client disconnects before a response is finished, the server will receive a `ClientDisconnected` error.  This function logs a warning message and returns a response with a 499 status code to indicate that the client closed the request.
+
+    Returns:
+        Response: A response with a 499 status code.
+    """
+    logger.warning("Client disconnected before response finished")
+    return Response("", 499)

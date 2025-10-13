@@ -14,8 +14,7 @@ from sys import path
 from urllib.parse import ParseResult, urlparse
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
-from re import search, fullmatch
-from html import escape
+from re import fullmatch
 from shutil import rmtree
 from tempfile import mkdtemp
 from os.path import abspath, join, dirname
@@ -24,7 +23,7 @@ from os.path import abspath, join, dirname
 path.append(abspath(join(dirname(__file__), "../../")))
 from Models.MediaFileModel import Media_File, Database_Handler
 from Models.YouTubeModel import YouTube
-from Models.Media import Media, RowType, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Tuple
+from Models.Media import Media, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Tuple
 from Errors.ExtractioErrors import CrawlerNotAllowedError
 
 

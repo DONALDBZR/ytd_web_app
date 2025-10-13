@@ -1,5 +1,6 @@
 from Models.TableModel import Table_Model, Database_Handler, RowType, List, Tuple, Any, Optional
 from Data.YouTube_Get_By_Channel import YouTube_Get_By_Channel
+from Data.YouTube_Metadata import YouTube_Metadata
 
 
 class YouTube(Table_Model):
@@ -29,17 +30,19 @@ class YouTube(Table_Model):
         database_handler: Database_Handler,
         join_table: str,
         parameters: Tuple[Any, ...]
-    ) -> List["YouTube"]:
+    ) -> List["YouTube_Metadata"]:
         """
-        Retrieving metadata records for a given media identifier by joining the media table with a provided platform/value table.
+        Retrieving YouTube video metadata from the database.
+
+        This method queries the relational database to fetch metadata related to a YouTube video based on its identifier.  It performs a join operation with the given `join_table` to retrieve associated platform information.  The results are limited to 1 entry.
 
         Args:
-            database_handler (Database_Handler): The database handler instance to run the query.
+            database_handler (Database_Handler): The database handler instance used to run the query.
             join_table (str): The name of the table to join for additional metadata.
-            parameters (Tuple[Any, ...]): Parameters for the SQL WHERE clause (e.g., identifier tuple).
+            parameters (Tuple[Any, ...]): The parameters to be passed to the query.
 
         Returns:
-            List[YouTube]: A list of YouTube instances containing the fetched metadata.
+            List[YouTube_Metadata]: A list of YouTube_Meta objects containing the fetched metadata, or an empty list if no data exists.
         """
         temporary_instance: "YouTube" = cls(database_handler)
         base_table: str = temporary_instance.getTableName()
@@ -47,7 +50,7 @@ class YouTube(Table_Model):
         database_response: List[RowType] = temporary_instance.getDatabaseHandler().getData(query, parameters)
         if not database_response:
             return []
-        return [cls(database_handler, **row) for row in database_response] # type: ignore
+        return [YouTube_Metadata(**row) for row in database_response] # type: ignore
 
     @classmethod
     def getByTitle(cls, database_handler: Database_Handler, title: str) -> List[YouTube_Get_By_Channel]:

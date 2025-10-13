@@ -588,7 +588,7 @@ class Crawler:
 
     def __processYouTubeData(
         self,
-        youtube_entries: List[YouTube],
+        youtube_entries: List[YouTube_Metadata],
         allowed_platforms: List[str],
         dataset: List[Dict[str, Union[str, int, None]]]
     ) -> List[Dict[str, Union[str, int, None]]]:
@@ -596,7 +596,7 @@ class Crawler:
         Validating and processing YouTube data retrieved from the database.  If valid, appends formatted entries to the dataset.
 
         Parameters:
-            youtube_entries (List[YouTube]): List of YouTube model instances.
+            youtube_entries (List[YouTube_Metadata]): List of YouTube model instances.
             allowed_platforms (List[str]): List of allowed platform identifiers.
             dataset (List[Dict[str, Union[str, int, None]]]): The dataset to append processed video entries to.
 
@@ -609,7 +609,7 @@ class Crawler:
         if not isinstance(youtube_entries, list):
             self.getLogger().error(f"Invalid data from the relational database server. - Type: {type(youtube_entries)}")
             raise ValueError("Invalid data from the relational database server.")
-        if not all(isinstance(entry, YouTube) for entry in youtube_entries):
+        if not all(isinstance(entry, YouTube_Metadata) for entry in youtube_entries):
             self.getLogger().error(f"Non-YouTube objects found in data. - Data: {youtube_entries}")
             raise ValueError("Non-YouTube objects found in data!")
         if not all(isinstance(data, dict) for data in dataset):

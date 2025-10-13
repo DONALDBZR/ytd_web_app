@@ -23,7 +23,7 @@ from os.path import abspath, join, dirname
 path.append(abspath(join(dirname(__file__), "../../")))
 from Models.MediaFileModel import Media_File, Database_Handler
 from Models.YouTubeModel import YouTube
-from Models.Media import Media, Relational_Database_Error, Extractio_Logger, Environment, List, Dict, Tuple
+from Models.Media import Media, Relational_Database_Error, Extractio_Logger, Environment, List, Dict
 from Errors.ExtractioErrors import CrawlerNotAllowedError
 
 

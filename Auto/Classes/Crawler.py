@@ -25,6 +25,7 @@ from Models.MediaFileModel import Media_File, Database_Handler
 from Models.YouTubeModel import YouTube
 from Models.Media import Media, Relational_Database_Error, Extractio_Logger, Environment, List, Dict
 from Errors.ExtractioErrors import CrawlerNotAllowedError
+from Data.YouTube_Metadata import YouTube_Metadata
 
 
 class Crawler:
@@ -579,7 +580,7 @@ class Crawler:
             return dataset
         for index, identifier in enumerate(identifiers):
             try:
-                metadata: List[YouTube] = YouTube.getMetadata(self.getDatabaseHandler(), "Media", (identifier,))
+                metadata: List[YouTube_Metadata] = YouTube.getMetadata(self.getDatabaseHandler(), "Media", (identifier,))
                 dataset = self.__processYouTubeData(metadata, allowed_platforms, dataset)
             except Exception as error:
                 self.getLogger().error(f"There is an error while processing the identifier. - Identifier: {identifier} - Index: {index} - Error: {error}")

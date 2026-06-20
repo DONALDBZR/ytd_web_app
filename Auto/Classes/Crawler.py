@@ -6,7 +6,7 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from os import chmod
-from typing import cast, Union
+from typing import cast, Union, Tuple
 from inspect import stack
 from time import time, sleep
 from json import dumps
@@ -980,16 +980,62 @@ class Crawler:
         """
         if referrer != "firstRun":
             return
-        xpath: str = "//*[@id='text']/a"
         self.setHtmlTag(None) # type: ignore
         try:
             sleep(delay)
-            self.setHtmlTag(self.getDriver().find_element(By.XPATH, xpath))
+            self.setHtmlTag(self.__getAuthorChannelElement(0))
             author_channel_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
             self.getData()[index]["author_channel"] = self.sanitizeUniformResourceLocator(author_channel_uniform_resource_locator)
         except (TimeoutException, WebDriverException, NoSuchElementException) as error:
-            self.getLogger().error(f"An error occurred while retrieving data for the first run! - Error: {error} - X-PATH: {xpath} - HTML Tag: {self.getHtmlTag()} - Delay: {delay:.3f} s")
+            self.getLogger().error(f"An error occurred while retrieving data for the first run! - Error: {error} - HTML Tag: {self.getHtmlTag()} - Delay: {delay:.3f} s")
             raise error
+
+    def __getAuthorChannelElement(
+        self,
+        index: int,
+        tries: int = 1
+    ) -> WebElement:
+        """
+        Attempting to retrieve the author's channel element using multiple selectors with a retry mechanism.
+
+        Procedures:
+        1. Attempts to find the element using the selector at the current index.
+        2. If the element is found, it logs the success and returns the element.
+        3. If the element is not found, it logs the failure and recursively calls itself with the next index and incremented tries count.
+        4. If the number of tries exceeds the number of allowed selectors, it logs an error and raises a `NoSuchElementException`.
+
+        Parameters:
+            index (int): The index of the selector to be used from the allowed selectors list.
+            tries (int): The current attempt count for retrieving the element.
+
+        Returns:
+            WebElement
+
+        Raises:
+            ValueError: If the number of tries is less than 1.
+            NoSuchElementException: If the element is not found after reaching the maximum number of tries.
+        """
+        allowed_selectors: List[Tuple[str, str]] = [
+            (By.XPATH, "//*[@id='text']/a"),
+            (By.CSS_SELECTOR, "ytd-channel-name a")
+        ]
+        if tries < 1:
+            self.getLogger().error(f"Invalid number of tries! - Tries: {tries}")
+            raise ValueError("Invalid number of tries!")
+        if tries > len(allowed_selectors):
+            self.getLogger().error(f"The element is not found after reaching a maximum amount of tries!")
+            raise NoSuchElementException("The element is not found after reaching a maximum amount of tries!")
+        try:
+            by, value = allowed_selectors[index]
+            html_tag: WebElement = self.getDriver().find_element(by, value)
+            self.getLogger().inform(f"Author channel element has been found! - By: {by} - Value: {value} - Tries: {tries}")
+            return html_tag
+        except (NoSuchElementException) as error:
+            self.getLogger().error(f"Author channel element has not been found! - By: {by} - Value: {value} - Error: {error}")
+            return self.__getAuthorChannelElement(
+                index + 1,
+                tries + 1
+            )
 
     def sanitizeUniformResourceLocator(self, uniform_resource_locator: str) -> str:
         """

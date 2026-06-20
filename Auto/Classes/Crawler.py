@@ -941,8 +941,14 @@ class Crawler:
 
     def __getDataSecondRun(self, referrer: str, index: int) -> None:
         """
-        Retrieving the latest content uniform resource locator
-        during the second run and updates the data structure.
+        Retrieving the latest content uniform resource locator during the second run and updates the data structure.
+
+        Procedures:
+            1. Checks if the referrer is "secondRun".  If not, it returns without performing any action.
+            2. Attempts to find the thumbnail elements on the page using an XPath selector.
+            3. If the thumbnail elements are found, it retrieves the href attribute of the third thumbnail element (index 2) and sanitizes the uniform resource locator.
+            4. Updates the data structure at the specified index with the sanitized latest content uniform resource locator.
+            5. If any exceptions occur during the process (e.g., WebDriverException, NoSuchElementException), it logs the error and raises the exception.
 
         Parameters:
             referrer (string): The source of the function call. Should be "secondRun" to proceed.
@@ -950,12 +956,16 @@ class Crawler:
 
         Returns:
             void
+
+        Raises:
+            WebDriverException: If an error occurs while interacting with the web driver.
+            NoSuchElementException: If the thumbnail elements are not found on the page.
         """
         if referrer != "secondRun":
             return
         try:
             self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
-            if len(self.getHtmlTags()) < 2:
+            if len(self.getHtmlTags()) < 3:
                 self.getLogger().warn("The thumbnail element is not found!")
                 return
             self.setHtmlTag(self.getHtmlTags()[2])

@@ -6,6 +6,6 @@ import logging
 sys.path.insert(0, '/var/www/html/ytd_web_app')
 sys.path.insert(0, '/var/www/html/ytd_web_app/venv/lib/python3.10/site-packages/')
 # Setting up the logging
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stderr, level=logging.ERROR)
 # Import and run the application
 from index import Application as application

@@ -547,14 +547,15 @@ class YouTube_Downloader:
             self.__updateCache()
             self.getLogger().inform(f"The application has successfully loaded the cache. - Identifier: {self.getIdentifier()}")
             return response
-        options: Dict[str, bool] = {
+        options: Dict[str, Union[str, bool]] = {
+            "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
             "quiet": True,
             "skip_download": True,
             "nocheckcertificate": True,
             "extract_flat": True,
             "no_warnings": True
         }
-        self.setVideo(YoutubeDL(options))
+        self.setVideo(YoutubeDL(options)) # type: ignore
         raw_youtube: Dict[str, Any] = self.getVideo().extract_info(
             url=self.getUniformResourceLocator(),
             download=False
@@ -772,11 +773,14 @@ class YouTube_Downloader:
             self.setIdentifier(str(metadata["identifier"]))
             audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
             video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
-            options: Dict[str, bool] = {
+            options: Dict[str, Union[str, bool]] = {
+                "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
                 "quiet": True,
+                "nocheckcertificate": True,
+                "no_warnings": True,
                 "listformats": True
             }
-            files: Dict[str, str] = self.__getFiles(audio_file_location, video_file_location, options)
+            files: Dict[str, str] = self.__getFiles(audio_file_location, video_file_location, options) # type: ignore
             self.getLogger().inform(f"The media content has been downloaded! - Audio: {audio_file_location} - Video: {video_file_location}")
             audio_file_location = files["audio"]
             video_file_location = files["video"]
@@ -797,7 +801,7 @@ class YouTube_Downloader:
             self.getLogger().error(f"There is an error while retrieving the streams. - Error: {error}")
             return {}
 
-    def __getFiles(self, audio: str, video: str, options: Dict[str, bool]) -> Dict[str, str]:
+    def __getFiles(self, audio: str, video: str, options: Dict[str, Union[str, bool]]) -> Dict[str, str]:
         """
         Retrieving the audio and video files for a given resource.  If the audio and video files already exist, it returns their file paths. Otherwise, it downloads the streams using YoutubeDL and returns the downloaded file paths.
 
@@ -810,7 +814,7 @@ class YouTube_Downloader:
         Parameters:
             audio (string): The file path of the audio file.
             video (string): The file path of the video file.
-            options (Dict[string, bool]): A dictionary of options to configure the YoutubeDL download process.
+            options (Dict[string, Union[string, bool]]): A dictionary of options to configure the YoutubeDL download process.
 
         Returns:
             Dict[string, string]
@@ -826,7 +830,7 @@ class YouTube_Downloader:
                 "video": video
             }
         try:
-            self.setVideo(YoutubeDL(options))
+            self.setVideo(YoutubeDL(options)) # type: ignore
             info = self.getVideo().extract_info(
                 url=self.getUniformResourceLocator(),
                 download=False
@@ -885,7 +889,7 @@ class YouTube_Downloader:
         """
         streams: List[Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]] = []
         for stream in self.getStreams():
-            is_audio_only: bool = stream.get("vcodec") == "none" and stream.get("audio_ext", "") == "mp4"
+            is_audio_only: bool = stream.get("vcodec") == "none" and stream.get("acodec") not in (None, "", "none")
             adaptive_bitrate: float = stream.get("abr") or stream.get("tbr") or 0 # type: ignore
             audio_codec: str = stream.get("acodec", "Unknown") # type: ignore
             streams = self.__getAudioStreams(streams, stream, is_audio_only, adaptive_bitrate, audio_codec)
@@ -1057,12 +1061,16 @@ class YouTube_Downloader:
         try:
             self.getLogger().inform(f"Downloading the video file. - File Path: {file_path}")
             format_identifier: str = f"{video['format_id']}+{audio['format_id']}" # type: ignore
-            options: Dict[str, str] = {
+            options: Dict[str, Union[str, bool]] = {
+                "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
+                "quiet": True,
+                "nocheckcertificate": True,
+                "no_warnings": True,
                 "format": format_identifier,
                 "merge_output_format": "mp4",
                 "outtmpl": file_path
             }
-            self.setVideo(YoutubeDL(options))
+            self.setVideo(YoutubeDL(options)) # type: ignore
             self.getVideo().download([self.getUniformResourceLocator()])
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             self.__postVideo(file_path)
@@ -1172,11 +1180,15 @@ class YouTube_Downloader:
             format_identifier: str = stream.get("format_id") # type: ignore
             protocol: str = stream.get("protocol", "") # type: ignore
             format_specification: str = self.getAudioFormatSpecification(format_identifier, protocol)
-            options: Dict[str, str] = {
+            options: Dict[str, Union[str, bool]] = {
+                "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
+                "quiet": True,
+                "nocheckcertificate": True,
+                "no_warnings": True,
                 "format": format_specification,
                 "outtmpl": file_path
             }
-            self.setVideo(YoutubeDL(options))
+            self.setVideo(YoutubeDL(options)) # type: ignore
             self.getVideo().download([self.getUniformResourceLocator()])
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             self.__postAudio(file_path)

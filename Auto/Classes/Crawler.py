@@ -14,7 +14,7 @@ from sys import path
 from urllib.parse import ParseResult, urlparse
 from urllib.robotparser import RobotFileParser
 from selenium.common.exceptions import TimeoutException, WebDriverException, NoSuchElementException
-from re import fullmatch
+from re import fullmatch, search
 from shutil import rmtree
 from tempfile import mkdtemp
 from os.path import abspath, join, dirname
@@ -99,6 +99,10 @@ class Crawler:
     """
     The temporary user data directory of the crawler.
     """
+    __outcome: str
+    """
+    The result of the run: "saved", "no_data" or "failed".
+    """
 
     def __init__(self) -> None:
         """
@@ -114,6 +118,7 @@ class Crawler:
         """
         self.setLogger(Extractio_Logger(__name__))
         self.setTemporaryUserDataDirectory(None)
+        self.setOutcome("no_data")
         try:
             self.setEnvironment(Environment())
             self.setDirectory(f"{self.getEnvironment().getDirectory()}/Cache/Trend/")
@@ -139,6 +144,25 @@ class Crawler:
         Returns:
             None
         """
+        self.cleanTemporaryUserDataDirectory()
+
+    def getOutcome(self) -> str:
+        return self.__outcome
+
+    def setOutcome(self, outcome: str) -> None:
+        self.__outcome = outcome
+
+    def close(self) -> None:
+        """
+        Quitting the browser and removing its temporary profile; safe to call repeatedly.
+
+        Returns:
+            None
+        """
+        try:
+            self.getDriver().quit()
+        except Exception:
+            pass
         self.cleanTemporaryUserDataDirectory()
 
     def __setUserAgents(self) -> None:
@@ -326,6 +350,9 @@ class Crawler:
             self.__setUpSecondRun(referrer, dataset)
             self.__initializeFirstRun(referrer)
             self.__initializeSecondRun(referrer)
+            if referrer == "firstRun" and identifiers and not self.getData():
+                self.getLogger().error("No author channel could be retrieved from the downloaded content!")
+                self.setOutcome("failed")
             if len(identifiers) == 0:
                 self.getLogger().inform("No new data has been found.")
                 return
@@ -416,7 +443,7 @@ class Crawler:
         Returns:
             void
         """
-        new_dataset: List[Dict[str, Union[str, None]]] = [{"author_channel": author_channel, "latest_content": None} for author_channel in list(set([str(media_metadata["author_channel"]) for media_metadata in dataset]))]
+        new_dataset: List[Dict[str, Union[str, None]]] = [{"author_channel": author_channel, "latest_content": None} for author_channel in list(set([str(media_metadata["author_channel"]) for media_metadata in dataset if media_metadata.get("author_channel")]))]
         self.setData(cast(List[Dict[str, Union[str, int, None]]], new_dataset))
 
     def secondRun(self) -> None:
@@ -443,6 +470,10 @@ class Crawler:
             void
         """
         self.setData([content for content in self.getData() if content["latest_content"] != None])
+        if not self.getData():
+            self.getLogger().warn("No latest content has been retrieved from any channel; nothing to save.")
+            self.setOutcome("failed")
+            return
         new_data: List[Dict[str, Union[str, int, None]]] = []
         try:
             for index in range(0, len(self.getData()), 1):
@@ -459,6 +490,7 @@ class Crawler:
                 new_data.append(data)
             self.setData(new_data)
             self.save()
+            self.setOutcome("saved")
         except Exception as error:
             self.getLogger().error(f"An error occurred while building the data! - Error: {error}")
             raise error
@@ -964,12 +996,16 @@ class Crawler:
         if referrer != "secondRun":
             return
         try:
-            self.setHtmlTags(self.getDriver().find_elements(By.XPATH, '//a[@id="thumbnail"]'))
-            if len(self.getHtmlTags()) < 3:
-                self.getLogger().warn("The thumbnail element is not found!")
+            self.setHtmlTags(self.getDriver().find_elements(By.CSS_SELECTOR, "a[href^='/watch?v=']"))
+            identifiers: List[str] = []
+            for tag in self.getHtmlTags():
+                match = search(r"[?&]v=([a-zA-Z0-9_-]{11})(?:&|$)", str(tag.get_attribute("href")))
+                if match and match.group(1) not in identifiers:
+                    identifiers.append(match.group(1))
+            if not identifiers:
+                self.getLogger().warn(f"No video link has been found on the channel page! - Uniform Resource Locator: {self.getDriver().current_url}")
                 return
-            self.setHtmlTag(self.getHtmlTags()[2])
-            latest_content_uniform_resource_locator: str = str(self.getHtmlTag().get_attribute("href"))
+            latest_content_uniform_resource_locator: str = f"{self.getEnvironment().getYouTubeVideoUniformResourceLocator()}{identifiers[0]}"
             self.getData()[index]["latest_content"] = self.sanitizeUniformResourceLocator(latest_content_uniform_resource_locator)
         except (WebDriverException, NoSuchElementException) as error:
             self.getLogger().error(f"An error occurred while retrieving data for the second run! - Error: {error}")
@@ -1026,6 +1062,9 @@ class Crawler:
             NoSuchElementException: If the element is not found after reaching the maximum number of tries.
         """
         allowed_selectors: List[Tuple[str, str]] = [
+            (By.CSS_SELECTOR, "ytd-video-owner-renderer a[href^='/@']"),
+            (By.CSS_SELECTOR, "a[href^='/@']"),
+            (By.CSS_SELECTOR, "a[href^='/channel/']"),
             (By.XPATH, "//*[@id='text']/a"),
             (By.CSS_SELECTOR, "ytd-channel-name a")
         ]

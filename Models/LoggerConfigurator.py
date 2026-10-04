@@ -137,7 +137,8 @@ class Logger_Configurator:
         """
         logger: Logger = getLogger(logger_name)
         logger.setLevel(DEBUG)
-        if logger.hasHandlers():
+        logger.propagate = False
+        if logger.handlers:
             return logger
         file_handler: FileHandler = FileHandler(
             join(

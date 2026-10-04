@@ -5,10 +5,12 @@ Authors:
     Darkness4869
 """
 from Environment import Environment
-from logging import Logger, getLogger, FileHandler, Formatter, DEBUG, Handler
+from logging import Logger, getLogger, Formatter, INFO, Handler, getLevelName
+from logging.handlers import RotatingFileHandler
 from typing import List, Optional
-from os import makedirs
+from os import makedirs, environ
 from os.path import join
+from Models.SharedRotatingFileHandler import Shared_Rotating_File_Handler
 
 
 class Logger_Configurator:
@@ -136,16 +138,19 @@ class Logger_Configurator:
             Logger: The configured logger instance, ready for use.
         """
         logger: Logger = getLogger(logger_name)
-        logger.setLevel(DEBUG)
+        level = getLevelName(environ.get("EXTRACTIO_LOG_LEVEL", "INFO").upper())
+        logger.setLevel(level if isinstance(level, int) else INFO)
         logger.propagate = False
         if logger.handlers:
             return logger
-        file_handler: FileHandler = FileHandler(
+        file_handler: RotatingFileHandler = Shared_Rotating_File_Handler(
             join(
                 self.getDirectory(),
                 self.getFilename()
             ),
             mode=self.getFileMode(),
+            maxBytes=5 * 1024 * 1024,
+            backupCount=5,
             encoding=self.getEncoding()
         )
         formatter: Formatter = Formatter(self.getFormat())

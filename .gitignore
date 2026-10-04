@@ -1,7 +1,7 @@
 /.vscode/
 /__pycache__/
-/Routes/__pycache__/
-/Models/__pycache__/
+/*/__pycache__/
+/*/*/__pycache__/
 /venv/
 /Environment.py
 /Cache/
@@ -10,7 +10,6 @@
 /ytd.wsgi
 /Access.log
 /Logs
-/Auto/Classes/__pycache__/
 /static/Sitemap.xml
 /SQL/
 /static/images/
@@ -24,11 +23,8 @@
 /extractio-v2/
 /static/build/
 /user_agents.txt
-/Errors/__pycache__/
 /start.sh
-/ytd/__pycache__/
 /deploy.sh
-/Data/__pycache__/
 /BingSiteAuth.xml
 /Prompts/
 /.github/

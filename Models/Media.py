@@ -405,8 +405,8 @@ class Media:
         Returns:
             Dict[str, str]
         """
-        self._YouTubeDownloader = YouTube_Downloader(str(related_content["uniform_resource_locator"]), int(related_content["media_identifier"]))
-        metadata: Dict[str, Optional[Union[str, int]]] = self._YouTubeDownloader.search()
+        downloader: YouTube_Downloader = YouTube_Downloader(str(related_content["uniform_resource_locator"]), int(related_content["media_identifier"]))
+        metadata: Dict[str, Optional[Union[str, int]]] = downloader.search()
         return {
             "duration": str(related_content["duration"]),
             "channel": str(related_content["channel"]),
@@ -431,11 +431,20 @@ class Media:
         """
         status: int = 200 if len(related_contents) > 0 else 204
         data: List[Dict[str, str]] = []
-        max_workers: int = len(related_contents) if status == 200 else 1
-        executor: ThreadPoolExecutor = ThreadPoolExecutor(max_workers=max_workers)
-        futures: List[Future[Dict[str, str]]] = [executor.submit(self.__fetchMetadata, related_content) for related_content in related_contents]
-        for future in as_completed(futures):
-            data.append(future.result())
+        if not related_contents:
+            return {
+                "status": status,
+                "data": data
+            }
+        with ThreadPoolExecutor(max_workers=min(4, len(related_contents))) as executor:
+            futures: List[Future[Dict[str, str]]] = [executor.submit(self.__fetchMetadata, related_content) for related_content in related_contents]
+            for future in as_completed(futures):
+                try:
+                    data.append(future.result())
+                except Exception as error:
+                    self.getLogger().error(f"The metadata of a related content cannot be retrieved. - Error: {error}")
+        if not data:
+            status = 503
         return {
             "status": status,
             "data": data

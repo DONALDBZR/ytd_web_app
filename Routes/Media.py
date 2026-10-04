@@ -116,6 +116,34 @@ def closeDatabase():
     if DatabaseHandler.getConnection() is not None and DatabaseHandler.getConnection().is_connected():
         DatabaseHandler.closeConnection()
 
+def fetchRelatedContents(identifier: str) -> Dict[str, Union[int, List[Dict[str, str]]]]:
+    """
+    Retrieving the related contents without ever raising; failures are reported as a 503 with no data.
+
+    Parameters:
+        identifier (string): The media identifier, prefixed with `shorts/` for Shorts.
+
+    Returns:
+        Dict[string, Union[int, List[Dict[string, string]]]]
+    """
+    system_request: Dict[str, Union[str, None]] = {
+        "referer": None,
+        "search": "",
+        "platform": "",
+        "ip_address": "127.0.0.1",
+        "port": str(request.environ.get("SERVER_PORT"))
+    }
+    try:
+        return Media(system_request).getRelatedContents(identifier)
+    except Exception as error:
+        Routing_Logger.error(f"The related contents cannot be retrieved. - Identifier: {identifier} - Error: {error}")
+        return {
+            "status": 503,
+            "data": []
+        }
+    finally:
+        closeDatabase()
+
 @Media_Portal.route("/Search", methods=["GET"])
 def search() -> Response:
     """
@@ -327,7 +355,7 @@ def getRelatedContents(identifier: str) -> Response:
         Response
     """
     mime_type: str = "application/json"
-    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]{11}$"
     if not fullmatch(identifier_regex, identifier):
         Routing_Logger.error(f"The format for the identifier is invalid identifier. - Identifier: {identifier} - Status: 400 - Route: {request.url}")
         data: Dict[str, str] = {
@@ -342,17 +370,8 @@ def getRelatedContents(identifier: str) -> Response:
             status=400,
             mimetype=mime_type
         )
-    system_request: Dict[str, Union[str, None]] = {
-        "referer": None,
-        "search": "",
-        "platform": "",
-        "ip_address": "127.0.0.1",
-        "port": str(request.environ.get("SERVER_PORT"))
-    }
-    media: Media = Media(system_request)
-    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
-    Routing_Logger.inform(f"The response has been sent. - Status: {model_response['status']} - Data: {model_response['data']}")
-    closeDatabase()
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = fetchRelatedContents(identifier)
+    Routing_Logger.inform(f"The response has been sent. - Status: {model_response['status']} - Count: {len(model_response['data'])}") # type: ignore
     return Response(
         response=dumps(
             obj=model_response["data"],
@@ -411,7 +430,8 @@ def rateLimited(error: Exception) -> Response:
             obj=data,
             indent=4
         ),
-        status=429
+        status=429,
+        mimetype="application/json"
     )
 
 @Media_Portal.route('/Shorts/<string:identifier>', methods=["GET"])
@@ -491,7 +511,7 @@ def getRelatedContentsShorts(identifier: str) -> Response:
         Response
     """
     mime_type: str = "application/json"
-    identifier_regex: str = r"^[a-zA-Z0-9\-_]+$"
+    identifier_regex: str = r"^[a-zA-Z0-9\-_]{11}$"
     if not fullmatch(identifier_regex, identifier):
         Routing_Logger.error(f"The format for the identifier is invalid identifier. - Identifier: {identifier} - Status: 400")
         data: Dict[str, str] = {
@@ -505,16 +525,7 @@ def getRelatedContentsShorts(identifier: str) -> Response:
             status=400,
             mimetype=mime_type
         )
-    system_request: Dict[str, Union[str, None]] = {
-        "referer": None,
-        "search": "",
-        "platform": "",
-        "ip_address": "127.0.0.1",
-        "port": str(request.environ.get("SERVER_PORT"))
-    }
-    media: Media = Media(system_request)
-    identifier = f"shorts/{identifier}"
-    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = media.getRelatedContents(identifier)
+    model_response: Dict[str, Union[int, List[Dict[str, str]]]] = fetchRelatedContents(f"shorts/{identifier}")
     return Response(
         response=dumps(
             obj=model_response["data"],

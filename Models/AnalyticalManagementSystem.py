@@ -1355,6 +1355,7 @@ class AnalyticalManagementSystem:
             self.getLogger().error("The Analytical Management System cannot retrieve the IP Address.")
             return self.service_unavailable
         if self.sanitizeRealIpAddress() == self.ok:
+            self.setHostname(self.getIpAddress())
             return self.ok
         try:
             self.setHostname(self.getIpAddress())

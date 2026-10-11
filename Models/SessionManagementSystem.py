@@ -96,6 +96,7 @@ class Session_Manager:
         """
         ENV: Environment = Environment()
         self.setDirectory(f"{ENV.getDirectory()}/Cache/Session/Users")
+        os.makedirs(self.getDirectory(), exist_ok=True)
         self.setLogger(Extractio_Logger(__name__))
         self.setPort(str(request["port"]))
         self.setDatabaseHandler(database_handler or Database_Handler())
@@ -264,12 +265,11 @@ class Session_Manager:
             "timestamp": self.getTimestamp(),
             "color_scheme": self.getColorScheme()
         }
-        self.getSession()['Client'] = data
+        self.getSession()["Client"] = data
         session_data = self.retrieveSession()
-        file_path = f"{self.getDirectory()}{self.getIpAddress()}.json"
-        session_file = open(file_path, 'w')
-        session_file.write(session_data)
-        session_file.close()
+        file_path = os.path.join(self.getDirectory(), f"{self.getIpAddress()}.json")
+        with open(file_path, "w") as session_file:
+            session_file.write(session_data)
         self.getLogger().inform("The session has been successfully created!")
         return self.getSession()
 

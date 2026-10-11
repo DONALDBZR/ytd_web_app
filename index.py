@@ -68,6 +68,19 @@ Compress(Application)
 CORS(Application, origins=ENV.getAllowedOrigins())
 
 
+def connectDatabase() -> Optional[Response]:
+    """
+    Connects to the database server.
+
+    Returns:
+        (Optional[Response])
+    """
+    try:
+        DatabaseHandler.connect()
+    except Exception as error:
+        logger.error(f"The application could not restore its database connection. - Error: {error}")
+        return Response("Service Unavailable", 503)
+
 @Application.before_request
 def before_request() -> Optional[Response]:
     """
@@ -84,7 +97,7 @@ def before_request() -> Optional[Response]:
         )
     except Exception as error:
         logger.warn(f"The application has not been able to connect to the database server. - Error: {error}")
-        DatabaseHandler.connect()
+        return connectDatabase()
     SecurityManagementSystem.generateNonce()
     ip_address: str = request.remote_addr # type: ignore
     endpoint: str = request.path
@@ -308,5 +321,5 @@ def handleClientDisconnect(error: ClientDisconnected) -> Response:
     Returns:
         Response: A response with a 499 status code.
     """
-    logger.warning("Client disconnected before response finished")
+    logger.warn("Client disconnected before response finished")
     return Response("", 499)

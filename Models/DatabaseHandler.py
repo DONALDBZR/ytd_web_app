@@ -144,7 +144,20 @@ class Database_Handler:
         Returns:
             (MySQLConnection): The established MySQL connection object.
         """
-        return self.__connect()
+        connection: MySQLConnection = self.__connect()
+        old_connection: MySQLConnection = self.getConnection()
+        try:
+            self.closeCursor()
+        except Relational_Database_Error as error:
+            self.getLogger().warn(f"The old database cursor could not be closed during reconnection. - Error: {error}")
+        self.setConnection(connection)
+        self.setCursor(None)
+        try:
+            old_connection.close()
+        except Relational_Database_Error as error:
+            self.getLogger().warn(f"The old database connection could not be closed during reconnection. - Error: {error}")
+        self.getLogger().inform("The database handler has successfully replaced its database connection.")
+        return connection
 
     def __connect(self) -> MySQLConnection:
         """

@@ -48,6 +48,7 @@ from Routes.Download import Download_Portal
 from Routes.Video import Video_Portal
 from Routes.Trend import Trend_Portal
 from Routes.Track import Track_Portal
+from Routes.Streaming import Streaming_Portal
 
 
 Application.secret_key = key
@@ -64,6 +65,7 @@ Application.register_blueprint(Download_Portal, url_prefix="/Download")
 Application.register_blueprint(Video_Portal, url_prefix="/Public/Video")
 Application.register_blueprint(Trend_Portal, url_prefix="/Trend")
 Application.register_blueprint(Track_Portal, url_prefix="/Track")
+Application.register_blueprint(Streaming_Portal, url_prefix="/Streaming")
 Compress(Application)
 CORS(Application, origins=ENV.getAllowedOrigins())
 
@@ -84,11 +86,21 @@ def connectDatabase() -> Optional[Response]:
 @Application.before_request
 def before_request() -> Optional[Response]:
     """
-    Before every request, this function checks if the application is able to connect to the database server.  If the connection fails, it tries to reconnect.  It also generates a nonce for security purposes.  It checks if the endpoint is limited by the rate limiter.  If it is, it returns a "429 Too Many Requests" response.  Returns None otherwise.
+    Performs pre-request checks and setups, including database connectivity, security nonce generation, and rate limiting.
+
+    Procedures:
+        1. Check if the request is for the streaming endpoint and bypass database checks if it is.
+        2. Ping the database to ensure connectivity.
+        3. Attempt to reconnect to the database if the ping fails.
+        4. Generate a security nonce.
+        5. Apply rate limiting based on the client's IP address and the requested endpoint.
+        6. Return an appropriate response if any of the checks fail.
 
     Returns:
         (Optional[Response])
     """
+    if request.path.startswith("/Streaming/"):
+        return None
     try:
         DatabaseHandler.getConnection().ping(
             reconnect=True,

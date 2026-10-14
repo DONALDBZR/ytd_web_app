@@ -17,3 +17,11 @@ class ForgedRequestError(Exception):
 class ChannelConfigurationError(ValueError):
     """Raised when a channel entry is invalid."""
     pass
+
+class StreamUnavailable(Exception):
+    """The channel has no playable public live broadcast."""
+    pass
+
+class StreamResolutionError(Exception):
+    """YouTube could not be resolved at this time."""
+    pass

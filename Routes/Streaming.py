@@ -3,11 +3,11 @@ from threading import Lock
 from time import monotonic
 from typing import Deque, Optional
 from urllib.parse import urlparse
-from flask import Blueprint, Response, jsonify, redirect, request
+from flask import Blueprint, Response, redirect, request
 from Models.Logger import Extractio_Logger
 from Models.Streaming.ChannelManager import ChannelConfigurationError, ChannelManager
-from Models.Streaming.StreamManager import ResolutionBusy, StreamManager
-from Models.Streaming.YouTubeLiveStream import StreamUnavailable, YouTubeLiveStream, allowed_media_url
+from Models.Streaming.StreamManager import ResolutionBusy, Stream_Manager
+from Models.Streaming.YouTubeLiveStream import StreamUnavailable, YouTubeLiveStream
 from os import environ
 from ipaddress import ip_network, ip_address
 from json import dumps
@@ -78,8 +78,7 @@ except (ChannelConfigurationError, ValueError, RuntimeError) as error:
     message = "The streaming configuration is invalid."
     logger.error(f"{message} - Error: {error}")
     raise RuntimeError(message)
-
-manager = StreamManager(
+manager: Stream_Manager = Stream_Manager(
     channels,
     YouTubeLiveStream(_timeout),
     _cache_ttl,
@@ -333,8 +332,7 @@ def play_live(slug: str) -> Response:
         )
     try:
         stream = manager.resolve(channel)
-        # A second validation boundary prevents unsafe redirects if resolver behavior changes.
-        if not allowed_media_url(stream.url):
+        if not manager.getResolver().allowedMediaUniformResourceLocator(stream.url):
             message = "The resolved stream uniform resource locator is not allowed."
             logger.error(f"{message} - Slug: {slug}")
             return Response(

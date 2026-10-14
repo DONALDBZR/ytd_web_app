@@ -25,3 +25,7 @@ class StreamUnavailable(Exception):
 class StreamResolutionError(Exception):
     """YouTube could not be resolved at this time."""
     pass
+
+class ResolutionBusy(Exception):
+    """All configured resolver slots are occupied."""
+    pass

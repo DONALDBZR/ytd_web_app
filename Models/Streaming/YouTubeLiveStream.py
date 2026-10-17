@@ -328,7 +328,11 @@ class YouTubeLiveStream:
         try:
             info: Optional[Dict[str, Any]] = self._extractInfo(channel)
             formats: List[Dict[str, Any]] = info.get("formats") or []
-            candidates: List[Dict[str, Any]] = [item for item in formats if item.get("url") and item.get("vcodec") not in (None, "none") and item.get("acodec") not in (None, "none")]
+            requested_formats: List[Dict[str, Any]] = info.get("requested_formats") or []
+            format_options: List[Dict[str, Any]] = requested_formats + formats
+            candidates: List[Dict[str, Any]] = [item for item in format_options if item.get("url") and item.get("vcodec") not in (None, "none") and item.get("acodec") not in (None, "none")]
+            if (info.get("url") and info.get("vcodec") not in (None, "none") and info.get("acodec") not in (None, "none") and not requested_formats):
+                candidates.append(info)
             candidates.sort(
                 key=lambda item: (
                     str(item.get("ext")) == "mp4",
@@ -338,23 +342,101 @@ class YouTubeLiveStream:
                     ),
                 reverse=True
             )
-            selected: Dict[str, Any] = candidates[0] if candidates else info
-            uniform_resource_locator: Optional[str] = selected.get("url")
-            self.__validateMediaUniformResourceLocator(
-                selected,
-                formats,
-                uniform_resource_locator,
-                candidates
+            if candidates:
+                selected: Dict[str, Any] = candidates[0]
+                uniform_resource_locator: Optional[str] = selected.get("url")
+                self.__validateMediaUniformResourceLocator(
+                    selected,
+                    format_options,
+                    uniform_resource_locator,
+                    candidates
+                )
+                expires_at: Optional[float] = self.__getExpiresAt(uniform_resource_locator)
+                return Resolved_Stream(
+                    url=str(uniform_resource_locator),
+                    mime_type=str(selected.get("http_headers", {}).get("Content-Type") or selected.get("mime_type") or "video/mp4"),
+                    expires_at=expires_at,
+                    title=str(info.get("title") or channel.display_name)
+                )
+            video_formats: List[Dict[str, Any]] = [item for item in format_options if item.get("url") and item.get("vcodec") not in (None, "none") and item.get("acodec") in (None, "none")]
+            audio_formats: List[Dict[str, Any]] = [item for item in format_options if item.get("url") and item.get("acodec") not in (None, "none") and item.get("vcodec") in (None, "none")]
+            video_formats.sort(
+                key=lambda item: (
+                    "avc" in str(item.get("vcodec", "")).lower() or "h264" in str(item.get("vcodec", "")).lower(),
+                    float(item.get("height") or 0),
+                    float(item.get("tbr") or 0),
+                ),
+                reverse=True
             )
-            expires_at: Optional[float] = self.__getExpiresAt(uniform_resource_locator)
+            audio_formats.sort(
+                key=lambda item: (
+                    "mp4a" in str(item.get("acodec", "")).lower() or "aac" in str(item.get("acodec", "")).lower(),
+                    float(item.get("abr") or item.get("tbr") or 0),
+                ),
+                reverse=True
+            )
+            if not video_formats or not audio_formats:
+                message: str = "YouTube did not provide a compatible live audio/video format pair."
+                self.getLogger().error(message)
+                raise StreamUnavailable(message)
+            video: Dict[str, Any] = video_formats[0]
+            audio: Dict[str, Any] = audio_formats[0]
+            video_url: str = str(video.get("url") or "")
+            audio_url: str = str(audio.get("url") or "")
+            if not self.allowedMediaUniformResourceLocator(video_url) or not self.allowedMediaUniformResourceLocator(audio_url):
+                message: str = "YouTube returned a media URL outside the allowed CDN hosts."
+                self.getLogger().error(message)
+                raise StreamUnavailable(message)
+            expires = [
+                expiry for expiry in (self.__getExpiresAt(video_url), self.__getExpiresAt(audio_url))
+                if expiry is not None
+            ]
             return Resolved_Stream(
-                url=str(uniform_resource_locator),
-                mime_type=str(selected.get("http_headers", {}).get("Content-Type") or selected.get("mime_type") or "video/mp4"),
-                expires_at=expires_at,
+                url="",
+                mime_type="application/vnd.apple.mpegurl",
+                expires_at=min(expires) if expires else None,
                 title=str(info.get("title") or channel.display_name),
+                video_url=video_url,
+                audio_url=audio_url,
+                video_headers=self.__safeMediaHeaders(video.get("http_headers")),
+                audio_headers=self.__safeMediaHeaders(audio.get("http_headers")),
             )
         finally:
             self.getYoutubeDownloader().close()
+
+    def __safeMediaHeaders(self, value: Any) -> Dict[str, str]:
+        """
+        Safely extracting non-sensitive HTTP headers from the provided value.
+
+        Procedures:
+            1. Check if the value is a dictionary.
+            2. Extract only the "User-Agent" and "Referer" headers.
+            3. Ensure the header values do not contain carriage return or newline characters.
+            4. Return the safe headers as a dictionary.
+
+        Parameters:
+            value (Any): The input value that may contain HTTP headers.
+
+        Returns:
+            Dict[str, str]: A dictionary containing only the safe HTTP headers.
+        """
+        if not isinstance(value, dict):
+            return {}
+        safe_headers: Dict[str, str] = {}
+        allowed_keys: List[str] = [
+            "User-Agent",
+            "Referer"
+        ]
+        for key in allowed_keys:
+            header_value = value.get(key)
+            is_string: bool = isinstance(header_value, str)
+            has_cariage: bool = "\r" in str(header_value)
+            has_newline: bool = "\n" in str(header_value)
+            is_allowed: bool = is_string and not has_cariage and not has_newline
+            if not is_allowed:
+                continue
+            safe_headers[str(key)] = header_value # type: ignore
+        return safe_headers
 
     def __getExpiresAt(self, uniform_resource_locator: Optional[str]) -> Optional[float]:
         """

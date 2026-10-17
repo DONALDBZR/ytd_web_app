@@ -12,10 +12,13 @@ from os import environ
 from ipaddress import ip_network, ip_address
 from json import dumps
 from re import sub
+from pathlib import Path
+from Environment import Environment
 
 
 Streaming_Portal: Blueprint = Blueprint("Streaming", __name__)
 logger: Extractio_Logger = Extractio_Logger(__name__)
+ENV: Environment = Environment()
 
 def _integer_setting(
     name: str,
@@ -54,7 +57,9 @@ def _integer_setting(
     return value
 
 try:
-    channels: Channel_Manager = Channel_Manager.fromJson(environ.get("STREAMING_CHANNELS", "[]"))
+    file_path: str = f"{ENV.getDirectory()}/Cache/StreamingChannels.json"
+    channel_configuration: Path = Path(file_path)
+    channels: Channel_Manager = Channel_Manager.fromJson(channel_configuration.read_text(encoding="utf-8"))
     _timeout = _integer_setting(
         "STREAMING_RESOLUTION_TIMEOUT",
         15,

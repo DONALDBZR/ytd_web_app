@@ -220,7 +220,7 @@ class Stream_Manager:
             self.getLogger().error(f"{message} - Error: {error}")
             self.getCache().pop(channel.slug, None)
             self.getFailures().pop(channel.slug, None)
-            raise RuntimeError(message)
+            raise StreamUnavailable(message)
         except Exception as error:
             message: str = f"An error occurred during stream resolution"
             self.getLogger().error(f"{message} - Error: {error}")

@@ -29,3 +29,7 @@ class StreamResolutionError(Exception):
 class ResolutionBusy(Exception):
     """All configured resolver slots are occupied."""
     pass
+
+class RemuxUnavailable(RuntimeError):
+    """Raised when a separate-track live stream cannot be remuxed."""
+    pass

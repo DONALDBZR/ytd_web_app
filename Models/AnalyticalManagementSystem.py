@@ -175,16 +175,14 @@ class AnalyticalManagementSystem:
         """
         Initializing the Analytical Management System.
 
-        It sets up the core components of the system.  It performs the following actions:
-            1.  Loading environment variables.
-            2.  Initializing the application logger.
-            3.  Establishing a database connection handler.
-            4.  Setting the application name and the current timestamp.
-            5.  Creating the session table if it does not exist.
-            6.  Initializing the security hash.
-            7.  Setting the IP Information API.
+        Procedures:
+            1. Set the database handler.
+            2. Initialize the application logger.
+            3. Set the IP Information API.
+            4. Set the hostname to None.
+            5. Log the initialization of the Analytical Management System.
 
-        Args:
+        Parameters:
             database_handler (Database_Handler): The database handler instance to interact with the database.
 
         Raises:
@@ -193,6 +191,7 @@ class AnalyticalManagementSystem:
         self.setDatabaseHandler(database_handler or Database_Handler())
         self.setLogger(Extractio_Logger(__name__))
         self.setIpInformationApi("https://ipinfo.io")
+        self.setHostname(None)
         self.getLogger().inform("Analytical Management System has been initialized.")
 
     def getForwardedUniformResourceLocator(self) -> str:

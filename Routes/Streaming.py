@@ -5,7 +5,7 @@ from typing import Deque, Optional
 from urllib.parse import urlparse
 from flask import Blueprint, Response, redirect, request
 from Models.Logger import Extractio_Logger
-from Models.Streaming.ChannelManager import ChannelConfigurationError, ChannelManager
+from Models.Streaming.ChannelManager import ChannelConfigurationError, Channel_Manager
 from Models.Streaming.StreamManager import ResolutionBusy, Stream_Manager
 from Models.Streaming.YouTubeLiveStream import StreamUnavailable, YouTubeLiveStream
 from os import environ
@@ -54,7 +54,7 @@ def _integer_setting(
     return value
 
 try:
-    channels = ChannelManager.fromJson(environ.get("STREAMING_CHANNELS", "[]"))
+    channels: Channel_Manager = Channel_Manager.fromJson(environ.get("STREAMING_CHANNELS", "[]"))
     _timeout = _integer_setting(
         "STREAMING_RESOLUTION_TIMEOUT",
         15,
@@ -350,7 +350,7 @@ def play_live(slug: str) -> Response:
         logger.warn(f"{message} - Slug: {slug} - Error: {error}")
         return Response(
             response=dumps({
-                "error": error,
+                "error": str(error),
             }),
             status=503,
             mimetype="application/json"

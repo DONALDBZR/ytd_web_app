@@ -438,7 +438,12 @@ class Session_Manager:
         """
         Reading and parsing a JSON file, returning its contents as a dictionary.
 
-        This method attempts to open and load a JSON file. If successful, it logs a success message and returns the parsed data.  If an error occurs, it logs the error and returns None.
+        Procedures:
+            1. Attempt to open the specified JSON file.
+            2. Parse the contents of the file into a dictionary.
+            3. Log a success message if the file is read successfully.
+            4. Handle and log any errors that occur during the file reading or parsing process.
+            5. Return the parsed data or None if an error occurs.
 
         Parameters:
             file_path (string): The path to the JSON file.
@@ -456,6 +461,9 @@ class Session_Manager:
             file.close()
             self.getLogger().inform(f"The file has been successfully read. - File Path: {file_path}")
             return data
+        except FileNotFoundError:
+            self.getLogger().warn(f"The session file disappeared before it could be read. - File Path: {file_path}")
+            return None
         except JSONDecodeError as error:
             self.getLogger().error(f"Failed to decode the JSON file. - File Path: {file_path} - Error: {error}")
             return None

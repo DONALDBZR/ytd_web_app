@@ -73,17 +73,9 @@ class YouTubeLiveStream:
             Optional[Dict[str, Any]]: The extracted stream information if available, otherwise None.
 
         Raises:
-            StreamUnavailable: If there is no live broadcast currently available for the channel.
+            StreamUnavailable: If the current info type is not allowed and there is no live broadcast.
         """
-        allowed_types: List[str] = [
-            "playlist",
-            "multi_video",
-        ]
-        type: str = str(current_info.get("_type"))
-        is_allowed: bool = type in allowed_types
-        if not is_allowed:
-            self.getLogger().warn("The current information type is not allowed.")
-            return None
+        self.__validateCurrentInfo(current_info)
         entries: List[Dict[str, Any]] = current_info.get("entries") or [] # type: ignore
         current_info = next((item for item in entries if item and item.get("live_status") == "is_live"), None) # type: ignore
         if not current_info:
@@ -95,6 +87,39 @@ class YouTubeLiveStream:
             uniform_resource_locator,
             download=False
         ) # type: ignore
+
+    def __validateCurrentInfo(self, current_info: Dict[str, Any]) -> None:
+        """
+        Validating the current YouTube info dictionary to ensure it is of an allowed type.
+
+        Procedures:
+            1. Check if the current info type is in the list of allowed types.
+            2. If the type is not allowed but the stream is live, log a warning and return.
+            3. If the type is not allowed and the stream is not live, raise a `StreamUnavailable` exception.
+
+        Parameters:
+            current_info (Dict[str, Any]): The YouTube info dictionary containing stream details.
+
+        Returns:
+            None: This method does not return any value.
+
+        Raises:
+            StreamUnavailable: If there is no live broadcast currently available for the channel.
+        """
+        allowed_types: List[str] = [
+            "playlist",
+            "multi_video",
+        ]
+        type: str = str(current_info.get("_type"))
+        is_allowed: bool = type in allowed_types
+        if is_allowed:
+            return
+        message: str = "The current information type is not allowed."
+        self.getLogger().warn(message)
+        if current_info.get("live_status") == "is_live":
+            self.getLogger().warn("The current information type is not allowed, but the stream is live.")
+            return
+        raise StreamUnavailable(message)
 
     def _extractInfo(self, channel: Channel) -> Dict[str, Any]:
         """
@@ -133,46 +158,79 @@ class YouTubeLiveStream:
             raise StreamUnavailable(message)
         return info
 
-    def __validateMediaStream(
-        self,
-        candidate: Dict[str, Any],
-        info: Dict[str, Any],
-        formats: List[Dict[str, Any]]
-    ) -> None:
+    def __validateMediaStream(self, candidate: Dict[str, Any]) -> None:
         """
         Validating the media stream candidate to ensure it has a combined audio/video stream.
 
         Procedures:
-            1. Check if the candidate has both video and audio codecs.
-            2. Determine if the candidate is a combined stream.
-            3. If it is a combined stream, check if it is remuxed.
-            4. Raise an error if the stream is not combined or remuxing is not enabled.
+            1. Validate the combined media stream.
+            2. Validate the remuxing media stream.
 
         Parameters:
             candidate (Dict[str, Any]): The media stream candidate to validate.
-            info (Dict[str, Any]): The extracted information of the media stream.
-            formats (List[Dict[str, Any]]): The list of available media formats.
 
         Returns:
             None: Raises an error if the media stream candidate is not valid.
 
         Raises:
-            StreamUnavailable: If the media stream candidate is not valid.
+            StreamUnavailable: If the media stream candidate is not valid, either due to not being a combined stream or remuxing not being enabled.
+        """
+        self.__validateCombinedMediaStream(candidate)
+        self.__validateRemuxingMediaStream(candidate)
+
+    def __validateRemuxingMediaStream(self, candidate: Dict[str, Any]) -> None:
+        """
+        Validating the remuxing media stream to ensure remuxing is enabled.
+
+        Procedures:
+            1. Check if the candidate has requested formats.
+            2. Raise an error if remuxing is not enabled.
+
+        Parameters:
+            candidate (Dict[str, Any]): The media stream candidate to validate.
+
+        Returns:
+            None: Raises an error if remuxing is not enabled.
+
+        Raises:
+            StreamUnavailable: If remuxing is not enabled.
+        """
+        if not candidate.get("requested_formats"):
+            return
+        message = "Remuxing is not enabled."
+        self.getLogger().error(message)
+        raise StreamUnavailable(message)
+
+    def __validateCombinedMediaStream(self, candidate: Dict[str, Any]) -> None:
+        """
+        Validating the combined media stream to ensure it has both video and audio codecs.
+
+        Procedures:
+            1. Check if the candidate has both video and audio codecs.
+            2. Determine if the candidate is a combined stream.
+            3. Raise an error if the stream is not combined.
+
+        Parameters:
+            candidate (Dict[str, Any]): The media stream candidate to validate.
+
+        Returns:
+            None: Raises an error if the media stream candidate is not a combined stream.
+
+        Raises:
+            StreamUnavailable: If the media stream candidate is not a combined stream.
         """
         has_video_codec: bool = candidate.get("vcodec") not in (None, "none")
         has_audio_codec: bool = candidate.get("acodec") not in (None, "none")
         has_combined_stream: bool = has_video_codec and has_audio_codec
-        if not has_combined_stream:
+        if has_combined_stream:
             return
-        is_remuxed: bool = (candidate.get("requested_formats") or (candidate is info and formats)) is not None
-        message: str = "Remuxing is not enabled." if is_remuxed else "YouTube did not provide a combined audio/video stream"
+        message: str = "YouTube did not provide a combined audio/video stream; separate audio/video streams are unsupported."
         self.getLogger().error(message)
         raise StreamUnavailable(message)
 
     def __validateMediaUniformResourceLocator(
         self,
         candidate: Dict[str, Any],
-        info: Dict[str, Any],
         formats: List[Dict[str, Any]],
         uniform_resource_locator: Optional[str],
         candidates: List[Dict[str, Any]]
@@ -188,7 +246,6 @@ class YouTubeLiveStream:
 
         Parameters:
             candidate (Dict[str, Any]): The media stream candidate to validate.
-            info (Dict[str, Any]): The information dictionary containing media stream details.
             formats (List[Dict[str, Any]]): The list of available media formats.
             uniform_resource_locator (Optional[str]): The media uniform resource locator (URL) to validate.
             candidates (List[Dict[str, Any]]): The list of candidate media streams.
@@ -199,12 +256,12 @@ class YouTubeLiveStream:
         Raises:
             StreamUnavailable: If the media URL is not valid and no valid combined stream is available.
         """
-        self.__validateMediaStream(candidate, info, formats)
+        self.__validateMediaStream(candidate)
         is_valid_uniform_resource_locator: bool = isinstance(uniform_resource_locator, str) and self.allowedMediaUniformResourceLocator(uniform_resource_locator)
         if is_valid_uniform_resource_locator:
             return
         is_valid_stream: bool = formats and not candidates # type: ignore
-        message: str = "Remuxing is not enabled." if is_valid_stream else "YouTube did not provide a supported combined stream."
+        message: str = "Remuxing is not enabled." if is_valid_stream else "YouTube did not provide a supported combined stream; separate audio/video streams are unsupported."
         self.getLogger().error(message)
         raise StreamUnavailable(message)
 
@@ -230,7 +287,8 @@ class YouTubeLiveStream:
         Raises:
             StreamUnavailable: If no valid media stream is available.
         """
-        self.setYoutubeDownloader(YoutubeDL(options)) # type: ignore
+        downloader_context: YoutubeDL = YoutubeDL(options) # type: ignore
+        self.setYoutubeDownloader(downloader_context.__enter__()) # type: ignore
         try:
             info: Optional[Dict[str, Any]] = self._extractInfo(channel)
             formats: List[Dict[str, Any]] = info.get("formats") or []
@@ -248,7 +306,6 @@ class YouTubeLiveStream:
             uniform_resource_locator: Optional[str] = selected.get("url")
             self.__validateMediaUniformResourceLocator(
                 selected,
-                info,
                 formats,
                 uniform_resource_locator,
                 candidates
@@ -322,7 +379,7 @@ class YouTubeLiveStream:
         try:
             return self.__resolve(channel, options)
         except StreamUnavailable as error:
-            message: str = "YouTube live stream is unavailable."
+            message: str = "The live stream is unavailable."
             self.getLogger().error(f"{message} - Error: {error}")
             raise StreamUnavailable(message)
         except (DownloadError, TimeoutError, OSError, ValueError) as error:

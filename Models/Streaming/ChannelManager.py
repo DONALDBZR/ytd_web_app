@@ -41,7 +41,7 @@ class ChannelManager:
 
     def __init__(self, entries: Optional[Iterable[dict]] = None):
         """
-        Initializes the ChannelManager with optional channel entries.
+        Initializing the ChannelManager with optional channel entries.
 
         Procedures:
             1. Initialize the internal channels dictionary.
@@ -56,6 +56,9 @@ class ChannelManager:
         """
         self.setChannels({})
         self.setLogger(Extractio_Logger("Channel_Manager"))
+        self.setSlugPattern(compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"))
+        self.setChannelIdPattern(compile(r"^UC[a-zA-Z0-9_-]{22}$"))
+        self.setHandlePattern(compile(r"^@[a-zA-Z0-9._-]{3,30}$"))
         if entries is None:
             self.getLogger().inform("No channel entries provided")
             return
@@ -99,7 +102,7 @@ class ChannelManager:
 
     def canonicalChannelUrl(self, value: str) -> str:
         """
-        Converts a YouTube channel URL, handle, or UC channel ID into a canonical live URL.
+        Converting a YouTube channel URL, handle, or UC channel ID into a canonical live URL.
 
         Procedures:
             1. Strip leading and trailing whitespace from the input value.
@@ -116,9 +119,6 @@ class ChannelManager:
         Raises:
             ChannelConfigurationError: If the input value does not match any known pattern.
         """
-        self.setSlugPattern(compile(r"^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"))
-        self.setChannelIdPattern(compile(r"^UC[a-zA-Z0-9_-]{22}$"))
-        self.setHandlePattern(compile(r"^@[a-zA-Z0-9._-]{3,30}$"))
         value = value.strip()
         if self.getChannelIdPattern().fullmatch(value):
             self.getLogger().inform("Matched channel ID pattern")
@@ -240,7 +240,9 @@ class ChannelManager:
             self.canonicalChannelUrl(uniform_resource_locator),
             enabled
         )
-        self.getChannels()[slug] = channel
+        current_channels: Dict[str, Channel] = self.getChannels()
+        current_channels[slug] = channel
+        self.setChannels(current_channels)
         return channel
 
     def get(self, slug: str) -> Optional[Channel]:

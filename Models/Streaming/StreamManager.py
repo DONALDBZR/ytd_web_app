@@ -1,7 +1,7 @@
 from threading import BoundedSemaphore, Lock
 from time import monotonic, time
 from typing import Dict, Tuple, Optional
-from Models.Streaming.ChannelManager import Channel, ChannelManager
+from Models.Streaming.ChannelManager import Channel, Channel_Manager
 from Models.Streaming.YouTubeLiveStream import Resolved_Stream, StreamUnavailable, YouTubeLiveStream
 from Errors.ExtractioErrors import ResolutionBusy
 from Models.Logger import Extractio_Logger
@@ -21,7 +21,7 @@ class Stream_Manager:
         __failures: Tracks recent resolution failures to prevent immediate retries.
         __logger: Handles logging for the Stream Manager.
     """
-    __channels: ChannelManager
+    __channels: Channel_Manager
     """
     Manages the registration and retrieval of YouTube streaming channels.
     """
@@ -56,7 +56,7 @@ class Stream_Manager:
 
     def __init__(
         self,
-        channels: ChannelManager,
+        channels: Channel_Manager,
         resolver: YouTubeLiveStream,
         cache_ttl: int = 20,
         max_concurrent: int = 2
@@ -112,10 +112,10 @@ class Stream_Manager:
     def setResolver(self, resolver: YouTubeLiveStream) -> None:
         self.__resolver = resolver
 
-    def getChannels(self) -> ChannelManager:
+    def getChannels(self) -> Channel_Manager:
         return self.__channels
 
-    def setChannels(self, channels: ChannelManager) -> None:
+    def setChannels(self, channels: Channel_Manager) -> None:
         self.__channels = channels
 
     def __getCached(self, channel: Channel) -> Optional[Resolved_Stream]:

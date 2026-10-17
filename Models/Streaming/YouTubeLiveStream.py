@@ -72,17 +72,14 @@ class YouTubeLiveStream:
         Returns:
             Optional[Dict[str, Any]]: The updated live information, or None if not available.
         """
-        if live_info is None:
-            return None
         allowed_types: List[str] = [
             "playlist",
             "multi_video"
         ]
-        has_live_information: bool = live_info is not None
         has_allowed_type: bool = current_info.get("_type") in allowed_types
         is_live: bool = current_info.get("live_status") == "is_live"
-        if (has_live_information and not has_allowed_type and is_live):
-            live_info = current_info
+        if not has_allowed_type and is_live:
+            return current_info
         return live_info
 
     def __extractInfo(self, current_info: Dict[str, Any]) -> Optional[Dict[str, Any]]:

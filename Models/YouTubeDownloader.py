@@ -1,11 +1,11 @@
-from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Any, Relational_Database_Error
+from Models.DatabaseHandler import Database_Handler, Extractio_Logger, Environment, List, Relational_Database_Error
 from datetime import datetime
 from urllib.error import HTTPError
 from yt_dlp import YoutubeDL
-from typing import Dict, Union, Optional, Tuple
+from typing import Any, Dict, Union, Optional, Tuple
 from time import strftime, gmtime, sleep
 from os.path import isfile, exists, getmtime, getsize
-from os import makedirs, replace, remove
+from os import environ, makedirs, replace, remove
 from Errors.ExtractioErrors import NotFoundError
 from yt_dlp.utils import DownloadError, ExtractorError
 from Models.YouTubeModel import YouTube
@@ -258,6 +258,76 @@ class YouTube_Downloader:
 
     def setLogger(self, logger: Extractio_Logger) -> None:
         self.__logger = logger
+
+    def __youtubeOptions(self, options: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Configuring YouTube download options, including JavaScript runtime support and optional session credentials.
+
+        Procedures:
+            1. Enable JavaScript runtime support for YouTube downloads.
+            2. Check for optional session credentials (cookies) and configure them if available.
+            3. Configure the YouTube extractor with the provided options.
+
+        Parameters:
+            options (Dict[str, Any]): The initial set of options for the YouTube downloader.
+
+        Returns:
+            Dict[str, Any]: The updated set of options with YouTube-specific configurations.
+        """
+        return self.__setPotProviderUrl(self.__setCookieFile({
+            "js_runtimes": {
+                "node": {}
+            }
+        }))
+
+    def __setPotProviderUrl(self, options: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Configuring the YouTube Pot Provider URL for the extractor options.
+
+        Procedures:
+            1. Check for the presence of the environment variable defining the Pot Provider URL.
+            2. If the environment variable is set, update the options dictionary with the Pot Provider URL.
+
+        Parameters:
+            options (Dict[str, Any]): The current set of options for the YouTube downloader.
+
+        Returns:
+            Dict[str, Any]: The updated set of options with the Pot Provider URL configured if available.
+        """
+        pot_provider_url: Optional[str] = environ.get("EXTRACTIO_YOUTUBE_POT_PROVIDER_URL")
+        if pot_provider_url:
+            options["extractor_args"] = {
+                "youtube": {
+                    "player_client": [
+                        "mweb"
+                    ]
+                },
+                "youtubepot-bgutilhttp": {
+                    "base_url": [
+                        pot_provider_url
+                    ]
+                }
+            }
+        return options
+
+    def __setCookieFile(self, options: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Setting the cookie file for YouTube downloads if the environment variable is defined.
+
+        Procedures:
+            1. Check for the presence of the environment variable defining the cookie file.
+            2. If the environment variable is set, update the options dictionary with the cookie file path.
+
+        Parameters:
+            options (Dict[str, Any]): The current set of options for the YouTube downloader.
+
+        Returns:
+            Dict[str, Any]: The updated set of options with the cookie file configured if available.
+        """
+        cookie_file: Optional[str] = environ.get("EXTRACTIO_YOUTUBE_COOKIES")
+        if cookie_file:
+            options["cookiefile"] = cookie_file
+        return options
 
     def __setYouTube(self) -> None:
         """
@@ -548,14 +618,13 @@ class YouTube_Downloader:
             self.getLogger().inform(f"The application has successfully loaded the cache. - Identifier: {self.getIdentifier()}")
             return response
         options: Dict[str, Union[str, bool]] = {
-            "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
             "quiet": True,
             "skip_download": True,
             "nocheckcertificate": True,
             "extract_flat": True,
             "no_warnings": True
         }
-        self.setVideo(YoutubeDL(options)) # type: ignore
+        self.setVideo(YoutubeDL(self.__youtubeOptions(options))) # type: ignore
         raw_youtube: Dict[str, Any] = self.getVideo().extract_info(
             url=self.getUniformResourceLocator(),
             download=False
@@ -714,7 +783,7 @@ class YouTube_Downloader:
                 length=self.getLength(),
                 published_at=self.getPublishedAt(),
                 author=unescape(self.getAuthor()),
-                title=unescape(self.getTitle().encode("latin-1").decode("utf-8")),
+                title=unescape(self.getTitle()),
                 Media=self.getMediaIdentifier()
             )
             response: bool = youtube.save()
@@ -774,7 +843,6 @@ class YouTube_Downloader:
             audio_file_location: str = f"{self.getDirectory()}/Audio/{self.getIdentifier()}.mp3"
             video_file_location: str = f"{self.getDirectory()}/Video/{self.getIdentifier()}.mp4"
             options: Dict[str, Union[str, bool]] = {
-                "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
                 "quiet": True,
                 "nocheckcertificate": True,
                 "no_warnings": True,
@@ -830,7 +898,7 @@ class YouTube_Downloader:
                 "video": video
             }
         try:
-            self.setVideo(YoutubeDL(options)) # type: ignore
+            self.setVideo(YoutubeDL(self.__youtubeOptions(options))) # type: ignore
             info = self.getVideo().extract_info(
                 url=self.getUniformResourceLocator(),
                 download=False
@@ -1038,12 +1106,12 @@ class YouTube_Downloader:
         """
         Downloading a video file by combining audio and video streams and saving it to the specified file path.
 
-        This method performs the following tasks:
-            - Logging the start of the download process.
-            - Configuring the download options to merge audio and video streams into an MP4 file.
-            - Initiating the download using the YouTubeDL library.
-            - Saving metadata related to the downloaded file into the relational database.
-            - Logging the success or failure of saving metadata.
+        Procedures:
+            1. Configure the download options for merging audio and video streams.
+            2. Initiate the download using the YouTubeDL library.
+            3. Save metadata related to the downloaded file into the relational database.
+            4. Handle any errors that occur during the download or metadata saving process.
+            5. Return the file path to the downloaded and merged video file.
 
         Args:
             audio (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): The audio stream information.
@@ -1061,16 +1129,16 @@ class YouTube_Downloader:
         try:
             self.getLogger().inform(f"Downloading the video file. - File Path: {file_path}")
             format_identifier: str = f"{video['format_id']}+{audio['format_id']}" # type: ignore
+            format_specification: str = f"{format_identifier}/bestvideo+bestaudio/best"
             options: Dict[str, Union[str, bool]] = {
-                "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
                 "quiet": True,
                 "nocheckcertificate": True,
                 "no_warnings": True,
-                "format": format_identifier,
+                "format": format_specification,
                 "merge_output_format": "mp4",
                 "outtmpl": file_path
             }
-            self.setVideo(YoutubeDL(options)) # type: ignore
+            self.setVideo(YoutubeDL(self.__youtubeOptions(options))) # type: ignore
             self.getVideo().download([self.getUniformResourceLocator()])
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             self.__postVideo(file_path)
@@ -1161,9 +1229,16 @@ class YouTube_Downloader:
         """
         Downloading an audio file from a given media stream and saves it to a specified file path.
 
-        This method configures download options based on the provided stream's format identifier and protocol, initiates the download using the YoutubeDL library, and saves the audio file to the specified path.  It logs the success or failure of the download and attempts to persist metadata in a relational database.
+        Procedures:
+            1. Extract the format identifier and protocol from the provided stream.
+            2. Determine the appropriate format specification for the audio download.
+            3. Configure the download options for the YoutubeDL library.
+            4. Initiate the download and save the audio file to the specified path.
+            5. Save metadata related to the downloaded audio file into the relational database.
+            6. Handle any errors that occur during the download or metadata saving process.
+            7. Return the file path to the downloaded audio file.
 
-        Args:
+        Parameters:
             stream (Dict[str, Union[str, int, float, List[Dict[str, Union[str, float]]], None, Dict[str, str]]]): The audio stream information including format ID and protocol.
             file_path (str): The path where the audio file should be saved.
 
@@ -1176,19 +1251,21 @@ class YouTube_Downloader:
             Relational_Database_Error: If there is an issue communicating with the database.
         """
         try:
-            self.getLogger().inform("Downloading the audio file. - File Path: {file_path}")
             format_identifier: str = stream.get("format_id") # type: ignore
             protocol: str = stream.get("protocol", "") # type: ignore
             format_specification: str = self.getAudioFormatSpecification(format_identifier, protocol)
+            if format_specification != "bestaudio":
+                format_specification = f"{format_specification}/bestaudio"
+            provider_status: str = "enabled" if environ.get("EXTRACTIO_YOUTUBE_POT_PROVIDER_URL") else "disabled"
+            self.getLogger().inform(f"Downloading the audio file. - File Path: {file_path} - Format: {format_specification} - PO Token Provider: {provider_status}")
             options: Dict[str, Union[str, bool]] = {
-                "cookiefile": "/var/www/.config/google-chrome/cookies.txt",
                 "quiet": True,
                 "nocheckcertificate": True,
                 "no_warnings": True,
                 "format": format_specification,
                 "outtmpl": file_path
             }
-            self.setVideo(YoutubeDL(options)) # type: ignore
+            self.setVideo(YoutubeDL(self.__youtubeOptions(options))) # type: ignore
             self.getVideo().download([self.getUniformResourceLocator()])
             self.setTimestamp(datetime.now().strftime("%Y-%m-%d - %H:%M:%S"))
             self.__postAudio(file_path)
@@ -1240,7 +1317,7 @@ class YouTube_Downloader:
                 Returns "bestaudio" if the format ID is missing or if the protocol is HLS (m3u8),
                 otherwise returns the string representation of the format identifier.
         """
-        if format_identifier is None or "m3u8" is str(protocol).lower():
+        if format_identifier is None or "m3u8" in str(protocol).lower():
             self.getLogger().warn("Using fallback format due to unsupported or missing format identifier.")
             return "bestaudio"
         return str(format_identifier)

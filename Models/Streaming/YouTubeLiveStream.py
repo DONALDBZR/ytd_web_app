@@ -55,16 +55,44 @@ class YouTubeLiveStream:
     def setYoutubeDownloader(self, youtube_downloader: YoutubeDL):
         self.__youtube_downloader = youtube_downloader
 
+    def __getLiveInformation(self, current_info: Dict[str, Any], live_info: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+        """
+        Determining the appropriate live information based on the current info and existing live info.
+
+        Procedures:
+            1. Return None immediately if there is no existing live information.
+            2. Check if the current info type is allowed and if it represents a live stream.
+            3. Update the live information with the current info if it is a live stream and the type is not allowed.
+            4. Return the final live information, which may be updated or unchanged.
+
+        Parameters:
+            current_info (Dict[str, Any]): The current YouTube info dictionary.
+            live_info (Optional[Dict[str, Any]]): The existing live information, if any.
+
+        Returns:
+            Optional[Dict[str, Any]]: The updated live information, or None if not available.
+        """
+        if live_info is None:
+            return None
+        allowed_types: List[str] = [
+            "playlist",
+            "multi_video"
+        ]
+        has_live_information: bool = live_info is not None
+        has_allowed_type: bool = current_info.get("_type") in allowed_types
+        is_live: bool = current_info.get("live_status") == "is_live"
+        if (has_live_information and not has_allowed_type and is_live):
+            live_info = current_info
+        return live_info
+
     def __extractInfo(self, current_info: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Extracting detailed information about the current live stream from the provided YouTube info dictionary.
 
         Procedures:
             1. Check if the current info type is allowed.
-            2. Find the live stream entry in the list of entries.
-            3. Extract the URL of the live stream.
-            4. Use YoutubeDL to extract detailed information about the live stream.
-            5. Return the extracted stream information.
+            2. Use the current information directly when it is already a live video, otherwise find the live stream entry in its entries list.
+            3. Return the detailed information when formats are already present; otherwise extract the selected entry's URL.
 
         Parameters:
             current_info (Dict[str, Any]): The YouTube info dictionary containing stream details.
@@ -77,12 +105,23 @@ class YouTubeLiveStream:
         """
         self.__validateCurrentInfo(current_info)
         entries: List[Dict[str, Any]] = current_info.get("entries") or [] # type: ignore
-        current_info = next((item for item in entries if item and item.get("live_status") == "is_live"), None) # type: ignore
-        if not current_info:
+        live_info: Optional[Dict[str, Any]] = self.__getLiveInformation(current_info, next((item for item in entries if item and item.get("live_status") == "is_live"), None))
+        if live_info is None:
             message: str = "The channel is not currently broadcasting."
             self.getLogger().error(message)
             raise StreamUnavailable(message)
-        uniform_resource_locator: str = str(current_info.get("url") or current_info.get("webpage_url"))
+        has_formats: bool = bool(live_info.get("formats"))
+        has_direct_media_url: bool = isinstance(live_info.get("url"), str)
+        has_video_codec: bool = live_info.get("vcodec") not in (None, "none")
+        has_audio_codec: bool = live_info.get("acodec") not in (None, "none")
+        is_streamable: bool = has_formats or (has_direct_media_url and has_video_codec and has_audio_codec)
+        if is_streamable:
+            return live_info
+        uniform_resource_locator: Optional[str] = (live_info.get("webpage_url") or live_info.get("original_url") or live_info.get("url"))
+        if not uniform_resource_locator:
+            message = "The live broadcast URL is unavailable."
+            self.getLogger().error(message)
+            raise StreamUnavailable(message)
         return self.getYoutubeDownloader().extract_info(
             uniform_resource_locator,
             download=False
@@ -371,10 +410,10 @@ class YouTubeLiveStream:
             "no_warnings": True,
             "skip_download": True,
             "noplaylist": True,
+            "ignore_no_formats_error": True,
             "socket_timeout": self.getSocketTimeout(),
             "retries": 0,
             "extractor_retries": 0,
-            "format": "best[acodec!=none][vcodec!=none]/best",
         }
         try:
             return self.__resolve(channel, options)

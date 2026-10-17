@@ -7,7 +7,7 @@ from Models.Logger import Extractio_Logger
 from json import loads, JSONDecodeError
 
 
-class ChannelManager:
+class Channel_Manager:
     """
     Manages the registration and retrieval of YouTube streaming channels.
 
@@ -147,7 +147,7 @@ class ChannelManager:
         return f"https://www.youtube.com/{identity}/live"
 
     @classmethod
-    def fromJson(cls, configuration: str) -> "ChannelManager":
+    def fromJson(cls, configuration: str) -> "Channel_Manager":
         """
         Creating a ChannelManager instance from a JSON configuration string.
 
@@ -163,7 +163,7 @@ class ChannelManager:
             configuration (str): A JSON string representing the channel configuration.
 
         Returns:
-            ChannelManager: An instance of ChannelManager initialized with the parsed channels.
+            Channel_Manager: An instance of Channel_Manager initialized with the parsed channels.
 
         Raises:
             ChannelConfigurationError: If the configuration is not a valid JSON array or contains invalid entries.

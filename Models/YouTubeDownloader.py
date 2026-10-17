@@ -274,11 +274,12 @@ class YouTube_Downloader:
         Returns:
             Dict[str, Any]: The updated set of options with YouTube-specific configurations.
         """
-        return self.__setPotProviderUrl(self.__setCookieFile({
-            "js_runtimes": {
-                "node": {}
-            }
-        }))
+        configured_options: Dict[str, Any] = options.copy()
+        configured_options.setdefault("js_runtimes", {
+            "node": {}
+        })
+        configured_options.setdefault("restrictfilenames", True)
+        return self.__setPotProviderUrl(self.__setCookieFile(configured_options))
 
     def __setPotProviderUrl(self, options: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -299,6 +300,7 @@ class YouTube_Downloader:
             options["extractor_args"] = {
                 "youtube": {
                     "player_client": [
+                        "default",
                         "mweb"
                     ]
                 },

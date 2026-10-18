@@ -1,7 +1,7 @@
 from collections import defaultdict, deque
 from threading import Lock
 from time import monotonic
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Deque, Optional, List
 from Models.Streaming.ChannelManager import Channel
 from urllib.parse import urlparse
@@ -291,7 +291,7 @@ def channel_info(slug: str) -> Response:
         "video_count": None,
         "playback_status": "unavailable",
         "metadata_status": "unavailable",
-        "checked_at": datetime.now(timezone.utc).isoformat(),
+        "checked_at": datetime.now().astimezone().isoformat(),
     }
     if channel.enabled:
         try:
@@ -306,7 +306,7 @@ def channel_info(slug: str) -> Response:
                     else "unknown"
                 ),
                 "metadata_status": "available",
-                "checked_at": datetime.now(timezone.utc).isoformat(),
+                "checked_at": datetime.now().astimezone().isoformat(),
             })
         except Exception as error:
             logger.warn(f"Channel metadata lookup failed. - Slug: {slug} - Error type: {type(error).__name__}")

@@ -194,6 +194,87 @@ class YouTubeLiveStream:
             raise StreamUnavailable(message)
         return info
 
+    def getChannelMetadata(self, channel: Channel) -> Dict[str, Optional[Union[int, str]]]:
+        """
+        Retrieving the metadata for the given channel, including subscriber count, video count, and live status.
+
+        Procedures:
+            1. Use YoutubeDL to extract information about the channel's videos and live stream.
+            2. Check if the extracted information is available.
+            3. Return the relevant metadata for the channel.
+
+        Parameters:
+            channel (Channel): The channel for which to retrieve metadata.
+
+        Returns:
+            Dict[str, Optional[Union[int, str]]]: The metadata for the channel, including subscriber count, video count, and live status.
+
+        Raises:
+            StreamResolutionError: If YouTube returns no channel information.
+        """
+        options: Dict[str, Union[bool, float, int, str]] = {
+            "quiet": True,
+            "no_warnings": True,
+            "skip_download": True,
+            "noplaylist": True,
+            "socket_timeout": self.getSocketTimeout(),
+            "retries": 0,
+            "extractor_retries": 0,
+        }
+        self.setYoutubeDownloader(YoutubeDL(options)) # type: ignore
+        try:
+            videos_info: Optional[Dict[str, Any]] = self.__getVideosUniformResourceLocators(channel)
+            live_info: Optional[Dict[str, Any]] = self.__getLiveInformationData(channel)
+        finally:
+            self.getYoutubeDownloader().close()
+        if not videos_info or not live_info:
+            message: str = "This channel has no available video or live stream information."
+            self.getLogger().error(f"{message} - Name: {channel.display_name} - Uniform Resource Locator: {channel.youtube_url}")
+            raise StreamResolutionError(message)
+        return {
+            "subscriber_count": int(str(videos_info.get("channel_follower_count"))),
+            "video_count": int(str(videos_info.get("channel_video_count", videos_info.get("playlist_count")))),
+            "live_status": live_info.get("live_status"),
+        }
+
+    def __getLiveInformationData(self, channel: Channel) -> Optional[Dict[str, Any]]:
+        """
+        Retrieving the live stream information for a specific channel.
+
+        Procedures:
+            1. Use the configured YoutubeDL instance to extract information about the channel's live stream.
+            2. Return the extracted live stream information.
+
+        Parameters:
+            channel (Channel): The channel for which to retrieve live stream information.
+
+        Returns:
+            Optional[Dict[str, Any]]: The extracted live stream information, or None if extraction fails.
+        """
+        return self.getYoutubeDownloader().extract_info(
+            channel.youtube_url,
+            download=False
+        ) # type: ignore
+
+    def __getVideosUniformResourceLocators(self, channel: Channel) -> Optional[Dict[str, Any]]:
+        """
+        Retrieving the video URLs for a specific channel.
+
+        Procedures:
+            1. Use the configured YoutubeDL instance to extract information about the channel's videos.
+            2. Return the extracted video information.
+
+        Parameters:
+            channel (Channel): The channel for which to retrieve video URLs.
+
+        Returns:
+            Optional[Dict[str, Any]]: The extracted video information, or None if extraction fails.
+        """
+        return self.getYoutubeDownloader().extract_info(
+            f"{channel.youtube_url.rsplit('/', 1)[0]}/videos",
+            download=False
+        ) # type: ignore
+
     def __validateMediaStream(self, candidate: Dict[str, Any]) -> None:
         """
         Validating the media stream candidate to ensure it has a combined audio/video stream.

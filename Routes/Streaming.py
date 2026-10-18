@@ -2,7 +2,7 @@ from collections import defaultdict, deque
 from threading import Lock
 from time import monotonic
 from datetime import datetime
-from typing import Deque, Optional, List
+from typing import Deque, Optional, List, Union
 from Models.Streaming.ChannelManager import Channel
 from urllib.parse import urlparse
 from flask import Blueprint, Response, redirect, request, send_from_directory, url_for
@@ -296,16 +296,17 @@ def channel_info(slug: str) -> Response:
     if channel.enabled:
         try:
             current = manager.getResolver().getChannelMetadata(channel)
-            live_status = current.get("live_status")
+            is_live = current.get("is_live", False)
+            is_live = bool(is_live) if isinstance(is_live, (bool)) else False
+            subscriber_count = current.get("subscriber_count")
+            subscriber_count = int(subscriber_count) if isinstance(subscriber_count, int) else None
+            video_count = current.get("video_count")
+            video_count = int(video_count) if isinstance(video_count, int) else None
             metadata.update({
-                "subscriber_count": current.get("subscriber_count"),
-                "video_count": current.get("video_count"),
-                "playback_status": (
-                    "live" if live_status == "is_live"
-                    else "offline" if live_status in {"not_live", "was_live", "post_live", "is_upcoming"}
-                    else "unknown"
-                ),
-                "metadata_status": "available",
+                "subscriber_count": subscriber_count,
+                "video_count": video_count,
+                "playback_status": "live" if is_live else "offline",
+                "metadata_status": "available" if subscriber_count is not None and video_count is not None else "partial",
                 "checked_at": datetime.now().astimezone().isoformat(),
             })
         except Exception as error:

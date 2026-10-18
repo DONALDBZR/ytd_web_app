@@ -1,6 +1,7 @@
 from collections import defaultdict, deque
 from threading import Lock
 from time import monotonic
+from datetime import datetime, timezone
 from typing import Deque, Optional, List
 from Models.Streaming.ChannelManager import Channel
 from urllib.parse import urlparse
@@ -285,13 +286,37 @@ def channel_info(slug: str) -> Response:
             status=404,
             mimetype="application/json"
         )
+    metadata = {
+        "subscriber_count": None,
+        "video_count": None,
+        "playback_status": "unavailable",
+        "metadata_status": "unavailable",
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+    }
+    if channel.enabled:
+        try:
+            current = manager.getResolver().getChannelMetadata(channel)
+            live_status = current.get("live_status")
+            metadata.update({
+                "subscriber_count": current.get("subscriber_count"),
+                "video_count": current.get("video_count"),
+                "playback_status": (
+                    "live" if live_status == "is_live"
+                    else "offline" if live_status in {"not_live", "was_live", "post_live", "is_upcoming"}
+                    else "unknown"
+                ),
+                "metadata_status": "available",
+                "checked_at": datetime.now(timezone.utc).isoformat(),
+            })
+        except Exception as error:
+            logger.warn(f"Channel metadata lookup failed. - Slug: {slug} - Error type: {type(error).__name__}")
     return Response(
         response=dumps({
             "slug": channel.slug,
             "display_name": channel.display_name,
             "url": channel.youtube_url,
             "enabled": channel.enabled,
-            "playback_status": "not_checked"
+            **metadata,
         }),
         status=200,
         mimetype="application/json"
